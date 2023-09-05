@@ -142,6 +142,24 @@ genA_base: &genA_base
   - "lj_genA_ptRatio"
   - "egm_lj_genA_ptRatio"
   - "mu_lj_genA_ptRatio"
+  - "dsaMuon_genMu_ptRatio"
+  - "dsaMuon0_genMu0_ptRatio"
+  - "dsaMuon1_genMu1_ptRatio"
+  - "muon_genMu_ptRatio"
+  - "muon0_genMu0_ptRatio"
+  - "muon1_genMu1_ptRatio"
+  - "mu_lj_genA_ptRatio_vs_recolxy"
+  - "egm_lj_genA_ptRatio_vs_recolxy"
+  - "mu_lj_genA_ptRatio_vs_truelxy"
+  - "egm_lj_genA_ptRatio_vs_truelxy"
+  - "dsaMuon0_genMu0_ptRatio_vs_truelxy"
+  - "muon0_genMu0_ptRatio_vs_truelxy"
+  - "dsaMuon0_genMu0_ptRatio_vs_truept"
+  - "muon0_genMu0_ptRatio_vs_truept"
+  - "genMu0_truept_vs_dsaMuon0_lxy"
+  - "genMu0_truept_vs_muon0_lxy"
+  - "mu_lj_genA_lxyRatio"
+  - "egm_lj_genA_lxyRatio"
   - "genA_matched_lj_lxy"
   - "genA_toMu_matched_lj_lxy"
   - "genA_toE_matched_lj_lxy"
@@ -166,7 +184,6 @@ gen_base: &gen_base
   - *genMu_base
   - *genA_base
   - "gen_abspid"
-
 
 base: &base
   - *pv_base
