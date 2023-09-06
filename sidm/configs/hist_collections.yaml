@@ -139,27 +139,6 @@ genA_base: &genA_base
   - "genA_lj_dR"
   - "genA_lj_dR_lowRange"
   - "genA_genA_dphi"
-  - "lj_genA_ptRatio"
-  - "egm_lj_genA_ptRatio"
-  - "mu_lj_genA_ptRatio"
-  - "dsaMuon_genMu_ptRatio"
-  - "dsaMuon0_genMu0_ptRatio"
-  - "dsaMuon1_genMu1_ptRatio"
-  - "muon_genMu_ptRatio"
-  - "muon0_genMu0_ptRatio"
-  - "muon1_genMu1_ptRatio"
-  - "mu_lj_genA_ptRatio_vs_recolxy"
-  - "egm_lj_genA_ptRatio_vs_recolxy"
-  - "mu_lj_genA_ptRatio_vs_truelxy"
-  - "egm_lj_genA_ptRatio_vs_truelxy"
-  - "dsaMuon0_genMu0_ptRatio_vs_truelxy"
-  - "muon0_genMu0_ptRatio_vs_truelxy"
-  - "dsaMuon0_genMu0_ptRatio_vs_truept"
-  - "muon0_genMu0_ptRatio_vs_truept"
-  - "genMu0_truept_vs_dsaMuon0_lxy"
-  - "genMu0_truept_vs_muon0_lxy"
-  - "mu_lj_genA_lxyRatio"
-  - "egm_lj_genA_lxyRatio"
   - "genA_matched_lj_lxy"
   - "genA_toMu_matched_lj_lxy"
   - "genA_toE_matched_lj_lxy"
@@ -168,6 +147,14 @@ genA_base: &genA_base
   - "genA_matched_egmLj_lxy"
   - "genA_toE_matched_egmLj_lxy"
   - "genA_matched_lj_n"
+  - "genA_lj_ptRatio"
+  - "genA_egmLj_ptRatio"
+  - "genA_muLj_ptRatio"
+  - "genA_dsaMuonLj_ptRatio"
+  - "genA_pfMuonLj_ptRatio"
+  - "genA_dsaMuon0Lj_ptRatio"
+  - "genA_egmLj_lxyRatio"
+  - "genA_muLj_lxyRatio"
 
 lepton_genA_base: &lepton_genA_base
   - "electron_nearGenA_n"
@@ -178,6 +165,28 @@ lepton_genA_base: &lepton_genA_base
   - "muon_nearGenA_n_genA_lxy"
   - "dsaMuon_nearGenA_n"
   - "dsaMuon_nearGenA_n_genA_lxy"
+  
+lepton_genLepton_base: &lepton_genLepton_base
+  - "dsaMuon_genMu_ptRatio"
+  - "dsaMuon0_genMu_ptRatio"
+  - "dsaMuon1_genMu_ptRatio"
+  - "pfMuon_genMu_ptRatio"
+  - "pfMuon0_genMu_ptRatio"
+  - "pfMuon1_genMu_ptRatio"
+  - "dsaMuon0_genMu0_ptRatio_vs_truept"
+  - "muon0_genMu0_ptRatio_vs_truept"
+
+lepton_genLepton_genA_base: &lepton_genLepton_genA_base
+  - "dsaMuon0_genMu0_ptRatio_vs_truelxy"
+  - "muon0_genMu0_ptRatio_vs_truelxy"
+  - "genMu0_truept_vs_dsaMuon0_lxy"
+  - "genMu0_truept_vs_muon0_lxy"
+  
+genA_lj_2d: &genA_lj_2d
+  - "mu_lj_genA_ptRatio_vs_recolxy"
+  - "egm_lj_genA_ptRatio_vs_recolxy"
+  - "mu_lj_genA_ptRatio_vs_truelxy"
+  - "egm_lj_genA_ptRatio_vs_truelxy"
 
 gen_base: &gen_base
   - *genE_base
@@ -204,3 +213,10 @@ base: &base
 base_plus_gen: &base_plus_gen
   - *base
   - *gen_base
+  
+base_plus_gen_resolution: &base_plus_gen_resolution
+  - *base
+  - *gen_base
+  - *genA_lj_2d
+  - *lepton_genLepton_base
+  - *lepton_genLepton_genA_base

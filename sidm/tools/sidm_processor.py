@@ -50,10 +50,6 @@ class SidmProcessor(processor.ProcessorABC):
             # fixme: would be good to explicitly order other objects as well
             if hasattr(objs[obj_name], "pt"):
                 objs[obj_name] = objs[obj_name][ak.argsort(objs[obj_name].pt, ascending=False)]
-            
-            # adding genAs_lxy to the object collection directly
-            if obj_name=="genAs":
-                objs["genAs_lxy"] = (objs["genAs"].dauvtx-objs["genAs"].vtx).r
 
         # evaluate object selections for all analysis channels
         channels = self.build_analysis_channels(objs)
