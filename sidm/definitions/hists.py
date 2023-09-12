@@ -1116,6 +1116,35 @@ hist_defs = {
         ],
         evt_mask=lambda objs: (ak.num(objs["muons"]) > 0)
     ),
+    "dsaMuon0_muLj_ptRatio_vs_truept": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 2.0, name="dsaMuon0_genMu0_ptRatio"),
+                   lambda objs, mask: (objs["dsaMuons"].nearest(objs["ljs"], threshold=0.4).pt
+                       / objs["dsaMuons"].nearest(objs["genAs"], threshold=0.4).pt)[mask,0]),
+            h.Axis(hist.axis.Regular(500, 0, 1000, name="genMu0_pt"),
+                   lambda objs, mask: (objs["dsaMuons"].nearest(objs["genMus"], threshold=0.4).pt)[mask,0]),
+        ],
+        evt_mask=lambda objs: (ak.num(objs["dsaMuons"]) > 0)
+    ),
+    "muon0_muLj_ptRatio_vs_truept": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 2.0, name="muon0_muLj_ptRatio"),
+                   lambda objs, mask: (objs["muons"].nearest(objs["ljs"], threshold=0.4).pt
+                       / objs["muons"].nearest(objs["genAs"], threshold=0.4).pt)[mask,0]),
+            h.Axis(hist.axis.Regular(500, 0, 1000, name="genMu0_pt"),
+                   lambda objs, mask: (objs["muons"].nearest(objs["genMus"], threshold=0.4).pt)[mask,0]),
+        ],
+        evt_mask=lambda objs: (ak.num(objs["muons"]) > 0)
+    ),
+    "egmLj_ptRatio_vs_egm_truept": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 2.0, name="egm_lj_genA_ptRatio"),
+                   lambda objs, mask: derived_objs["egm_ljs"](objs).pt
+                       / derived_objs["egm_ljs"](objs).nearest(objs["genAs"], threshold=0.4).pt),
+            h.Axis(hist.axis.Regular(500, 0, 1000, name="genE_pt"),
+                   lambda objs, mask: (derived_objs["egm_ljs"](objs).nearest(objs["genEs"], threshold=0.4).pt)[mask,0]),
+        ],
+    ),
     # LJ True pT vs True Lxy, dR 0.4 matching window
     "genMu0_truept_vs_dsaMuon0_lxy": h.Histogram(
         [

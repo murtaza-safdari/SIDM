@@ -175,12 +175,15 @@ lepton_genLepton_base: &lepton_genLepton_base
   - "pfMuon1_genMu_ptRatio"
   - "dsaMuon0_genMu0_ptRatio_vs_truept"
   - "muon0_genMu0_ptRatio_vs_truept"
+  - "egmLj_ptRatio_vs_egm_truept"
 
 lepton_genLepton_genA_base: &lepton_genLepton_genA_base
   - "dsaMuon0_genMu0_ptRatio_vs_truelxy"
   - "muon0_genMu0_ptRatio_vs_truelxy"
   - "genMu0_truept_vs_dsaMuon0_lxy"
   - "genMu0_truept_vs_muon0_lxy"
+  - "dsaMuon0_muLj_ptRatio_vs_truept"
+  - "muon0_muLj_ptRatio_vs_truept"
   
 genA_lj_2d: &genA_lj_2d
   - "mu_lj_genA_ptRatio_vs_recolxy"
