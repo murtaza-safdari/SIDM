@@ -147,12 +147,17 @@ genA_base: &genA_base
   - "genA_matched_egmLj_lxy"
   - "genA_toE_matched_egmLj_lxy"
   - "genA_matched_lj_n"
+  - "genAs_toE_pt"
+  - "genAs_toMu_pt"
+
+genA_ratio: &genA_ratio
   - "genA_lj_ptRatio"
   - "genA_egmLj_ptRatio"
+  - "genA_oneElectronLj_ptRatio"
+  - "genA_onePhotonLj_ptRatio"
+  - "genA_twoElectronLj_ptRatio"
+  - "genA_twoPhotonLj_ptRatio"
   - "genA_muLj_ptRatio"
-  - "genA_dsaMuonLj_ptRatio"
-  - "genA_pfMuonLj_ptRatio"
-  - "genA_dsaMuon0Lj_ptRatio"
   - "genA_egmLj_lxyRatio"
   - "genA_muLj_lxyRatio"
 
@@ -178,6 +183,10 @@ lepton_genLepton_base: &lepton_genLepton_base
   - "egmLj_ptRatio_vs_egm_truept"
 
 lepton_genLepton_genA_base: &lepton_genLepton_genA_base
+  - "genA_dsaMuonLj_ptRatio"
+  - "genA_pfMuonLj_ptRatio"
+  - "genA_dsaMuon0Lj_ptRatio"
+  - "genA_pfMuon0Lj_ptRatio"
   - "dsaMuon0_genMu0_ptRatio_vs_truelxy"
   - "muon0_genMu0_ptRatio_vs_truelxy"
   - "genMu0_truept_vs_dsaMuon0_lxy"
@@ -220,6 +229,7 @@ base_plus_gen: &base_plus_gen
 base_plus_gen_resolution: &base_plus_gen_resolution
   - *base
   - *gen_base
+  - *genA_ratio
   - *genA_lj_2d
   - *lepton_genLepton_base
   - *lepton_genLepton_genA_base
