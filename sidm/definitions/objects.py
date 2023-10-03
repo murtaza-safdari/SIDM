@@ -24,6 +24,8 @@ primary_objs = {
 derived_objs = {
     "mu_ljs": lambda objs: objs["ljs"][(objs["ljs"].muon_n >= 2)],
     "egm_ljs": lambda objs: objs["ljs"][(objs["ljs"].muon_n == 0)],
+    "electron_ljs": lambda objs, n: objs["ljs"][(objs["ljs"].muon_n == 0)&(objs["ljs"].photon_n == 0)&(objs["ljs"].electron_n == n)],
+    "photon_ljs": lambda objs, n: objs["ljs"][(objs["ljs"].muon_n == 0)&(objs["ljs"].photon_n == n)&(objs["ljs"].electron_n == 0)],
     "genAs_matched_lj": lambda objs, r: objs["genAs"][dR(objs["genAs"], objs["ljs"]) < r],
     "genAs_toMu_matched_lj": lambda objs, r: objs["genAs_toMu"][dR(objs["genAs_toMu"], objs["ljs"]) < r],
     "genAs_toE_matched_lj": lambda objs, r: objs["genAs_toE"][dR(objs["genAs_toE"], objs["ljs"]) < r],
