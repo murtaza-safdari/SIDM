@@ -53,9 +53,9 @@ baseNoLj: &baseNoLj
 base: &base
   obj_cuts: &obj_base
     <<: *obj_baseNoLj
-    ljs: &lj_base
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
+  lj_cuts: &lj_base
+    - "pT > 30 GeV"
+    - "|eta| < 2.4"
   evt_cuts: &evt_base
     - *evt_baseNoLj
     - ">=2 LJs"
@@ -76,9 +76,9 @@ base: &base
 matchedLj: &matchedLj
   obj_cuts: &obj_matchedLj
     <<: *obj_base
-    ljs: 
-      - *lj_base
-      - "dR(LJ, A) < 0.2"
+  lj_cuts: 
+    - *lj_base
+    - "dR(LJ, A) < 0.2"
   evt_cuts: &evt_matchedLj
     - *evt_base
     - ">=2 matched As"

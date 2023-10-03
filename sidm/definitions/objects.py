@@ -10,7 +10,7 @@ primary_objs = {
     "photons": lambda evts: evts.pfphoton,
     "muons": lambda evts: evts.muon,
     "dsaMuons": lambda evts: evts.dsamuon,
-    "ljs": lambda evts: evts.pfjet,
+    "ntuple_ljs": lambda evts: evts.pfjet,
     "ljsources": lambda evts: evts.ljsource,
     "gens": lambda evts: evts.gen,
     "genEs": lambda evts: evts.gen[abs(evts.gen.pid) == 11],

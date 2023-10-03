@@ -42,6 +42,20 @@ def flatten(x):
     loop(x)
     return flattened_list
 
+def add_unique_and_flatten(flattened_list, x):
+    """Flatten arbitrarily nested list or dict, keeping only unique items"""
+    # https://stackoverflow.com/questions/2158395/
+    def loop(sublist):
+        if isinstance(sublist, dict):
+            sublist = sublist.values()
+        for item in sublist:
+            if isinstance(item, (dict, list)):
+                loop(item)
+            elif item not in flattened_list:
+                flattened_list.append(item)
+    loop(x)
+    return flattened_list
+
 def dR(obj1, obj2):
     """Return dR between obj1 and the nearest obj2"""
     return obj1.nearest(obj2, return_metric=True)[1]
@@ -58,16 +72,18 @@ def set_plot_style(style='cms', dpi=50):
         raise NotImplementedError
     plt.rcParams['figure.dpi'] = dpi
 
-def plot(hists, **kwargs):
+def plot(hists, skip_label=False, **kwargs):
     """Plot using hep.hist(2d)plot and add cms labels"""
     dim = len(hists[0].axes) if isinstance(hists, list) else len(hists.axes)
     if dim == 1:
-        hep.histplot(hists, **kwargs)
+        h = hep.histplot(hists, **kwargs)
     elif dim == 2:
-        hep.hist2dplot(hists, **kwargs)
+        h = hep.hist2dplot(hists, **kwargs)
     else:
         raise NotImplementedError(f"Cannot plot {dim}-dimensional hist")
-    hep.cms.label()
+    if not skip_label:
+        hep.cms.label()
+    return h
 
 def load_yaml(cfg):
     """Load yaml files and return corresponding dict"""

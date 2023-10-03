@@ -21,7 +21,7 @@ class Histogram:
         self.evt_mask = (lambda objs: slice(None)) if evt_mask is None else evt_mask
         self.hist = None
 
-    def make_hist(self, channels=None):
+    def make_hist(self, channels=None, lj_reco_choices=None):
         """Build associated hist.Hist
 
         Perform outside __init__ because channels aren't known until runtime.
@@ -31,6 +31,11 @@ class Histogram:
         if channels is not None:
             channel_axis = hist.axis.StrCategory(channels, name="channel")
             self.axes = [Axis(channel_axis, lambda objs, mask: objs["ch"])] + self.axes
+
+        # optionally add lj_reco axis to hist
+        if lj_reco_choices is not None:
+            lj_reco_axis = hist.axis.StrCategory(lj_reco_choices, name="lj_reco")
+            self.axes = [Axis(lj_reco_axis, lambda objs, mask: objs["lj_reco"])] + self.axes
 
         axes = [a.axis for a in self.axes]
         self.hist = hist.Hist(*axes, storage=self.storage)
@@ -42,7 +47,7 @@ class Histogram:
         masked_weights = evt_weights[self.evt_mask(objs)]
         fill_args["weight"] = masked_weights*ak.ones_like(fill_args[self.axes[-1].name])
         for name in fill_args.keys():
-            if name != "channel":
+            if name not in ("channel", "lj_reco"):
                 fill_args[name] = ak.flatten(fill_args[name], axis=None)
 
         try:
@@ -50,7 +55,6 @@ class Histogram:
         except ValueError:
             print("Warning: a histogram with the following axis names could not be filled and will"
                   f" be skipped: {list(fill_args.keys())}")
-
 
 class Axis:
     """Class to represent histogram axes

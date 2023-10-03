@@ -1,9 +1,12 @@
 awkward==1.10.3
 coffea==0.7.21
 dask==2022.5.0
-hist==2.6.3
+fastjet==3.4.0.1
+hist==2.7.2
 matplotlib==3.7.1
 mplhep==0.3.26
-PyYAML==6.0
+numpy==1.23.5
+PyYAML==6.0.1
 setuptools==65.6.3
 tabulate==0.9.0
+vector==1.1.1

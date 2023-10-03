@@ -19,6 +19,14 @@ from sidm.definitions.objects import derived_objs
 importlib.reload(h)
 
 
+counter_defs = {
+    "Total LJs": lambda objs: ak.count(objs["ljs"].pt),
+    "Gen As to muons": lambda objs: ak.count(objs["genAs_toMu"].pt),
+    "Gen As to electrons": lambda objs: ak.count(objs["genAs_toE"].pt),
+    "Matched gen As to muons": lambda objs: ak.count(derived_objs["genAs_toMu_matched_lj"](objs,0.4).pt),
+    "Matched gen As to electrons": lambda objs: ak.count(derived_objs["genAs_toE_matched_lj"](objs,0.4).pt),
+}
+
 hist_defs = {
     # pv
     "pv_n": h.Histogram(
@@ -384,7 +392,7 @@ hist_defs = {
     ),
     "lj0_dRSpread": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(350, 0, 0.05, name="lj0_dRSpread",
+            h.Axis(hist.axis.Regular(250, 0, 1.0, name="lj0_dRSpread",
                                      label="Leading lepton jet dRSpread"),
                    lambda objs, mask: objs["ljs"][mask, 0].dRSpread),
         ],
@@ -392,7 +400,7 @@ hist_defs = {
     ),
     "lj1_dRSpread": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(350, 0, 0.05, name="lj1_dRSpread",
+            h.Axis(hist.axis.Regular(250, 0, 1.0, name="lj1_dRSpread",
                                      label="Subleading lepton jet dRSpread"),
                    lambda objs, mask: objs["ljs"][mask, 1].dRSpread),
         ],
@@ -556,14 +564,14 @@ hist_defs = {
     ),
     "lj_lj_invmass": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(200, 0, 2000, name="ljlj_mass"),
+            h.Axis(hist.axis.Regular(100, 0, 2000, name="ljlj_mass", label=r"InvMass($LJ_{0}$, $LJ_{1}$)"),
                    lambda objs, mask: objs["ljs"][mask, :2].sum().mass),
         ],
         evt_mask=lambda objs: ak.num(objs["ljs"]) > 1,
     ),
     "lj_lj_invmass_lowRange": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(200, 0, 500, name="ljlj_mass"),
+            h.Axis(hist.axis.Regular(100, 0, 500, name="ljlj_mass", label=r"InvMass($LJ_{0}$, $LJ_{1}$)"),
                    lambda objs, mask: objs["ljs"][mask, :2].sum().mass),
         ],
         evt_mask=lambda objs: ak.num(objs["ljs"]) > 1,
