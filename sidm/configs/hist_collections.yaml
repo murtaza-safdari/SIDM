@@ -89,6 +89,7 @@ lj_lj_base: &lj_lj_base
   - "lj_lj_absdphi"
   - "lj_lj_invmass"
   - "lj_lj_invmass_lowRange"
+  - "lj_lj_invmass_resolution"
 
 abcd_base: &abcd_base
   - "abcd_lj_lj_dphi_vs_lj0_pfIsolationPt05"
@@ -158,6 +159,13 @@ genA_ratio: &genA_ratio
   - "genA_twoElectronLj_ptRatio"
   - "genA_twoPhotonLj_ptRatio"
   - "genA_muLj_ptRatio"
+  - "genA_lj_massRatio"
+  - "genA_egmLj_massRatio"
+  - "genA_oneElectronLj_massRatio"
+  - "genA_onePhotonLj_massRatio"
+  - "genA_twoElectronLj_massRatio"
+  - "genA_twoPhotonLj_massRatio"
+  - "genA_muLj_massRatio"
   - "genA_egmLj_lxyRatio"
   - "genA_muLj_lxyRatio"
 
@@ -185,6 +193,8 @@ lepton_genLepton_base: &lepton_genLepton_base
 lepton_genLepton_genA_base: &lepton_genLepton_genA_base
   - "genA_dsaMuonLj_ptRatio"
   - "genA_pfMuonLj_ptRatio"
+  - "genA_dsaMuonLj_massRatio"
+  - "genA_pfMuonLj_massRatio"
   - "genA_dsaMuon0Lj_ptRatio"
   - "genA_pfMuon0Lj_ptRatio"
   - "dsaMuon0_genMu0_ptRatio_vs_truelxy"
