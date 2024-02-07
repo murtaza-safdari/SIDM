@@ -54,11 +54,11 @@ lj_isolation: &lj_isolation
   - "lj_pfIsolation05"
   - "lj0_pfIsolation05"
   - "lj1_pfIsolation05"
-  - "lj_pfIsolationPtNoPU05"
-  - "lj_pfIsolationPt05"
+  - "lj_pfIsolationPtNoPU05" # not in v2 ntuples
+  - "lj_pfIsolationPt05" # not in v2 ntuples
   - "lj_pfIsolation07"
-  - "lj_pfIsolationPtNoPU07"
-  - "lj_pfIsolationPt07"
+  - "lj_pfIsolationPtNoPU07" # not in v2 ntuples
+  - "lj_pfIsolationPt07" # not in v2 ntuples
   - "lj_pfiso"
 
 ljsource_base: &ljsource_base
@@ -92,7 +92,7 @@ lj_lj_base: &lj_lj_base
   - "lj_lj_invmass_resolution"
 
 abcd_base: &abcd_base
-  - "abcd_lj_lj_dphi_vs_lj0_pfIsolationPt05"
+  - "abcd_lj_lj_dphi_vs_lj0_pfIsolationPt05" # not in v2 ntuples
 
 genE_base: &genE_base
   - "genE_n"

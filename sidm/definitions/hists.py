@@ -316,14 +316,14 @@ hist_defs = {
         ],
         evt_mask=lambda objs: ak.num(objs["ljs"]) > 1,
     ),
-    "lj_pfIsolationPtNoPU05": h.Histogram(
+    "lj_pfIsolationPtNoPU05": h.Histogram( # not in v2 ntuples
         [
             h.Axis(hist.axis.Regular(80, 0, 0.8, name="lj_pfIsolationPtNoPU05",
                                      label="Lepton jet isolation"),
                    lambda objs, mask: objs["ljs"].pfIsolationPtNoPU05),
         ],
     ),
-    "lj_pfIsolationPt05": h.Histogram(
+    "lj_pfIsolationPt05": h.Histogram( # not in v2 ntuples
         [
             h.Axis(hist.axis.Regular(80, 0, 0.8, name="lj_pfIsolationPt05",
                                      label="Lepton jet isolation"),
@@ -337,14 +337,14 @@ hist_defs = {
                    lambda objs, mask: objs["ljs"].pfIsolation07),
         ],
     ),
-    "lj_pfIsolationPtNoPU07": h.Histogram(
+    "lj_pfIsolationPtNoPU07": h.Histogram( # not in v2 ntuples
         [
             h.Axis(hist.axis.Regular(80, 0, 0.8, name="lj_pfIsolationPtNoPU07",
                                      label="Lepton jet isolation"),
                    lambda objs, mask: objs["ljs"].pfIsolationPtNoPU07),
         ],
     ),
-    "lj_pfIsolationPt07": h.Histogram(
+    "lj_pfIsolationPt07": h.Histogram( # not in v2 ntuples
         [
             h.Axis(hist.axis.Regular(80, 0, 0.8, name="lj_pfIsolationPt07",
                                      label="Lepton jet isolation"),
@@ -584,7 +584,7 @@ hist_defs = {
         evt_mask=lambda objs: ak.num(objs["ljs"]) > 1,
     ),
     # ABCD plane
-    "abcd_lj_lj_dphi_vs_lj0_pfIsolationPt05": h.Histogram(
+    "abcd_lj_lj_dphi_vs_lj0_pfIsolationPt05": h.Histogram( # not in v2 ntuples
         [
             h.Axis(hist.axis.Regular(200, 0, 2*math.pi, name="ljlj_absdphi",
                                      label=r"Lepton jet pair |$\Delta\phi$|"),

@@ -38,7 +38,13 @@ def parse_name(name):
 
     process_names = {
         "SIDM_XXTo2ATo2Mu2E_mXX": "2Mu2E_",
-        "SIDM_XXTo2ATo4Mu_mXX" : "4Mu_"
+        "SIDM_XXTo2ATo4Mu_mXX" : "4Mu_",
+        "DYJetsToLL_M" : "DYJetsToLL_M",
+        "QCD_Pt" : "QCD_Pt",
+        "TTJets_TuneCP5_13TeV" : "TTJets",
+        "WW_TuneCP5_13TeV" : "WW",
+        "WZ_TuneCP5_13TeV" : "WZ",
+        "ZZ_TuneCP5_13TeV" : "ZZ",
         # fixme: add backgrounds and data as necessary
     }
     chunks = name.split("-")
@@ -48,9 +54,15 @@ def parse_name(name):
         print("Unrecognized process name. Skipping {}".format(name))
         return None
 
-    simplified_name += chunks[1].replace("_mA", "GeV_") # bound state mass
-    simplified_name += chunks[2].replace("_ctau", "GeV_") # dark photon mass
-    simplified_name += chunks[3].split("_TuneCP")[0] + "mm" # dark photon ctau
+    # further simplify names as necessary
+    if name.startswith("SIDM"):
+        simplified_name += chunks[1].replace("_mA", "GeV_") # bound state mass
+        simplified_name += chunks[2].replace("_ctau", "GeV_") # dark photon mass
+        simplified_name += chunks[3].split("_TuneCP")[0] + "mm" # dark photon ctau
+    elif name.startswith("DYJetsToLL_M"):
+        simplified_name += chunks[1].split("_")[0] # mass range
+    elif name.startswith("QCD_Pt"):
+        simplified_name += chunks[1].split("_")[0] # pT range
 
     return simplified_name
 
@@ -104,9 +116,9 @@ for sample in samples:
     output[args.name]["samples"][simple_name] = {}
     sample_path = sample.name
 
-    # Descend three layers, expecting to find a single directory at each
+    # Descend two layers, expecting to find a single directory at each
     try:
-        for _ in range(3):
+        for _ in range(2):
             sample_path = descend(ntuple_path, sample_path, args.first_dir)
             if sample_path is None:
                 raise StopIteration()
@@ -114,11 +126,15 @@ for sample in samples:
         continue
 
     # If traversal was successful, add path and files to output dictionary
-    output[args.name]["samples"][simple_name]["path"] = sample_path + "/"
     try:
         files = [f.name for f in xrd_client.dirlist(ntuple_path + sample_path)[1]]
+        # Handle cases with additional directory layer
+        if len(files) == 1 and "0000" in files:
+            sample_path += "/0000"
+            files = [f.name for f in xrd_client.dirlist(ntuple_path + sample_path)[1]]
     except TypeError:
         print("Unexpected directory structure. Skipping {}".format(sample_path))
+    output[args.name]["samples"][simple_name]["path"] = sample_path + "/"
     output[args.name]["samples"][simple_name]["files"] = files
 
 # Avoid yaml references, a la stackoverflow.com/questions/13518819
@@ -128,3 +144,4 @@ with open(args.cfg, 'a') as out_file:
     out_file.write("\n\n# " + args.comment + "\n")
     yaml.dump(output, out_file, default_flow_style=False)
     out_file.write("\n")
+

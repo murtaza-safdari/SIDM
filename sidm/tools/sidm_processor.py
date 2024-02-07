@@ -52,9 +52,12 @@ class SidmProcessor(processor.ProcessorABC):
         # create object collections
         objs = {}
         for obj_name, obj_def in primary_objs.items():
-            objs[obj_name] = obj_def(events)
-            # pt order
-            objs[obj_name] = self.order(objs[obj_name])
+            try:
+                objs[obj_name] = obj_def(events)
+                # pt order
+                objs[obj_name] = self.order(objs[obj_name])
+            except AttributeError:
+                print(f"Warning: {obj_name} not found in this sample. Skipping.")
 
         cutflows = {}
         counters = {}
@@ -116,7 +119,10 @@ class SidmProcessor(processor.ProcessorABC):
                 counters[lj_reco][channel] = {}
 
                 for name, counter in counter_defs.items():
-                    counters[lj_reco][channel][name]=counter(sel_objs)
+                    try:
+                        counters[lj_reco][channel][name] = counter(sel_objs)
+                    except (KeyError, AttributeError) as e:
+                        print(f"Warning: cannot fill counter {name}. Skipping.")
 
         # lose lj_reco dimension to cutflows if only one reco was run
         if len(self.lj_reco_choices) == 1:

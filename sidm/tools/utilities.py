@@ -91,15 +91,17 @@ def load_yaml(cfg):
     with open(f"{cwd}/{cfg}", encoding="utf8") as yaml_cfg:
         return yaml.safe_load(yaml_cfg)
 
-def make_fileset(samples, ntuple_version, location_cfg="../configs/ntuple_locations.yaml"):
+def make_fileset(samples, ntuple_version, max_files=-1, location_cfg="../configs/ntuple_locations.yaml"):
     """Make fileset to pass to processor.runner"""
-    if ntuple_version != "ffntuple_v4":
-        raise NotImplementedError("Only ffntuple_v4 ntuples have been implemented")
+    if ntuple_version not in ["ffntuple_v2", "ffntuple_v4"]:
+        raise NotImplementedError("Only ffntuple_v2 and ffntuple_v4 ntuples have been implemented")
     locations = load_yaml(location_cfg)[ntuple_version]
     fileset = {}
     for sample in samples:
         base_path = locations["path"] + locations["samples"][sample]["path"]
         file_list = [base_path + f for f in locations["samples"][sample]["files"]]
+        if max_files != -1:
+            file_list = file_list[:max_files]
         fileset[sample] = file_list
     return fileset
 

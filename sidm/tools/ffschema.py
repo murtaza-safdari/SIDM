@@ -54,12 +54,20 @@ class FFSchema(BaseSchema):
         """Modify branch forms ensure proper object behavior and nesting"""
 
         # define special cases
+        # one-value-per-event branches that contain underscores
         multiword_single_values = [
             b for b in branch_forms if b.startswith(("HLT", "tomatchfilter"))
         ]
-        object_names = {
-            "akjet": "akjet_ak4PFJetsCHS",
-        }
+        # names of objects that contain underscores
+        multiword_objects = [
+            "akjet_ak4PFJetsCHS",
+        ]
+        # trigger objects, which are LorentzVectors with no other attributes
+        # names contain underscores and tend to be subsets of other object names
+        trigger_objects = [
+            b[:-2] for b in branch_forms if b.startswith(("TO", "L1TO")) and b.endswith("_n")
+        ]
+        # names of count branches that don't fit the normal pattern
         counts_names = {
             "pfjet_pfcand": "pfjet_pfcands_n",
             "pfjet_pfcands": None,
@@ -79,7 +87,7 @@ class FFSchema(BaseSchema):
                 elif obj.endswith('_rawP4'):
                     obj_name = obj[:-6]
                 else:
-                    raise RuntimeError(f"Expected LorentzVector {obj} to end with 'p4' or 'rawP4'")
+                    obj_name = obj
                 form = zip_forms(
                     {
                         "x": branch_forms.pop(f"{obj}/{obj}.fCoordinates.fX"),
@@ -91,6 +99,9 @@ class FFSchema(BaseSchema):
                     "LorentzVector",
                 )
                 branch_forms[obj_name] = form
+                # remove trigger object counts branches
+                if obj_name in trigger_objects:
+                    branch_forms.pop(f"{obj_name}_n")
             # handle three-vectors
             elif components == {"fX", "fY", "fZ"}:
                 form = zip_forms(
@@ -120,14 +131,23 @@ class FFSchema(BaseSchema):
                 )
 
         # identify object branches (as opposed to one-value-per-event branches)
+        # exclude multiword_object and trigger_object branches, which require futher processing
         object_branches = [
-            b for b in branch_forms if "_" in b and b not in multiword_single_values
+            b for b in branch_forms if "_" in b
+            and b not in multiword_single_values
+            and not b.startswith(tuple(multiword_objects))
+            and not b.startswith(tuple(trigger_objects))
         ]
 
         # identify base objects (e.g. "muon")
-        objects = list(set(
-            object_names.get(b.split("_")[0], b.split("_")[0]) for b in object_branches
-        ))
+        objects = list(set(b.split('_')[0] for b in object_branches))
+
+        # add multiword objects if necessary
+        for mw_obj in multiword_objects:
+            mw_obj_branches = [b for b in branch_forms if b.startswith(mw_obj)]
+            if len(mw_obj_branches) > 0:
+                objects.append(mw_obj)
+                object_branches += mw_obj_branches
 
         for obj in objects:
             # identify all object attributes

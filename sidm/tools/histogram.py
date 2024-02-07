@@ -42,7 +42,14 @@ class Histogram:
 
     def fill(self, objs, evt_weights):
         """Fill associated hist.Hist"""
-        fill_args = {a.name: a.fill_func(objs, self.evt_mask(objs)) for a in self.axes}
+        # Create fill args, warning user and skipping hists that cannot be filled
+        try:
+            fill_args = {a.name: a.fill_func(objs, self.evt_mask(objs)) for a in self.axes}
+        except (AttributeError, KeyError) as e:
+            print("Warning: a histogram with the following axis names could not be filled and will"
+                  f" be skipped: {[a.name for a in self.axes]}")
+            return
+
         # Use last axis to define weight structure to avoid channels axis
         masked_weights = evt_weights[self.evt_mask(objs)]
         fill_args["weight"] = masked_weights*ak.ones_like(fill_args[self.axes[-1].name])
@@ -50,6 +57,7 @@ class Histogram:
             if name not in ("channel", "lj_reco"):
                 fill_args[name] = ak.flatten(fill_args[name], axis=None)
 
+        # Fill hist, warning user and skipping hists that cannot be filled
         try:
             self.hist.fill(**fill_args)
         except ValueError:
