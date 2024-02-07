@@ -937,7 +937,7 @@ hist_defs = {
     # genA-genA
     "genA_genA_dphi": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(100, 0, math.pi, name="genA_genA_dphi",
+            h.Axis(hist.axis.Regular(50, 0, math.pi, name="genA_genA_dphi",
                                      label=r"$\Delta\phi$ between dark photons"),
                    lambda objs, mask: objs["genAs"][mask, 1].delta_phi(objs["genAs"][mask, 0])),
         ],
@@ -947,15 +947,39 @@ hist_defs = {
     "genA_lj_dR": h.Histogram(
         [
             # dR(A, nearest LJ)
-            h.Axis(hist.axis.Regular(200, 0, 2*math.pi, name="genA_lj_dR"),
+            h.Axis(hist.axis.Regular(50, 0, 2*math.pi, name="genA_lj_dR"),
                    lambda objs, mask: dR(objs["genAs"], objs["ljs"]))
         ],
     ),
     "genA_lj_dR_lowRange": h.Histogram(
         [
             # dR(A, nearest LJ)
-            h.Axis(hist.axis.Regular(200, 0, 1.0, name="genA_lj_dR_lowRange"),
+            h.Axis(hist.axis.Regular(50, 0, 1.0, name="genA_lj_dR_lowRange"),
                    lambda objs, mask: dR(objs["genAs"], objs["ljs"]))
+        ],
+    ),
+    "lj_genA_ptRatio": h.Histogram(
+        [
+            # (LJ pT)/(nearest A pT)
+            h.Axis(hist.axis.Regular(50, 0, 2.0, name="lj_genA_ptRatio"),
+                   lambda objs, mask: objs["ljs"].pt
+                       / objs["ljs"].nearest(objs["genAs"]).pt),
+        ],
+    ),
+    "egm_lj_genA_ptRatio": h.Histogram(
+        [
+            # (LJ pT)/(nearest A pT)
+            h.Axis(hist.axis.Regular(50, 0, 2.0, name="egm_lj_genA_ptRatio"),
+                   lambda objs, mask: derived_objs["egm_ljs"](objs).pt
+                       / derived_objs["egm_ljs"](objs).nearest(objs["genAs"]).pt),
+        ],
+    ),
+    "mu_lj_genA_ptRatio": h.Histogram(
+        [
+            # (LJ pT)/(nearest A pT)
+            h.Axis(hist.axis.Regular(50, 0, 2.0, name="mu_lj_genA_ptRatio"),
+                   lambda objs, mask: derived_objs["mu_ljs"](objs).pt
+                       / derived_objs["mu_ljs"](objs).nearest(objs["genAs"]).pt),
         ],
     ),
     "genA_matched_lj_lxy": h.Histogram(
