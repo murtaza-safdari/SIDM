@@ -13,11 +13,17 @@ electron_base: &electron_base
   - "electron_n"
   - "electron_pt"
   - "electron_eta_phi"
+  - "ljs_electron_n"
+  - "ljs_electron_pt"
+  - "ljs_electron_eta_phi"
 
 photon_base: &photon_base
   - "photon_n"
   - "photon_pt"
   - "photon_eta_phi"
+  - "ljs_photon_n"
+  - "ljs_photon_pt"
+  - "ljs_photon_eta_phi"
 
 muon_base: &muon_base
   - "muon_n"
@@ -25,6 +31,9 @@ muon_base: &muon_base
   - "muon_eta_phi"
   - "muon_absD0"
   - "muon_absD0_lowRange"
+  - "ljs_muon_n"
+  - "ljs_muon_pt"
+  - "ljs_muon_eta_phi"
 
 dsaMuon_base: &dsaMuon_base
   - "dsaMuon_n"
@@ -32,6 +41,9 @@ dsaMuon_base: &dsaMuon_base
   - "dsaMuon_eta_phi"
   - "dsaMuon_absD0"
   - "dsaMuon_absD0_lowRange"
+  - "ljs_dsaMuon_n"
+  - "ljs_dsaMuon_pt"
+  - "ljs_dsaMuon_eta_phi"
 
 lj_base: &lj_base
   - "lj_n"
@@ -71,19 +83,28 @@ ljsource_base: &ljsource_base
 electron_lj_base: &electron_lj_base
   - "electron_lj_dR"
   - "electron_lj_dR_lowRange"
+  - "ljs_electron_lj_dR"
+  - "ljs_electron_lj_dR_lowRange"
 
 photon_lj_base: &photon_lj_base
   - "photon_lj_dR"
   - "photon_lj_dR_lowRange"
   - "photon_lj_dR_reallyLowRange"
+  - "ljs_photon_lj_dR"
+  - "ljs_photon_lj_dR_lowRange"
+  - "ljs_photon_lj_dR_reallyLowRange"
 
 muon_lj_base: &muon_lj_base
   - "muon_lj_dR"
   - "muon_lj_dR_lowRange"
+  - "ljs_muon_lj_dR"
+  - "ljs_muon_lj_dR_lowRange"
 
 dsaMuon_lj_base: &dsaMuon_lj_base
   - "dsaMuon_lj_dR"
   - "dsaMuon_lj_dR_lowRange"
+  - "ljs_dsaMuon_lj_dR"
+  - "ljs_dsaMuon_lj_dR_lowRange"
 
 lj_lj_base: &lj_lj_base
   - "lj_lj_absdphi"

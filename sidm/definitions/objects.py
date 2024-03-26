@@ -10,6 +10,10 @@ primary_objs = {
     "photons": lambda evts: evts.photon, # fixme: understand differences between photon and pfphoton in v4 ntuples
     "muons": lambda evts: evts.muon,
     "dsaMuons": lambda evts: evts.dsamuon,
+    "ljs_electrons": lambda evts: evts.ljsource[evts["ljsource"]["type"] == 2],
+    "ljs_photons": lambda evts: evts.ljsource[evts["ljsource"]["type"] == 4],
+    "ljs_muons": lambda evts: evts.ljsource[evts["ljsource"]["type"] == 3],
+    "ljs_dsaMuons": lambda evts: evts.ljsource[evts["ljsource"]["type"] == 8],
     "ntuple_ljs": lambda evts: evts.pfjet,
     "ljsources": lambda evts: evts.ljsource,
     "gens": lambda evts: evts.gen,

@@ -82,6 +82,27 @@ hist_defs = {
                                                               objs["genAs_toE"]) < 0.5])),
         ],
     ),
+    # electrons from lepton jet sources
+    "ljs_electron_n": h.Histogram(
+        [
+            h.Axis(hist.axis.Integer(0, 10, name="electron_n"),
+                   lambda objs, mask: ak.num(objs["ljs_electrons"])),
+        ],
+    ),
+    "ljs_electron_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 200, name="electron_pt"),
+                   lambda objs, mask: objs["ljs_electrons"].pt),
+        ],
+    ),
+    "ljs_electron_eta_phi": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(50, -3, 3, name="electron_eta"),
+                   lambda objs, mask: objs["ljs_electrons"].eta),
+            h.Axis(hist.axis.Regular(50, -1*math.pi, math.pi, name="electron_phi"),
+                   lambda objs, mask: objs["ljs_electrons"].phi),
+        ],
+    ),
     # pfelectron-genA
     "electron_nearGenA_n_genA_lxy": h.Histogram(
         [
@@ -130,6 +151,27 @@ hist_defs = {
             h.Axis(hist.axis.Integer(0, 10, name="photon_nearGenA_n"),
                    lambda objs, mask: ak.num(objs["photons"][dR(objs["photons"],
                                                               objs["genAs_toE"]) < 0.5])),
+        ],
+    ),
+    # photons from lepton jet sources
+    "ljs_photon_n": h.Histogram(
+        [
+            h.Axis(hist.axis.Integer(0, 10, name="photon_n"),
+                   lambda objs, mask: ak.num(objs["ljs_photons"])),
+        ],
+    ),
+    "ljs_photon_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 200, name="photon_pt"),
+                   lambda objs, mask: objs["ljs_photons"].pt),
+        ],
+    ),
+    "ljs_photon_eta_phi": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(50, -3, 3, name="photon_eta"),
+                   lambda objs, mask: objs["ljs_photons"].eta),
+            h.Axis(hist.axis.Regular(50, -1*math.pi, math.pi, name="photon_phi"),
+                   lambda objs, mask: objs["ljs_photons"].phi),
         ],
     ),
     # pfphoton-genA
@@ -195,6 +237,27 @@ hist_defs = {
                                                               objs["genAs_toMu"]) < 0.5])),
         ],
     ),
+    # muons from lepton jet sources
+    "ljs_muon_n": h.Histogram(
+        [
+            h.Axis(hist.axis.Integer(0, 10, name="muon_n"),
+                   lambda objs, mask: ak.num(objs["ljs_muons"])),
+        ],
+    ),
+    "ljs_muon_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 200, name="muon_pt"),
+                   lambda objs, mask: objs["ljs_muons"].pt),
+        ],
+    ),
+    "ljs_muon_eta_phi": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(50, -3, 3, name="muon_eta"),
+                   lambda objs, mask: objs["ljs_muons"].eta),
+            h.Axis(hist.axis.Regular(50, -1*math.pi, math.pi, name="muon_phi"),
+                   lambda objs, mask: objs["ljs_muons"].phi),
+        ],
+    ),
     # pfmuon-genA
     "muon_nearGenA_n_genA_lxy": h.Histogram(
         [
@@ -257,6 +320,27 @@ hist_defs = {
             h.Axis(hist.axis.Integer(0, 10, name="dsaMuon_nearGenA_n"),
                    lambda objs, mask: ak.num(objs["dsaMuons"][dR(objs["dsaMuons"],
                                                               objs["genAs_toMu"]) < 0.5])),
+        ],
+    ),
+    # dsamuon from lepton jet sources
+    "ljs_dsaMuon_n": h.Histogram(
+        [
+            h.Axis(hist.axis.Integer(0, 10, name="dsaMuon_n"),
+                   lambda objs, mask: ak.num(objs["ljs_dsaMuons"])),
+        ],
+    ),
+    "ljs_dsaMuon_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 200, name="dsaMuon_pt"),
+                   lambda objs, mask: objs["ljs_dsaMuons"].pt),
+        ],
+    ),
+    "ljs_dsaMuon_eta_phi": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(50, -3, 3, name="dsaMuon_eta"),
+                   lambda objs, mask: objs["ljs_dsaMuons"].eta),
+            h.Axis(hist.axis.Regular(50, -1*math.pi, math.pi, name="dsaMuon_phi"),
+                   lambda objs, mask: objs["ljs_dsaMuons"].phi),
         ],
     ),
     # dsamuon-genA
@@ -501,6 +585,21 @@ hist_defs = {
                    lambda objs, mask: dR(objs["electrons"], objs["ljs"]))
         ],
     ),
+    # lepton jet sources pfelectron-lj
+    "ljs_electron_lj_dR": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(100, 0, 2*math.pi, name="ljs_electron_lj_dR"),
+                   lambda objs, mask: dR(objs["ljs_electrons"], objs["ljs"]))
+        ],
+    ),
+    "ljs_electron_lj_dR_lowRange": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(100, 0, 1.0, name="ljs_electron_lj_dR_lowRange"),
+                   lambda objs, mask: dR(objs["ljs_electrons"], objs["ljs"]))
+        ],
+    ),
     # pfphoton-lj
     "photon_lj_dR": h.Histogram(
         [
@@ -523,6 +622,28 @@ hist_defs = {
                    lambda objs, mask: dR(objs["photons"], objs["ljs"]))
         ],
     ),
+    # lepton jet sources pfphoton-lj
+    "ljs_photon_lj_dR": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(100, 0, 2*math.pi, name="ljs_photon_lj_dR"),
+                   lambda objs, mask: dR(objs["ljs_photons"], objs["ljs"]))
+        ],
+    ),
+    "ljs_photon_lj_dR_lowRange": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(100, 0, 1.0, name="ljs_photon_lj_dR_lowRange"),
+                   lambda objs, mask: dR(objs["ljs_photons"], objs["ljs"]))
+        ],
+    ),
+    "ljs_photon_lj_dR_reallyLowRange": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(100, 0, 0.1, name="ljs_photon_lj_dR_reallyLowRange"),
+                   lambda objs, mask: dR(objs["ljs_photons"], objs["ljs"]))
+        ],
+    ),
     # pfmuon-lj
     "muon_lj_dR": h.Histogram(
         [
@@ -538,6 +659,21 @@ hist_defs = {
                    lambda objs, mask: dR(objs["muons"], objs["ljs"]))
         ],
     ),
+    # lepton jet sources pfmuon-lj
+    "ljs_muon_lj_dR": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(100, 0, 2*math.pi, name="ljs_muon_lj_dR"),
+                   lambda objs, mask: dR(objs["ljs_muons"], objs["ljs"]))
+        ],
+    ),
+    "ljs_muon_lj_dR_lowRange": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(100, 0, 1.0, name="ljs_muon_lj_dR_lowRange"),
+                   lambda objs, mask: dR(objs["ljs_muons"], objs["ljs"]))
+        ],
+    ),
     # dsamuon-lj
     "dsaMuon_lj_dR": h.Histogram(
         [
@@ -551,6 +687,21 @@ hist_defs = {
             # dR(e, nearest LJ)
             h.Axis(hist.axis.Regular(50, 0, 1.0, name="dsaMuon_lj_dR_lowRange"),
                    lambda objs, mask: dR(objs["dsaMuons"], objs["ljs"]))
+        ],
+    ),
+    # lepton jet sources dsamuon-lj
+    "ljs_dsaMuon_lj_dR": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(100, 0, 2*math.pi, name="ljs_dsaMuon_lj_dR"),
+                   lambda objs, mask: dR(objs["ljs_dsaMuons"], objs["ljs"]))
+        ],
+    ),
+    "ljs_dsaMuon_lj_dR_lowRange": h.Histogram(
+        [
+            # dR(e, nearest LJ)
+            h.Axis(hist.axis.Regular(50, 0, 1.0, name="ljs_dsaMuon_lj_dR_lowRange"),
+                   lambda objs, mask: dR(objs["ljs_dsaMuons"], objs["ljs"]))
         ],
     ),
     # lj-lj
