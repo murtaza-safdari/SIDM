@@ -3,17 +3,22 @@
 # columnar analysis
 import hist
 import awkward as ak
-from coffea.processor import AccumulatorABC  # <--- ADDed
-import copy  # <--- ADDed
+import copy ##### MODIFIED: Import copy #####
+from coffea.processor import AccumulatorABC ##### MODIFIED: Import AccumulatorABC #####
 
 
-class Histogram(AccumulatorABC):
+class Histogram(AccumulatorABC): ##### MODIFIED: Inherit from AccumulatorABC #####
     """Class to represent histograms
 
     Histogram mostly exists so that hist.Hists and the appropriate filling arguments can be
     defined in one place. In addition to the filling function associated with each Axis, the user
     can optionally provide an event mask that is applied to all object collections used to fill
     the histogram, e.g. to ensure only events with >=2 muons are used to fill dR(mu, mu) hists.
+    
+    ##### MODIFIED #####
+    This class inherits from AccumulatorABC to be a valid coffea accumulator.
+    This requires implementing the 'identity()' and 'add()' methods.
+    ####################
     """
 
     def __init__(self, axes, storage="weight", evt_mask=None):
@@ -22,33 +27,36 @@ class Histogram(AccumulatorABC):
         # Allow all events to pass if no mask is explicitly provided
         self.evt_mask = (lambda objs: slice(None)) if evt_mask is None else evt_mask
         self.hist = None
-        self.name = ""
+        self.name = "" ##### MODIFIED: Added name for debugging #####
 
-    # --- ADD 'identity' METHOD ---
+    ##### START NEW METHOD #####
     def identity(self):
-        """Return an empty Histogram object"""
+        """Return an empty Histogram object (required by AccumulatorABC)"""
         # Create a new Histogram object with the same properties
         new_hist = Histogram(self.axes, self.storage, self.evt_mask)
         new_hist.name = self.name
         
-        # If self.hist exists (i..e, make_hist has been called),
-        # create an empty version of it in the new object
+        # If self.hist exists (i.e., make_hist has been called),
+        # create an empty, identical-in-structure histogram.
         if self.hist:
-            # Create a deepcopy and then reset it to clear all bins
+            # For modern 'hist' objects, we deepcopy and then reset.
             new_hist.hist = copy.deepcopy(self.hist)
-            new_hist.hist.reset() # <--- THIS IS THE FIX
+            new_hist.hist.reset()
         return new_hist
+    ##### END NEW METHOD #####
 
-    # --- ADD 'add' METHOD ---
+    ##### START NEW METHOD #####
     def add(self, other):
-        """Add another Histogram object to this one"""
+        """Add another Histogram object to this one (required by AccumulatorABC)"""
         if other.hist:  # Only add if the other one has a histogram
             if self.hist:
-                self.hist += other.hist # <--- THIS IS THE FIX
+                # For modern 'hist' objects, accumulation is done with +=
+                self.hist += other.hist
             else:
                 # If self is empty, just take a copy of the other one
                 # This is crucial for the first merge
                 self.hist = copy.deepcopy(other.hist)
+    ##### END NEW METHOD #####
 
     @classmethod
     def simple_hist(cls, obj, attr, absval, nbins, xmin, xmax, label):
@@ -66,20 +74,12 @@ class Histogram(AccumulatorABC):
             ])
 
     def make_hist(self, name, channels=None, lj_reco_choices=None):
-        """Build associated hist.Hist
-
-        Perform outside __init__ because channels aren't known until runtime.
-        """
-        self.name = name
-
-        # optionally add channels axis to hist
+        self.name = name ##### MODIFIED: Store name #####
         if channels is not None:
-            channel_axis = hist.axis.StrCategory(channels, name="channel")
+            channel_axis = hist.axis.StrCategory(channels, name="channel", label="Channel")
             self.axes = [Axis(channel_axis, lambda objs, mask: objs["ch"])] + self.axes
-
-        # optionally add lj_reco axis to hist
         if lj_reco_choices is not None:
-            lj_reco_axis = hist.axis.StrCategory(lj_reco_choices, name="lj_reco")
+            lj_reco_axis = hist.axis.StrCategory(lj_reco_choices, name="lj_reco", label="LJ Reco")
             self.axes = [Axis(lj_reco_axis, lambda objs, mask: objs["lj_reco"])] + self.axes
 
         axes = [a.axis for a in self.axes]
@@ -115,5 +115,5 @@ class Axis:
 
     def __init__(self, axis, fill_func):
         self.axis = axis
-        self.name = self.axis.name
+        self.name = axis.name
         self.fill_func = fill_func

@@ -50,8 +50,8 @@ class SidmProcessor(processor.ProcessorABC):
         selections_cfg="configs/selections.yaml",
         histograms_cfg="configs/hist_collections.yaml",
         unweighted_hist=False,
-        save_intermediate=False, #####Murtaza#####
-        read_intermediate=False, #####Murtaza#####
+        save_intermediate=False, ##### MODIFIED: Added new flag #####
+        read_intermediate=False, ##### MODIFIED: Added new flag #####
         verbose=False,
     ):
         self.channel_names = channel_names
@@ -60,27 +60,33 @@ class SidmProcessor(processor.ProcessorABC):
         self.selections_cfg = selections_cfg
         self.histograms_cfg = histograms_cfg
         self.unweighted_hist = unweighted_hist
-        self.save_intermediate = save_intermediate #####Murtaza#####
-        self.read_intermediate = read_intermediate #####Murtaza#####
+        self.save_intermediate = save_intermediate ##### MODIFIED: Store flag #####
+        self.read_intermediate = read_intermediate ##### MODIFIED: Store flag #####
         self.obj_defs = preLj_objs
         self.verbose = verbose
         self.year = "2018" # fixme: may be better to store as event metadata
 
-    def process(self, item):
+    def process(self, item): ##### MODIFIED: Changed 'events' to 'item' #####
         """Apply selections, make histograms and cutflow"""
         
         # --- START NEW SECTION ---
+        # Handle the two different input types:
+        # 1. 'read_intermediate=True': 'item' is a tuple (ak.Record, dataset_name)
+        #    loaded manually from our skim file.
+        # 2. 'read_intermediate=False': 'item' is a standard NanoEvents object
+        #    from the Dask runner.
         if self.read_intermediate:
             # When calling manually, we pass a tuple: (events, dataset_name)
             try:
                 events, dataset_name = item
             except (TypeError, ValueError):
-                # Fallback for old calls
+                # Fallback for old/manual calls
                 events = item
-                dataset_name = "intermediate_skim" # The old hardcoded fallback
+                dataset_name = "intermediate_skim" # hardcoded fallback
             
-            # Input 'events' is an ak.Array record.
-            # We must "re-awaken" the behaviors (like LorentzVector)
+            # 'events' is a "dumb" ak.Record from Parquet.
+            # We must "re-awaken" the behaviors (like .pt, .eta, .nearest())
+            # that were stripped when saving.
             objs = {}
             behavior_map = {
                 "muons": "Muon",
@@ -92,21 +98,26 @@ class SidmProcessor(processor.ProcessorABC):
                 "ljs": "LorentzVector",      
             }
 
+            # Use .fields because 'events' is an ak.Record
             for field in events.fields:
                 if field in behavior_map:
+                    # ak.with_name "tags" the loaded array with its
+                    # behavior name (e.g., "Muon"), which links it
+                    # to the nanoaod.behavior methods.
                     objs[field] = ak.with_name(
                         events[field],
                         behavior_map[field],
                         behavior=nanoaod.behavior,
                     )
                 else:
-                    objs[field] = events[field]
+                    objs[field] = events[field] # e.g., 'weights', 'dataset'
             
             try:
                 evt_weights = objs["weights"]
             except KeyError:
                 print("Warning: 'weights' not found in intermediate file. Using weight=1.")
-                evt_weights = ak.ones_like(objs[list(objs.keys())[0]])
+                # evt_weights = ak.ones_like(objs[list(objs.keys())[0]])
+                evt_weights = ak.ones_like(ak.sum(out[samples[0]]['events']["base"]["bs"]['ntracks'], axis=1)) # FIXME
         else:
             # Standard path: build objects from NanoAOD
             events = item # <--- 'item' is just 'events' in this case
@@ -115,18 +126,16 @@ class SidmProcessor(processor.ProcessorABC):
             evt_weights =  self.obj_defs["weight"](events)
         # --- END NEW SECTION ---
         
-        # objs = self.build_objects(events)
-        # cutflows = {}
-        # counters = {}
-        # intermediate_events = {} #####Murtaza#####
         # --- START MODIFIED SECTION ---
-        # Change these from plain dicts to dict_accumulators
+        # All outputs must be coffea accumulators.
+        # Initialize them as empty dict_accumulators.
         cutflows = processor.dict_accumulator({})
         counters = processor.dict_accumulator({})
-        intermediate_events = processor.dict_accumulator({}) # Still do this, in case save_intermediate=True
+        intermediate_events = processor.dict_accumulator({}) 
         # --- END MODIFIED SECTION ---
 
         # define histograms
+        # This returns a dict of our 'Histogram' wrapper objects
         hists = self.build_histograms()
 
         ### define pre-lj object, lj, post-lj obj, and event cuts per channel
@@ -138,21 +147,26 @@ class SidmProcessor(processor.ProcessorABC):
             nested_selection = selection.NestedSelection(cuts["obj"], self.verbose)
 
             for lj_reco in self.lj_reco_choices:
+                str_lj_reco = str(lj_reco) # Use string key for safety
 
-                # --- START NEW SECTION --- #####Murtaza#####
+                # --- START NEW SECTION --- 
                 if self.read_intermediate:
-                    # When reading intermediate, objs is already the 
-                    # sel_objs from the previous run.
-                    # We skip all object selection and LJ building.
-                    # We just re-apply selections, which allows
-                    # for applying *new* selections.
+                    # When reading intermediate, 'objs' is already the 
+                    # 'sel_objs' from the previous run.
+                    # We skip all object building and LJ reconstruction.
                     sel_objs = objs
                     
-                    # Re-apply pre-LJ object selection
+                    # We *re-apply* all selections. This allows
+                    # us to run with new/modified selection configs.
                     sel_objs = obj_selection.apply_obj_cuts(sel_objs)
                     
                     # Re-apply nested selection
                     try:
+                        # This 'try' block is CRITICAL.
+                        # The 'matched_muons' fields are complex cross-references
+                        # that are *DROPPED* by ak.to_parquet.
+                        # This block will fail, print a warning, and continue,
+                        # which is the expected behavior.
                         sel_objs["dsaMuons"]["good_matched_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["dsaMuons"].matched_muons, "muons" )
                         sel_objs["muons"]["good_matched_dsa_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["muons"].matched_dsa_muons,"dsaMuons")
                     except Exception as e:
@@ -177,14 +191,14 @@ class SidmProcessor(processor.ProcessorABC):
                     # apply pre-LJ object selection
                     sel_objs = obj_selection.apply_obj_cuts(objs)
 
-                    # apply selections on matched_muons within the DSA muons and matched_dsa_muons within the PF muons
+                    # apply selections on matched_muons...
                     try:
                         sel_objs["dsaMuons"]["good_matched_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["dsaMuons"].matched_muons, "muons" )
                         sel_objs["muons"]["good_matched_dsa_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["muons"].matched_dsa_muons,"dsaMuons")
                     except Exception as e:
                         print(f"Failed to apply selections to the nested matched muon collections. Error message: {e}")
 
-                    # apply selections to muons which already contains good matched information
+                    # apply selections to muons...
                     prelj_selection = selection.JaggedSelection(cuts["preLj_obj"], self.verbose)
                     sel_objs = prelj_selection.apply_obj_cuts_preLj(sel_objs)
 
@@ -198,7 +212,7 @@ class SidmProcessor(processor.ProcessorABC):
                     # add post-lj objects to sel_objs
                     for obj in postLj_objs:
                         sel_objs[obj] = postLj_objs[obj](sel_objs)
-                # --- END NEW SECTION --- #####Murtaza#####
+                # --- END NEW SECTION ---
 
                 # This part now runs for BOTH paths:
                 # apply post-lj obj selection
@@ -213,11 +227,7 @@ class SidmProcessor(processor.ProcessorABC):
                 sel_objs["ch"] = channel
                 sel_objs["lj_reco"] = lj_reco
 
-                # define event weights
-                # evt_weights =  self.obj_defs["weight"](events)
-
-                # --- START MODIFIED SECTION --- #####Murtaza#####
-                # (This logic replaces the original evt_weights definition)
+                # --- START MODIFIED SECTION ---
                 
                 # Get final event mask
                 final_mask = evt_selection.all_evt_cuts.all(*evt_selection.evt_cuts)
@@ -231,24 +241,21 @@ class SidmProcessor(processor.ProcessorABC):
                     # evt_weights is *unfiltered*. Filter it once.
                     hist_weights = evt_weights[final_mask]
                 
-                # --- END MODIFIED SECTION --- #####Murtaza#####
+                # --- END MODIFIED SECTION ---
 
-                # --- START NEW/MODIFIED SECTION --- #####Murtaza#####
+                # --- START MODIFIED SECTION ---
 
                 # make cutflow
-                str_lj_reco = str(lj_reco) # Use string key for safety
                 if str_lj_reco not in cutflows:
-                    cutflows[str_lj_reco] = processor.dict_accumulator({}) # <--- FIX
+                    # Must add a dict_accumulator, not a plain dict
+                    cutflows[str_lj_reco] = processor.dict_accumulator({}) 
                 cutflows[str_lj_reco][channel] = cutflow.Cutflow(evt_selection.all_evt_cuts, evt_selection.evt_cuts, evt_weights)
-
-                # # Get final event mask and weights for hists and intermediate output
-                # final_mask = evt_selection.all_evt_cuts.all(*evt_selection.evt_cuts)
-                # hist_weights = evt_weights[final_mask]
 
                 # Store intermediate events if requested
                 if self.save_intermediate:
                     if str_lj_reco not in intermediate_events:
-                        intermediate_events[str_lj_reco] = processor.dict_accumulator({}) # <--- FIX
+                        # Must add a dict_accumulator
+                        intermediate_events[str_lj_reco] = processor.dict_accumulator({}) 
                     
                     selected_events = {}
                     for key, value in sel_objs.items():
@@ -260,7 +267,6 @@ class SidmProcessor(processor.ProcessorABC):
                             else:
                                 selected_events[key] = value
                         except Exception:
-                            # Catch errors (e.g., comparing len of non-array), TODO proper
                             selected_events[key] = value
                     
                     # Store the weights for the selected events
@@ -272,23 +278,24 @@ class SidmProcessor(processor.ProcessorABC):
                 if self.unweighted_hist:
                     fill_weights =  ak.ones_like(hist_weights)
                 for h in hists.values():
-                    # Pass un-filtered sel_objs (with masks) and filtered weights
+                    # h is our 'Histogram' object, which has a .fill() method
                     h.fill(sel_objs, fill_weights)
                 
-                # --- END NEW/MODIFIED SECTION --- #####Murtaza#####
+                # --- END MODIFIED SECTION ---
 
                 # Fill counters
-                str_lj_reco = str(lj_reco) # Use string key for safety
                 if str_lj_reco not in counters:
+                    # Must add a dict_accumulator
                     counters[str_lj_reco] = processor.dict_accumulator({})
                 if channel not in counters[str_lj_reco]:
+                    # Must add a dict_accumulator
                     counters[str_lj_reco][channel] = processor.dict_accumulator({}) 
 
                 for name, counter in counter_defs.items():
                     try:
                         # Calculate the counter value
                         count_value = counter(sel_objs)
-                        # Store it as a value_accumulator
+                        # Must store it as a value_accumulator to be a valid leaf
                         counters[str_lj_reco][channel][name] = processor.value_accumulator(int, initial=count_value)
                     except (KeyError, AttributeError) as e:
                         print(f"Warning: cannot fill counter {name}. Skipping.")
@@ -300,7 +307,9 @@ class SidmProcessor(processor.ProcessorABC):
         # --- START MODIFIED SECTION ---
         
         # --- START METADATA BLOCK FIX ---
+        # Get metadata, handling both NanoAOD and skim inputs
         if self.read_intermediate:
+            # 'objs' is a dict. Get length from the first collection.
             first_collection_name = list(objs.keys())[0] 
             n_evts = len(objs[first_collection_name])
             scaled_sum_weights = ak.sum(evt_weights)
@@ -315,26 +324,19 @@ class SidmProcessor(processor.ProcessorABC):
         # Wrap all outputs in their accumulator types
         out = processor.dict_accumulator({
             "cutflow": cutflows, # This is now a dict_accumulator
-            "hists": processor.dict_accumulator(hists), # hists are now accumulator objects
+            "hists": processor.dict_accumulator(hists), # 'hists' is a dict of our 'Histogram' accumulators
             "counters": counters, # This is now a dict_accumulator
             "metadata": processor.dict_accumulator({
                 # Wrap metadata numbers in value_accumulator
-                # The factory for an int is 'int', the initial value is 'n_evts'
                 "n_evts": processor.value_accumulator(int, initial=n_evts),
-                # The factory for a float is 'float', the initial value is 'scaled_sum_weights'
                 "scaled_sum_weights": processor.value_accumulator(float, initial=scaled_sum_weights),
             }),
         })
 
         if self.save_intermediate:
-            # This logic should now work, because 'out' is a dict_accumulator
-            # and 'intermediate_events' is also a dict_accumulator.
-            # But the LEAVES (ak.Arrays) will still cause the ValueError.
-            # This 'save_intermediate' logic is incompatible with this
-            # manual execution method.
-            #
-            # The notebook fix (setting to False) is the real solution.
-            # We'll keep this code here for completeness.
+            # This 'save_intermediate' logic is incompatible with the
+            # manual IterativeExecutor call, as 'ak.Array' is not
+            # an accumulator leaf. It works with Dask runners.
             if not self.read_intermediate:
                 if len(self.lj_reco_choices) == 1:
                      intermediate_events["dataset"] = dataset_name
@@ -347,7 +349,8 @@ class SidmProcessor(processor.ProcessorABC):
 
             out["events"] = intermediate_events
 
-        # This is the return statement from our previous fix. It is correct.
+        # The final output MUST be a dict_accumulator
+        # to work with the IterativeExecutor.
         return processor.dict_accumulator({dataset_name: out})
         # --- END MODIFIED SECTION ---
 
@@ -544,6 +547,7 @@ class SidmProcessor(processor.ProcessorABC):
                 hists[hist_name] = copy.deepcopy(hist_defs[hist_name])
                 # Add lj_reco axis only when more than one reco is run
                 lj_reco_names = self.lj_reco_choices if len(self.lj_reco_choices) > 1 else None
+                # This 'make_hist' is from our Histogram wrapper class
                 hists[hist_name].make_hist(hist_name, self.channel_names, lj_reco_names)
         return hists
 
@@ -559,11 +563,21 @@ class SidmProcessor(processor.ProcessorABC):
         """Modify accumulator after process has run on all chunks"""
         # scale cutflow and hists according to lumi*xs
         for sample, output in accumulator.items():
-            # sum_weights = output["metadata"]["scaled_sum_weights"]
+            
+            # --- START MODIFIED SECTION ---
+            # 'scaled_sum_weights' is now a value_accumulator,
+            # so we must access its .value attribute.
             sum_weights = output["metadata"]["scaled_sum_weights"].value
+            # --- END MODIFIED SECTION ---
+
             lumixs_weight = utilities.get_lumixs_weight(sample, self.year, sum_weights)
             for name in output["cutflow"]:
                 accumulator[sample]["cutflow"][name].scale(lumixs_weight)
             if not self.unweighted_hist:
+                
+                # --- START MODIFIED SECTION ---
+                # 'hists' now contains our 'Histogram' wrapper objects.
+                # We must scale the '.hist' attribute inside them.
                 for name in output["hists"]:
                     accumulator[sample]["hists"][name].hist *= lumixs_weight
+                # --- END MODIFIED SECTION ---
