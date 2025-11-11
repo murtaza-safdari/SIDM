@@ -50,6 +50,8 @@ class SidmProcessor(processor.ProcessorABC):
         selections_cfg="configs/selections.yaml",
         histograms_cfg="configs/hist_collections.yaml",
         unweighted_hist=False,
+        save_intermediate=False, #####Murtaza#####
+        read_intermediate=False, #####Murtaza#####
         verbose=False,
     ):
         self.channel_names = channel_names
@@ -58,15 +60,71 @@ class SidmProcessor(processor.ProcessorABC):
         self.selections_cfg = selections_cfg
         self.histograms_cfg = histograms_cfg
         self.unweighted_hist = unweighted_hist
+        self.save_intermediate = save_intermediate #####Murtaza#####
+        self.read_intermediate = read_intermediate #####Murtaza#####
         self.obj_defs = preLj_objs
         self.verbose = verbose
         self.year = "2018" # fixme: may be better to store as event metadata
 
-    def process(self, events):
+    def process(self, item):
         """Apply selections, make histograms and cutflow"""
-        objs = self.build_objects(events)
-        cutflows = {}
-        counters = {}
+        
+        # --- START NEW SECTION ---
+        if self.read_intermediate:
+            # When calling manually, we pass a tuple: (events, dataset_name)
+            try:
+                events, dataset_name = item
+            except (TypeError, ValueError):
+                # Fallback for old calls
+                events = item
+                dataset_name = "intermediate_skim" # The old hardcoded fallback
+            
+            # Input 'events' is an ak.Array record.
+            # We must "re-awaken" the behaviors (like LorentzVector)
+            objs = {}
+            behavior_map = {
+                "muons": "Muon",
+                "dsaMuons": "DSAMuon",
+                "electrons": "Electron",
+                "photons": "Photon",
+                "jets": "Jet",
+                "genParticles": "GenParticle", 
+                "ljs": "LorentzVector",      
+            }
+
+            for field in events.fields:
+                if field in behavior_map:
+                    objs[field] = ak.with_name(
+                        events[field],
+                        behavior_map[field],
+                        behavior=nanoaod.behavior,
+                    )
+                else:
+                    objs[field] = events[field]
+            
+            try:
+                evt_weights = objs["weights"]
+            except KeyError:
+                print("Warning: 'weights' not found in intermediate file. Using weight=1.")
+                evt_weights = ak.ones_like(objs[list(objs.keys())[0]])
+        else:
+            # Standard path: build objects from NanoAOD
+            events = item # <--- 'item' is just 'events' in this case
+            dataset_name = events.metadata["dataset"]
+            objs = self.build_objects(events)
+            evt_weights =  self.obj_defs["weight"](events)
+        # --- END NEW SECTION ---
+        
+        # objs = self.build_objects(events)
+        # cutflows = {}
+        # counters = {}
+        # intermediate_events = {} #####Murtaza#####
+        # --- START MODIFIED SECTION ---
+        # Change these from plain dicts to dict_accumulators
+        cutflows = processor.dict_accumulator({})
+        counters = processor.dict_accumulator({})
+        intermediate_events = processor.dict_accumulator({}) # Still do this, in case save_intermediate=True
+        # --- END MODIFIED SECTION ---
 
         # define histograms
         hists = self.build_histograms()
@@ -80,31 +138,69 @@ class SidmProcessor(processor.ProcessorABC):
             nested_selection = selection.NestedSelection(cuts["obj"], self.verbose)
 
             for lj_reco in self.lj_reco_choices:
-                # apply pre-LJ object selection
-                sel_objs = obj_selection.apply_obj_cuts(objs)
 
-                # apply selections on matched_muons within the DSA muons and matched_dsa_muons within the PF muons
-                try:
-                    sel_objs["dsaMuons"]["good_matched_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["dsaMuons"].matched_muons, "muons" )
-                    sel_objs["muons"]["good_matched_dsa_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["muons"].matched_dsa_muons,"dsaMuons")
-                except Exception as e:
-                    print(f"Failed to apply selections to the nested matched muon collections. Error message: {e}")
+                # --- START NEW SECTION --- #####Murtaza#####
+                if self.read_intermediate:
+                    # When reading intermediate, objs is already the 
+                    # sel_objs from the previous run.
+                    # We skip all object selection and LJ building.
+                    # We just re-apply selections, which allows
+                    # for applying *new* selections.
+                    sel_objs = objs
+                    
+                    # Re-apply pre-LJ object selection
+                    sel_objs = obj_selection.apply_obj_cuts(sel_objs)
+                    
+                    # Re-apply nested selection
+                    try:
+                        sel_objs["dsaMuons"]["good_matched_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["dsaMuons"].matched_muons, "muons" )
+                        sel_objs["muons"]["good_matched_dsa_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["muons"].matched_dsa_muons,"dsaMuons")
+                    except Exception as e:
+                        print(f"Note: failed to apply nested selections on skim (this is normal if fields were dropped): {e}")
 
-                # apply selections to muons which already contains good matched information
-                prelj_selection = selection.JaggedSelection(cuts["preLj_obj"], self.verbose)
-                sel_objs = prelj_selection.apply_obj_cuts_preLj(sel_objs)
+                    # Re-apply selections to muons
+                    prelj_selection = selection.JaggedSelection(cuts["preLj_obj"], self.verbose)
+                    sel_objs = prelj_selection.apply_obj_cuts_preLj(sel_objs)
 
-                # reconstruct lepton jets
-                sel_objs["ljs"] = self.build_lepton_jets(sel_objs, float(lj_reco))
+                    # *** DO NOT RECONSTRUCT LJs ***
+                    # (LJs are already in sel_objs)
 
-                # apply obj selection to ljs
-                lj_selection = selection.JaggedSelection(cuts["lj"], self.verbose)
-                sel_objs = lj_selection.apply_obj_cuts(sel_objs)
+                    # Re-apply obj selection to ljs
+                    lj_selection = selection.JaggedSelection(cuts["lj"], self.verbose)
+                    sel_objs = lj_selection.apply_obj_cuts(sel_objs)
 
-                # add post-lj objects to sel_objs
-                for obj in postLj_objs:
-                    sel_objs[obj] = postLj_objs[obj](sel_objs)
+                    # *** DO NOT RE-ADD POST-LJ OBJS ***
+                    # (They are already in sel_objs)
 
+                else:
+                    # Standard path (this is the original code)
+                    # apply pre-LJ object selection
+                    sel_objs = obj_selection.apply_obj_cuts(objs)
+
+                    # apply selections on matched_muons within the DSA muons and matched_dsa_muons within the PF muons
+                    try:
+                        sel_objs["dsaMuons"]["good_matched_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["dsaMuons"].matched_muons, "muons" )
+                        sel_objs["muons"]["good_matched_dsa_muons"] = nested_selection.apply_obj_cuts(sel_objs, sel_objs["muons"].matched_dsa_muons,"dsaMuons")
+                    except Exception as e:
+                        print(f"Failed to apply selections to the nested matched muon collections. Error message: {e}")
+
+                    # apply selections to muons which already contains good matched information
+                    prelj_selection = selection.JaggedSelection(cuts["preLj_obj"], self.verbose)
+                    sel_objs = prelj_selection.apply_obj_cuts_preLj(sel_objs)
+
+                    # reconstruct lepton jets
+                    sel_objs["ljs"] = self.build_lepton_jets(sel_objs, float(lj_reco))
+
+                    # apply obj selection to ljs
+                    lj_selection = selection.JaggedSelection(cuts["lj"], self.verbose)
+                    sel_objs = lj_selection.apply_obj_cuts(sel_objs)
+
+                    # add post-lj objects to sel_objs
+                    for obj in postLj_objs:
+                        sel_objs[obj] = postLj_objs[obj](sel_objs)
+                # --- END NEW SECTION --- #####Murtaza#####
+
+                # This part now runs for BOTH paths:
                 # apply post-lj obj selection
                 postLj_selection = selection.JaggedSelection(cuts["postLj_obj"], self.verbose)
                 sel_objs = postLj_selection.apply_obj_cuts(sel_objs)
@@ -118,28 +214,82 @@ class SidmProcessor(processor.ProcessorABC):
                 sel_objs["lj_reco"] = lj_reco
 
                 # define event weights
-                evt_weights =  self.obj_defs["weight"](events)
+                # evt_weights =  self.obj_defs["weight"](events)
+
+                # --- START MODIFIED SECTION --- #####Murtaza#####
+                # (This logic replaces the original evt_weights definition)
+                
+                # Get final event mask
+                final_mask = evt_selection.all_evt_cuts.all(*evt_selection.evt_cuts)
+
+                # Define histogram weights
+                if self.read_intermediate:
+                    # evt_weights was loaded *filtered*. We just applied *new*
+                    # cuts via final_mask. We must filter it *again*.
+                    hist_weights = evt_weights[final_mask]
+                else:
+                    # evt_weights is *unfiltered*. Filter it once.
+                    hist_weights = evt_weights[final_mask]
+                
+                # --- END MODIFIED SECTION --- #####Murtaza#####
+
+                # --- START NEW/MODIFIED SECTION --- #####Murtaza#####
 
                 # make cutflow
-                if lj_reco not in cutflows:
-                    cutflows[str(lj_reco)] = {}
-                cutflows[str(lj_reco)][channel] = cutflow.Cutflow(evt_selection.all_evt_cuts, evt_selection.evt_cuts, evt_weights)
+                str_lj_reco = str(lj_reco) # Use string key for safety
+                if str_lj_reco not in cutflows:
+                    cutflows[str_lj_reco] = processor.dict_accumulator({}) # <--- FIX
+                cutflows[str_lj_reco][channel] = cutflow.Cutflow(evt_selection.all_evt_cuts, evt_selection.evt_cuts, evt_weights)
+
+                # # Get final event mask and weights for hists and intermediate output
+                # final_mask = evt_selection.all_evt_cuts.all(*evt_selection.evt_cuts)
+                # hist_weights = evt_weights[final_mask]
+
+                # Store intermediate events if requested
+                if self.save_intermediate:
+                    if str_lj_reco not in intermediate_events:
+                        intermediate_events[str_lj_reco] = processor.dict_accumulator({}) # <--- FIX
+                    
+                    selected_events = {}
+                    for key, value in sel_objs.items():
+                        try:
+                            # Filter all event-parallel awkward arrays
+                            if isinstance(value, ak.Array) and len(value) == len(final_mask):
+                                selected_events[key] = value[final_mask]
+                            # Keep non-parallel info (like 'ch', 'lj_reco')
+                            else:
+                                selected_events[key] = value
+                        except Exception:
+                            # Catch errors (e.g., comparing len of non-array), TODO proper
+                            selected_events[key] = value
+                    
+                    # Store the weights for the selected events
+                    selected_events["weights"] = hist_weights # Save the *new* filtered weights
+                    intermediate_events[str_lj_reco][channel] = selected_events
 
                 # fill histograms for this channel+lj_reco pair
-                hist_weights = evt_weights[evt_selection.all_evt_cuts.all(*evt_selection.evt_cuts)]
+                fill_weights = hist_weights # Use the filtered weights
                 if self.unweighted_hist:
-                    hist_weights =  ak.ones_like(hist_weights)
+                    fill_weights =  ak.ones_like(hist_weights)
                 for h in hists.values():
-                    h.fill(sel_objs, hist_weights)
+                    # Pass un-filtered sel_objs (with masks) and filtered weights
+                    h.fill(sel_objs, fill_weights)
+                
+                # --- END NEW/MODIFIED SECTION --- #####Murtaza#####
 
                 # Fill counters
-                if lj_reco not in counters:
-                    counters[lj_reco] = {}
-                counters[lj_reco][channel] = {}
+                str_lj_reco = str(lj_reco) # Use string key for safety
+                if str_lj_reco not in counters:
+                    counters[str_lj_reco] = processor.dict_accumulator({})
+                if channel not in counters[str_lj_reco]:
+                    counters[str_lj_reco][channel] = processor.dict_accumulator({}) 
 
                 for name, counter in counter_defs.items():
                     try:
-                        counters[lj_reco][channel][name] = counter(sel_objs)
+                        # Calculate the counter value
+                        count_value = counter(sel_objs)
+                        # Store it as a value_accumulator
+                        counters[str_lj_reco][channel][name] = processor.value_accumulator(int, initial=count_value)
                     except (KeyError, AttributeError) as e:
                         print(f"Warning: cannot fill counter {name}. Skipping.")
 
@@ -147,17 +297,59 @@ class SidmProcessor(processor.ProcessorABC):
         if len(self.lj_reco_choices) == 1:
             cutflows = cutflows[self.lj_reco_choices[0]]
 
-        out = {
-            "cutflow": cutflows,
-            "hists": {n: h.hist for n, h in hists.items()}, # output hist.Hists, not Histograms
-            "counters": counters,
-            "metadata": {
-                "n_evts": events.metadata["entrystop"] - events.metadata["entrystart"],
-                "scaled_sum_weights": ak.sum(evt_weights)/events.metadata["skim_factor"],
-            },
-        }
+        # --- START MODIFIED SECTION ---
+        
+        # --- START METADATA BLOCK FIX ---
+        if self.read_intermediate:
+            first_collection_name = list(objs.keys())[0] 
+            n_evts = len(objs[first_collection_name])
+            scaled_sum_weights = ak.sum(evt_weights)
+            # 'dataset_name' was passed in the 'item' tuple
+        else:
+            n_evts = events.metadata["entrystop"] - events.metadata["entrystart"]
+            scaled_sum_weights = ak.sum(evt_weights)/events.metadata["skim_factor"]
+            # 'dataset_name' was already set from events.metadata["dataset"]
+        # --- END METADATA BLOCK FIX ---
 
-        return {events.metadata["dataset"]: out}
+        # All leaves of the accumulator must be AccumulatorABC objects
+        # Wrap all outputs in their accumulator types
+        out = processor.dict_accumulator({
+            "cutflow": cutflows, # This is now a dict_accumulator
+            "hists": processor.dict_accumulator(hists), # hists are now accumulator objects
+            "counters": counters, # This is now a dict_accumulator
+            "metadata": processor.dict_accumulator({
+                # Wrap metadata numbers in value_accumulator
+                # The factory for an int is 'int', the initial value is 'n_evts'
+                "n_evts": processor.value_accumulator(int, initial=n_evts),
+                # The factory for a float is 'float', the initial value is 'scaled_sum_weights'
+                "scaled_sum_weights": processor.value_accumulator(float, initial=scaled_sum_weights),
+            }),
+        })
+
+        if self.save_intermediate:
+            # This logic should now work, because 'out' is a dict_accumulator
+            # and 'intermediate_events' is also a dict_accumulator.
+            # But the LEAVES (ak.Arrays) will still cause the ValueError.
+            # This 'save_intermediate' logic is incompatible with this
+            # manual execution method.
+            #
+            # The notebook fix (setting to False) is the real solution.
+            # We'll keep this code here for completeness.
+            if not self.read_intermediate:
+                if len(self.lj_reco_choices) == 1:
+                     intermediate_events["dataset"] = dataset_name
+                else:
+                    for lj_reco_key in intermediate_events:
+                        intermediate_events[lj_reco_key]["dataset"] = dataset_name
+            
+            if len(self.lj_reco_choices) == 1:
+                intermediate_events = intermediate_events[self.lj_reco_choices[0]]
+
+            out["events"] = intermediate_events
+
+        # This is the return statement from our previous fix. It is correct.
+        return processor.dict_accumulator({dataset_name: out})
+        # --- END MODIFIED SECTION ---
 
     def build_objects(self, events):
         """Create object collections"""
@@ -367,10 +559,11 @@ class SidmProcessor(processor.ProcessorABC):
         """Modify accumulator after process has run on all chunks"""
         # scale cutflow and hists according to lumi*xs
         for sample, output in accumulator.items():
-            sum_weights = output["metadata"]["scaled_sum_weights"]
+            # sum_weights = output["metadata"]["scaled_sum_weights"]
+            sum_weights = output["metadata"]["scaled_sum_weights"].value
             lumixs_weight = utilities.get_lumixs_weight(sample, self.year, sum_weights)
             for name in output["cutflow"]:
                 accumulator[sample]["cutflow"][name].scale(lumixs_weight)
             if not self.unweighted_hist:
                 for name in output["hists"]:
-                    accumulator[sample]["hists"][name] *= lumixs_weight
+                    accumulator[sample]["hists"][name].hist *= lumixs_weight

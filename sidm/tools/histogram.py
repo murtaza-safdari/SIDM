@@ -3,9 +3,11 @@
 # columnar analysis
 import hist
 import awkward as ak
+from coffea.processor import AccumulatorABC  # <--- ADDed
+import copy  # <--- ADDed
 
 
-class Histogram:
+class Histogram(AccumulatorABC):
     """Class to represent histograms
 
     Histogram mostly exists so that hist.Hists and the appropriate filling arguments can be
@@ -20,6 +22,33 @@ class Histogram:
         # Allow all events to pass if no mask is explicitly provided
         self.evt_mask = (lambda objs: slice(None)) if evt_mask is None else evt_mask
         self.hist = None
+        self.name = ""
+
+    # --- ADD 'identity' METHOD ---
+    def identity(self):
+        """Return an empty Histogram object"""
+        # Create a new Histogram object with the same properties
+        new_hist = Histogram(self.axes, self.storage, self.evt_mask)
+        new_hist.name = self.name
+        
+        # If self.hist exists (i..e, make_hist has been called),
+        # create an empty version of it in the new object
+        if self.hist:
+            # Create a deepcopy and then reset it to clear all bins
+            new_hist.hist = copy.deepcopy(self.hist)
+            new_hist.hist.reset() # <--- THIS IS THE FIX
+        return new_hist
+
+    # --- ADD 'add' METHOD ---
+    def add(self, other):
+        """Add another Histogram object to this one"""
+        if other.hist:  # Only add if the other one has a histogram
+            if self.hist:
+                self.hist += other.hist # <--- THIS IS THE FIX
+            else:
+                # If self is empty, just take a copy of the other one
+                # This is crucial for the first merge
+                self.hist = copy.deepcopy(other.hist)
 
     @classmethod
     def simple_hist(cls, obj, attr, absval, nbins, xmin, xmax, label):
