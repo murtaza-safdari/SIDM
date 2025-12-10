@@ -6,6 +6,37 @@ import awkward as ak
 import copy
 from coffea.processor import AccumulatorABC
 
+# --- Helpers for Pickling (Must be top-level) ---
+
+def get_channel_val(objs, mask):
+    """Helper to retrieve channel for histogram filling"""
+    return objs["ch"]
+
+def get_lj_reco_val(objs, mask):
+    """Helper to retrieve lj_reco for histogram filling"""
+    return objs["lj_reco"]
+
+def default_evt_mask(objs):
+    """Default mask that selects all events"""
+    return slice(None)
+
+class SimpleHistFiller:
+    """Functor to replace the local 'f' closure in simple_hist for pickling"""
+    def __init__(self, obj, attr, absval):
+        self.obj = obj
+        self.attr = attr
+        self.absval = absval
+
+    def __call__(self, objs, mask):
+        if self.attr == "n":
+            return ak.num(objs[self.obj])
+        elif self.absval:
+            return abs(getattr(objs[self.obj], self.attr))
+        else:
+            return getattr(objs[self.obj], self.attr)
+
+# ------------------------------------------------
+
 class Histogram(AccumulatorABC):
     """Class to represent histograms
 
@@ -20,8 +51,8 @@ class Histogram(AccumulatorABC):
     def __init__(self, axes, storage="weight", evt_mask=None):
         self.axes = axes
         self.storage = storage
-        # Allow all events to pass if no mask is explicitly provided
-        self.evt_mask = (lambda objs: slice(None)) if evt_mask is None else evt_mask
+        # FIX: Use top-level function instead of lambda for pickling support
+        self.evt_mask = default_evt_mask if evt_mask is None else evt_mask
         self.hist = None
         self.name = ""
 
@@ -50,14 +81,8 @@ class Histogram(AccumulatorABC):
     @classmethod
     def simple_hist(cls, obj, attr, absval, nbins, xmin, xmax, label):
         """Method to simplify creation of basic obj.attribute hists"""
-        # define fill function
-        def f(objs, mask):
-            if attr == "n":
-                return ak.num(objs[obj])
-            elif absval:
-                return abs(objs[obj].__getattr__(attr))
-            else:
-                return objs[obj].__getattr__(attr)
+        # Use the pickle-safe functor instead of a local function
+        f = SimpleHistFiller(obj, attr, absval)
         return cls([
             Axis(hist.axis.Regular(nbins, xmin, xmax, name=f"{obj}_{attr}", label=label), f)
             ])
@@ -66,10 +91,12 @@ class Histogram(AccumulatorABC):
         self.name = name
         if channels is not None:
             channel_axis = hist.axis.StrCategory(channels, name="channel", label="Channel")
-            self.axes = [Axis(channel_axis, lambda objs, mask: objs["ch"])] + self.axes
+            # Use top-level helper function
+            self.axes = [Axis(channel_axis, get_channel_val)] + self.axes
         if lj_reco_choices is not None:
             lj_reco_axis = hist.axis.StrCategory(lj_reco_choices, name="lj_reco", label="LJ Reco")
-            self.axes = [Axis(lj_reco_axis, lambda objs, mask: objs["lj_reco"])] + self.axes
+            # Use top-level helper function
+            self.axes = [Axis(lj_reco_axis, get_lj_reco_val)] + self.axes
 
         axes = [a.axis for a in self.axes]
         self.hist = hist.Hist(*axes, storage=self.storage)

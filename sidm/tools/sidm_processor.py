@@ -395,7 +395,12 @@ class SidmProcessor(processor.ProcessorABC):
         """Modify accumulator after process has run on all chunks"""
         # scale cutflow and hists according to lumi*xs
         for sample, output in accumulator.items():
-            sum_weights = output["metadata"]["scaled_sum_weights"].value
+            # Robustly handle sum_weights (might be accumulator object OR raw number)
+            sum_weights_acc = output["metadata"]["scaled_sum_weights"]
+            if hasattr(sum_weights_acc, "value"):
+                sum_weights = sum_weights_acc.value
+            else:
+                sum_weights = sum_weights_acc
             lumixs_weight = utilities.get_lumixs_weight(sample, self.year, sum_weights)
             
             for name in output["cutflow"]:
@@ -403,4 +408,11 @@ class SidmProcessor(processor.ProcessorABC):
             
             if not self.unweighted_hist:
                 for name in output["hists"]:
-                    accumulator[sample]["hists"][name].hist *= lumixs_weight
+                    h = accumulator[sample]["hists"][name]
+                    # Robust check: Is it a Wrapper or a raw Hist?
+                    if hasattr(h, "hist"):
+                        h.hist *= lumixs_weight
+                    else:
+                        # Assume it's a raw Hist from Dask reduction
+                        h *= lumixs_weight
+                        accumulator[sample]["hists"][name] = h

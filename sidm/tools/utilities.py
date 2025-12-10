@@ -184,10 +184,15 @@ def make_fileset(samples, ntuple_version, max_files=-1, location_cfg="signal_v8.
         file_list = [base_path + f for f in sample_yaml["files"]]
         if max_files != -1:
             file_list = file_list[:max_files]
+        is_data = sample_yaml.get("is_data", False) #FIXME
+        year = sample_yaml.get("year", "2018") #FIXME
         fileset[sample] = {
             "files": file_list,
             "metadata": {
-                "skim_factor": sample_yaml.get("skim_factor", 1.0)}
+                "skim_factor": sample_yaml.get("skim_factor", 1.0),
+                "is_data": is_data,
+                "year": year,
+            }
         }
     return fileset
 
