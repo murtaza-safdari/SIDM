@@ -331,3 +331,65 @@ def returnBitMapTArrayPhoton(bitMap, var1, var2):
                 temp.append(False)
         tList.append(temp)
     return ak.Array(tList)
+
+def is_nanoaod_compat(a):
+    """
+    Checks if array is simple enough to be saved to Parquet for NanoAODSchema.
+    Allows:
+    - NumpyTypes (numbers, bools)
+    - OptionTypes (masked numbers, for indices)
+    - ListTypes (jagged arrays of numbers)
+    Rejects:
+    - Complex Objects (Records)
+    - Deeply nested arrays (ndim > 2)
+    """
+    t = ak.type(a)
+    # Unwrap layers to find the core
+    if isinstance(t, ak.types.ArrayType): t = t.content
+    if isinstance(t, ak.types.ListType): t = t.content
+    if isinstance(t, ak.types.OptionType): t = t.content
+    return isinstance(t, ak.types.NumpyType)
+
+def flatten_for_parquet(events):
+    """
+    Converts a nested events record into a flat dictionary compatible with 
+    NanoAODSchema. Now supports Scalar Records (like BeamSpot).
+    """
+    flat_arrays = {}
+    
+    for bname in events.fields:
+        branch = events[bname]
+        
+        # 1. Handle Jagged Collections (e.g. Muon, DSAMuon)
+        if branch.fields and branch.ndim > 1:
+            flat_arrays[f"n{bname}"] = ak.num(branch)
+            for sub in branch.fields:
+                sub_array = branch[sub]
+                
+                if "OptionType" in str(ak.type(sub_array.layout)):
+                    sub_array = ak.fill_none(sub_array, -1)
+                
+                clean_array = ak.without_parameters(sub_array)
+                if clean_array.ndim == 2 and is_nanoaod_compat(clean_array):
+                    flat_arrays[f"{bname}_{sub}"] = ak.to_packed(clean_array)
+                    
+        # 2. Handle Scalars and Scalar Records (e.g. run, BeamSpot)
+        else:
+            # Case A: Scalar Record (like BeamSpot)
+            # It has fields, but ndim=1 (one value per event, not a list)
+            if branch.fields and branch.ndim == 1:
+                for sub in branch.fields:
+                    sub_array = branch[sub]
+                    clean_array = ak.without_parameters(sub_array)
+                    
+                    if is_nanoaod_compat(clean_array):
+                        # Flatten name: BeamSpot.x0 -> BeamSpot_x0
+                        flat_arrays[f"{bname}_{sub}"] = ak.to_packed(clean_array)
+            
+            # Case B: Simple Column (like run, event)
+            else:
+                clean_array = ak.without_parameters(branch)
+                if clean_array.ndim <= 1 and is_nanoaod_compat(clean_array):
+                    flat_arrays[bname] = ak.to_packed(clean_array)
+
+    return ak.zip(flat_arrays, depth_limit=1)

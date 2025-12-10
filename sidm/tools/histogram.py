@@ -3,11 +3,10 @@
 # columnar analysis
 import hist
 import awkward as ak
-import copy ##### MODIFIED: Import copy #####
-from coffea.processor import AccumulatorABC ##### MODIFIED: Import AccumulatorABC #####
+import copy
+from coffea.processor import AccumulatorABC
 
-
-class Histogram(AccumulatorABC): ##### MODIFIED: Inherit from AccumulatorABC #####
+class Histogram(AccumulatorABC):
     """Class to represent histograms
 
     Histogram mostly exists so that hist.Hists and the appropriate filling arguments can be
@@ -15,10 +14,7 @@ class Histogram(AccumulatorABC): ##### MODIFIED: Inherit from AccumulatorABC ###
     can optionally provide an event mask that is applied to all object collections used to fill
     the histogram, e.g. to ensure only events with >=2 muons are used to fill dR(mu, mu) hists.
     
-    ##### MODIFIED #####
     This class inherits from AccumulatorABC to be a valid coffea accumulator.
-    This requires implementing the 'identity()' and 'add()' methods.
-    ####################
     """
 
     def __init__(self, axes, storage="weight", evt_mask=None):
@@ -27,36 +23,29 @@ class Histogram(AccumulatorABC): ##### MODIFIED: Inherit from AccumulatorABC ###
         # Allow all events to pass if no mask is explicitly provided
         self.evt_mask = (lambda objs: slice(None)) if evt_mask is None else evt_mask
         self.hist = None
-        self.name = "" ##### MODIFIED: Added name for debugging #####
+        self.name = ""
 
-    ##### START NEW METHOD #####
     def identity(self):
         """Return an empty Histogram object (required by AccumulatorABC)"""
-        # Create a new Histogram object with the same properties
         new_hist = Histogram(self.axes, self.storage, self.evt_mask)
         new_hist.name = self.name
-        
-        # If self.hist exists (i.e., make_hist has been called),
-        # create an empty, identical-in-structure histogram.
         if self.hist:
-            # For modern 'hist' objects, we deepcopy and then reset.
             new_hist.hist = copy.deepcopy(self.hist)
             new_hist.hist.reset()
         return new_hist
-    ##### END NEW METHOD #####
 
-    ##### START NEW METHOD #####
     def add(self, other):
         """Add another Histogram object to this one (required by AccumulatorABC)"""
-        if other.hist:  # Only add if the other one has a histogram
+        if other.hist:
             if self.hist:
-                # For modern 'hist' objects, accumulation is done with +=
                 self.hist += other.hist
             else:
-                # If self is empty, just take a copy of the other one
-                # This is crucial for the first merge
                 self.hist = copy.deepcopy(other.hist)
-    ##### END NEW METHOD #####
+
+    def scale(self, weight):
+        """Apply scale factor (required by AccumulatorABC)"""
+        if self.hist is not None:
+            self.hist *= weight
 
     @classmethod
     def simple_hist(cls, obj, attr, absval, nbins, xmin, xmax, label):
@@ -74,7 +63,7 @@ class Histogram(AccumulatorABC): ##### MODIFIED: Inherit from AccumulatorABC ###
             ])
 
     def make_hist(self, name, channels=None, lj_reco_choices=None):
-        self.name = name ##### MODIFIED: Store name #####
+        self.name = name
         if channels is not None:
             channel_axis = hist.axis.StrCategory(channels, name="channel", label="Channel")
             self.axes = [Axis(channel_axis, lambda objs, mask: objs["ch"])] + self.axes
