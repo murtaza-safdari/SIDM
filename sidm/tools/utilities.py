@@ -393,3 +393,63 @@ def flatten_for_parquet(events):
                     flat_arrays[bname] = ak.to_packed(clean_array)
 
     return ak.zip(flat_arrays, depth_limit=1)
+
+def run_parquet_analysis(fileset, processor_instance, metadata=None, executor=None):
+    """
+    A 'Runner-like' function for Parquet files.
+    
+    Args:
+        fileset (dict): {dataset_name: {'files': [paths...]}}
+        processor_instance: The processor to run
+        metadata (dict): Global metadata (e.g. {'skim_factor': 1.0})
+        executor (Client): Optional Dask client. If None, runs locally.
+    """
+    import dask.distributed
+    from coffea.nanoevents import NanoEventsFactory
+    from sidm.tools.llpnanoaodschema import LLPNanoAODSchema
+    from coffea import processor
+
+    # Define the Worker Function
+    # This runs on the remote Dask worker
+    def worker_func(filename, dataset_name, meta):
+        # Merge dataset name into metadata
+        file_meta = meta.copy() if meta else {}
+        file_meta["dataset"] = dataset_name
+        
+        # Load Parquet
+        events = NanoEventsFactory.from_parquet(
+            filename,
+            schemaclass=LLPNanoAODSchema,
+            metadata=file_meta
+        ).events()
+        
+        # Run Processor
+        return processor_instance.process(events)
+
+    # Build Task List
+    tasks = []
+    # fileset structure: {'SampleName': {'files': [f1, f2]}}
+    for dataset, info in fileset.items():
+        for filename in info["files"]:
+            tasks.append((filename, dataset, metadata))
+
+    print(f"Submitting {len(tasks)} tasks to {'Dask' if executor else 'Local'}...")
+
+    # Execute (Map)
+    if executor:
+        # Dask Mode
+        futures = executor.map(worker_func, *zip(*tasks))
+        results = executor.gather(futures)
+    else:
+        # Local Mode
+        results = [worker_func(*t) for t in tasks]
+
+    # Accumulate (Reduce)
+    print("Accumulating results...")
+    final_output = processor.accumulate(results)
+
+    # Post-Process (Scale)
+    print("Post-processing...")
+    processor_instance.postprocess(final_output)
+
+    return final_output
