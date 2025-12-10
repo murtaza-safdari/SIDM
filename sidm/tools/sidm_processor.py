@@ -65,22 +65,19 @@ class SidmProcessor(processor.ProcessorABC):
         counters = processor.dict_accumulator({})
         skims = processor.dict_accumulator({}) 
 
-        # Handle missing dataset metadata (common when loading from Parquet)
         if "dataset" in events.metadata:
             dataset_name = events.metadata["dataset"]
         else:
             dataset_name = "Skim"
         
-        # In skim mode, we might not have is_data, assume False if missing
         is_data = events.metadata.get("is_data", False)
 
-        # Pre-initialize skims structure to ensure keys exist even if no events pass
+        # Pre-initialize skims structure
         if self.skim_mode:
             for lj_reco in self.lj_reco_choices:
                 str_lj_reco = str(lj_reco)
                 skims[str_lj_reco] = processor.dict_accumulator({})
                 for channel in self.channel_names:
-                    # Initialize with empty list accumulator
                     skims[str_lj_reco][channel] = processor.list_accumulator([])
 
         objs = self.build_objects(events)
@@ -138,8 +135,6 @@ class SidmProcessor(processor.ProcessorABC):
                 if self.skim_mode:
                     skimmed_events = events[final_mask]
                     flat_skim = utilities.flatten_for_parquet(skimmed_events)
-                    
-                    # Store in LIST accumulator (Overwrites the empty init for this chunk)
                     skims[str_lj_reco][channel] = processor.list_accumulator([flat_skim])
                 # -----------------
 
@@ -182,6 +177,10 @@ class SidmProcessor(processor.ProcessorABC):
             
         skim_factor = events.metadata.get("skim_factor", 1.0)
         scaled_sum_weights = ak.sum(evt_weights) / skim_factor
+
+        # FIX: Clean histograms (remove lambdas) before pickling/returning
+        for h in hists.values():
+            h.clean_for_pickle()
 
         out = processor.dict_accumulator({
             "cutflow": cutflows,

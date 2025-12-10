@@ -38,26 +38,17 @@ class SimpleHistFiller:
 # ------------------------------------------------
 
 class Histogram(AccumulatorABC):
-    """Class to represent histograms
-
-    Histogram mostly exists so that hist.Hists and the appropriate filling arguments can be
-    defined in one place. In addition to the filling function associated with each Axis, the user
-    can optionally provide an event mask that is applied to all object collections used to fill
-    the histogram, e.g. to ensure only events with >=2 muons are used to fill dR(mu, mu) hists.
-    
-    This class inherits from AccumulatorABC to be a valid coffea accumulator.
-    """
+    """Class to represent histograms"""
 
     def __init__(self, axes, storage="weight", evt_mask=None):
         self.axes = axes
         self.storage = storage
-        # FIX: Use top-level function instead of lambda for pickling support
         self.evt_mask = default_evt_mask if evt_mask is None else evt_mask
         self.hist = None
         self.name = ""
 
     def identity(self):
-        """Return an empty Histogram object (required by AccumulatorABC)"""
+        """Return an empty Histogram object"""
         new_hist = Histogram(self.axes, self.storage, self.evt_mask)
         new_hist.name = self.name
         if self.hist:
@@ -66,7 +57,7 @@ class Histogram(AccumulatorABC):
         return new_hist
 
     def add(self, other):
-        """Add another Histogram object to this one (required by AccumulatorABC)"""
+        """Add another Histogram object to this one"""
         if other.hist:
             if self.hist:
                 self.hist += other.hist
@@ -74,14 +65,22 @@ class Histogram(AccumulatorABC):
                 self.hist = copy.deepcopy(other.hist)
 
     def scale(self, weight):
-        """Apply scale factor (required by AccumulatorABC)"""
+        """Apply scale factor"""
         if self.hist is not None:
             self.hist *= weight
 
+    def clean_for_pickle(self):
+        """
+        Remove functions (lambdas) that cannot be pickled by standard pickle.
+        This must be called before returning the accumulator from the processor.
+        """
+        self.evt_mask = None
+        if self.axes:
+            for axis in self.axes:
+                axis.fill_func = None # Drop the lambda
+
     @classmethod
     def simple_hist(cls, obj, attr, absval, nbins, xmin, xmax, label):
-        """Method to simplify creation of basic obj.attribute hists"""
-        # Use the pickle-safe functor instead of a local function
         f = SimpleHistFiller(obj, attr, absval)
         return cls([
             Axis(hist.axis.Regular(nbins, xmin, xmax, name=f"{obj}_{attr}", label=label), f)
@@ -91,18 +90,15 @@ class Histogram(AccumulatorABC):
         self.name = name
         if channels is not None:
             channel_axis = hist.axis.StrCategory(channels, name="channel", label="Channel")
-            # Use top-level helper function
             self.axes = [Axis(channel_axis, get_channel_val)] + self.axes
         if lj_reco_choices is not None:
             lj_reco_axis = hist.axis.StrCategory(lj_reco_choices, name="lj_reco", label="LJ Reco")
-            # Use top-level helper function
             self.axes = [Axis(lj_reco_axis, get_lj_reco_val)] + self.axes
 
         axes = [a.axis for a in self.axes]
         self.hist = hist.Hist(*axes, storage=self.storage)
 
     def fill(self, objs, evt_weights):
-        """Fill associated hist.Hist"""
         # Create fill args, warning user and skipping hists that cannot be filled
         try:
             fill_args = {a.name: a.fill_func(objs, self.evt_mask(objs)) for a in self.axes}
@@ -110,25 +106,19 @@ class Histogram(AccumulatorABC):
             print(f"Warning: a histogram with the name {self.name} could not be filled and will be skipped")
             return
 
-        # Use last axis to define weight structure to avoid channels axis
         masked_weights = evt_weights[self.evt_mask(objs)]
         fill_args["weight"] = masked_weights*ak.ones_like(fill_args[self.axes[-1].name])
         for name in fill_args.keys():
             if name not in ("channel", "lj_reco"):
                 fill_args[name] = ak.flatten(fill_args[name], axis=None)
 
-        # Fill hist, warning user and skipping hists that cannot be filled
         try:
             self.hist.fill(**fill_args)
         except ValueError:
             print(f"Warning: a histogram with the name {self.name} could not be filled and will be skipped")
 
 class Axis:
-    """Class to represent histogram axes
-
-    Axis just bundles together hist.axis objects and functions to fill them.
-    """
-
+    """Class to represent histogram axes"""
     def __init__(self, axis, fill_func):
         self.axis = axis
         self.name = axis.name
