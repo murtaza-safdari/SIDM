@@ -95,10 +95,12 @@ LLPMuonArray.MomentumClass = vector.LorentzVectorArray  # noqa: F821
 # --- 3. Schema Definition ---
 
 class LLPNanoAODSchema(NanoAODSchema):
-    """LLPNano schema builder"""
+    """LLPNano schema builder
+    LLPNano is an extended NanoAOD format that includes DSA Muons and improved displacement info
+    """
     mixins = {
         **NanoAODSchema.mixins,
-        "Muon": "LLPMuon", 
+        "Muon": "LLPMuon", #Adds the matched_dsa_muon property on top of the normal NanoAOD Muon behavior
         "DSAMuon": "DSAMuon",
     }
 

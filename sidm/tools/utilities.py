@@ -286,14 +286,12 @@ def get_lumixs_weight(dataset, year, sum_weights):
     return lumi*xs/sum_weights
 
 def check_variablePhoton(value, min_val=0b01):
-    """
-    Function to check if the variable is at least `min_val`
-    """
+    """Function to check if the variable is at least `min_val`"""
     return value >= min_val
 
 def select_numbersPhoton(number, var1, var2):
-    """
-    Function to select the numbers where each variable is at least 0b010 except for variable of choice
+    """Function to select the numbers where each variable is at least 0b010 
+    except for variable of choice
     """
     selected = True
 
@@ -338,8 +336,7 @@ def returnBitMapTArrayPhoton(bitMap, var1, var2):
     return ak.Array(tList)
 
 def is_nanoaod_compat(a):
-    """
-    Checks if array is simple enough to be saved to Parquet for NanoAODSchema.
+    """Checks if array is simple enough to be saved to Parquet for NanoAODSchema.
     Allows:
     - NumpyTypes (numbers, bools)
     - OptionTypes (masked numbers, for indices)
@@ -356,16 +353,16 @@ def is_nanoaod_compat(a):
     return isinstance(t, ak.types.NumpyType)
 
 def flatten_for_parquet(events):
-    """
-    Converts a nested events record into a flat dictionary compatible with 
-    NanoAODSchema. Now handles hidden index fields for cross-references.
+    """Converts a nested events record into a flat dictionary compatible with 
+    NanoAODSchema. Handles Scalar Records (like BeamSpot), and hidden index 
+    fields for cross-references.
     """
     flat_arrays = {}
     
     for bname in events.fields:
         branch = events[bname]
         
-        # 1. Handle Jagged Collections (e.g. Muon, DSAMuon)
+        # Handle Jagged Collections (e.g. Muon, DSAMuon)
         if branch.fields and branch.ndim > 1:
             flat_arrays[f"n{bname}"] = ak.num(branch)
             
@@ -389,15 +386,18 @@ def flatten_for_parquet(events):
                 if clean_array.ndim == 2 and is_nanoaod_compat(clean_array):
                     flat_arrays[f"{bname}_{sub}"] = ak.to_packed(clean_array)
                     
-        # 2. Handle Scalars (no changes needed here, usually)
+        # Handle Scalars and Scalar Records
         else:
-            # ... (keep existing scalar logic) ...
+            # Case A: Scalar Record (like BeamSpot)
+            # It has fields, but ndim=1 (one value per event, not a list)
             if branch.fields and branch.ndim == 1:
-                 for sub in branch.fields:
+                for sub in branch.fields:
                     sub_array = branch[sub]
                     clean_array = ak.without_parameters(sub_array)
                     if is_nanoaod_compat(clean_array):
+                        # Flatten name: BeamSpot.x0 -> BeamSpot_x0
                         flat_arrays[f"{bname}_{sub}"] = ak.to_packed(clean_array)
+            # Case B: Simple Column (like run, event)
             else:
                 clean_array = ak.without_parameters(branch)
                 if clean_array.ndim <= 1 and is_nanoaod_compat(clean_array):
@@ -406,9 +406,7 @@ def flatten_for_parquet(events):
     return ak.zip(flat_arrays, depth_limit=1)
 
 def run_parquet_analysis(fileset, processor_instance, metadata=None, executor=None):
-    """
-    A 'Runner-like' function for Parquet files.
-    
+    """A 'Runner-like' function for Parquet files.
     Args:
         fileset (dict): {dataset_name: {'files': [paths...]}}
         processor_instance: The processor to run
