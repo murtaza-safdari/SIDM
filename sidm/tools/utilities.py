@@ -358,7 +358,7 @@ def is_nanoaod_compat(a):
 def flatten_for_parquet(events):
     """
     Converts a nested events record into a flat dictionary compatible with 
-    NanoAODSchema. Now supports Scalar Records (like BeamSpot).
+    NanoAODSchema. Now handles hidden index fields for cross-references.
     """
     flat_arrays = {}
     
@@ -368,30 +368,36 @@ def flatten_for_parquet(events):
         # 1. Handle Jagged Collections (e.g. Muon, DSAMuon)
         if branch.fields and branch.ndim > 1:
             flat_arrays[f"n{bname}"] = ak.num(branch)
-            for sub in branch.fields:
-                sub_array = branch[sub]
+            
+            # Combine public fields AND hidden fields (from layout) to catch indices like muonMatch1idx
+            all_keys = branch.fields
+            if hasattr(branch.layout, "keys"):
+                all_keys = set(branch.fields) | set(branch.layout.keys())
+            
+            for sub in all_keys:
+                # Some layout keys might not be accessible via __getitem__, skip if so
+                try:
+                    sub_array = branch[sub]
+                except (IndexError, ValueError):
+                    continue
                 
                 if "OptionType" in str(ak.type(sub_array.layout)):
                     sub_array = ak.fill_none(sub_array, -1)
                 
                 clean_array = ak.without_parameters(sub_array)
+                # Check compatibility (must be flat numbers, 2D)
                 if clean_array.ndim == 2 and is_nanoaod_compat(clean_array):
                     flat_arrays[f"{bname}_{sub}"] = ak.to_packed(clean_array)
                     
-        # 2. Handle Scalars and Scalar Records (e.g. run, BeamSpot)
+        # 2. Handle Scalars (no changes needed here, usually)
         else:
-            # Case A: Scalar Record (like BeamSpot)
-            # It has fields, but ndim=1 (one value per event, not a list)
+            # ... (keep existing scalar logic) ...
             if branch.fields and branch.ndim == 1:
-                for sub in branch.fields:
+                 for sub in branch.fields:
                     sub_array = branch[sub]
                     clean_array = ak.without_parameters(sub_array)
-                    
                     if is_nanoaod_compat(clean_array):
-                        # Flatten name: BeamSpot.x0 -> BeamSpot_x0
                         flat_arrays[f"{bname}_{sub}"] = ak.to_packed(clean_array)
-            
-            # Case B: Simple Column (like run, event)
             else:
                 clean_array = ak.without_parameters(branch)
                 if clean_array.ndim <= 1 and is_nanoaod_compat(clean_array):
