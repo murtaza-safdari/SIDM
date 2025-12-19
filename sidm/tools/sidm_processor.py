@@ -33,6 +33,25 @@ def _patched_local2global(stack):
     stack.append(out)
 tr.local2global = _patched_local2global
 
+# --- Needed to fix `AttributeError: 'list' object has no attribute 'add'` ---
+from coffea.processor import AccumulatorABC
+class SafeListAccumulator(list, AccumulatorABC):
+    """
+    A robust list accumulator that guarantees .add() exists and works 
+    even when pickled/unpickled across Dask workers.
+    """
+    def identity(self):
+        return SafeListAccumulator([])
+
+    def add(self, other):
+        if isinstance(other, list):
+            self.extend(other)
+        elif isinstance(other, SafeListAccumulator):
+            self.extend(other)
+        else:
+            raise ValueError(f"Cannot add {type(other)} to SafeListAccumulator")
+# ---------------------------------
+
 class SidmProcessor(processor.ProcessorABC):
     """Class to apply selections, make histograms, and make cutflows
 
@@ -144,7 +163,9 @@ class SidmProcessor(processor.ProcessorABC):
                     skimmed_events = events[final_mask]
                     flat_skim = utilities.flatten_for_parquet(skimmed_events)
                     # Store in LIST accumulator
-                    skims[str_lj_reco][channel] = processor.list_accumulator([flat_skim])
+                    # skims[str_lj_reco][channel] = processor.list_accumulator([flat_skim])
+                    # Needed to fix `AttributeError: 'list' object has no attribute 'add'`
+                    skims[str_lj_reco][channel] = SafeListAccumulator([flat_skim])
                 # -----------------
 
                 hist_weights = evt_weights[final_mask]
