@@ -180,11 +180,11 @@ trigger_muPtCut_muID: &trigger_muPtCut_muID
 ljsource_cuts_chargeCC: &ljsource_cuts_chargeCC
   obj_cuts: &obj_ljsource_cuts_chargeCC
       <<: *obj_ljsource_cuts
-      dsaMuons: 
+      dsaMuons:
         - "pT > 10 GeV"
         - "|eta| < 2.4"
         - "displaced ID"
-        - "all + charge" # cross-cleaning with charge requirement 
+        - "all + charge" # cross-cleaning with charge requirement
 
 ljsource_cuts_barrel: &ljsource_cuts_barrel
   obj_cuts: &obj_ljsource_cuts_barrel
@@ -320,6 +320,14 @@ baseNoLj_egLj: &baseNoLj_egLj
   evt_cuts:
     - *evt_baseNoLj
     - ">=2 LJs"
+base_data: &base_data
+  obj_cuts: &obj_base
+    <<: *obj_baseNoLj
+  postLj_obj_cuts:
+    <<: *base_postLj_obj_cuts
+  evt_cuts: &evt_base
+    - *evt_baseNoLj
+    - "< 2 LJs"
 
 #selection on base_ljObjCut
 base_ljObjCut_pixelHits_as_ljSource: &base_ljObjCut_pixelHits_as_ljSource
@@ -1538,7 +1546,7 @@ baseNoLj_Even_Muon_Charge: &baseNoLj_Even_Muon_Charge
       - "|eta| < 2.4"
     mu_ljs:
       - *mu_lj_base
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Only_One_Muon: &baseNoLj_Only_One_Muon
@@ -1550,7 +1558,7 @@ baseNoLj_Only_One_Muon: &baseNoLj_Only_One_Muon
       - "|eta| < 2.4"
     mu_ljs:
       - "Mu == 1"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Only_Two_Muon: &baseNoLj_Only_Two_Muon
@@ -1562,7 +1570,7 @@ baseNoLj_Only_Two_Muon: &baseNoLj_Only_Two_Muon
       - "|eta| < 2.4"
     mu_ljs:
       - "Mu == 2"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Only_Three_Muon: &baseNoLj_Only_Three_Muon
@@ -1574,7 +1582,7 @@ baseNoLj_Only_Three_Muon: &baseNoLj_Only_Three_Muon
       - "|eta| < 2.4"
     mu_ljs:
       - "Mu == 3"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Four_Ormore_Muon: &baseNoLj_Four_Ormore_Muon
@@ -1586,7 +1594,7 @@ baseNoLj_Four_Ormore_Muon: &baseNoLj_Four_Ormore_Muon
       - "|eta| < 2.4"
     mu_ljs:
       - "Mu >= 4"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Two_Ormore_Muon: &baseNoLj_Two_Ormore_Muon
@@ -1598,7 +1606,7 @@ baseNoLj_Two_Ormore_Muon: &baseNoLj_Two_Ormore_Muon
       - "|eta| < 2.4"
     mu_ljs:
       - "Mu >= 2"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Even_Muon_Charge_Displacement: &baseNoLj_Even_Muon_Charge_Displacement
@@ -1613,7 +1621,7 @@ baseNoLj_Even_Muon_Charge_Displacement: &baseNoLj_Even_Muon_Charge_Displacement
       - "displaced"
     egm_ljs:
       - "displaced"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Only_Two_Muon_Displacement: &baseNoLj_Only_Two_Muon_Displacement
@@ -1628,7 +1636,7 @@ baseNoLj_Only_Two_Muon_Displacement: &baseNoLj_Only_Two_Muon_Displacement
       - "displaced"
     egm_ljs:
       - "displaced"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Two_Ormore_Muon_Displacement: &baseNoLj_Two_Ormore_Muon_Displacement
@@ -1643,7 +1651,7 @@ baseNoLj_Two_Ormore_Muon_Displacement: &baseNoLj_Two_Ormore_Muon_Displacement
       - "displaced"
     egm_ljs:
       - "displaced"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Two_Ormore_Muon_Displacement_EgmIso: &baseNoLj_Two_Ormore_Muon_Displacement_EgmIso
@@ -1659,7 +1667,7 @@ baseNoLj_Two_Ormore_Muon_Displacement_EgmIso: &baseNoLj_Two_Ormore_Muon_Displace
     egm_ljs:
       - "displaced"
       - "egm_lj_iso < 0.2"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Two_Ormore_Muon_Displacement_MuIso: &baseNoLj_Two_Ormore_Muon_Displacement_MuIso
@@ -1675,7 +1683,7 @@ baseNoLj_Two_Ormore_Muon_Displacement_MuIso: &baseNoLj_Two_Ormore_Muon_Displacem
       - "mu_lj_iso < 0.1"
     egm_ljs:
       - "displaced"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 baseNoLj_Two_Ormore_Muon_Displacement_EgmIso_MuIso: &baseNoLj_Two_Ormore_Muon_Displacement_EgmIso_MuIso
@@ -1692,7 +1700,7 @@ baseNoLj_Two_Ormore_Muon_Displacement_EgmIso_MuIso: &baseNoLj_Two_Ormore_Muon_Di
     egm_ljs:
       - "displaced"
       - "egm_lj_iso < 0.2"
-  evt_cuts: 
+  evt_cuts:
     - *evt_baseNoLj
 
 data_control_region_1Lj: &data_control_region_1Lj
