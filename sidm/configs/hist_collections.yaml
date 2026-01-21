@@ -73,6 +73,7 @@ muon_base: &muon_base
   - "muon_dxy_XXLowRange"
   - "muon_dxy_XLowRange"
   - "muon_dxy_lowRange"
+  - "muon_muon_invmass"
 
 dsaMuon_base: &dsaMuon_base
   - "dsaMuon_n"
@@ -383,7 +384,7 @@ genE_base: &genE_base
   - "genE0_dxy_lowRange"
   - "genE1_dxy_lowRange"
   - "genE_matched_electron_status"
-  
+
 genMu_base: &genMu_base
   - "genMu_n"
   - "genMu_pt"
@@ -630,7 +631,7 @@ base_plus_gen_resolution: &base_plus_gen_resolution
   - *genA_lj_2d
   - *lepton_genLepton_base
   - *lepton_genLepton_genA_base
-  
+
 
 muon_displacement: &muon_displacement
   - "mu_lj_pfMuon_dxy_XLowRange"
@@ -690,7 +691,7 @@ muon_displacement: &muon_displacement
   - "leading_pf_mu_lj_pfMu_max_trkNumTrkLayers"
   - "leading_pf_dsa_mu_lj_pfMu_max_trkNumTrkLayers"
   - "leading_mu_lj_pf_muon_min_dxy"
-  
+
 electron_displacement: &electron_displacement
   - "egm_lj_electron_dxy_XXXLowRange"
   - "egm_lj_electron_max_dxy_XXXLowRange"
@@ -710,7 +711,7 @@ electron_displacement: &electron_displacement
   - "leading_e_lj_electron_min_lostHits"
   - "leading_eg_lj_electron_min_lostHits"
   - "leading_egm_lj_electron_min_dxy"
-  
+
 lj_displacement: &lj_displacement
   - "mulj_egmlj_invmass"
   - "mulj_egmlj_invmass_pixelHits_lostHits"
@@ -745,7 +746,7 @@ lj_displacement: &lj_displacement
   - "mulj_eg_lj_invmass_lostHits"
   - "mu_lj_n"
   - "egm_lj_n"
-  
+
 dxy_significance: &dxy_significance
   - "mu_lj_pfMuon_dxy_signi"
   - "mu_lj_dsaMuon_dxy_signi"
@@ -837,4 +838,9 @@ Muon_selection_bkg_base: &Muon_selection_bkg_base
   - "mulj_egmlj_invmass"
   - "mu_lj_isolation"
 
+
+data_base: &data_base
+  - "muon_n"
+  - "muon_pt"
+  - "muon_dxy"
 
