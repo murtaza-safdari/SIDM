@@ -290,7 +290,6 @@ base_data: &base_data
   evt_cuts: &evt_base
     - *evt_baseNoLj
     - "< 2 LJs"
-
 #selection on base_ljObjCut
 base_ljObjCut_pixelHits_as_ljSource: &base_ljObjCut_pixelHits_as_ljSource
   obj_cuts:
@@ -1741,10 +1740,10 @@ data_control_region_1egmLj: &data_control_region_1egmLj
       - "pT > 30 GeV"
       - "|eta| < 2.4"
   evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "= 1 egmLJs"
+      - *evt_baseNoLj
+      - "pass flags"
+      - "= 1 LJs"
+      - "= 1 egmLJs"
 
 data_control_region_1egmLj_cosmic_veto: &data_control_region_1egmLj_cosmic_veto
   obj_cuts:
@@ -1754,9 +1753,9 @@ data_control_region_1egmLj_cosmic_veto: &data_control_region_1egmLj_cosmic_veto
       - "|dxy| <= 40"
       - "|dz| <= 60"
   postLj_obj_cuts:
-    ljs:
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
+      ljs:
+        - "pT > 30 GeV"
+        - "|eta| < 2.4"
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"
@@ -1833,3 +1832,15 @@ data_control_region_2muLj_cosmic_veto: &data_control_region_2muLj_cosmic_veto
     - "= 2 LJs"
     - "= 2 muLJs"
     - "all cos_alpha(dsa, dsa) > -0.9"
+
+Z_to_mumu_control_region: &Z_to_mumu_control_region
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+    muons:
+      - "looseID"
+      - "pT > 5 GeV"
+      - "|eta| < 2.4"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "60 <= inv(Mu_0, Mu_1) <= 120"
+    - "n_mu == 2"
