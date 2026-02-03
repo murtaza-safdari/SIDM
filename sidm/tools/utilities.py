@@ -352,6 +352,38 @@ def returnBitMapTArrayPhoton(bitMap, var1, var2):
         tList.append(temp)
     return ak.Array(tList)
 
+def lepton_dxy_resolution(leptons, pvs, rank="all", diff=False):
+    matched = leptons.matched_gen
+
+    if rank == "all":
+        valid = (~ak.is_none(matched)) & (matched.status == 1)
+        leptons = leptons[valid]
+        matched = matched[valid]
+
+        dxy_gen = dxy(matched, ref=pvs)
+        dxy_reco = leptons.dxy
+        nonzero = dxy_gen != 0
+
+        result = dxy_reco - dxy_gen
+        return result if diff else result[nonzero] / dxy_gen[nonzero]
+
+    # rank is an integer: one lepton per event
+    enough = ak.num(leptons) > rank
+    leptons = leptons[enough]
+    pvs = pvs[enough]
+    matched = leptons.matched_gen
+
+    lep = leptons[:, rank]
+    gen = matched[:, rank]
+    dxy_gen = dxy(gen, ref=pvs)
+    dxy_reco = lep.dxy
+    result = dxy_reco - dxy_gen
+
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ratio = ak.where((~ak.is_none(gen)) & (gen.status == 1) & (dxy_gen != 0), result / dxy_gen, np.nan)
+
+    return result if diff else ratio
+   
 def spin1_model(x, A, alpha):
     """Physics model: dN/dCosTheta ~ A * (1 + alpha * cos^2(theta))"""
     return A * (1 + alpha * x**2)
