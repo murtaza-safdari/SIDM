@@ -56,6 +56,7 @@ def parse_name(name):
         "WZ_TuneCP5_13TeV" : "WZ",
         "ZZ_TuneCP5_13TeV" : "ZZ",
         "Run2018C" : "DoubleMuon_2018C",
+        "Run2018C_15Feb2022_UL2018": "DoubleMuon_2018C",
         # fixme: add backgrounds and data as necessary
     }
     chunks = name.split("-")
