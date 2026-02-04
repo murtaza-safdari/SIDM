@@ -1845,3 +1845,6 @@ Z_to_mumu_control_region: &Z_to_mumu_control_region
     - "pass flags"
     - "60 <= inv(Mu_0, Mu_1) <= 120"
     - "n_mu == 2"
+    - "dPhi(Mu_0, Mu_1) > 2.4"
+
+
