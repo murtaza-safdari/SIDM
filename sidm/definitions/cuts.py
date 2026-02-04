@@ -157,6 +157,7 @@ obj_cut_defs = {
     "muons": {
         #Tested the following to try to enable us to apply these cuts to muons *and* matched_muons associated to dsas
         "looseID": lambda objs, muons: muons.looseId,
+        "tightID": lambda objs, muons: muons.tightId,
         "pT > 5 GeV": lambda objs, muons: muons.pt > 5,
         "|eta| < 2.4": lambda objs, muons: abs(muons.eta) < 2.4,
         "dR(mu, A) < 0.5": lambda objs, muons: dR(muons, objs["genAs_toMu"]) < 0.5,
@@ -274,5 +275,6 @@ evt_cut_defs = {
     "= 2 muLJs": lambda objs: (ak.num(objs["mu_ljs"]) == 2) & (ak.num(objs["egm_ljs"]) == 0),
     "all cos_alpha(dsa, dsa) > -0.9": lambda objs: ak.all(cosAlpha(objs["dsaMuons"]) > -0.9, axis=1),
     "60 <= inv(Mu_0, Mu_1) <= 120": lambda objs : ((objs["muons"][:,:2].sum().mass) <= 120) &  ((objs["muons"][:,:2].sum().mass) >= 60),
-    "n_mu == 2": lambda objs : ak.num(objs["muons"]) == 2 ,
+    "n_mu == 2": lambda objs : ak.num(objs["muons"]) == 2,
+    "dPhi(Mu_0, Mu_1) > 2.4": lambda objs: ak.fill_none(abs((ak.pad_none(objs["muons"], 2)[:,0].delta_phi(ak.pad_none(objs["muons"], 2)[:,1]))) > 2.4, False),
 }
