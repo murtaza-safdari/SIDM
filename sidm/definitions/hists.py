@@ -629,6 +629,7 @@ hist_defs = {
                lambda objs, mask: lepton_dxy_resolution(objs["egm_ljs"].electrons, objs["pvs"], rank=1, diff=True))
         ],
      evt_mask=lambda objs: ak.num(objs["egm_ljs"].electrons) > 1,
+    ),
     # dsamuon
     "dsaMuon_n": obj_attr("dsaMuons", "n"),
     "dsaMuon_pt":obj_attr("dsaMuons", "pt", xmax=500),
