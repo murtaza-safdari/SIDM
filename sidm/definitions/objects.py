@@ -76,6 +76,7 @@ preLj_objs["jets"]       = lambda evts: evts.Jet
 # define objects whose that will be added to objs by the sidm_processor after LJs are clustered
 # and LJ cuts are applied. postLj_obj cuts can be applied to these
 postLj_objs = {}
+postLj_objs_MC = {}
 postLj_objs["mu_ljs"]       = lambda objs: yesMu(objs["ljs"])
 postLj_objs["egm_ljs"]      = lambda objs: noMu(objs["ljs"])
 postLj_objs["pfmu_ljs"]     = lambda objs: noDsa(objs["mu_ljs"])
@@ -83,8 +84,8 @@ postLj_objs["dsamu_ljs"]    = lambda objs: noPf(objs["mu_ljs"])
 postLj_objs["electron_ljs"] = lambda objs: noPhoton(objs["egm_ljs"])
 postLj_objs["photon_ljs"]   = lambda objs: noE(objs["egm_ljs"])
 # Adding the following here since I want the cuts on genMus and genEs to be applied
-postLj_objs["genMus_fromA"] = lambda objs: fromPid(objs["genMus"], 32)
-postLj_objs["genEs_fromA"]  = lambda objs: fromPid(objs["genEs"],  32)
+postLj_objs_MC["genMus_fromA"] = lambda objs: fromPid(objs["genMus"], 32)
+postLj_objs_MC["genEs_fromA"]  = lambda objs: fromPid(objs["genEs"],  32)
 
 # define objects that depend on extra parameters determined in hist or cut definitions
 derived_objs = {}

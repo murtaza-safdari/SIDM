@@ -14,7 +14,7 @@ import vector
 from sidm import BASE_DIR
 from sidm.tools import selection, cutflow, utilities
 from sidm.definitions.hists import hist_defs, counter_defs
-from sidm.definitions.objects import preLj_objs, postLj_objs
+from sidm.definitions.objects import preLj_objs, postLj_objs, postLj_objs_MC
 import coffea.nanoevents.transforms as tr
 
 def _patched_local2global(stack):
@@ -59,6 +59,8 @@ class SidmProcessor(processor.ProcessorABC):
         self.histograms_cfg = histograms_cfg
         self.unweighted_hist = unweighted_hist
         self.obj_defs = preLj_objs
+        self.postLj_objs = postLj_objs
+        self.postLj_objs_MC = postLj_objs_MC
         self.verbose = verbose
 
     def process(self, events):
@@ -127,8 +129,10 @@ class SidmProcessor(processor.ProcessorABC):
                 sel_objs = lj_selection.apply_obj_cuts(sel_objs)
 
                 # add post-lj objects to sel_objs
-                for obj in postLj_objs:
-                    sel_objs[obj] = postLj_objs[obj](sel_objs)
+                if not is_data:
+                    self.postLj_objs = {**self.postLj_objs, **self.postLj_objs_MC}
+                for obj in self.postLj_objs:
+                    sel_objs[obj] = self.postLj_objs[obj](sel_objs)
 
                 # apply post-lj obj selection
                 postLj_selection = selection.JaggedSelection(cuts["postLj_obj"], self.verbose)
