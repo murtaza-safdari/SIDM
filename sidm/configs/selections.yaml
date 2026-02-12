@@ -1847,4 +1847,19 @@ Z_to_mumu_control_region: &Z_to_mumu_control_region
     - "n_mu == 2"
     - "dPhi(Mu_0, Mu_1) > 2.4"
 
+ttjets_control_region: &ttjets_control_region
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+    muons:
+      - "tightID"
+      - "pT > 5 GeV"
+      - "|eta| < 2.4"
+    jets:
+      - "btagDeepFlavB_tight"
+      - "tightID"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "n_mu == 2"
+    - "n_jet == 2"
 
