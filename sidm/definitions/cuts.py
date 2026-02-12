@@ -154,6 +154,10 @@ obj_cut_defs = {
         "missing_hits == 1" : lambda objs: objs["electrons"].lostHits == 1,
         "dxy >= 0.05" : lambda objs: objs["electrons"].dxy >= 0.05,
     },
+    "jets":{
+        "btagDeepFlavB_tight": lambda objs: objs["jets"].btagDeepFlavB >= 0.7100,
+        "tightID": lambda objs: objs["jets"].jetId >= 6,
+    },
     "muons": {
         #Tested the following to try to enable us to apply these cuts to muons *and* matched_muons associated to dsas
         "looseID": lambda objs, muons: muons.looseId,
@@ -276,5 +280,6 @@ evt_cut_defs = {
     "all cos_alpha(dsa, dsa) > -0.9": lambda objs: ak.all(cosAlpha(objs["dsaMuons"]) > -0.9, axis=1),
     "60 <= inv(Mu_0, Mu_1) <= 120": lambda objs : ((objs["muons"][:,:2].sum().mass) <= 120) &  ((objs["muons"][:,:2].sum().mass) >= 60),
     "n_mu == 2": lambda objs : ak.num(objs["muons"]) == 2,
+    "n_jet == 2": lambda objs : ak.num(objs["jets"]) == 2,
     "dPhi(Mu_0, Mu_1) > 2.4": lambda objs: ak.fill_none(abs((ak.pad_none(objs["muons"], 2)[:,0].delta_phi(ak.pad_none(objs["muons"], 2)[:,1]))) > 2.4, False),
 }
