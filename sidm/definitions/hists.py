@@ -373,6 +373,8 @@ hist_defs = {
                    lambda objs, mask: dR(objs["electrons"],  objs["electrons"].matched_gen[objs["electrons"].matched_gen.status == 1]))
         ],
     ),
+    #jets
+    "jet_n": obj_attr("jets", "n"),
     # pfphoton
     "photon_n": obj_attr("photons", "n"),
     "photon_pt":obj_attr("photons", "pt", xmax=500),

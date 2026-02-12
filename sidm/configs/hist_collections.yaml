@@ -838,6 +838,9 @@ Muon_selection_bkg_base: &Muon_selection_bkg_base
   - "mulj_egmlj_invmass"
   - "mu_lj_isolation"
 
+ttjets_base: &ttjets_base
+  - "jet_n"
+  - "muon_n"
 
 data_base: &data_base
   - "muon_n"
