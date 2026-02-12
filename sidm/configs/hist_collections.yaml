@@ -842,6 +842,9 @@ trig_base: &trig_base
   - "all_muon0_pt_vs_all_muon1_pt"
   - "mu_lj_sum_pt_score"
 
+ttjets_base: &ttjets_base
+  - "jet_n"
+  - "muon_n"
 
 data_base: &data_base
   - "muon_n"
