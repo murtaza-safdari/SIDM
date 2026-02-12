@@ -425,6 +425,8 @@ hist_defs = {
                    lambda objs, mask: dR(objs["photons"], objs["genEs"]))
         ],
     ),
+    #met
+    "met_pt":obj_attr("met", "pt", xmax=500),
     # pfmuon
     "muon_n": obj_attr("muons", "n"),
     "muon_pt":obj_attr("muons", "pt", xmax=500),
@@ -489,6 +491,14 @@ hist_defs = {
     "muon_muon_invmass": h.Histogram(
         [
             h.Axis(hist.axis.Regular(150, 0, 150, name="muon_muon_mass",
+                                     label=r"Invariant Mass ($\mu_{0}$, $\mu_{1}$)"),
+                   lambda objs, mask: objs["muons"][mask, :2].sum().mass),
+        ],
+        evt_mask=lambda objs: ak.num(objs["muons"]) > 1,
+    ),
+    "muon_muon_invmass_highRange": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 400, name="muon_muon_mass",
                                      label=r"Invariant Mass ($\mu_{0}$, $\mu_{1}$)"),
                    lambda objs, mask: objs["muons"][mask, :2].sum().mass),
         ],

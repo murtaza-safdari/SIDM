@@ -843,7 +843,8 @@ ttjets_base: &ttjets_base
   - "muon_n"
   - "muon_muon_dphi"
   - "muon_muon_invmass"
-
+  - "muon_muon_invmass_highRange"
+  - "met_pt"
 data_base: &data_base
   - "muon_n"
   - "muon_pt"
