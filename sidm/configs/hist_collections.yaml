@@ -841,6 +841,8 @@ Muon_selection_bkg_base: &Muon_selection_bkg_base
 ttjets_base: &ttjets_base
   - "jet_n"
   - "muon_n"
+  - "muon_muon_dphi"
+  - "muon_muon_invmass"
 
 data_base: &data_base
   - "muon_n"
