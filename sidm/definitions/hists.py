@@ -4364,5 +4364,16 @@ hist_defs = {
         ],
         evt_mask=lambda objs: ak.num(objs["genEs_fromA"]) >= 2,
     ),
-
+   "muon_bjet_inv_mass": h.Histogram(
+    [
+        h.Axis(
+            hist.axis.Regular(200, 0, 200, name="muon_bjet_inv_mass",
+            label=r"Invariant Mass ($\mu_{0}$, bjet)"),
+            lambda objs, mask: ((objs["muons"][:, 0] +
+                    objs["muons"][:, 0].nearest(objs["bjets"], threshold=0.4)).mass),),
+    ],
+    evt_mask=lambda objs:
+        (ak.num(objs["bjets"]) > 0) &
+        (ak.num(objs["muons"]) > 0),
+), 
 }

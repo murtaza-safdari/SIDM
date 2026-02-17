@@ -845,6 +845,7 @@ ttjets_base: &ttjets_base
   - "muon_muon_invmass"
   - "muon_muon_invmass_highRange"
   - "met_pt"
+  - "muon_bjet_inv_mass"
 data_base: &data_base
   - "muon_n"
   - "muon_pt"
