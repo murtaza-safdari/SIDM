@@ -158,12 +158,14 @@ obj_cut_defs = {
         "btagDeepFlavB_tight": lambda objs: objs["jets"].btagDeepFlavB >= 0.7100,
         "tightID": lambda objs: objs["jets"].jetId >= 6,
         "|eta| < 2.4": lambda objs: abs(objs["jets"].eta) < 2.4,
-         "pT > 30 GeV": lambda objs: objs["jets"].pt > 30,
+        "pT > 30 GeV": lambda objs: objs["jets"].pt > 30,
+        "dR(jets, mu) > 0.4": lambda objs: dR(objs["jets"], objs["muons"]) > 0.4,
     },
     "bjets":{
         "tightID": lambda objs: objs["bjets"].jetId >= 6,
         "|eta| < 2.4": lambda objs: abs(objs["bjets"].eta) < 2.4,
         "pT > 30 GeV": lambda objs: objs["bjets"].pt > 30,
+        "dR(bjets, mu) > 0.4": lambda objs: dR(objs["bjets"], objs["muons"]) > 0.4,
     },
     "muons": {
         #Tested the following to try to enable us to apply these cuts to muons *and* matched_muons associated to dsas
