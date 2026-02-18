@@ -4376,4 +4376,12 @@ hist_defs = {
         (ak.num(objs["bjets"]) > 0) &
         (ak.num(objs["muons"]) > 0),
 ), 
+   "muon_bjet_min_inv_mass": h.Histogram(
+    [
+        h.Axis(
+            hist.axis.Regular(200, 0, 200, name="muon_bjet_min_inv_mass",label=r"min Invariant Mass ($\mu_{0}$, bjet)"),
+            lambda objs, mask: ak.min((objs["muons"][:, 0] + objs["bjets"]).mass,axis=1),),
+    ],
+    evt_mask=lambda objs: (ak.num(objs["bjets"]) > 0) &(ak.num(objs["muons"]) > 0),
+   ),
 }
