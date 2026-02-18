@@ -1868,3 +1868,23 @@ ttjets_control_region: &ttjets_control_region
     - "n_mu == 2"
     - "2j2btag"
 
+ttjets_4j2btag: &ttjets_4j2btag
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+    muons:
+      - "tightID"
+      - "pT > 5 GeV"
+      - "|eta| < 2.4"
+    jets:
+      - "tightID"
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    bjets:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+      - "tightID"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "n_mu == 2"
+    - "4j2btag"
