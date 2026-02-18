@@ -290,5 +290,6 @@ evt_cut_defs = {
     "n_bjet == 2": lambda objs : ak.num(objs["bjets"]) == 2,
     "n_jet == 2": lambda objs : ak.num(objs["jets"]) == 2,
     "2j2btag": lambda objs : (ak.num(objs["jets"]) == 2) &  (ak.num(objs["bjets"]) == 2),
+    "4j2btag": lambda objs : (ak.num(objs["jets"]) == 4) &  (ak.num(objs["bjets"]) == 2),
     "dPhi(Mu_0, Mu_1) > 2.4": lambda objs: ak.fill_none(abs((ak.pad_none(objs["muons"], 2)[:,0].delta_phi(ak.pad_none(objs["muons"], 2)[:,1]))) > 2.4, False),
 }
