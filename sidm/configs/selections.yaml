@@ -1852,29 +1852,37 @@ ttjets_2j2btag: &ttjets_2j2btag
     <<: *obj_ljsource_cuts
     muons:
       - "tightID"
-      - "pT > 5 GeV"
-      - "|eta| < 2.4"
+      - "pT > 30 GeV"
+      - "|eta| < 2.1"
+      - "pfRelIso04_all <= 0.15"
+      - "sip3d < 4"
     jets:
       - "tightID"
       - "pT > 30 GeV"
       - "|eta| < 2.4"
+      - "dR(jets, mu) > 0.4"
     bjets:
       - "pT > 30 GeV"
       - "|eta| < 2.4"
       - "tightID"
+      - "dR(bjets, mu) > 0.4"
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"
     - "n_mu == 2"
     - "2j2btag"
+    - "pv_ndof >=4"
+    - "pv_z <= 24"
 
 ttjets_4j2btag: &ttjets_4j2btag
   obj_cuts:
     <<: *obj_ljsource_cuts
     muons:
       - "tightID"
-      - "pT > 5 GeV"
-      - "|eta| < 2.4"
+      - "pT > 30 GeV"
+      - "|eta| < 2.1"
+      - "pfRelIso04_all <= 0.15"
+      - "sip3d < 4"
     jets:
       - "tightID"
       - "pT > 30 GeV"
@@ -1890,3 +1898,5 @@ ttjets_4j2btag: &ttjets_4j2btag
     - "pass flags"
     - "n_mu == 2"
     - "4j2btag"
+    - "pv_ndof >=4"
+    - "pv_z <= 24"
