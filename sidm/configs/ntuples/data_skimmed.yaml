@@ -41,7 +41,7 @@ llpNanoAOD_v2:
       - skimmed_output_13.root
       - skimmed_output_130.root
       - skimmed_output_131.root
-      - skimmed_output_132.root
+      # - skimmed_output_132.root
       - skimmed_output_133.root
       - skimmed_output_134.root
       - skimmed_output_135.root
