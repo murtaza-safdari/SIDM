@@ -375,6 +375,7 @@ hist_defs = {
     ),
     #jets
     "jet_n": obj_attr("jets", "n"),
+    "bjet_n": obj_attr("bjets", "n"),
     # pfphoton
     "photon_n": obj_attr("photons", "n"),
     "photon_pt":obj_attr("photons", "pt", xmax=500),
