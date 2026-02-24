@@ -1900,3 +1900,24 @@ ttjets_4j2btag: &ttjets_4j2btag
     - "4j2btag"
     - "pv_ndof >=4"
     - "pv_z <= 24"
+
+data_control_region: &data_control_region
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts: &base_postLj_obj_cuts
+    ljs: &lj_base
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+      - "mu_charge == 0"
+    mu_ljs:
+      - "reverse_iso"
+      - "reverse_displaced"
+    egm_ljs:
+      - "reverse_iso"
+      - "reverse_displaced"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "1 egm_ljs"
+    - "1 mu_ljs"
+    - "inv(lj1, lj2) <= 100"
