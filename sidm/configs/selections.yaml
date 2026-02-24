@@ -1904,11 +1904,9 @@ ttjets_4j2btag: &ttjets_4j2btag
 data_control_region: &data_control_region
   obj_cuts:
     <<: *obj_ljsource_cuts
-  postLj_obj_cuts: &base_postLj_obj_cuts
-    ljs: &lj_base
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
-      - "mu_charge == 0"
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
     mu_ljs:
       - "reverse_iso"
       - "reverse_displaced"
@@ -1916,7 +1914,7 @@ data_control_region: &data_control_region
       - "reverse_iso"
       - "reverse_displaced"
   evt_cuts:
-    - *evt_baseNoLj
+    - *evt_pv_cuts
     - "pass flags"
     - "1 egm_ljs"
     - "1 mu_ljs"
