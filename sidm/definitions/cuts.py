@@ -49,8 +49,8 @@ obj_cut_defs = {
         "egm_lj_iso < 0.2": lambda objs: objs["egm_ljs"].isolation < 0.2,
         "reverse_iso": lambda objs: objs["egm_ljs"].isolation >= 0.2,
         "lostHits >= 1": lambda objs: ak.min(objs["egm_ljs"].electrons.trkNumPixelHits, axis=-1) >= 1,
-        "displaced": lambda objs: (ak.min(objs["egm_ljs"].egamma.lostHits, axis=-1) >= 1)
-        "reverse_displaced": lambda objs: (ak.min(objs["egm_ljs"].egamma.lostHits, axis=-1) <1)
+        "displaced": lambda objs: (ak.min(objs["egm_ljs"].egamma.lostHits, axis=-1) >= 1),
+        "reverse_displaced": lambda objs: (ak.min(objs["egm_ljs"].egamma.lostHits, axis=-1) <1),
     },
     "mu_ljs": {
         "pfMuLj": lambda objs: (objs["mu_ljs"].pfMu_n > 0) & (objs["mu_ljs"].dsaMu_n == 0),
