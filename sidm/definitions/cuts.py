@@ -66,7 +66,7 @@ obj_cut_defs = {
         "Mu == 3": lambda objs: objs["mu_ljs"].muon_n == 3,
         "Mu >= 4": lambda objs: objs["mu_ljs"].muon_n >= 4,
         "Mu >= 2": lambda objs: objs["mu_ljs"].muon_n >= 2,
-        "reverse_displaced": lambda objs: (ak.max(objs["mu_ljs"].muons.trkNumPixelHits, axis=-1) > 2) ,
+        "reverse_displaced": lambda objs: (ak.min(objs["mu_ljs"].muons.trkNumPixelHits, axis=-1) > 2) ,
     },
     "genMus":{
         "pT >= 10 GeV": lambda objs: objs["genMus"].pt >= 10,
@@ -308,5 +308,15 @@ evt_cut_defs = {
     "pv_ndof >=4" : lambda objs :  ak.flatten(objs["pvs"].ndof) >=4.0,
     "pv_z <= 24" : lambda objs :  ak.flatten(objs["pvs"].z) <= 24,
     "inv(lj1, lj2) <= 100": lambda objs : (objs["ljs"][:,:2].sum().mass) <= 100,
+    "pass two missing triggers": lambda objs: (
+    (
+        objs["hlt"].DoubleL2Mu23NoVtx_2Cha_NoL2Matched
+      | objs["hlt"].DoubleL2Mu23NoVtx_2Cha_CosmicSeed_NoL2Matched
+    )
+    & ~(objs["hlt"].DoubleL2Mu23NoVtx_2Cha)
+    & ~(objs["hlt"].DoubleL2Mu23NoVtx_2Cha_CosmicSeed)
+    & ~(objs["hlt"].DoubleL2Mu25NoVtx_2Cha_Eta2p4)
+    & ~(objs["hlt"].DoubleL2Mu25NoVtx_2Cha_CosmicSeed_Eta2p4)
+),
 
 }
