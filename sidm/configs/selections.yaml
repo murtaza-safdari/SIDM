@@ -223,7 +223,7 @@ baseNoLjNoLjsource_4_trigger: &baseNoLjNoLjsource_4_trigger
   obj_cuts:
     <<: *obj_gen_level_cuts
   evt_cuts:
-    -"pass 4 triggers"
+    - "pass four triggers"
     - *evt_pv_cuts
 
 baseNoLjNoLjsource_noTrigger: &baseNoLjNoLjsource_noTrigger
