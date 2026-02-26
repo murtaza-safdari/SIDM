@@ -212,6 +212,13 @@ gen_leptons_born: &gen_leptons_born
   evt_cuts:
     - "PV filter"
 
+baseNoLjNoLjsource_two_trigger: &baseNoLjNoLjsource_two_trigger
+  obj_cuts:
+    <<: *obj_gen_level_cuts
+  evt_cuts:
+    - "pass two missing triggers"
+    - *evt_pv_cuts
+
 baseNoLjNoLjsource_noTrigger: &baseNoLjNoLjsource_noTrigger
   obj_cuts:
     <<: *obj_gen_level_cuts
