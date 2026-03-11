@@ -1777,6 +1777,14 @@ hist_defs = {
                    lambda objs, mask: objs["mu_ljs"].muons.phi),
         ],
     ),
+    "egm_lj_electron_eta_phi": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(50, -3, 3, name="egm_lj_e_eta"),
+                   lambda objs, mask: objs["egm_ljs"].electrons.eta),
+            h.Axis(hist.axis.Regular(50, -1*math.pi, math.pi, name="egm_lj_e_phi"),
+                   lambda objs, mask: objs["egm_ljs"].electrons.phi),
+        ],
+    ),
     "lj_electronPhotonN": h.Histogram(
         [
             h.Axis(hist.axis.Integer(0, 10, name="lj_electronPhotonN"),
