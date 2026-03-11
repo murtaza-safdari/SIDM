@@ -602,23 +602,6 @@ gen_base: &gen_base
   - *genA_toE_base
   - "gen_abspid"
 
-base: &base
-  - *pv_base
-  - *electron_base
-  - *photon_base
-  - *muon_base
-  - *dsaMuon_base
-  - *lj_base
-  - *mu_lj_base
-  - *egm_lj_base
-  - *electron_lj_base
-  - *photon_lj_base
-  - *muon_lj_base
-  - *dsaMuon_lj_base
-  - *lj_lj_base
-  - *abcd_base
-  - *electron_photon_base
-  - *isolation_base
 
 base_plus_gen: &base_plus_gen
   - *base
@@ -855,3 +838,23 @@ data_base: &data_base
   - "muon_muon_dphi"
   - "muon_muon_invmass"
 
+base: &base
+  - *pv_base
+  - *electron_base
+  - *photon_base
+  - *muon_base
+  - *dsaMuon_base
+  - *lj_base
+  - *mu_lj_base
+  - *egm_lj_base
+  - *electron_lj_base
+  - *photon_lj_base
+  - *muon_lj_base
+  - *dsaMuon_lj_base
+  - *lj_lj_base
+  - *abcd_base
+  - *electron_photon_base
+  - *isolation_base
+  - *displacement_base
+  - *data_base
+  - *ttjets_base
