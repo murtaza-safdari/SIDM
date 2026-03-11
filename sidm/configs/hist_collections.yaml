@@ -603,17 +603,6 @@ gen_base: &gen_base
   - "gen_abspid"
 
 
-base_plus_gen: &base_plus_gen
-  - *base
-  - *gen_base
-
-base_plus_gen_resolution: &base_plus_gen_resolution
-  - *base
-  - *gen_base
-  - *genA_ratio
-  - *genA_lj_2d
-  - *lepton_genLepton_base
-  - *lepton_genLepton_genA_base
 
 
 muon_displacement: &muon_displacement
@@ -831,6 +820,7 @@ ttjets_base: &ttjets_base
   - "met_pt"
   - "muon_bjet_inv_mass"
   - "muon_bjet_min_inv_mass"
+
 data_base: &data_base
   - "muon_n"
   - "muon_pt"
@@ -858,3 +848,15 @@ base: &base
   - *displacement_base
   - *data_base
   - *ttjets_base
+
+base_plus_gen: &base_plus_gen
+  - *base
+  - *gen_base
+
+base_plus_gen_resolution: &base_plus_gen_resolution
+  - *base
+  - *gen_base
+  - *genA_ratio
+  - *genA_lj_2d
+  - *lepton_genLepton_base
+  - *lepton_genLepton_genA_base
