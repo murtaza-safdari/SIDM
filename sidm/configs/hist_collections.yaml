@@ -845,9 +845,9 @@ base: &base
   - *abcd_base
   - *electron_photon_base
   - *isolation_base
-  - *displacement_base
-  - *data_base
-  - *ttjets_base
+  # - *displacement_base
+  # - *data_base
+  # - *ttjets_base
 
 base_plus_gen: &base_plus_gen
   - *base
