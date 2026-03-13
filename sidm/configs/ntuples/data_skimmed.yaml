@@ -1,5 +1,3 @@
-
-
 # RUN2018C_skimmed
 llpNanoAOD_v2:
   path: root://xcache//store/group/lpcmetx/SIDM/Data/2018data/Skims/
@@ -642,13 +640,6 @@ llpNanoAOD_v2:
       path: Run2018C_15Feb2022_UL2018/
       skim_factor: 0.40991912557418
       year: '2018'
-
-
-
-# 2018A
-llpNanoAOD_v2:
-  path: root://xcache//store/group/lpcmetx/SIDM/Data/2018data/Skims/Run2018A_15Feb2022_UL2018/
-  samples:
     DoubleMuon_2018A_0:
       files:
       - skimmed_output_1.root
@@ -1651,7 +1642,7 @@ llpNanoAOD_v2:
       - skimmed_output_998.root
       - skimmed_output_999.root
       is_data: true
-      path: 0000/
+      path: Run2018A_15Feb2022_UL2018/0000/
       skim_factor: 0.3395500686047371
       year: '2018'
     DoubleMuon_2018A_1:
@@ -2651,7 +2642,7 @@ llpNanoAOD_v2:
       - skimmed_output_1998.root
       - skimmed_output_1999.root
       is_data: true
-      path: 0001/
+      path: Run2018A_15Feb2022_UL2018/0001/
       skim_factor: 0.3960224080770357
       year: '2018'
     DoubleMuon_2018A_2:
@@ -3426,7 +3417,7 @@ llpNanoAOD_v2:
       - skimmed_output_2767.root
       - skimmed_output_2768.root
       is_data: true
-      path: 0002/
+      path: Run2018A_15Feb2022_UL2018/0002/
       skim_factor: 0.3617809117162447
       year: '2018'
 
