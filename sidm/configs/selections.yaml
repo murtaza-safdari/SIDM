@@ -1928,9 +1928,8 @@ data_control_region: &data_control_region
       - "reverse_iso"
       - "reverse_displaced"
   evt_cuts:
-    - *evt_pv_cuts
+    - *evt_baseNoLj
     - "pass flags"
-    - "pass four triggers"
     - "1 egm_ljs"
     - "1 mu_ljs"
     - "inv(lj1, lj2) <= 100"
