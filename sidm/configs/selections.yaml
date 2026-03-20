@@ -1980,3 +1980,27 @@ data_control_region_noIso_noDisp: &data_control_region_noIso_noDisp
     - "1 egm_ljs"
     - "1 mu_ljs"
     - "inv(lj1, lj2) <= 100"
+
+data_control_region_1muLj: &data_control_region_1muLj
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "1 mu_ljs"
+    - "inv(lj1, lj2) <= 100"
+
+data_control_region_1egLj: &data_control_region_1egLj
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "1 egm_ljs"
+    - "inv(lj1, lj2) <= 100"
