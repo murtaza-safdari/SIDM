@@ -2015,4 +2015,3 @@ data_control_region_1Lj: &data_control_region_1Lj
     - *evt_baseNoLj
     - "pass flags"
     - "= 1 LJs"
-    - "inv(lj1, lj2) <= 100"
