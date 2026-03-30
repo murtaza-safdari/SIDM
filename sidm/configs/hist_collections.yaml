@@ -74,6 +74,8 @@ muon_base: &muon_base
   - "muon_dxy_XLowRange"
   - "muon_dxy_lowRange"
   - "muon_muon_invmass"
+  - "muon_muon_invmass_highRange"
+  - "muon_muon_cosAlpha"
 
 dsaMuon_base: &dsaMuon_base
   - "dsaMuon_n"
@@ -85,6 +87,8 @@ dsaMuon_base: &dsaMuon_base
   - "dsaMuon_absD0_lowRange"
   - "dsaMuon_numOverlapSegments_matchedMuons"
   - "dsaMuon_numOverlapSegments_goodMatchedMuons"
+  - "dsaMu_dsaMu_dR"
+  - "dsaMu_dsaMu_invmass"
   - "dsaMu_dsaMu_cosAlpha"
 
 lj_base: &lj_base
