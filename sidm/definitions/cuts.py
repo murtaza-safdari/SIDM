@@ -311,6 +311,8 @@ evt_cut_defs = {
     "inv(lj1, lj2) <= 100": lambda objs : (objs["ljs"][:,:2].sum().mass) <= 100,
     "cosA_muons > -0.95":  lambda objs : cosA_cut(objs["muons"]),
     "cosA_dsaMuons > -0.95":  lambda objs : cosA_cut(objs["dsaMuons"]),
+    "cosmic_mu_pair <= 6":lambda objs : cosA_pair_cut(objs["muons"]),
+    "cosmic_dsaMu_pair <= 6":lambda objs : cosA_pair_cut(objs["dsaMuons"]),
     "pass two missing triggers": lambda objs: (
     (
         objs["hlt"].DoubleL2Mu23NoVtx_2Cha_NoL2Matched
