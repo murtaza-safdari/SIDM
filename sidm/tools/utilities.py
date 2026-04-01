@@ -125,14 +125,10 @@ def cos_alpha(muons):
 
 
 def cosA_cut(muons):
+    valid = ak.num(muons) == 2
 
-    # Require at least 2 muons
-    valid = ak.num(muons) > 1
-
-    # Compute cos(alpha)
     cosA = cos_alpha(muons)
 
-    # Final boolean mask (IMPORTANT: pure boolean)
     return valid & (cosA > -0.95)
     
 def lj_combination_dR(obj):
