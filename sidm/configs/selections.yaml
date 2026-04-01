@@ -2015,3 +2015,16 @@ data_control_region_1Lj: &data_control_region_1Lj
     - *evt_baseNoLj
     - "pass flags"
     - "= 1 LJs"
+
+data_control_region_1Lj_cosmic_veto: &data_control_region_1Lj_cosmic_veto
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 LJs"
+    - "cosA_muons > -0.95"
+    - "cosA_dsaMuons > -0.95"
