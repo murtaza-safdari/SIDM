@@ -130,6 +130,19 @@ def cosA_cut(muons):
     cosA = cos_alpha(muons)
 
     return valid & (cosA > -0.95)
+
+
+
+def cosA_pair_cut(muons):
+    threshold = -0.95
+    pairs = ak.combinations(muons, 2, axis=1)
+    v1, v2 = ak.unzip(pairs)
+
+    cos_theta = np.cos(v1.deltaangle(v2))
+
+    count = ak.sum(cos_theta <= threshold, axis=1)
+
+    return count <= 6
     
 def lj_combination_dR(obj):
     pair = ak.combinations(obj, 2, axis=1, fields=["lj1", "lj2"])
