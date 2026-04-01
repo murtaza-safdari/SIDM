@@ -95,6 +95,46 @@ def add_matched_dsamuon_mass(obj):
     obj["mass"] = ak.full_like(obj.pt, 0.105712890625)
     return obj
 
+def cos_alpha(muons):
+    # Pad to ensure at least 2 entries (avoids index errors)
+    mu_padded = ak.pad_none(muons, 2)
+
+    mu0 = mu_padded[:, 0]
+    mu1 = mu_padded[:, 1]
+
+    # Replace None with safe values
+    mu0_px = ak.fill_none(mu0.px, 0)
+    mu0_py = ak.fill_none(mu0.py, 0)
+    mu0_pz = ak.fill_none(mu0.pz, 0)
+
+    mu1_px = ak.fill_none(mu1.px, 0)
+    mu1_py = ak.fill_none(mu1.py, 0)
+    mu1_pz = ak.fill_none(mu1.pz, 0)
+
+    dot = mu0_px * mu1_px + mu0_py * mu1_py + mu0_pz * mu1_pz
+    mag0 = np.sqrt(mu0_px**2 + mu0_py**2 + mu0_pz**2)
+    mag1 = np.sqrt(mu1_px**2 + mu1_py**2 + mu1_pz**2)
+
+    # Denominator
+    den = mag0 * mag1
+
+    # Safe division (no np.divide!)
+    cosA = ak.where(den > 0, dot / den, 0)
+
+    return cosA
+
+
+def cosA_cut(muons):
+
+    # Require at least 2 muons
+    valid = ak.num(muons) > 1
+
+    # Compute cos(alpha)
+    cosA = cos_alpha(muons)
+
+    # Final boolean mask (IMPORTANT: pure boolean)
+    return valid & (cosA > -0.95)
+    
 def lj_combination_dR(obj):
     pair = ak.combinations(obj, 2, axis=1, fields=["lj1", "lj2"])
     dR = dR_general(pair["lj1"], pair["lj2"])
@@ -267,6 +307,43 @@ def make_fileset(samples, ntuple_version, max_files=-1, location_cfg="signal_v8.
                 "year": sample_yaml.get("year", "2018"),
             },
         }
+    return fileset
+
+def make_fileset_new(samples, ntuple_version, max_files=-1, location_cfg="signal_v8.yaml", fileset=None):
+    """Make fileset to pass to processor.runner"""
+    location_cfg = f"{BASE_DIR}/configs/ntuples/" + location_cfg
+    locations = load_yaml(location_cfg)[ntuple_version]
+
+    if not fileset:
+        fileset = {}
+
+    for sample in samples:
+        sample_yaml = locations["samples"][sample]
+        base_path = locations["path"] + sample_yaml["path"]
+
+        # New structure: list of dicts
+        file_entries = sample_yaml["files"]
+
+        # Apply max_files
+        if max_files != -1:
+            file_entries = file_entries[:max_files]
+
+        # Build file list
+        file_list = [base_path + f["name"] for f in file_entries]
+
+        # Sum lumi of selected files
+        total_lumi = sum(f.get("lumi", 0.0) for f in file_entries)
+
+        fileset[sample] = {
+            "files": file_list,
+            "metadata": {
+                "skim_factor": sample_yaml.get("skim_factor", 1.0),
+                "is_data": sample_yaml.get("is_data", False),
+                "year": sample_yaml.get("year", "2018"),
+                "total_lumi": total_lumi,   # ← added
+            },
+        }
+
     return fileset
 
 def check_bit(array, bit_num):
