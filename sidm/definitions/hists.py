@@ -727,64 +727,21 @@ hist_defs = {
         ],
         evt_mask=lambda objs: ak.num(objs["dsaMuons"]) > 1,
     ),
-   "dsaMu_dsaMu_cosAlpha": h.Histogram(
-    [
-        h.Axis(
-            hist.axis.Regular(
-                100, -1, 1,
-                name="cosAlpha",
-                label=r"$\cos\alpha(\mathrm{DSA}\ \mu_{0}, \mathrm{DSA}\ \mu_{1})$"),
-        
-        lambda objs, mask: (
-            (objs["dsaMuons"][mask, 0].px * objs["dsaMuons"][mask, 1].px +
-             objs["dsaMuons"][mask, 0].py * objs["dsaMuons"][mask, 1].py +
-             objs["dsaMuons"][mask, 0].pz * objs["dsaMuons"][mask, 1].pz)
-            /
-            (
-                np.sqrt(
-                    objs["dsaMuons"][mask, 0].px**2 +
-                    objs["dsaMuons"][mask, 0].py**2 +
-                    objs["dsaMuons"][mask, 0].pz**2
-                ) *
-                np.sqrt(
-                    objs["dsaMuons"][mask, 1].px**2 +
-                    objs["dsaMuons"][mask, 1].py**2 +
-                    objs["dsaMuons"][mask, 1].pz**2
-                )
-            )
-        )),
-    ],
-    evt_mask=lambda objs: ak.num(objs["dsaMuons"]) > 1,
-),
-      "muon_muon_cosAlpha": h.Histogram(
-    [
-        h.Axis(
-            hist.axis.Regular(
-                100, -1, 1,
-                name="cosAlpha",
-                label=r"$\cos\alpha( \mu_{0}, \mu_{1})$"),
-        
-        lambda objs, mask: (
-            (objs["muons"][mask, 0].px * objs["muons"][mask, 1].px +
-             objs["muons"][mask, 0].py * objs["muons"][mask, 1].py +
-             objs["muons"][mask, 0].pz * objs["muons"][mask, 1].pz)
-            /
-            (
-                np.sqrt(
-                    objs["muons"][mask, 0].px**2 +
-                    objs["muons"][mask, 0].py**2 +
-                    objs["muons"][mask, 0].pz**2
-                ) *
-                np.sqrt(
-                    objs["muons"][mask, 1].px**2 +
-                    objs["muons"][mask, 1].py**2 +
-                    objs["muons"][mask, 1].pz**2
-                )
-            )
-        )),
-    ],
-    evt_mask=lambda objs: ak.num(objs["muons"]) > 1,
-),
+    "dsaMu_dsaMu_cosAlpha": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, -1, 1, name="muon_muon_cosAlpha",
+                                     label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
+                   lambda objs, mask: cosAlpha(objs["dsaMuons"])),
+        ],
+    ),
+    "muon_muon_cosAlpha": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, -1, 1, name="muon_muon_cosalpha",
+                                     label=r"CosAlpha($\mu$, $\mu$)"),
+                   lambda objs, mask: cosAlpha(objs["muons"])),
+        ],
+    ),
+
     # lj
     "lj_n": obj_attr("ljs", "n"),
     "lj_iso": obj_attr("ljs", "isolation", nbins=50, xmax=2),

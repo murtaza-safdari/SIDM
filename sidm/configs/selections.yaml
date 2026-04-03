@@ -2052,7 +2052,7 @@ data_control_region_1Lj_cosmic_veto_dsa: &data_control_region_1Lj_cosmic_veto_ds
     - *evt_baseNoLj
     - "pass flags"
     - "= 1 LJs"
-    - "n_dsa == 2"
+    - "n_dsa >= 2"
     - "all cos_alpha(dsa, dsa) >= -0.95"
 
 data_control_region_1Lj_cosmic_dsa: &data_control_region_1Lj_cosmic_dsa
@@ -2065,5 +2065,5 @@ data_control_region_1Lj_cosmic_dsa: &data_control_region_1Lj_cosmic_dsa
     - *evt_baseNoLj
     - "pass flags"
     - "= 1 LJs"
-    - "n_dsa == 2"
+    - "n_dsa >= 2"
     - "any cos_alpha(dsa, dsa) <= -0.95"

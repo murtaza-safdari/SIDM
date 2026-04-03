@@ -297,7 +297,7 @@ evt_cut_defs = {
     "all cos_alpha(dsa, dsa) > -0.9": lambda objs: ak.all(cosAlpha(objs["dsaMuons"]) > -0.9, axis=1),
     "60 <= inv(Mu_0, Mu_1) <= 120": lambda objs : ((objs["muons"][:,:2].sum().mass) <= 120) &  ((objs["muons"][:,:2].sum().mass) >= 60),
     "n_mu == 2": lambda objs : ak.num(objs["muons"]) == 2,
-    "n_dsa == 2": lambda objs : ak.num(objs["dsaMuons"]) == 2,
+    "n_dsa >= 2": lambda objs : ak.num(objs["dsaMuons"]) >= 2,
     "n_bjet == 2": lambda objs : ak.num(objs["bjets"]) == 2,
     "n_jet == 2": lambda objs : ak.num(objs["jets"]) == 2,
     "2j2btag": lambda objs : (ak.num(objs["jets"]) == 2) &  (ak.num(objs["bjets"]) == 2),
@@ -310,8 +310,8 @@ evt_cut_defs = {
     "cosA_dsaMuons > -0.95":  lambda objs : cosA_cut(objs["dsaMuons"]),
     "cosmic_mu_pair <= 6":lambda objs : cosA_pair_cut(objs["muons"]),
     "cosmic_dsaMu_pair <= 6":lambda objs : cosA_pair_cut(objs["dsaMuons"]),
-    "all cos_alpha(dsa, dsa) >= -0.95" : lambda objs : ak.all(cosAlpha(objs["dsaMuons"]), axis =1) >= -0.95,
-    "any cos_alpha(dsa, dsa) <= -0.95" : lambda objs : ak.any(cosAlpha(objs["dsaMuons"]), axis =1) <= -0.95,
+    "all cos_alpha(dsa, dsa) > -0.95" : lambda objs : ak.all(cosAlpha(objs["dsaMuons"]) > 0.95, axis =1),
+    "any cos_alpha(dsa, dsa) <= -0.95" : lambda objs : ak.any(cosAlpha(objs["dsaMuons"]) <=-0.95, axis =1),
     "pass two missing triggers": lambda objs: (
     (
         objs["hlt"].DoubleL2Mu23NoVtx_2Cha_NoL2Matched
