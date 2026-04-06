@@ -315,6 +315,7 @@ evt_cut_defs = {
     "cosmic_mu_pair <= 6":lambda objs : cosA_pair_cut(objs["muons"]),
     "cosmic_dsaMu_pair <= 6":lambda objs : cosA_pair_cut(objs["dsaMuons"]),
     "all cos_alpha(dsa, dsa) > -0.95" : lambda objs : ak.all(cosAlpha(objs["dsaMuons"]) > -0.95, axis =1),
+    "all cos_alpha(mu, mu) > -0.95" : lambda objs : ak.all(cosAlpha(objs["muons"]) > -0.95, axis =1),
     "any cos_alpha(dsa, dsa) <= -0.95" : lambda objs : ak.any(cosAlpha(objs["dsaMuons"]) <=-0.95, axis =1),
     "pass two missing triggers": lambda objs: (
     (
