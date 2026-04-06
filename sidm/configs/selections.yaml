@@ -2068,7 +2068,7 @@ data_control_region_1Lj_cosmic_dsa: &data_control_region_1Lj_cosmic_dsa
     - "n_dsa >= 2"
     - "any cos_alpha(dsa, dsa) <= -0.95"
 
-data_control_region_1Lj_cosmic_dsa_pf: &data_control_region_1Lj_cosmic_dsa_pf
+data_control_region_1Lj_cosmic_veto_dsa_pf: &data_control_region_1Lj_cosmic_veto_dsa_pf
   obj_cuts:
     <<: *obj_ljsource_cuts
   postLj_obj_cuts:
@@ -2079,5 +2079,5 @@ data_control_region_1Lj_cosmic_dsa_pf: &data_control_region_1Lj_cosmic_dsa_pf
     - "pass flags"
     - "= 1 LJs"
     - "n_dsa >= 2"
-    - "any cos_alpha(dsa, dsa) <= -0.95"
+    - "all cos_alpha(dsa, dsa) > -0.95"
     - "all cos_alpha(mu, mu) > -0.95"
