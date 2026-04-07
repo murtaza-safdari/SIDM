@@ -98161,13 +98161,6 @@ llpNanoAOD_v2:
       path: Run2018D_15Feb2022_UL2018_Block_327a81b6/
       skim_factor: 0.4542247461710549
       year: '2018'
-
-
-
-# 2018D
-llpNanoAOD_v2:
-  path: root://xcache//store/group/lpcmetx/SIDM/Data/2018data/Skims/
-  samples:
     DoubleMuon_2018C:
       files:
       - skimmed_output_1.root
