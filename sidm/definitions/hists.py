@@ -432,6 +432,7 @@ hist_defs = {
     "muon_n": obj_attr("muons", "n"),
     "muon_pt":obj_attr("muons", "pt", xmax=500),
     "muon_dxy":obj_attr("muons", "dxy"),
+    "muon_dz":obj_attr("muons", "dz"),
     "muon_dxy_XXXXLowRange": obj_attr("muons", "dxy", xmax=0.01),
     "muon_dxy_XXXLowRange": obj_attr("muons", "dxy", xmax=0.1),
     "muon_dxy_XXLowRange": obj_attr("muons", "dxy", xmax=0.2),
