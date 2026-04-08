@@ -63,6 +63,7 @@ muon_base: &muon_base
   - "muon_n"
   - "muon_pt"
   - "muon_dxy"
+  - "muon_dz"
   - "muon_eta_phi"
   - "muon_absD0"
   - "muon_absD0_lowRange"
