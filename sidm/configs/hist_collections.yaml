@@ -177,6 +177,7 @@ mu_lj_base: &mu_lj_base
   - "mu_lj_pfMu_trkNumPixelHits"
   - "mu_lj_pfMu_trkNumTrkLayers"
   - "mu_lj_muon_eta_phi"
+  - "mu_lj_dsaMuon_dz"
 
 egm_lj_base: &egm_lj_base
   - "egm_lj_n"
