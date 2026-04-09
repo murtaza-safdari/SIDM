@@ -130,6 +130,8 @@ baseNoLj: &baseNoLj
     <<: *obj_ljsource_cuts
   evt_cuts: &evt_baseNoLj
     - *evt_baseNoLjNoljsource
+    - ">=2 LJs"
+    - "dPhi(LJ_0, LJ_1) > 2"
 
 baseNoLj_noTrigger: &baseNoLj_noTrigger
   obj_cuts:

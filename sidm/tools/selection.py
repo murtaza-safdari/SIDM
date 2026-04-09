@@ -24,23 +24,23 @@ class Selection:
 
     def apply_evt_cuts(self, objs):
         """Evaluate all event cuts and apply results to object collections"""
-
-        # evaluate all selected cuts
+        # fixme: current sequential approach breaks cutflows
+        sel_objs = objs.copy()
         for cut in self.evt_cuts:
             if self.verbose:
                 print("Applying cut:", cut)
             try:
-                self.all_evt_cuts.add(cut, evt_cut_defs[cut](objs))
+                mask = evt_cut_defs[cut](sel_objs)
             except Exception as e:
                 print(f"Warning: Unable to evaluate {cut} Skipping.",e)
 
-        # apply event cuts to object collections
-        sel_objs = {}
-        for name, obj in objs.items():
-            try:
-                sel_objs[name] = obj[self.all_evt_cuts.all(*self.evt_cuts)]
-            except:
-                print(f"Warning: Unable to apply event cuts to {name}. Skipping.")
+            # apply to all object collections
+            for name, obj in sel_objs.items():
+                try:
+                    sel_objs[name] = obj[mask]
+                except:
+                    print(f"Warning: Unable to apply event cuts to {name}. Skipping.")
+
         return sel_objs
 
 

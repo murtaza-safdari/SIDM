@@ -102,8 +102,14 @@ class SidmProcessor(processor.ProcessorABC):
         # define histograms
         hists = self.build_histograms()
 
-        ### define pre-lj object, lj, post-lj obj, and event cuts per channel
+        # define pre-lj object, lj, post-lj obj, and event cuts per channel
         ch_cuts = self.build_cuts()
+
+        # define event weights
+        if not is_data:
+            evt_weights = self.obj_defs["weight"](events)
+        else:
+            evt_weights = ak.broadcast_arrays(1.0, self.obj_defs["met"](events))[0]
 
         # loop through lj reco choices and channels, treating each lj+channel pair as a unique Selection
         for channel, cuts in ch_cuts.items():
@@ -137,28 +143,24 @@ class SidmProcessor(processor.ProcessorABC):
                 # apply post-lj obj selection
                 postLj_selection = selection.JaggedSelection(cuts["postLj_obj"], self.verbose)
                 sel_objs = postLj_selection.apply_obj_cuts(sel_objs)
-
+ 
                 # build Selection objects and apply event selection
+                sel_objs["evt_weights"] = evt_weights
                 evt_selection = selection.Selection(cuts["evt"], self.verbose)
                 sel_objs = evt_selection.apply_evt_cuts(sel_objs)
 
                 # fill all hists
-                sel_objs["ch"] = channel
-                sel_objs["lj_reco"] = lj_reco
 
-                # define event weights
-                if not is_data:
-                    evt_weights = self.obj_defs["weight"](events)
-                else:
-                    evt_weights = ak.broadcast_arrays(1.0, self.obj_defs["met"](events))[0]
-
+                # fixme: disable cutflows due to sequential event cut implementation
                 # make cutflow
-                if lj_reco not in cutflows:
-                    cutflows[str(lj_reco)] = {}
-                cutflows[str(lj_reco)][channel] = cutflow.Cutflow(evt_selection.all_evt_cuts, evt_selection.evt_cuts, evt_weights)
+                #if lj_reco not in cutflows:
+                #    cutflows[str(lj_reco)] = {}
+                #cutflows[str(lj_reco)][channel] = cutflow.Cutflow(evt_selection.all_evt_cuts, evt_selection.evt_cuts, evt_weights)
 
                 # fill histograms for this channel+lj_reco pair
-                hist_weights = evt_weights[evt_selection.all_evt_cuts.all(*evt_selection.evt_cuts)]
+                sel_objs["ch"] = channel
+                sel_objs["lj_reco"] = lj_reco
+                hist_weights = sel_objs["evt_weights"]
                 if self.unweighted_hist:
                     hist_weights =  ak.ones_like(hist_weights)
                 for h in hists.values():
@@ -176,8 +178,9 @@ class SidmProcessor(processor.ProcessorABC):
                         print(f"Warning: cannot fill counter {name}. Skipping.")
 
         # lose lj_reco dimension to cutflows if only one reco was run
-        if len(self.lj_reco_choices) == 1:
-            cutflows = cutflows[self.lj_reco_choices[0]]
+        # fixme: disable cutflows due to sequential event cut implemention
+        #if len(self.lj_reco_choices) == 1:
+        #    cutflows = cutflows[self.lj_reco_choices[0]]
 
         out = {
             "cutflow": cutflows,
@@ -394,8 +397,8 @@ class SidmProcessor(processor.ProcessorABC):
             year = output["metadata"]["year"].pop()
             sum_weights = output["metadata"]["scaled_sum_weights"]
             lumixs_weight = utilities.get_lumixs_weight(sample, year, sum_weights)
-            for name in output["cutflow"]:
-                accumulator[sample]["cutflow"][name].scale(lumixs_weight)
+            #for name in output["cutflow"]:
+            #    accumulator[sample]["cutflow"][name].scale(lumixs_weight)
             if not self.unweighted_hist:
                 for name in output["hists"]:
                     accumulator[sample]["hists"][name] *= lumixs_weight
