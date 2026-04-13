@@ -439,6 +439,7 @@ genMu_base: &genMu_base
   - "genMu_matched_lj_muon_dxy"
   - "genMu_matched_lj_muon_dxy_lowRange"
   - "genMu_matched_lj_muon_dxy_XLowRange"
+  - "genMu_vz"
 
 genA_base: &genA_base
   - "genAs_n"
