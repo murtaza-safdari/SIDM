@@ -3009,6 +3009,7 @@ hist_defs = {
     "genMu_pt": obj_attr("genMus", "pt"),
     "genMu_pt_highRange": obj_attr("genMus", "pt", xmax=700),
     "genMu_dxy": obj_attr("genMus", "dxy", absval=True, xmax=10, nbins=100),
+    "genMu_vz": obj_attr("genMus", "vz", absval=True, xmax=100, nbins=100),
     "genMu_dxy_lowRange": obj_attr("genMus", "dxy", absval=True, xmax=1, nbins=100),
     "genMu_dxy_XLowRange": obj_attr("genMus", "dxy", absval=True, xmax=0.1, nbins=100),
     "genMu_dxy_XXLowRange": obj_attr("genMus", "dxy", absval=True, xmax=0.01, nbins=100),
