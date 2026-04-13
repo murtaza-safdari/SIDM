@@ -648,12 +648,7 @@ hist_defs = {
     "dsaMuon_n": obj_attr("dsaMuons", "n"),
     "dsaMuon_pt":obj_attr("dsaMuons", "pt", xmax=500),
     "dsaMuon_dxy":obj_attr("dsaMuons", "dxy"),
-    "dsaMuon_dz": h.Histogram(
-        [
-            h.Axis(hist.axis.Regular(100, 0, 80, name=r"DSA Muon dz (cm)"),
-                   lambda objs, mask: abs(objs["dsaMuons"].dz)),
-        ],
-    ),
+    "dsaMuon_dz":obj_attr("dsaMuons", "dz", xmax =300, nbins=300),
     "dsaMuon_eta_phi": obj_eta_phi("dsaMuons"),
     "dsaMuon_absD0": obj_attr("dsaMuons", "dxy", absval=True, xmax=500),
     "dsaMuon_absD0_lowRange": obj_attr("dsaMuons", "dxy", absval=True, xmax=10),
