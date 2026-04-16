@@ -1,11 +1,12 @@
 """Module to define the Selection and JaggedSelection classes"""
 
 # columnar analysis
+import awkward as ak
 from coffea.analysis_tools import PackedSelection
 # local
 from sidm.definitions.cuts import evt_cut_defs, obj_cut_defs
+from sidm.tools.cutflow import SimpleCutflow
 import traceback
-
 
 class Selection:
     """Class to represent the collection of cuts that define a Selection
@@ -19,12 +20,15 @@ class Selection:
 
     def __init__(self, cuts, verbose=False):
         self.evt_cuts = cuts # list of names of cuts to be applied
-        self.all_evt_cuts = PackedSelection() # will be filled later when cuts are evaluated
+        self.cutflow = SimpleCutflow() # will be filled later when cuts are evaluated
         self.verbose = verbose
 
     def apply_evt_cuts(self, objs):
         """Evaluate all event cuts and apply results to object collections"""
         # fixme: current sequential approach breaks cutflows
+        print(self.cutflow)
+        self.cutflow.add_row("None", ak.count(objs["evt_weights"]), ak.sum(objs["evt_weights"]))
+        print(self.cutflow)
         sel_objs = objs.copy()
         for cut in self.evt_cuts:
             if self.verbose:
@@ -36,10 +40,12 @@ class Selection:
 
             # apply to all object collections
             for name, obj in sel_objs.items():
-                try:
-                    sel_objs[name] = obj[mask]
-                except:
-                    print(f"Warning: Unable to apply event cuts to {name}. Skipping.")
+                #try:
+                sel_objs[name] = obj[mask]
+                if name == "evt_weights":
+                    self.cutflow.add_row(cut, ak.count(sel_objs[name]), ak.sum(sel_objs[name]))
+                #except:
+                #    print(f"Warning: Unable to apply event cuts to {name}. Skipping.")
 
         return sel_objs
 

@@ -152,10 +152,10 @@ class SidmProcessor(processor.ProcessorABC):
                 # fill all hists
 
                 # fixme: disable cutflows due to sequential event cut implementation
-                # make cutflow
-                #if lj_reco not in cutflows:
-                #    cutflows[str(lj_reco)] = {}
-                #cutflows[str(lj_reco)][channel] = cutflow.Cutflow(evt_selection.all_evt_cuts, evt_selection.evt_cuts, evt_weights)
+                # store cutflow in separate dict
+                if lj_reco not in cutflows:
+                    cutflows[str(lj_reco)] = {}
+                cutflows[str(lj_reco)][channel] = evt_selection.cutflow
 
                 # fill histograms for this channel+lj_reco pair
                 sel_objs["ch"] = channel
@@ -179,8 +179,8 @@ class SidmProcessor(processor.ProcessorABC):
 
         # lose lj_reco dimension to cutflows if only one reco was run
         # fixme: disable cutflows due to sequential event cut implemention
-        #if len(self.lj_reco_choices) == 1:
-        #    cutflows = cutflows[self.lj_reco_choices[0]]
+        if len(self.lj_reco_choices) == 1:
+            cutflows = cutflows[self.lj_reco_choices[0]]
 
         out = {
             "cutflow": cutflows,
@@ -397,8 +397,8 @@ class SidmProcessor(processor.ProcessorABC):
             year = output["metadata"]["year"].pop()
             sum_weights = output["metadata"]["scaled_sum_weights"]
             lumixs_weight = utilities.get_lumixs_weight(sample, year, sum_weights)
-            #for name in output["cutflow"]:
-            #    accumulator[sample]["cutflow"][name].scale(lumixs_weight)
+            for name in output["cutflow"]:
+                accumulator[sample]["cutflow"][name].scale(lumixs_weight)
             if not self.unweighted_hist:
                 for name in output["hists"]:
                     accumulator[sample]["hists"][name] *= lumixs_weight

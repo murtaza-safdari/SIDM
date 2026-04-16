@@ -130,8 +130,6 @@ baseNoLj: &baseNoLj
     <<: *obj_ljsource_cuts
   evt_cuts: &evt_baseNoLj
     - *evt_baseNoLjNoljsource
-    - ">=2 LJs"
-    - "dPhi(LJ_0, LJ_1) > 2"
 
 baseNoLj_noTrigger: &baseNoLj_noTrigger
   obj_cuts:
@@ -195,6 +193,7 @@ base: &base
   evt_cuts: &evt_2mu2e
     - *evt_base
     - "2mu2e"
+    - "dPhi(LJ_0, LJ_1) > 2"
 
 #selection on base_ljObjCut
 base_ljObjCut_pixelHits_as_ljSource: &base_ljObjCut_pixelHits_as_ljSource
