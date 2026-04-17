@@ -193,7 +193,6 @@ base: &base
   evt_cuts: &evt_2mu2e
     - *evt_base
     - "2mu2e"
-    - "dPhi(LJ_0, LJ_1) > 2"
 
 #selection on base_ljObjCut
 base_ljObjCut_pixelHits_as_ljSource: &base_ljObjCut_pixelHits_as_ljSource
