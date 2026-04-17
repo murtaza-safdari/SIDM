@@ -38,36 +38,25 @@ class SimpleCutflow(processor.AccumulatorABC):
         if cut in self.rows:
             raise RuntimeError(f"{cut} already in cutflow and cannot be added twice")
         self.rows[cut] = {"raw": raw, "weighted": weighted}
-    
-    def print_table(self, fraction=False, unweighted=False):
+
+    def print_table(self):
         """Print simple cutflow table to stdout"""
-        if unweighted: #fixme
-            print("unweighted argument is not implemented. Ignoring")
-        if fraction:
-            headers = [
-                "cut name",
-                "raw %",
-                "weighted %",
-            ]
-            data = []
-            for cut, vals in self.rows.items():
-                if cut == "None":
-                    total_raw = vals["raw"]
-                    total_weighted = vals["weighted"]
-                    data.append([cut, 100.0, 100.0])
-                else:
-                    data.append([
-                        cut,
-                        100*vals["raw"]/total_raw,
-                        100*vals["weighted"]/total_weighted
-                    ])
-        else:
-            headers = [
-                "cut name",
-                "raw N",
-                "weighted N",
-            ]
-            data = [[cut, v["raw"], v["weighted"]] for cut, v in self.rows.items()]
+        headers = [
+            "cut name",
+            "raw N",
+            "weighted N",
+            "weighted %",
+        ]
+        data = []
+        for cut, vals in self.rows.items():
+            if cut == "None":
+                total_weighted = vals["weighted"]
+            data.append([
+                cut,
+                vals["raw"],
+                vals["weighted"],
+                100*vals["weighted"]/total_weighted
+            ])
         print(tabulate(data, headers, floatfmt=".1f"))
 
 
