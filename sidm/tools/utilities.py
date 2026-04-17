@@ -215,17 +215,17 @@ def plot_ratio(num, den, **kwargs):
         gridspec_kw={'height_ratios': [3, 1], 'hspace': 0}
     )
     plt.sca(ax1)
-    plot(den, flow='none', color="k", skip_label=True,
-         label=kwargs["legend"][0])
+    label = kwargs["legend"][0] if "legend" in kwargs else None
+    plot(den, flow='none', color="k", skip_label=True, label=label)
 
     if not isinstance(num, list):
         num = [num]
 
     for i, x in enumerate(num):
-        plot(x, flow='none', label=kwargs["legend"][i + 1])
+        plot(x, flow='none', label=label)
 
     if "legend" in kwargs:
-        ax1.legend( title = kwargs["text"], alignment="left", )
+        ax1.legend(title = kwargs["text"], alignment="left")
 
     if "ylim" in kwargs:
         plt.ylim(kwargs["ylim"])
