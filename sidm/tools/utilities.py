@@ -95,52 +95,6 @@ def add_matched_dsamuon_mass(obj):
     obj["mass"] = ak.full_like(obj.pt, 0.105712890625)
     return obj
 
-def cos_alpha(muons):
-    # Pad to ensure at least 2 entries (avoids index errors)
-    mu_padded = ak.pad_none(muons, 2)
-
-    mu0 = mu_padded[:, 0]
-    mu1 = mu_padded[:, 1]
-
-    # Replace None with safe values
-    mu0_px = ak.fill_none(mu0.px, 0)
-    mu0_py = ak.fill_none(mu0.py, 0)
-    mu0_pz = ak.fill_none(mu0.pz, 0)
-
-    mu1_px = ak.fill_none(mu1.px, 0)
-    mu1_py = ak.fill_none(mu1.py, 0)
-    mu1_pz = ak.fill_none(mu1.pz, 0)
-
-    dot = mu0_px * mu1_px + mu0_py * mu1_py + mu0_pz * mu1_pz
-    mag0 = np.sqrt(mu0_px**2 + mu0_py**2 + mu0_pz**2)
-    mag1 = np.sqrt(mu1_px**2 + mu1_py**2 + mu1_pz**2)
-
-    # Denominator
-    den = mag0 * mag1
-
-    # Safe division (no np.divide!)
-    cosA = ak.where(den > 0, dot / den, 0)
-
-    return cosA
-
-
-def cosA_cut(muons):
-    valid = ak.num(muons) == 2
-
-    cosA = cos_alpha(muons)
-
-    return valid & (cosA > -0.95)
-def cosA_pair_cut(muons):
-    threshold = -0.95
-    pairs = ak.combinations(muons, 2, axis=1)
-    v1, v2 = ak.unzip(pairs)
-
-    cos_theta = np.cos(v1.deltaangle(v2))
-
-    count = ak.sum(cos_theta <= threshold, axis=1)
-
-    return count <= 6
-
 def cosAlpha(muons): #could work for any object
     pairs = ak.combinations(muons, 2, axis=1)
     v1, v2 = ak.unzip(pairs)
