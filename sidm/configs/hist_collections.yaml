@@ -91,6 +91,8 @@ dsaMuon_base: &dsaMuon_base
   - "dsaMu_dsaMu_dR"
   - "dsaMu_dsaMu_invmass"
   - "dsaMu_dsaMu_cosAlpha"
+  - "N_back_to_back_dsa"
+  - "N_parallel_dsa"
 
 lj_base: &lj_base
   - "lj_n"

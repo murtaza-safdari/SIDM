@@ -743,7 +743,20 @@ hist_defs = {
                    lambda objs, mask: cosAlpha(objs["muons"])),
         ],
     ),
-
+    "N_back_to_back_dsa": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_dsa",
+                                     label=r"N cos (DSA $\mu$, DSA $\mu$) <= -0.95 "),
+                   lambda objs, mask: ak.sum(cosAlpha(objs["dsaMuons"]) <= -0.95, axis =1)),
+        ],
+    ),
+    "N_parallel_dsa": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(10, 0, 10, name="N_parallel_dsa",
+                                     label=r"N cos (DSA $\mu$, DSA $\mu$) >= 0.95 "),
+                   lambda objs, mask: ak.sum(cosAlpha(objs["dsaMuons"]) >= 0.95, axis =1)),
+        ],
+    ),
     # lj
     "lj_n": obj_attr("ljs", "n"),
     "lj_iso": obj_attr("ljs", "isolation", nbins=50, xmax=2),
