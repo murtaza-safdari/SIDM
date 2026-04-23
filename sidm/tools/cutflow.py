@@ -16,7 +16,7 @@ class SimpleCutflow(processor.AccumulatorABC):
     def identity(self):
         """Create additive identity Cutflow to allow accumlator behavior"""
         cutflow = SimpleCutflow()
-        for cut, _ in self.rows:
+        for cut in self.rows:
             cutflow.add_row(cut, 0, 0.0)
         return cutflow
 
