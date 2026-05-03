@@ -270,6 +270,7 @@ evt_cut_defs = {
     "PV filter": lambda objs: ak.flatten(objs["pvs"].npvsGood) >= 1,
     #"Cosmic veto": lambda objs: objs["cosmicveto"].result,
     ">=2 LJs": lambda objs: ak.num(objs["ljs"]) >= 2,
+    ">=1 LJs": lambda objs: ak.num(objs["ljs"]) >= 1,
     "< 2 LJs": lambda objs: ak.num(objs["ljs"]) < 2,
     ">=1 egm_ljs": lambda objs: ak.num(objs["egm_ljs"]) >= 1,
     ">=1 mu_ljs": lambda objs: ak.num(objs["mu_ljs"]) >= 1,
