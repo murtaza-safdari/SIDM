@@ -750,11 +750,25 @@ hist_defs = {
                    lambda objs, mask: ak.sum(cosAlpha(objs["dsaMuons"]) <= -0.95, axis =1)),
         ],
     ),
+    "N_back_to_back_pf": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_pf",
+                                     label=r"N cos (PF $\mu$, PF $\mu$) <= -0.95 "),
+                   lambda objs, mask: ak.sum(cosAlpha(objs["muons"]) <= -0.95, axis =1)),
+        ],
+    ),
     "N_parallel_dsa": h.Histogram(
         [
             h.Axis(hist.axis.Regular(10, 0, 10, name="N_parallel_dsa",
                                      label=r"N cos (DSA $\mu$, DSA $\mu$) >= 0.95 "),
                    lambda objs, mask: ak.sum(cosAlpha(objs["dsaMuons"]) >= 0.95, axis =1)),
+        ],
+    ),
+    "N_parallel_pf": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_pf",
+                                     label=r"N cos (PF $\mu$, PF $\mu$) >= 0.95 "),
+                   lambda objs, mask: ak.sum(cosAlpha(objs["muons"]) >= 0.95, axis =1)),
         ],
     ),
     # lj
