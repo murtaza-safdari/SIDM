@@ -77,6 +77,8 @@ muon_base: &muon_base
   - "muon_muon_invmass"
   - "muon_muon_invmass_highRange"
   - "muon_muon_cosAlpha"
+  - "N_back_to_back_pf"
+  - "N_parallel_pf"
 
 dsaMuon_base: &dsaMuon_base
   - "dsaMuon_n"
