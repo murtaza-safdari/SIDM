@@ -297,11 +297,11 @@ baseNoLj_egLj: &baseNoLj_egLj
     - *evt_baseNoLj
     - ">=2 LJs"
 base_data: &base_data
-  obj_cuts: &obj_base
+  obj_cuts:
     <<: *obj_baseNoLj
   postLj_obj_cuts:
     <<: *base_postLj_obj_cuts
-  evt_cuts: &evt_base
+  evt_cuts: 
     - *evt_baseNoLj
     - "< 2 LJs"
 #selection on base_ljObjCut
