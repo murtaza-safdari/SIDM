@@ -400,6 +400,7 @@ base_ljObjCut_ljIso_1lj: &base_ljObjCut_ljIso_1lj
     ljs:
       - *lj_base
     mu_ljs:
+      - *mu_lj_base
       - "mu_lj_iso < 0.1"
     egm_ljs:
       - "egm_lj_iso < 0.2"
