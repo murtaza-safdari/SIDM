@@ -13,7 +13,7 @@ import hist
 import awkward as ak
 # local
 from sidm.tools import histogram as h
-from sidm.tools.utilities import dR, lxy, lxyz, lxyz_proper, betagamma, matched, dxy, lepton_dxy_resolution, cosAlpha
+from sidm.tools.utilities import dR, lxy, lxyz, lxyz_proper, betagamma, matched, dxy, lepton_dxy_resolution, cosAlpha, get_pairs
 from sidm.definitions.objects import derived_objs
 # always reload local modules to pick up changes during development
 importlib.reload(h)
@@ -797,6 +797,62 @@ hist_defs = {
             h.Axis(hist.axis.Regular(10, 0, 10, name="N_parallel_mu_lj_pf",
                                      label=r"N cos ($\mu$ LJ PF $\mu$,$\mu$ LJ PF $\mu$) >= 0.95 "),
                    lambda objs, mask: ak.sum(cosAlpha(objs["mu_ljs"].pfMuons) >= 0.95, axis =1)),
+        ],
+    ),
+    "dsa_pair_vx_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_vx_diff",
+                                     label=r" abs(DSA $\mu$1 Vx - , DSA $\mu$1 Vx ) "),
+                   lambda objs, mask: (lambda pair: abs(pair[0].vx - pair[1].vx))(get_pairs(objs["dsaMuons"]))),
+        ],
+    ),
+    "dsa_pair_vy_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_vx_diff",
+                                     label=r" abs(DSA $\mu$1 Vy - , DSA $\mu$1 Vy ) "),
+                   lambda objs, mask: (lambda pair: abs(pair[0].vy - pair[1].vy))(get_pairs(objs["dsaMuons"]))),
+        ],
+    ),
+    "dsa_pair_vz_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_vx_diff",
+                                     label=r" abs(DSA $\mu$1 Vz - , DSA $\mu$1 Vz ) "),
+                   lambda objs, mask: (lambda pair: abs(pair[0].vz - pair[1].vz))(get_pairs(objs["dsaMuons"]))),
+        ],
+    ),
+    "dsa_pair_dxy_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_dxy_diff",
+                                     label=r" abs(DSA $\mu$1 $d_{xy}$ - , DSA $\mu$1 $d_{xy}$ ) "),
+                   lambda objs, mask: (lambda pair: abs(pair[0].dxy - pair[1].dxy))(get_pairs(objs["dsaMuons"]))),
+        ],
+    ),
+    "dsa_pair_dz_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_dz_diff",
+                                     label=r" abs(DSA $\mu$1 $d_z$ - , DSA $\mu$1 $d_z$ ) "),
+                   lambda objs, mask: (lambda pair: abs(pair[0].dz - pair[1].dz))(get_pairs(objs["dsaMuons"]))),
+        ],
+    ),
+    "dsa_pair_eta_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 6, name="dsa_pair_eta_diff",
+                                     label=r" abs(DSA $\mu$1 $\eta$ - , DSA $\mu$1 $\eta$ ) "),
+                   lambda objs, mask: (lambda pair: abs(pair[0].eta - pair[1].eta))(get_pairs(objs["dsaMuons"]))),
+        ],
+    ),
+    "dsa_pair_phi_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 6, name="dsa_pair_phi_diff",
+                                     label=r" abs(DSA $\mu$1 $\phi$ - , DSA $\mu$1 $\phi$ ) "),
+                   lambda objs, mask: (lambda pair: abs(pair[0].phi - pair[1].phi))(get_pairs(objs["dsaMuons"]))),
+        ],
+    ),
+    "dsa_pair_charge_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(5, 0, 5, name="dsa_pair_charge_diff",
+                                     label=r" abs(DSA $\mu$1 charge - , DSA $\mu$1 charge ) "),
+                   lambda objs, mask: (lambda pair: abs(pair[0].charge - pair[1].charge))(get_pairs(objs["dsaMuons"]))),
         ],
     ),
     # lj

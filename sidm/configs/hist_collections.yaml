@@ -95,6 +95,14 @@ dsaMuon_base: &dsaMuon_base
   - "dsaMu_dsaMu_cosAlpha"
   - "N_back_to_back_dsa"
   - "N_parallel_dsa"
+  - "dsa_pair_vx_diff"
+  - "dsa_pair_vy_diff"
+  - "dsa_pair_vz_diff"
+  - "dsa_pair_dxy_diff"
+  - "dsa_pair_dz_diff"
+  - "dsa_pair_eta_diff"
+  - "dsa_pair_phi_diff"
+  - "dsa_pair_charge_diff"
 
 lj_base: &lj_base
   - "lj_n"
