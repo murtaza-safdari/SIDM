@@ -100,6 +100,11 @@ def cosAlpha(muons): #could work for any object
     v1, v2 = ak.unzip(pairs)
     cos_alpha = np.cos(v1.deltaangle(v2))
     return (cos_alpha)
+
+def get_pairs(obj):
+    pairs = pairs = ak.combinations(obj, 2, axis=1)
+    v1, v2 = ak.unzip(pairs)
+    return (v1, v2)
     
 def lj_combination_dR(obj):
     pair = ak.combinations(obj, 2, axis=1, fields=["lj1", "lj2"])
