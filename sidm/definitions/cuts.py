@@ -2,6 +2,7 @@
 
 # columnar analysis
 import awkward as ak
+import numpy as np
 # local
 from sidm.definitions.objects import derived_objs
 from sidm.tools.utilities import dR, lxy, rho, check_bits, returnBitMapTArrayPhoton, dR_outer, cosAlpha
@@ -239,6 +240,10 @@ obj_cut_defs = {
         ),
         "all + charge": lambda objs, dsa: ak.all((dsa.good_matched_muons.numMatch < 1) | (dsa.charge[:,:,None] != dsa.good_matched_muons.charge) | (dR_outer(dsa[:,:,None], dsa.good_matched_muons) > 0.1) | (dsa.good_matched_muons.numMatch/(dsa.nSegments[:,:,None]) < 0.34), axis=2),
     },
+    "dsaMuonPairs":{
+        "back_to_back_pairs": lambda objs: (lambda v1, v2: np.cos(v1.deltaangle(v2)) <= -0.95)
+                                         (*ak.unzip(objs["dsaMuonPairs"]))
+    }
 }
 
 evt_cut_defs = {

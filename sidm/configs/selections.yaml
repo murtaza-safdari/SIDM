@@ -2047,6 +2047,20 @@ data_control_region_1Lj_cosmic_dsa: &data_control_region_1Lj_cosmic_dsa
     - "n_dsa >= 2"
     - "any cos_alpha(dsa, dsa) <= -0.95"
 
+data_control_region_1Lj_back_to_back_dsa: &data_control_region_1Lj_back_to_back_dsa
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+    dsaMuonPairs:
+      - "back_to_back_pairs"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 LJs"
+    - "n_dsa >= 2"
+
 data_control_region_1Lj_cosmic_dsa_6_pairs: &data_control_region_1Lj_cosmic_dsa_6_pairs
   obj_cuts:
     <<: *obj_ljsource_cuts
