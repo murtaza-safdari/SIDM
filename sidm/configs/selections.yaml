@@ -2062,6 +2062,21 @@ data_control_region_1Lj_back_to_back_dsa: &data_control_region_1Lj_back_to_back_
     - "pass flags"
     - "= 1 LJs"
 
+data_control_region_1Lj_parallel_dsa: &data_control_region_1Lj_parallel_dsa
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+    mu_ljs:
+      - "Mu >= 2"
+    dsaMuonPairs:
+      - "parallel_pairs"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 LJs"
+
 data_control_region_1Lj_cosmic_dsa_6_pairs: &data_control_region_1Lj_cosmic_dsa_6_pairs
   obj_cuts:
     <<: *obj_ljsource_cuts

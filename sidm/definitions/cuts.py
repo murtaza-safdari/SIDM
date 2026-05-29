@@ -242,7 +242,9 @@ obj_cut_defs = {
     },
     "dsaMuonPairs":{
         "back_to_back_pairs": lambda objs: (lambda v1, v2: np.cos(v1.deltaangle(v2)) <= -0.95)
-                                         (*ak.unzip(objs["dsaMuonPairs"]))
+                                         (*ak.unzip(objs["dsaMuonPairs"])),
+        "parallel_pairs": lambda objs: (lambda v1, v2: np.cos(v1.deltaangle(v2)) >= 0.95)
+                                         (*ak.unzip(objs["dsaMuonPairs"])),
     }
 }
 
