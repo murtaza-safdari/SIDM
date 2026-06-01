@@ -749,56 +749,28 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_dsa",
                                      label=r"N cos (DSA $\mu$, DSA $\mu$) <= -0.95 "),
-                   lambda objs, mask: ak.sum(cosAlpha(objs["dsaMuons"]) <= -0.95, axis =1)),
-        ],
-    ),
-    "N_back_to_back_mu_lj_dsa": h.Histogram(
-        [
-            h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_mu_lj_dsa",
-                                     label=r"N cos ($\mu$ LJ DSA $\mu$,$\mu$ LJ DSA $\mu$) <= -0.95 "),
-                   lambda objs, mask: ak.sum(cosAlpha(objs["mu_ljs"].dsaMuons) <= -0.95, axis =1)),
-        ],
-    ),
-    "N_back_to_back_mu_lj_pf": h.Histogram(
-        [
-            h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_mu_lj_pf",
-                                     label=r"N cos ($\mu$ LJ PF $\mu$,$\mu$ LJ PF $\mu$) <= -0.95 "),
-                   lambda objs, mask: ak.sum(cosAlpha(objs["mu_ljs"].pfMuons) <= -0.95, axis =1)),
-        ],
-    ),
-    "N_back_to_back_pf": h.Histogram(
-        [
-            h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_pf",
-                                     label=r"N cos (PF $\mu$, PF $\mu$) <= -0.95 "),
-                   lambda objs, mask: ak.sum(cosAlpha(objs["muons"]) <= -0.95, axis =1)),
+                   lambda objs, mask: (lambda v1, v2: ak.sum(np.cos(v1.deltaangle(v2)) <= -0.95, axis=1))
+                                  (*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "N_parallel_dsa": h.Histogram(
         [
             h.Axis(hist.axis.Regular(10, 0, 10, name="N_parallel_dsa",
                                      label=r"N cos (DSA $\mu$, DSA $\mu$) >= 0.95 "),
-                   lambda objs, mask: ak.sum(cosAlpha(objs["dsaMuons"]) >= 0.95, axis =1)),
+                   lambda objs, mask: (lambda v1, v2: ak.sum(np.cos(v1.deltaangle(v2)) >= 0.95, axis=1))
+                                  (*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
-    "N_parallel_pf": h.Histogram(
+    "N_back_to_back_N_parellel_dsa": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_pf",
-                                     label=r"N cos (PF $\mu$, PF $\mu$) >= 0.95 "),
-                   lambda objs, mask: ak.sum(cosAlpha(objs["muons"]) >= 0.95, axis =1)),
-        ],
-    ),
-    "N_parallel_mu_lj_dsa": h.Histogram(
-        [
-            h.Axis(hist.axis.Regular(10, 0, 10, name="N_parallel_mu_lj_dsa",
-                                     label=r"N cos ($\mu$ LJ DSA $\mu$,$\mu$ LJ DSA $\mu$) >= 0.95 "),
-                   lambda objs, mask: ak.sum(cosAlpha(objs["mu_ljs"].dsaMuons) >= 0.95, axis =1)),
-        ],
-    ),
-    "N_parallel_mu_lj_pf": h.Histogram(
-        [
-            h.Axis(hist.axis.Regular(10, 0, 10, name="N_parallel_mu_lj_pf",
-                                     label=r"N cos ($\mu$ LJ PF $\mu$,$\mu$ LJ PF $\mu$) >= 0.95 "),
-                   lambda objs, mask: ak.sum(cosAlpha(objs["mu_ljs"].pfMuons) >= 0.95, axis =1)),
+            h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_dsa",
+                                     label=r"N cos (DSA $\mu$, DSA $\mu$) <= -0.95 "),
+                   lambda objs, mask: (lambda v1, v2: ak.sum(np.cos(v1.deltaangle(v2)) <= -0.95, axis=1))
+                                  (*ak.unzip(objs["dsaMuonPairs"]))),
+            h.Axis(hist.axis.Regular(10, 0, 10, name="N_parallel_dsa",
+                                     label=r"N cos (DSA $\mu$, DSA $\mu$) >= 0.95 "),
+                   lambda objs, mask: (lambda v1, v2: ak.sum(np.cos(v1.deltaangle(v2)) >= 0.95, axis=1))
+                                  (*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "dsa_pair_vx_diff": h.Histogram(
