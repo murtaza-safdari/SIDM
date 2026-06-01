@@ -77,8 +77,6 @@ muon_base: &muon_base
   - "muon_muon_invmass"
   - "muon_muon_invmass_highRange"
   - "muon_muon_cosAlpha"
-  - "N_back_to_back_pf"
-  - "N_parallel_pf"
 
 dsaMuon_base: &dsaMuon_base
   - "dsaMuon_n"
@@ -103,6 +101,7 @@ dsaMuon_base: &dsaMuon_base
   - "dsa_pair_eta_diff"
   - "dsa_pair_phi_diff"
   - "dsa_pair_charge_diff"
+  - "N_back_to_back_N_parellel_dsa"
 
 lj_base: &lj_base
   - "lj_n"
