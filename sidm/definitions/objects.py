@@ -1,6 +1,7 @@
 """Define all commonly used objects"""
 
 import awkward as ak
+import numpy as np
 from sidm.tools.utilities import matched, get_pairs
 
 # define helper functions
@@ -97,6 +98,8 @@ derived_objs["genAs_toMu_matched_muLj"] = lambda objs, r: matched(objs["genAs_to
 derived_objs["genAs_matched_egmLj"]     = lambda objs, r: matched(objs["genAs"], objs["egm_ljs"], r)
 derived_objs["genAs_toE_matched_egmLj"] = lambda objs, r: matched(objs["genAs_toE"], objs["egm_ljs"], r)
 derived_objs["mu_lj_matched_genAs_toMu"]   = lambda objs, r: matched(objs["mu_ljs"], objs["genAs_toMu"], r)
+derived_objs["back_to_back_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= -0.95])(objs["dsaMuonPairs"],*ak.unzip(objs["dsaMuonPairs"]))
+derived_objs["parallel_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= 0.95])(objs["dsaMuonPairs"],*ak.unzip(objs["dsaMuonPairs"]))
 # Gen-level objects that depend on PIDs not present in all samples (signal-only).
 # Defined as derived_objs so they're only evaluated when explicitly referenced by a histogram or cut.
 # Derive from objs["gens"] (uncut) rather than objs["genMus"]/objs["genEs"] (which are channel-filtered
