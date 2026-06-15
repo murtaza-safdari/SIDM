@@ -977,7 +977,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(5, 0, 5, name="back to back dsa_pair_charge_diff",
                                      label=r" back to back abs(DSA $\mu$1 $\phi$ - , DSA $\mu$1 $\phi$ ) "),
-                  lambda objs, mask: (lambda v1, v2: abs(v1.phi - v2.phi))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
+                  lambda objs, mask: (lambda v1, v2: abs(v1.charge - v2.charge))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_charge_diff": h.Histogram(
