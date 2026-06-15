@@ -788,7 +788,7 @@ hist_defs = {
             h.Axis(hist.axis.Regular(100, -1, 1, name="muon_muon_cosalpha",
                                      label=r"CosAlpha($\mu$, $\mu$)"),
                    lambda objs, mask: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
-                                         (*ak.unzip(objs["muons"]))),
+                                         (*ak.unzip(objs["muonPairs"]))),
         ],
     ),
     "N_back_to_back_dsa": h.Histogram(
