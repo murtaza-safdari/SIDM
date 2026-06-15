@@ -1745,35 +1745,6 @@ data_control_region_1Lj: &data_control_region_1Lj
     - "pass flags"
     - "= 1 LJs"
 
-data_control_region_1Lj_1BackToBackDSA: &data_control_region_1Lj_1BackToBackDSA
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
-    mu_ljs:
-      - "Mu >= 2"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "1 back_to_back_dsa"
-
-data_control_region_1Lj_2BackToBackDSA: &data_control_region_1Lj_2BackToBackDSA
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
-    mu_ljs:
-      - "Mu >= 2"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "2 back_to_back_dsa"
 
 data_control_region_1Lj_cosmic_veto: &data_control_region_1Lj_cosmic_veto
   obj_cuts:
@@ -2089,6 +2060,34 @@ data_control_region_1Lj_cosmic_veto_combination: &data_control_region_1Lj_cosmic
     - "cosmic_mu_pair <= 6"
     - "cosmic_dsaMu_pair <= 6"
 
+data_control_region_1Lj_cosmic_dsa_6_pairs: &data_control_region_1Lj_cosmic_dsa_6_pairs
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 LJs"
+    - "n_dsa >= 2"
+    - "n_pairs cos_alpha(dsa, dsa) <= -0.95 >= 6"
+
+data_control_region_1Lj_cosmic_veto_dsa_pf: &data_control_region_1Lj_cosmic_veto_dsa_pf
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 LJs"
+    - "n_dsa >= 2"
+    - "all cos_alpha(dsa, dsa) > -0.95"
+    - "all cos_alpha(mu, mu) > -0.95"
+
+
 data_control_region_1Lj_cosmic_veto_dsa: &data_control_region_1Lj_cosmic_veto_dsa
   obj_cuts:
     <<: *obj_ljsource_cuts
@@ -2145,29 +2144,33 @@ data_control_region_1Lj_parallel_dsa: &data_control_region_1Lj_parallel_dsa
     - "pass flags"
     - "= 1 LJs"
 
-data_control_region_1Lj_cosmic_dsa_6_pairs: &data_control_region_1Lj_cosmic_dsa_6_pairs
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "n_dsa >= 2"
-    - "n_pairs cos_alpha(dsa, dsa) <= -0.95 >= 6"
 
-data_control_region_1Lj_cosmic_veto_dsa_pf: &data_control_region_1Lj_cosmic_veto_dsa_pf
+data_control_region_1Lj_1BackToBackDSA: &data_control_region_1Lj_1BackToBackDSA
   obj_cuts:
     <<: *obj_ljsource_cuts
   postLj_obj_cuts:
     ljs:
-      - *lj_base
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"
     - "= 1 LJs"
-    - "n_dsa >= 2"
-    - "all cos_alpha(dsa, dsa) > -0.95"
-    - "all cos_alpha(mu, mu) > -0.95"
+    - "1 back_to_back_dsa"
+
+data_control_region_1Lj_2BackToBackDSA: &data_control_region_1Lj_2BackToBackDSA
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 LJs"
+    - "2 back_to_back_dsa"
