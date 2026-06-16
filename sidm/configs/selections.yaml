@@ -2106,7 +2106,6 @@ data_control_region_1Lj_parallel_dsa: &data_control_region_1Lj_parallel_dsa
     - "pass flags"
     - "= 1 LJs"
 
-
 data_control_region_1Lj_1BackToBackDSA: &data_control_region_1Lj_1BackToBackDSA
   obj_cuts:
     <<: *obj_ljsource_cuts
