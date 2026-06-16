@@ -91,6 +91,7 @@ dsaMuon_base: &dsaMuon_base
   - "dsaMu_dsaMu_dR"
   - "dsaMu_dsaMu_invmass"
   - "dsaMu_dsaMu_cosAlpha"
+  - "N_dsa_pairs"
   - "N_back_to_back_dsa"
   - "N_parallel_dsa"
   - "dsa_pair_vx_diff"
