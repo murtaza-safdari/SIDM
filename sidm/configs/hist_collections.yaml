@@ -119,6 +119,12 @@ dsaMuon_base: &dsaMuon_base
   - "parallel_dsa_pair_phi_diff"
   - "back_to_back_dsa_pair_charge_diff"
   - "parallel_dsa_pair_charge_diff"
+  - "dsa_pair_3d_distance"
+  - "back_to_back_dsa_pair_3d_distance"
+  - "parallel_dsa_pair_3d_distance"
+  - "dsa_pair_xz_distance"
+  - "back_to_back_dsa_pair_xz_distance"
+  - "parallel_dsa_pair_xz_distance"
 
 lj_base: &lj_base
   - "lj_n"

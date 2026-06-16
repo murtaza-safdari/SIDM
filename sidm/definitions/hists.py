@@ -824,6 +824,57 @@ hist_defs = {
                                   (*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
+    "dsa_pair_3d_distance": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 200, name="dsa_pair_3d_distance",
+                                     label=r" DSA-DSA 3D Distance "),
+                  lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +
+                                                                        (v1.vy - v2.vy)**2 +(v1.vz - v2.vz)**2))
+                                                        (*ak.unzip(objs["dsaMuonPairs"])))
+        ],
+    ),
+    "back_to_back_dsa_pair_3d_distance": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 200, name="back_to_back_dsa_pair_3d_distance",
+                                     label=r"back to back DSA-DSA 3D Distance "),
+                  lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +
+                                                                        (v1.vy - v2.vy)**2 +(v1.vz - v2.vz)**2))
+                                                        (*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs))))
+        ],
+    ),
+    "parallel_dsa_pair_3d_distance": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 200, name="back_to_back_dsa_pair_3d_distance",
+                                     label=r"back to back DSA-DSA 3D Distance "),
+                  lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +
+                                                                        (v1.vy - v2.vy)**2 +(v1.vz - v2.vz)**2))
+                                                        (*ak.unzip(derived_objs["parallel_dsa_pairs"](objs))))
+        ],
+    ),
+    "dsa_pair_xz_distance": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 200, name="dsa_pair_xz_distance",
+                                     label=r" DSA-DSA 3D Distance "),
+                  lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +(v1.vz - v2.vz)**2))
+                                                        (*ak.unzip(objs["dsaMuonPairs"])))
+        ],
+    ),
+    "back_to_back_dsa_pair_xz_distance": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 200, name="back_to_back_dsa_pair_xz_distance",
+                                     label=r"back to back DSA-DSA 3D Distance "),
+                  lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +(v1.vz - v2.vz)**2))
+                                                        (*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs))))
+        ],
+    ),
+    "parallel_dsa_pair_xz_distance": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 200, name="parallel_dsa_pair_xz_distance",
+                                     label=r"back to back DSA-DSA 3D Distance "),
+                  lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +(v1.vz - v2.vz)**2))
+                                                        (*ak.unzip(derived_objs["parallel_dsa_pairs"](objs))))
+        ],
+    ),
     "dsa_pair_vx_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, 0, 200, name="dsa_pair_vx_diff",
