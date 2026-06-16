@@ -776,168 +776,168 @@ hist_defs = {
     "dsa_pair_vx_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_vx_diff",
-                                     label=r" abs(DSA $\mu$1 Vx - , DSA $\mu$1 Vx ) "),
+                                     label=r" abs(DSA $\mu$1 Vx - , DSA $\mu$2 Vx ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.vx - v2.vx))(*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "back_to_back_dsa_pair_vx_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="back to back dsa_pair_vx_diff",
-                                     label=r" back to back abs(DSA $\mu$1 Vx - , DSA $\mu$1 Vx ) "),
+                                     label=r" back to back abs(DSA $\mu$1 Vx - , DSA $\mu$2 Vx ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.vx - v2.vx))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_vx_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="parallel dsa_pair_vx_diff",
-                                     label=r" parallel abs(DSA $\mu$1 Vx - , DSA $\mu$1 Vx ) "),
+                                     label=r" parallel abs(DSA $\mu$1 Vx -  DSA $\mu$2 Vx ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.vx - v2.vx))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
     "dsa_pair_vy_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_vx_diff",
-                                     label=r" abs(DSA $\mu$1 Vy - , DSA $\mu$1 Vy ) "),
+                                     label=r" abs(DSA $\mu$1 Vy - DSA $\mu$2 Vy ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.vy - v2.vy))(*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "back_to_back_dsa_pair_vy_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="back to back dsa_pair_vy_diff",
-                                     label=r" back to back abs(DSA $\mu$1 Vy - , DSA $\mu$1 Vy ) "),
+                                     label=r" back to back abs(DSA $\mu$1 Vy - DSA $\mu$2 Vy ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.vy - v2.vy))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_vy_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="parallel dsa_pair_vy_diff",
-                                     label=r" parallel abs(DSA $\mu$1 Vy - , DSA $\mu$1 Vy ) "),
+                                     label=r" parallel abs(DSA $\mu$1 Vy - DSA $\mu$2 Vy ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.vy - v2.vy))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
     "dsa_pair_vz_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_vx_diff",
-                                     label=r" abs(DSA $\mu$1 Vz - , DSA $\mu$1 Vz ) "),
+                                     label=r" abs(DSA $\mu$1 Vz - DSA $\mu$2 Vz ) "),
                    lambda objs, mask: (lambda v1, v2: abs(v1.vy - v2.vy))(*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "back_to_back_dsa_pair_vz_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="back to back dsa_pair_vz_diff",
-                                     label=r" back to back abs(DSA $\mu$1 Vz - , DSA $\mu$1 Vz ) "),
+                                     label=r" back to back abs(DSA $\mu$1 Vz - DSA $\mu$2 Vz ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.vz - v2.vz))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_vz_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="parallel dsa_pair_vz_diff",
-                                     label=r" parallel abs(DSA $\mu$1 Vz - , DSA $\mu$1 Vz ) "),
+                                     label=r" parallel abs(DSA $\mu$1 Vz - DSA $\mu$2 Vz ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.vz - v2.vz))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
     "dsa_pair_dxy_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_dxy_diff",
-                                     label=r" abs(DSA $\mu$1 $d_{xy}$ - , DSA $\mu$1 $d_{xy}$ ) "),
+                                     label=r" abs(DSA $\mu$1 $d_{xy}$ - DSA $\mu$2 $d_{xy}$ ) "),
                    lambda objs, mask: (lambda v1, v2: abs(v1.dxy - v2.dxy))(*ak.unzip(objs["dsaMuonPairs"]))),
         ]
     ),
     "back_to_back_dsa_pair_dxy_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="back to back dsa_pair_dxy_diff",
-                                     label=r" back to back abs(DSA $\mu$1 dxy - , DSA $\mu$1 dxy ) "),
+                                     label=r" back to back abs(DSA $\mu$1 dxy - DSA $\mu$2 dxy ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.dxy - v2.dxy))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_dxy_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="parallel dsa_pair_dxy_diff",
-                                     label=r" parallel abs(DSA $\mu$1 dxy - , DSA $\mu$1 dxy ) "),
+                                     label=r" parallel abs(DSA $\mu$1 dxy - DSA $\mu$2 dxy ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.dxy - v2.dxy))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
     "dsa_pair_dz_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="dsa_pair_dz_diff",
-                                     label=r" abs(DSA $\mu$1 $d_z$ - , DSA $\mu$1 $d_z$ ) "),
+                                     label=r" abs(DSA $\mu$1 $d_z$ - DSA $\mu$2 $d_z$ ) "),
                    lambda objs, mask: (lambda v1, v2: abs(v1.dz - v2.dz))(*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "back_to_back_dsa_pair_dz_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="back to back dsa_pair_dz_diff",
-                                     label=r" back to back abs(DSA $\mu$1 dz - , DSA $\mu$1 dz ) "),
+                                     label=r" back to back abs(DSA $\mu$1 dz - DSA $\mu$2 dz ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.dz - v2.dz))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_dz_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="parallel dsa_pair_dz_diff",
-                                     label=r" parallel abs(DSA $\mu$1 dz - , DSA $\mu$1 dz ) "),
+                                     label=r" parallel abs(DSA $\mu$1 dz - DSA $\mu$2 dz ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.dz - v2.dz))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
     "dsa_pair_eta_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 6, name="dsa_pair_eta_diff",
-                                     label=r" abs(DSA $\mu$1 $\eta$ - , DSA $\mu$1 $\eta$ ) "),
+                                     label=r" abs(DSA $\mu$1 $\eta$ - DSA $\mu$2 $\eta$ ) "),
                    lambda objs, mask: (lambda v1, v2: abs(v1.eta - v2.eta))(*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "back_to_back_dsa_pair_eta_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 6, name="back to back dsa_pair_eta_diff",
-                                     label=r" back to back abs(DSA $\mu$1 $\eta$ - , DSA $\mu$1 $\eta$ ) "),
+                                     label=r" back to back abs(DSA $\mu$1 $\eta$ - DSA $\mu$1 $\eta$ ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.eta - v2.eta))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_eta_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 7, name="parallel dsa_pair_eta_diff",
-                                     label=r" parallel abs(DSA $\mu$1 $\eta$ - , DSA $\mu$1 $\eta$ ) "),
+                                     label=r" parallel abs(DSA $\mu$1 $\eta$ - DSA $\mu$2 $\eta$ ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.eta - v2.eta))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
     "dsa_pair_phi_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 7, name="dsa_pair_phi_diff",
-                                     label=r" abs(DSA $\mu$1 $\phi$ - , DSA $\mu$1 $\phi$ ) "),
+                                     label=r" abs(DSA $\mu$1 $\phi$ - DSA $\mu$2 $\phi$ ) "),
                    lambda objs, mask: (lambda v1, v2: abs(v1.phi - v2.phi))(*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "back_to_back_dsa_pair_phi_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 7, name="back to back dsa_pair_eta_diff",
-                                     label=r" back to back abs(DSA $\mu$1 $\phi$ - , DSA $\mu$1 $\phi$ ) "),
+                                     label=r" back to back abs(DSA $\mu$1 $\phi$ - DSA $\mu$2 $\phi$ ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.phi - v2.phi))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_phi_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 7, name="parallel dsa_pair_phi_diff",
-                                     label=r" parallel abs(DSA $\mu$1 $\phi$ - , DSA $\mu$1 $\phi$ ) "),
+                                     label=r" parallel abs(DSA $\mu$1 $\phi$ - DSA $\mu$2 $\phi$ ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.phi - v2.phi))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
     "dsa_pair_charge_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(5, 0, 5, name="dsa_pair_charge_diff",
-                                     label=r" abs(DSA $\mu$1 charge - , DSA $\mu$1 charge ) "),
+                                     label=r" abs(DSA $\mu$1 charge - DSA $\mu$2 charge ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.charge - v2.charge))(*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "back_to_back_dsa_pair_charge_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(5, 0, 5, name="back to back dsa_pair_charge_diff",
-                                     label=r" back to back abs(DSA $\mu$1 $\phi$ - , DSA $\mu$1 $\phi$ ) "),
+                                     label=r" back to back abs(DSA $\mu$1 $\phi$ - DSA $\mu$2 $\phi$ ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.charge - v2.charge))(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs)))),
         ],
     ),
     "parallel_dsa_pair_charge_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(5, 0, 5, name="parallel dsa_pair_charge_diff",
-                                     label=r" parallel abs(DSA $\mu$1 charge - , DSA $\mu$1 charge ) "),
+                                     label=r" parallel abs(DSA $\mu$1 charge - DSA $\mu$2 charge ) "),
                   lambda objs, mask: (lambda v1, v2: abs(v1.charge - v2.charge))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
