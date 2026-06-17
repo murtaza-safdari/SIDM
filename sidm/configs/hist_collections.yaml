@@ -959,7 +959,7 @@ cosmic_muons: &cosmic_muons
   - "mu_lj_back_to_back_dsa_pair_vy_diff"
   - "mu_lj_parallel_dsa_pair_vy_diff"
   - "mu_lj_dsa_pair_vz_diff"
-  - "mu_lj_back_to_back_dsa_pair_vz_diff'
+  - "mu_lj_back_to_back_dsa_pair_vz_diff"
   - "mu_lj_parallel_dsa_pair_vz_diff"
   - "mu_lj_dsa_pair_dxy_diff"
   - "mu_lj_back_to_back_dsa_pair_dxy_diff"
@@ -967,14 +967,14 @@ cosmic_muons: &cosmic_muons
   - "mu_lj_dsa_pair_dz_diff"
   - "mu_lj_back_to_back_dsa_pair_dz_diff"
   - "mu_lj_parallel_dsa_pair_dz_diff"
-  - "mu_lj_dsa_pair_eta_diff'
+  - "mu_lj_dsa_pair_eta_diff"
   - "mu_lj_back_to_back_dsa_pair_eta_diff"
   - "mu_lj_parallel_dsa_pair_eta_diff"
   - "mu_lj_dsa_pair_phi_diff"
   - "mu_lj_back_to_back_dsa_pair_phi_diff"
   - "mu_lj_parallel_dsa_pair_phi_diff"
   - "mu_lj_dsa_pair_charge_diff"
-  - "mu_lj_back_to_back_dsa_pair_charge_diff'
+  - "mu_lj_back_to_back_dsa_pair_charge_diff"
   - "mu_lj_parallel_dsa_pair_charge_diff"
 
   
