@@ -1331,3 +1331,8 @@ def cosAlpha_lj(muons): #could work for any object
     v1, v2 = ak.unzip(pairs)
     cos_alpha = np.cos(v1.deltaangle(v2))
     return (cos_alpha)
+
+def nearest_lj_index(obj, lj):
+    nearest=obj.nearest(lj, threshold=0.4)
+    nearest_idx =  ak.fill_none(nearest.idx, -999)
+    return(nearest_idx)
