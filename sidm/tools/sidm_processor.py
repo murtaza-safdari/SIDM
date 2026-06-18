@@ -467,6 +467,7 @@ class SidmProcessor(processor.ProcessorABC):
 
         # pt order the new LJs
         ljs = self.order(ljs)
+        ljs = ak.with_field(ljs, ak.local_index(ljs.pt), "idx")
 
         # return the new LJ collection
         return ljs
