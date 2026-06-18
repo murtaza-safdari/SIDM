@@ -976,5 +976,8 @@ cosmic_muons: &cosmic_muons
   - "mu_lj_dsa_pair_charge_diff"
   - "mu_lj_back_to_back_dsa_pair_charge_diff"
   - "mu_lj_parallel_dsa_pair_charge_diff"
+  - "dsa_pair_nearest_lj_index_diff"
+  - "back_to_back_dsa_pair_nearest_lj_index_diff"
+  - "parallel_dsa_pair_nearest_lj_index_diff"
 
   
