@@ -948,5 +948,11 @@ cosmic_muons: &cosmic_muons
   - "dsa_pair_nearest_lj_index_diff"
   - "back_to_back_dsa_pair_nearest_lj_index_diff"
   - "parallel_dsa_pair_nearest_lj_index_diff"
+  - "dsa_pair_xy_distance"
+  - "back_to_back_dsa_pair_xy_distance"
+  - "parallel_dsa_pair_xy_distance"
+  - "dsa_pair_yz_distance"
+  - "back_to_back_dsa_pair_yz_distance"
+  - "parallel_dsa_pair_yz_distance"
 
   
