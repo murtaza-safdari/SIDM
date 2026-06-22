@@ -5,7 +5,7 @@ import awkward as ak
 import numpy as np
 # local
 from sidm.definitions.objects import derived_objs
-from sidm.tools.utilities import dR, lxy, rho, check_bits, returnBitMapTArrayPhoton, dR_outer, cosAlpha
+from sidm.tools.utilities import dR, lxy, rho, check_bits, returnBitMapTArrayPhoton, dR_outer, cosAlpha, nearest_lj_index
 
 obj_cut_defs = {
     "pvs": {
