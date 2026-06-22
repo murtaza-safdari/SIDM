@@ -245,7 +245,8 @@ obj_cut_defs = {
                                          (*ak.unzip(objs["dsaMuonPairs"])),
         "parallel_pairs": lambda objs: (lambda v1, v2: np.cos(v1.deltaangle(v2)) >= 0.95)
                                          (*ak.unzip(objs["dsaMuonPairs"])),
-    }
+        "lj_index_diff = 0": lambda objs: (lambda v1, v2, objs: abs(nearest_lj_index(v1, objs)  - nearest_lj_index(v2, objs)))(*ak.unzip(objs["dsaMuonPairs"]), objs["ljs"]) == 0,
+}
 }
 
 evt_cut_defs = {
