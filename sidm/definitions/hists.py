@@ -4031,9 +4031,9 @@ hist_defs = {
     "genMu_leading_vs_subleading_phi": h.Histogram(
         [
 
-            h.Axis(hist.axis.Regular(200, -7, 7, name="leading_Phi",label=r"$\phi(\mu_0^{gen})$"),
+            h.Axis(hist.axis.Regular(50, -7, 7, name="leading_Phi",label=r"$\phi(\mu_0^{gen})$"),
                   lambda objs, mask: objs["genMus"][mask, 0].phi),
-            h.Axis(hist.axis.Regular(200, -7, 7, name="subleading_Phi",label=r"$\phi(\mu_1^{gen})$"),
+            h.Axis(hist.axis.Regular(50, -7, 7, name="subleading_Phi",label=r"$\phi(\mu_1^{gen})$"),
                   lambda objs, mask: objs["genMus"][mask, 1].phi),
         ],
         evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
@@ -4041,9 +4041,9 @@ hist_defs = {
     "genMu_leading_vs_subleading_eta": h.Histogram(
         [
 
-            h.Axis(hist.axis.Regular(200, -7, 7, name="leading_Eta",label=r"$\eta(\mu_0^{gen})$"),
+            h.Axis(hist.axis.Regular(50, -7, 7, name="leading_Eta",label=r"$\eta(\mu_0^{gen})$"),
                   lambda objs, mask: objs["genMus"][mask, 0].eta),
-            h.Axis(hist.axis.Regular(200, -7, 7, name="subleading_Eta",label=r"$\eta(\mu_1^{gen})$"),
+            h.Axis(hist.axis.Regular(50, -7, 7, name="subleading_Eta",label=r"$\eta(\mu_1^{gen})$"),
                   lambda objs, mask: objs["genMus"][mask, 1].eta),
         ],
         evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
