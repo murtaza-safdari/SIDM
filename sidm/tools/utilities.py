@@ -1342,3 +1342,6 @@ def nearest_lj_index(obj, lj):
     nearest=obj.nearest(lj, threshold=0.4)
     nearest_idx =  ak.fill_none(nearest.idx, -999)
     return(nearest_idx)
+
+def vx_diff(obj1, obj2):
+    return abs(obj1.vx-obj2.vx)
