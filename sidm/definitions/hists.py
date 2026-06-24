@@ -1629,6 +1629,7 @@ hist_defs = {
     "lj_muonN": obj_attr("ljs", "muon_n", xmax=10, nbins=10),
     "lj_dsaMuN": obj_attr("ljs", "dsaMu_n", xmax=10, nbins=10),
     "lj_pfMuN": obj_attr("ljs", "pfMu_n", xmax=10, nbins=10),
+    "lj_vxSpread_dsa": obj_attr("ljs", "vxSpread_dsa", xmax=500, nbins=100),
     "lj_muon_pt": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 500, name=r"LJ $\mu$ pT (GeV)"),
