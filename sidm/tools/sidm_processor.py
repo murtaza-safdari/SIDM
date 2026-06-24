@@ -456,6 +456,8 @@ class SidmProcessor(processor.ProcessorABC):
         # c) and then take the maximum dR per LJ, leaving us with a single value per LJ
         ljs["dRSpread"] = ak.max(ak.flatten(
             ljs["constituents"].metric_table(ljs["constituents"], axis=2), axis=-1), axis=-1)
+        ljs["vxSpread_dsa"] = ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vx_diff), axis=-1), axis=-1)
 
         # LJ isolation
         ljs["matched_jet"] = ljs.nearest(objs["jets"], threshold=0.4)       
