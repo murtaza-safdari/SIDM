@@ -458,6 +458,14 @@ class SidmProcessor(processor.ProcessorABC):
             ljs["constituents"].metric_table(ljs["constituents"], axis=2), axis=-1), axis=-1)
         ljs["vxSpread_dsa"] = ak.max(ak.flatten(
             ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vx_diff), axis=-1), axis=-1)
+        ljs["vySpread_dsa"] = ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vy_diff), axis=-1), axis=-1)
+        ljs["vzSpread_dsa"] = ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vz_diff), axis=-1), axis=-1)
+        ljs["dxySpread_dsa"] = ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1)
+        ljs["dzSpread_dsa"] = ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1)
 
         # LJ isolation
         ljs["matched_jet"] = ljs.nearest(objs["jets"], threshold=0.4)       
