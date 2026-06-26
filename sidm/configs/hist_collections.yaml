@@ -981,3 +981,7 @@ cosmic_muons: &cosmic_muons
   - "genMu_leading_vs_subleading_phi"
   - "genMu_leading_vs_subleading_eta"
   - "lj_vxSpread_dsa"
+  - "lj_vySpread_dsa"
+  - "lj_vzSpread_dsa"
+  - "lj_dxySpread_dsa"
+  - "lj_dzSpread_dsa"
