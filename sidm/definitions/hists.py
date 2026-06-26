@@ -1380,7 +1380,7 @@ hist_defs = {
     "back_to_back_dsa_pair_vx": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, -500, 500, name="back_to_back_dsa_pair_vx1",
-                                     label=r" back to back DSA $\mu$2 Vx "),
+                                     label=r" back to back DSA $\mu$1 Vx "),
                   lambda objs, mask: (lambda v1: v1.vx)(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs))[0:1])),
             h.Axis(hist.axis.Regular(200, -500, 500, name="back_to_back_dsa_pair_vx2",
                                      label=r" back to back DSA $\mu$2 Vx "),
@@ -1390,7 +1390,7 @@ hist_defs = {
     "parallel_dsa_pair_vx": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, -500, 500, name="parallel_dsa_pair_vx1",
-                                     label=r"parallel DSA $\mu$2 Vx "),
+                                     label=r"parallel DSA $\mu$1 Vx "),
                   lambda objs, mask: (lambda v1: v1.vx)(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs))[0:1])),
             h.Axis(hist.axis.Regular(200, -500, 500, name="parallel_dsa_pair_vx2",
                                      label=r"parallel DSA $\mu$2 Vx "),
