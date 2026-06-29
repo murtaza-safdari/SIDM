@@ -213,6 +213,7 @@ obj_cut_defs = {
         "|dxy| <= 40": lambda objs, dsa: abs(dsa.dxy) <= 40,
         "|dz| <= 60": lambda objs, dsa: abs(dsa.dz) <= 60,
         "|eta| < 2.4": lambda objs, dsa: abs(dsa.eta) < 2.4,
+        "dR(dsa, A) < 0.4": lambda objs, dsa: dR(dsa, objs["genAs_toMu"]) < 0.4,
         # displaced ID as a single flag and as individual cuts
         "displaced ID" : lambda objs, dsa: dsa.displacedID > 0,
         "DT + CSC hits > 12": lambda objs, dsa: (dsa.trkNumDTHits

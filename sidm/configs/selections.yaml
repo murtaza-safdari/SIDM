@@ -2190,3 +2190,15 @@ backToBackDSA_ljIndex0_2BackToBackDSA: &backToBackDSA_ljIndex0_2BackToBackDSA
     - "pass flags"
     - "= 1 LJs"
     - "2 back_to_back_dsa"
+
+baseNoLj_dsaMatchedGenMu: &baseNoLj_dsaMatchedGenMu
+  obj_cuts:
+    <<: *obj_baseNoLj
+    dsaMuons:
+      - "pT > 10 GeV"
+      - "|eta| < 2.4"
+      - "displaced ID"
+      - "all" # cross-cleaning
+      - "dR(dsa, A) < 0.4"
+  evt_cuts:
+    - *evt_baseNoLj
