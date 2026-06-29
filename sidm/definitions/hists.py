@@ -1627,6 +1627,13 @@ hist_defs = {
     "lj_vzSpread_dsa": obj_attr("ljs", "vzSpread_dsa", xmax=500, nbins=500),
     "lj_dxySpread_dsa": obj_attr("ljs", "dxySpread_dsa", xmax=500, nbins=500),
     "lj_dzSpread_dsa": obj_attr("ljs", "dzSpread_dsa", xmax=500, nbins=500),
+    "lj_vxSpread_pf": obj_attr("ljs", "vxSpread_pf", xmax=500, nbins=500),
+    "lj_vySpread_pf": obj_attr("ljs", "vySpread_pf", xmax=500, nbins=500),
+    "lj_vzSpread_pf": obj_attr("ljs", "vzSpread_pf", xmax=500, nbins=500),
+    "lj_dxySpread_pf": obj_attr("ljs", "dxySpread_pf", xmax=500, nbins=500),
+    "lj_dzSpread_pf": obj_attr("ljs", "dzSpread_pf", xmax=500, nbins=500),
+    "lj_dxySpread_ele": obj_attr("ljs", "dxySpread_ele", xmax=500, nbins=500),
+    "lj_dzSpread_ele": obj_attr("ljs", "dzSpread_ele", xmax=500, nbins=500),
     "lj_muon_pt": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 500, name=r"LJ $\mu$ pT (GeV)"),
