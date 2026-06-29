@@ -677,13 +677,6 @@ hist_defs = {
                    lambda objs, mask: objs["dsaMuons"].good_matched_muons[:,:,:1].numMatch),#Also works! idk if the result makes sense, but it runs
         ],
     ),
-    "dsaMu_dsaMu_cosAlpha": h.Histogram(
-        [
-            h.Axis(hist.axis.Regular(100, -1, 1, name="muon_muon_cosAlpha", label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
-                   lambda objs, mask: cosAlpha(objs["dsaMuons"])),
-        ],
-    ),
-
     # dsamuon-genA
     "dsaMuon_nearGenA_n_genA_lxy": h.Histogram(
         [
