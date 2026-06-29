@@ -3820,6 +3820,46 @@ hist_defs = {
         ],
         evt_mask=lambda objs: ak.num(objs["genEs"]) > 1,
     ),
+    "genE_leading_vs_subleading_vx": h.Histogram(
+        [
+
+            h.Axis(hist.axis.Regular(100, -500, 500, name="leading_vx", label=r"$v_x(e_0^{gen})$"),
+                  lambda objs, mask: objs["genEs"][mask, 0].vx),
+            h.Axis(hist.axis.Regular(100, -500, 500, name="subleading_vx", label=r"$v_x(e_1^{gen})$"),
+                  lambda objs, mask: objs["genEs"][mask, 1].vx),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genEs"]) > 1,
+    ),
+    "genE_leading_vs_subleading_vy": h.Histogram(
+        [
+
+            h.Axis(hist.axis.Regular(100, -500, 500, name="leading_vy", label=r"$v_y(e_0^{gen})$"),
+                  lambda objs, mask: objs["genEs"][mask, 0].vy),
+            h.Axis(hist.axis.Regular(100, -500, 500, name="subleading_vy", label=r"$v_y(e_1^{gen})$"),
+                  lambda objs, mask: objs["genEs"][mask, 1].vy),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genEs"]) > 1,
+    ),
+    "genE_leading_vs_subleading_vz": h.Histogram(
+        [
+
+            h.Axis(hist.axis.Regular(100, -500, 500, name="leading_vz", label=r"$v_z(e_0^{gen})$"),
+                  lambda objs, mask: objs["genEs"][mask, 0].vz),
+            h.Axis(hist.axis.Regular(100, -500, 500, name="subleading_vz", label=r"$v_z(e_1^{gen})$"),
+                  lambda objs, mask: objs["genEs"][mask, 1].vz),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genEs"]) > 1,
+    ),
+    "genE_leading_vs_subleading_dxy": h.Histogram(
+        [
+
+            h.Axis(hist.axis.Regular(100, -500, 500, name="leading_dxy", label=r"$d_{xy}(e_0^{gen})$"),
+                  lambda objs, mask: objs["genEs"][mask, 0].dxy),
+            h.Axis(hist.axis.Regular(100, -500, 500, name="subleading_dxy", label=r"$d_{xy}(e_1^{gen})$"),
+                  lambda objs, mask: objs["genEs"][mask, 1].dxy),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genEs"]) > 1,
+    ),
     # genmuon
     "genMu_n": obj_attr("genMus", "n"),
     "genMu_pt": obj_attr("genMus", "pt"),
@@ -4042,6 +4082,46 @@ hist_defs = {
                   lambda objs, mask: objs["genMus"][mask, 0].eta),
             h.Axis(hist.axis.Regular(50, -7, 7, name="subleading_Eta",label=r"$\eta(\mu_1^{gen})$"),
                   lambda objs, mask: objs["genMus"][mask, 1].eta),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
+    ),
+    "genMu_leading_vs_subleading_vx": h.Histogram(
+        [
+
+            h.Axis(hist.axis.Regular(100, -500, 500, name="leading_vx", label=r"$v_x(\mu_0^{gen})$"),
+                  lambda objs, mask: objs["genMus"][mask, 0].vx),
+            h.Axis(hist.axis.Regular(100, -500, 500, name="subleading_vx", label=r"$v_x(\mu_1^{gen})$"),
+                  lambda objs, mask: objs["genMus"][mask, 1].vx),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
+    ),
+    "genMu_leading_vs_subleading_vy": h.Histogram(
+        [
+
+            h.Axis(hist.axis.Regular(100, -500, 500, name="leading_vy", label=r"$v_y(\mu_0^{gen})$"),
+                  lambda objs, mask: objs["genMus"][mask, 0].vy),
+            h.Axis(hist.axis.Regular(100, -500, 500, name="subleading_vy", label=r"$v_y(\mu_1^{gen})$"),
+                  lambda objs, mask: objs["genMus"][mask, 1].vy),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
+    ),
+    "genMu_leading_vs_subleading_vz": h.Histogram(
+        [
+
+            h.Axis(hist.axis.Regular(100, -500, 500, name="leading_vz", label=r"$v_z(\mu_0^{gen})$"),
+                  lambda objs, mask: objs["genMus"][mask, 0].vz),
+            h.Axis(hist.axis.Regular(100, -500, 500, name="subleading_vz", label=r"$v_z(\mu_1^{gen})$"),
+                  lambda objs, mask: objs["genMus"][mask, 1].vz),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
+    ),
+    "genMu_leading_vs_subleading_dxy": h.Histogram(
+        [
+
+            h.Axis(hist.axis.Regular(100, -500, 500, name="leading_dxy", label=r"$d_{xy}(\mu_0^{gen})$"),
+                  lambda objs, mask: objs["genMus"][mask, 0].dxy),
+            h.Axis(hist.axis.Regular(100, -500, 500, name="subleading_dxy", label=r"$d_{xy}(\mu_1^{gen})$"),
+                  lambda objs, mask: objs["genMus"][mask, 1].dxy),
         ],
         evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
     ),
