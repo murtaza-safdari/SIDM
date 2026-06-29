@@ -1634,6 +1634,15 @@ hist_defs = {
     "lj_dzSpread_pf": obj_attr("ljs", "dzSpread_pf", xmax=500, nbins=500),
     "lj_dxySpread_ele": obj_attr("ljs", "dxySpread_ele", xmax=500, nbins=500),
     "lj_dzSpread_ele": obj_attr("ljs", "dzSpread_ele", xmax=500, nbins=500),
+    "lj_vxySpread_dsa": obj_attr("ljs", "vxySpread_dsa", xmax=500, nbins=500),
+    "lj_vyzSpread_dsa": obj_attr("ljs", "vyzSpread_dsa", xmax=500, nbins=500),
+    "lj_vzxSpread_dsa": obj_attr("ljs", "vzxSpread_dsa", xmax=500, nbins=500),
+    "lj_v3dSpread_dsa": obj_attr("ljs", "v3dSpread_dsa", xmax=500, nbins=500),
+    "lj_vxySpread_pf": obj_attr("ljs", "vxySpread_pf", xmax=500, nbins=500),
+    "lj_vyzSpread_pf": obj_attr("ljs", "vyzSpread_pf", xmax=500, nbins=500),
+    "lj_vzxSpread_pf": obj_attr("ljs", "vzxSpread_pf", xmax=500, nbins=500),
+    "lj_v3dSpread_pf": obj_attr("ljs", "v3dSpread_pf", xmax=500, nbins=500),
+
     "lj_muon_pt": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 500, name=r"LJ $\mu$ pT (GeV)"),
