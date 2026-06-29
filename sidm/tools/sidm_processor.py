@@ -466,6 +466,20 @@ class SidmProcessor(processor.ProcessorABC):
             ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1)
         ljs["dzSpread_dsa"] = ak.max(ak.flatten(
             ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1)
+        ljs["vxSpread_pf"] = ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerVx_diff), axis=-1), axis=-1)
+        ljs["vySpread_pf"] = ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerVy_diff), axis=-1), axis=-1)
+        ljs["vzSpread_pf"] = ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerVz_diff), axis=-1), axis=-1)
+        ljs["dxySpread_pf"] = ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1)
+        ljs["dzSpread_pf"] = ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1)
+        ljs["dxySpread_ele"] = ak.max(ak.flatten(
+            ljs["electrons"].metric_table(ljs["electrons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1)
+        ljs["dzSpread_ele"] = ak.max(ak.flatten(
+            ljs["electrons"].metric_table(ljs["electrons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1)
 
         # LJ isolation
         ljs["matched_jet"] = ljs.nearest(objs["jets"], threshold=0.4)       
