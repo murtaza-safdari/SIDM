@@ -242,10 +242,10 @@ obj_cut_defs = {
         "all + charge": lambda objs, dsa: ak.all((dsa.good_matched_muons.numMatch < 1) | (dsa.charge[:,:,None] != dsa.good_matched_muons.charge) | (dR_outer(dsa[:,:,None], dsa.good_matched_muons) > 0.1) | (dsa.good_matched_muons.numMatch/(dsa.nSegments[:,:,None]) < 0.34), axis=2),
     },
     "dsaMuonPairs":{
-        "back_to_back_pairs": lambda objs: (lambda v1, v2: np.cos(v1.deltaangle(v2)) <= -0.95)
-                                         (*ak.unzip(objs["dsaMuonPairs"])),
-        "parallel_pairs": lambda objs: (lambda v1, v2: np.cos(v1.deltaangle(v2)) >= 0.95)
-                                         (*ak.unzip(objs["dsaMuonPairs"])),
+        "back_to_back_pairs": lambda objs: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
+                                         (*ak.unzip(objs["dsaMuonPairs"])) <= -0.95,
+        "parallel_pairs": lambda objs: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
+                                         (*ak.unzip(objs["dsaMuonPairs"])) >= 0.95,
         "lj_index_diff = 0": lambda objs: (lambda v1, v2, objs: abs(nearest_lj_index(v1, objs)  - nearest_lj_index(v2, objs)))(*ak.unzip(objs["dsaMuonPairs"]), objs["ljs"]) == 0,
 }
 }
