@@ -1370,6 +1370,22 @@ def dxy_diff(obj1, obj2):
 def dz_diff(obj1, obj2):
     return abs(obj1.dz-obj2.dz)
 
+def vxy_diff(obj1, obj2):
+    return ((obj1.vx-obj2.vx)**2 +
+            (obj1.vy-obj2.vy)**2)**0.5
+
+def vyz_diff(obj1, obj2):
+    return ((obj1.vy-obj2.vy)**2 +
+            (obj1.vz-obj2.vz)**2)**0.5
+
+def vzx_diff(obj1, obj2):
+    return ((obj1.vz-obj2.vz)**2 +
+            (obj1.vx-obj2.vx)**2)**0.5
+def v3d_diff(obj1, obj2):
+    return ((obj1.vx-obj2.vx)**2 +
+            (obj1.vy-obj2.vy)**2 +
+            (obj1.vz-obj2.vz)**2)**0.5
+
 def innerVx_diff(obj1, obj2):
     return abs(obj1.innerVx - obj2.innerVx)
 
@@ -1379,4 +1395,19 @@ def innerVy_diff(obj1, obj2):
 def innerVz_diff(obj1, obj2):
     return abs(obj1.innerVz - obj2.innerVz)
 
+def innerV3d_diff(obj1, obj2):
+    return ((obj1.innerVx-obj2.innerVx)**2 +
+            (obj1.innerVy-obj2.innerVy)**2 +
+            (obj1.innerVz-obj2.innerVz)**2)**0.5
 
+def innerVxy_diff(obj1, obj2):
+    return ((obj1.innerVx-obj2.innerVx)**2 +
+            (obj1.innerVy-obj2.innerVy)**2)**0.5
+
+def innerVzx_diff(obj1, obj2):
+    return ((obj1.innerVx-obj2.innerVx)**2 +
+            (obj1.innerVz-obj2.innerVz)**2)**0.5
+
+def innerVyz_diff(obj1, obj2):
+    return ((obj1.innerVy-obj2.innerVy)**2 +
+            (obj1.innerVz-obj2.innerVz)**2)**0.5
