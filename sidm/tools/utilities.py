@@ -1370,4 +1370,13 @@ def dxy_diff(obj1, obj2):
 def dz_diff(obj1, obj2):
     return abs(obj1.dz-obj2.dz)
 
+def innerVx_diff(obj1, obj2):
+    return abs(obj1.innerVx - obj2.innerVx)
+
+def innerVy_diff(obj1, obj2):
+    return abs(obj1.innerVy - obj2.innerVy)
+
+def innerVz_diff(obj1, obj2):
+    return abs(obj1.innerVz - obj2.innerVz)
+
 
