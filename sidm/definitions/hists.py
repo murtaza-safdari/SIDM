@@ -1314,6 +1314,36 @@ hist_defs = {
                   lambda objs, mask: (lambda v1, v2: abs(v1.charge - v2.charge))(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs)))),
         ],
     ),
+    "dsa_pair_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 500, name="dsa_pair_pt1",
+                                     label=r" DSA $\mu$1 $p_T$"),
+                  lambda objs, mask: (lambda v1: v1.pt)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+            h.Axis(hist.axis.Regular(200, 0, 500, name="dsa_pair_pt2",
+                                     label=r" DSA $\mu$2 $p_T$"),
+                  lambda objs, mask: (lambda v2: v2.pt)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+        ],
+    ),
+    "back_to_back_dsa_pair_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 500, name="back_to_back_dsa_pair_pt1",
+                                     label=r" back to back DSA $\mu$1 $p_T$"),
+                  lambda objs, mask: (lambda v1: v1.pt)(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs))[0:1])),
+            h.Axis(hist.axis.Regular(200, 0, 500, name="back_to_back_dsa_pair_pt2",
+                                     label=r" back to back DSA $\mu$2 $p_T$"),
+                  lambda objs, mask: (lambda v2: v2.pt)(*ak.unzip(derived_objs["back_to_back_dsa_pairs"](objs))[1:2])),
+        ],
+    ),
+    "parallel_dsa_pair_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 500, name="parallel_dsa_pair_pt1",
+                                     label=r" parallel DSA $\mu$1 $p_T$"),
+                  lambda objs, mask: (lambda v1: v1.pt)(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs))[0:1])),
+            h.Axis(hist.axis.Regular(200, 0, 500, name="parallel_dsa_pair_pt2",
+                                     label=r" parallel DSA $\mu$2 $p_T$"),
+                  lambda objs, mask: (lambda v2: v2.pt)(*ak.unzip(derived_objs["parallel_dsa_pairs"](objs))[1:2])),
+        ],
+    ),
     "dsa_pair_vx": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_vx 1",
