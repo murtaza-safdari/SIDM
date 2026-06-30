@@ -832,13 +832,6 @@ ttjets_base: &ttjets_base
   - "muon_bjet_inv_mass"
   - "muon_bjet_min_inv_mass"
 
-data_base: &data_base
-  - "muon_n"
-  - "muon_pt"
-  - "muon_dxy"
-  - "muon_muon_dphi"
-  - "muon_muon_invmass"
-
 base: &base
   - *pv_base
   - *electron_base
@@ -1006,3 +999,38 @@ cosmic_muons: &cosmic_muons
   - "mu_lj_vyzSpread_pf"
   - "mu_lj_vzxSpread_pf"
   - "mu_lj_v3dSpread_pf"
+
+data_base: &data_base
+  - "egm_lj_n"
+  - "egm_lj_iso"
+  - "egm_lj_pt"
+  - "electron_lj_pt"
+  - "egm_lj_electronN"
+  - "egm_lj_photonN"
+  - "egm_lj_electron_pt"
+  - "egm_lj_photon_pt"
+  - "egm_lj_electron_dxy"
+  - "mu_lj_n"
+  - "mu_lj_iso"
+  - "pfmu_lj_iso"
+  - "dsamu_lj_iso"
+  - "mu_lj_pt"
+  - "pfmu_lj_pt"
+  - "dsamu_lj_pt"
+  - "electron_n"
+  - "electron_pt"
+  - "electron_dxy"
+  - "electron_eta_phi"
+  - "photon_n"
+  - "photon_pt"
+  - "muon_n"
+  - "muon_pt"
+  - "muon_dxy"
+  - "muon_dz"
+  - "muon_eta_phi"
+  - "mu_lj_muonN"
+  - "mu_lj_pfMu_n"
+  - "mu_lj_dsaMu_n"
+  - "mu_lj_muon_pt"
+  - "mu_lj_pfMuon_pt"
+  - "mu_lj_dsaMuon_pt"
