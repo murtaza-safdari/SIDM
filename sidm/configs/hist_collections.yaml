@@ -999,6 +999,9 @@ cosmic_muons: &cosmic_muons
   - "mu_lj_vyzSpread_pf"
   - "mu_lj_vzxSpread_pf"
   - "mu_lj_v3dSpread_pf"
+  - "dsa_pair_pt"
+  - "back_to_back_dsa_pair_pt"
+  - "parallel_dsa_pair_pt"
 
 data_base: &data_base
   - "egm_lj_n"
