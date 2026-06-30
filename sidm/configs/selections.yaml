@@ -2164,3 +2164,18 @@ baseNoLj_dsaMatchedGenMu: &baseNoLj_dsaMatchedGenMu
       - "dR(dsa, A) < 0.4"
   evt_cuts:
     - *evt_baseNoLj
+
+data_control_region_1Lj_dzSpreadDSA: &data_control_region_1Lj_dzSpreadDSA
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+      - "dzSpread_dsa <= 50"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 LJs"
