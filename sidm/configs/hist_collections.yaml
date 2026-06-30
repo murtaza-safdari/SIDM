@@ -178,8 +178,6 @@ mu_lj_base: &mu_lj_base
   - "mu_lj_muon_eta_phi"
   - "mu_lj_dsaMuon_dz"
   - "mu_lj_dsaMuon_cosAlpha"
-  - "N_back_to_back_mu_lj_dsa"
-  - "N_back_to_back_mu_lj_pf"
 
 egm_lj_base: &egm_lj_base
   - "egm_lj_n"
