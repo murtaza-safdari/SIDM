@@ -2178,4 +2178,4 @@ data_control_region_1Lj_dzSpreadDSA: &data_control_region_1Lj_dzSpreadDSA
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"
-    - "= 1 LJs"
+    -  "= 1 muLj or 1 egmLJ"

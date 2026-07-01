@@ -300,6 +300,7 @@ evt_cut_defs = {
     "dR(Mu_0, Mu_1) > 0.03": lambda objs: objs["genMus"][:,0].delta_r(objs["genMus"][:,1]) > 0.03,
     "LJ-LJ dPhi > 2": lambda objs: abs(objs["ljs"][:, 0].delta_phi(objs["ljs"][:, 1])) > 2.0,
     "= 1 LJs": lambda objs: ak.num(objs["ljs"]) == 1,
+    "= 1 muLj or 1 egmLJ": lambda objs:((ak.num(objs["mu_ljs"]) == 1) & (ak.num(objs["egm_ljs"]) == 0)) | ((ak.num(objs["mu_ljs"]) == 0) & (ak.num(objs["egm_ljs"]) == 1)),
     "= 1 muLJs": lambda objs: (ak.num(objs["mu_ljs"]) == 1) & (ak.num(objs["egm_ljs"]) == 0),
     "= 1 egmLJs": lambda objs: (ak.num(objs["mu_ljs"]) == 0) & (ak.num(objs["egm_ljs"]) == 1),
     "= 2 LJs": lambda objs: ak.num(objs["ljs"]) == 2,
