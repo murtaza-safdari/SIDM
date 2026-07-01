@@ -810,16 +810,22 @@ Muon_selection_base: &Muon_selection_base
   - "mu_lj_pt"
   - "muLj_genA_ptRatio"
   - "mulj_egmlj_invmass"
+<<<<<<< HEAD
   - "mu_lj_iso"
+=======
+>>>>>>> 8bf525c (removed the hists that misses definition)
 
 Muon_selection_bkg_base: &Muon_selection_bkg_base
   - "mu_lj_pt"
   - "mulj_egmlj_invmass"
+<<<<<<< HEAD
   - "mu_lj_iso"
 
 trig_base: &trig_base
   - "all_muon0_pt_vs_all_muon1_pt"
   - "mu_lj_sum_pt_score"
+=======
+>>>>>>> 8bf525c (removed the hists that misses definition)
 
 ttjets_base: &ttjets_base
   - "jet_n"
