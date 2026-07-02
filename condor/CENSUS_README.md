@@ -49,7 +49,9 @@ same-pdgId mother chain in an unguarded loop, so that self-loop never terminates
 hangs** on a single such event. The census reads `GenPart_genPartIdxMother` on every **MC** file by
 default — a cheap extra branch read (≈ +5 %; the file open dominates), `--no-check-genpart` to turn
 it off, data has no GenPart and is skipped — and reports the offenders under **GENPART INTEGRITY**
-with per-file event counts.
+with per-file event counts. The scan reads only `GenPart_genPartIdxMother` and caps at the first
+500k events per file (`_GENPART_SCAN_MAX_EVENTS`), so a pathologically large or slow file cannot
+balloon or wedge the census; files above the cap are partial-scanned and noted.
 
 These files are **kept** (`reachable`, not condemned): the corrupt entries are a handful of inert
 filler particles, and the real gens and weights are intact. The hang itself is fixed independently

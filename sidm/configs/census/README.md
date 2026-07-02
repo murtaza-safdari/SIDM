@@ -12,7 +12,7 @@ dropped-file list (with reasons), and the provenance `meta` (source-YAML sha256,
 
 | run-id | source YAML | version | files | samples | dropped | runs-anomaly | complete | backend | date |
 |---|---|---|---:|---:|---:|---:|:---:|---|---|
-| `backgrounds_skimmed_light` | backgrounds.yaml | skimmed_llpNanoAOD_v2 | 56,296 | 18 | 256 | 0 | yes | condor (113 shards) | 2026-06-23 |
+| `backgrounds_skimmed_light` | backgrounds.yaml | skimmed_llpNanoAOD_v2 | 56,296 | 18 | 256 | 0 | yes | threaded | 2026-07-01 |
 | `data_light` | data.yaml | llpNanoAOD_v2 | 636 | 1 | 0 | 0 | yes | dask (max_workers=20) | 2026-06-23 |
 | `data_skimmed_light` | data_skimmed.yaml | llpNanoAOD_v2 | 127,415 | 68 | 324 | 0 | yes | condor (255 shards) | 2026-06-23 |
 | `signal_2mu2e_v10_light` | signal_2mu2e_v10.yaml | llpNanoAOD_v2 | 4,082 | 90 | 5 | 57 | yes | condor (9 shards) | 2026-06-23 |
