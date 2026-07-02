@@ -70,6 +70,8 @@ obj_cut_defs = {
         "reverse_displaced": lambda objs: (ak.min(objs["mu_ljs"].muons.trkNumPixelHits, axis=-1) > 2) ,
         "dzSpread_dsa <= 50": lambda objs: objs["mu_ljs"].dzSpread_dsa <= 50,
         "vxySpread_dsa <= 50": lambda objs: objs["mu_ljs"].vxySpread_dsa <= 50,
+        "dzSpread_dsa <= 5": lambda objs: objs["mu_ljs"].dzSpread_dsa <= 5,
+        "vxySpread_dsa <= 5": lambda objs: objs["mu_ljs"].vxySpread_dsa <= 5,
     },
     "genMus":{
         "pT >= 10 GeV": lambda objs: objs["genMus"].pt >= 10,
