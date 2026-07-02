@@ -1192,7 +1192,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_vx_diff",
                                      label=r" abs(DSA $\mu$1 Vz - DSA $\mu$2 Vz ) "),
-                   lambda objs, mask: (lambda v1, v2: abs(v1.vy - v2.vy))(*ak.unzip(objs["dsaMuonPairs"]))),
+                   lambda objs, mask: (lambda v1, v2: abs(v1.vz - v2.vz))(*ak.unzip(objs["dsaMuonPairs"]))),
         ],
     ),
     "back_to_back_dsa_pair_vz_diff": h.Histogram(
