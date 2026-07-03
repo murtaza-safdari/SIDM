@@ -2249,3 +2249,21 @@ data_control_region_1Lj_dzSpreadDSA5_vxySpreadDSA5: &data_control_region_1Lj_dzS
     - *evt_baseNoLj
     - "pass flags"
     -  "= 1 muLj or 1 egmLJ"
+
+data_control_region_1Lj_dzSpreadDSA5_pf5_vxySpreadDSA5_pf5: &data_control_region_1Lj_dzSpreadDSA5_pf5_vxySpreadDSA5_pf5
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+      - "dzSpread_dsa <= 5"
+      - "vxySpread_dsa <= 5"
+      - "dzSpread_pf <= 5"
+      - "vxySpread_pf <= 5"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    -  "= 1 muLj or 1 egmLJ"
