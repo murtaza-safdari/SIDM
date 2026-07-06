@@ -357,6 +357,10 @@ class SidmProcessor(processor.ProcessorABC):
         if type_id == 8:
             forms["trkNumPixelHits"] = 0*shape
             forms["trkNumTrkLayers"] = 0*shape
+        if type_id == 3:
+            forms["vx"] = forms["innerVx"]
+            forms["vy"] = forms["innerVy"]
+            forms["vy"] = forms["innerVy"]
         if type_id == 4:
             forms["lostHits"] = 999*shape
         return vector.zip(forms)
@@ -416,7 +420,7 @@ class SidmProcessor(processor.ProcessorABC):
 
         objs["dsaMuons"]["mass"] = ak.full_like(objs["dsaMuons"].pt, 0.105712890625)
 
-        safe_pf_fields = list(objs["muons"].fields)
+        safe_pf_fields = list(objs["muons"].fields) + ["vx", "vy", "vz"]
         safe_dsa_fields = list(objs["dsaMuons"].fields) +  ["trkNumPixelHits","trkNumTrkLayers" ]
 
         for field in unsafe_fields:
@@ -425,7 +429,7 @@ class SidmProcessor(processor.ProcessorABC):
             if field in safe_dsa_fields:
                 safe_dsa_fields.remove(field)
 
-        extra_muon_fields =  ["trkNumPixelHits","trkNumTrkLayers" ]
+        extra_muon_fields =  ["trkNumPixelHits","trkNumTrkLayers", "vx", "vy", "vz" ]
         muon_fields = list(set(safe_pf_fields).intersection(safe_dsa_fields)) + extra_muon_fields
        
 
@@ -474,6 +478,7 @@ class SidmProcessor(processor.ProcessorABC):
             ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vzx_diff), axis=-1), axis=-1)
         ljs["v3dSpread_dsa"] = ak.max(ak.flatten(
             ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.v3d_diff), axis=-1), axis=-1)
+        
         ljs["vxSpread_pf"] = ak.max(ak.flatten(
             ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerVx_diff), axis=-1), axis=-1)
         ljs["vySpread_pf"] = ak.max(ak.flatten(
@@ -492,10 +497,30 @@ class SidmProcessor(processor.ProcessorABC):
             ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerVzx_diff), axis=-1), axis=-1)
         ljs["v3dSpread_pf"] = ak.max(ak.flatten(
             ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerV3d_diff), axis=-1), axis=-1)
+        
         ljs["dxySpread_ele"] = ak.max(ak.flatten(
             ljs["electrons"].metric_table(ljs["electrons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1)
         ljs["dzSpread_ele"] = ak.max(ak.flatten(
             ljs["electrons"].metric_table(ljs["electrons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1)
+
+        ljs["vxSpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vx_diff), axis=-1), axis=-1)
+        ljs["vySpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vy_diff), axis=-1), axis=-1)
+        ljs["vzSpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vz_diff), axis=-1), axis=-1)
+        ljs["dxySpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1)
+        ljs["dzSpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1)
+        ljs["vxySpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vxy_diff), axis=-1), axis=-1)
+        ljs["vyzSpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vyz_diff), axis=-1), axis=-1)
+        ljs["vzxSpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vzx_diff), axis=-1), axis=-1)
+        ljs["v3dSpread_mu"] = ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.v3d_diff), axis=-1), axis=-1)
 
         # LJ isolation
         ljs["matched_jet"] = ljs.nearest(objs["jets"], threshold=0.4)       
