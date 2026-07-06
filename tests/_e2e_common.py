@@ -4,7 +4,8 @@ Runs the SidmProcessor over a small committed fixture (a 200-event 2Mu2E signal
 file) and exposes the pieces the report compares between `main` and the PR:
   * broken hist collections    -- static: collections referencing undefined hists
   * processor warnings         -- the "Unable to apply ... Skipping" lines, captured
-  * per-channel cutflow counts -- raw cumulative event counts (selection regression)
+  * per-channel cutflow counts -- raw + weighted cumulative counts (selection regression)
+  * channel health             -- which channels are regression-insensitive on the fixture
 
 There is no committed baseline: chain_report.py recomputes both sides from the
 checkout it runs against, so there is nothing for these helpers to keep in sync.
@@ -28,8 +29,17 @@ FIXTURE = os.path.join(_HERE, "data", "events_2mu2e_500GeV_200ev.root")
 # A signal-shaped dataset name so the processor takes its "assume 1 fb" path
 # instead of failing the cross-section lookup.
 DATASET = "2Mu2E_500GeV_1p2GeV_1p9mm"
+# Deliberately non-unit: postprocess scales the weighted column by
+# lumi*xs/(sum_w/skim_factor), so at skim_factor=1.0 (with the fixture's
+# genWeights identically 1.0) the /skim_factor path is a numerical no-op and a
+# PR that broke or dropped the skim_factor handling would leave every weighted
+# number unchanged; at 0.5 such a bug moves every weighted row.
+SKIM_FACTOR = 0.5
 
 # One channel per selection family, for the histogram-coverage / plotting pass.
+# chain_report.py intersects this list with all_channels() at run time, so a
+# channel renamed or removed on one side is skipped (and reported) on that side
+# rather than crashing it.
 REPRESENTATIVE_CHANNELS = [
     "base", "baseNoLj", "2mu2e", "4mu", "base_sr", "2mu2e_sr",
     "gen_leptons_final", "gen_leptons_born", "base_ljObjCut_ljIso",
@@ -94,7 +104,8 @@ def run_chain(channels, collections):
     from coffea import processor
     from sidm.tools import sidm_processor, llpnanoaodschema
     fileset = {DATASET: {"files": [FIXTURE],
-                         "metadata": {"is_data": False, "year": "2018", "skim_factor": 1.0}}}
+                         "metadata": {"is_data": False, "year": "2018",
+                                      "skim_factor": SKIM_FACTOR}}}
     runner = processor.Runner(
         executor=processor.IterativeExecutor(),
         schema=llpnanoaodschema.LLPNanoAODSchema,
@@ -112,8 +123,45 @@ def run_chain(channels, collections):
 def cutflow_counts(per_sample_output):
     """{channel: {cut_name: raw_cumulative_count}} for each channel's EVENT-LEVEL cut
     sequence (object-level cuts slim collections but add no cutflow rows). Raw integer
-    counts -- deterministic and independent of the (1 fb placeholder) cross-section
-    weighting, so the weighted column is intentionally ignored."""
+    counts -- deterministic and independent of the weighting."""
     cf = per_sample_output["cutflow"]
     return {ch: {cut: int(cf[ch].rows[cut]["raw"]) for cut in cf[ch].rows}
             for ch in cf}
+
+
+def cutflow_weighted(per_sample_output):
+    """{channel: {cut_name: weighted_cumulative_count}} -- the weighted twin of
+    cutflow_counts, rounded to 6 decimals for a stable diff. This is the column that
+    moves when weights/normalization change without any raw count changing."""
+    cf = per_sample_output["cutflow"]
+    return {ch: {cut: round(float(cf[ch].rows[cut]["weighted"]), 6) for cut in cf[ch].rows}
+            for ch in cf}
+
+
+def scaled_sum_weights(per_sample_output):
+    """The sample-level sum(genWeight)/skim_factor the processor uses for lumi*xs/Sw
+    normalization, rounded for a stable diff. None if absent."""
+    val = per_sample_output.get("metadata", {}).get("scaled_sum_weights")
+    return None if val is None else round(float(val), 6)
+
+
+def channel_health(per_sample_output):
+    """Which channels' cutflows the fixture cannot regression-test:
+    {"zero_final": [...], "no_cut_rows": [...]}. zero_final = the final event-level
+    cut leaves 0 events, so downstream count regressions are invisible. no_cut_rows
+    = the cutflow holds only the initial "None" total (the channel applies no
+    event-level cuts -- object-cut-only and cut-fragment-style channels), so the
+    count check sees nothing beyond the event total. Note this is about the CUTFLOW
+    only: a channel whose distinguishing cuts are all object-level (e.g. the
+    electron-ID family) has generic event rows and is NOT flagged here, but its ID
+    content is still invisible to the count check. Uses the in-memory row order
+    (the persisted JSON is key-sorted, so the final cut is only known here)."""
+    cf = per_sample_output["cutflow"]
+    zero_final, no_cut_rows = [], []
+    for ch in cf:
+        rows = cf[ch].rows
+        if set(rows) <= {"None"}:
+            no_cut_rows.append(ch)
+        elif int(list(rows.values())[-1]["raw"]) == 0:
+            zero_final.append(ch)
+    return {"zero_final": sorted(zero_final), "no_cut_rows": sorted(no_cut_rows)}

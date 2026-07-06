@@ -298,6 +298,8 @@ All the interesting code in this repository is in `SIDM/sidm/`, which is organiz
 - `test_notebooks` contains notebooks to test new classes or functionalities as they are added. These notebooks can also serve as a form  of unit test: if you edit some code in a way that you think shouldn't affect the behavior, you can run these notebooks to confirm the output is unchanged.
 - `studies` is where the physics happens. The notebooks in this directory are meant to serve effectively as pages in a lab notebook. The intention is to create a new notebook for each unique physics study and to include markdown comments to describe the intentions and observations of the person performing the study. These notebooks can also serve as unit tests in the same way as those in `test_notebooks`.
 
+Outside `sidm/`, the repository-level `tests/` directory holds the per-PR chain-report CI harness and its committed fixture — see [`tests/README.md`](tests/README.md).
+
 ## Analysis how-tos
 
 ### General workflow
@@ -306,7 +308,7 @@ I suggest the following workflow for performing a physics study:
 2. Create a new notebook in `studies` with a descriptive name (e.g. `study_lepton_isolation.ipynb`)
 3. Following the examples of the existing notebooks in `studies`, use `sidm_processor` to apply cuts and make histograms starting from an Firefighter ntuple of your choosing. Make sure to describe your reasoning and observations in text as you go.
 4. If you find you need to define new selections, new cuts, or new histograms, follow the guides below.
-5. Commit your changes as you go and submit a Pull Request once you have a reasonable standalone study or have added new selections, cuts, histograms, objects, classes, or features.
+5. Commit your changes as you go and submit a Pull Request once you have a reasonable standalone study or have added new selections, cuts, histograms, objects, classes, or features. Every PR automatically gets an advisory chain report comparing your branch to `main` (cutflows, hist collections, warnings); see [`tests/README.md`](tests/README.md).
 
 ### How to define a new histogram and add it to a collection
 1. Add an entry to the `hist_defs` dictionary inside [hists.py](https://github.com/btcardwell/SIDM/blob/440069c11e78814da88c86e67fe635d4b655ef6d/analysis/definitions/hists.py). One can potentially do this by mimicking the structure of the existing histograms, but here are some details for those who are interested:
