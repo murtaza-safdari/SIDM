@@ -908,7 +908,6 @@ cosmic_muons: &cosmic_muons
   - "back_to_back_dsa_pair_xz_distance"
   - "parallel_dsa_pair_xz_distance"
   - "muLj_dsaMu_dsaMu_cosAlpha"
-  - "muLj_dsaMu_dsaMu_cosAlpha2"
   - "mu_lj_N_dsa_pairs"
   - "mu_lj_N_back_to_back_dsa"
   - "mu_lj_N_parallel_dsa"
