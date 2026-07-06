@@ -1,8 +1,11 @@
 # Run3 4Mu signal samples (private full-chain production; LLPNanoAOD).
 # Auto-generated from EOS: /store/group/lpcmetx/SIDM/run3_samplegen/outputs/<era>/. ntuple_version key = era (2022/2022EE/2023/2023BPix).
-# Consume via make_fileset(samples, ntuple_version=<era>, location_cfg='signal_4mu_run3.yaml', replace_xcache=False).
+# Consume via make_fileset(samples, ntuple_version=<era>, location_cfg='signal_4mu_run3.yaml', replace_xcache=True).
+# NOTE: sample keys repeat identically across all four era blocks (no era token in the key),
+#       so consume ONE era at a time. Merging eras into a single fileset requires namespacing
+#       by era first (otherwise the shared keys collide / overwrite).
 '2022':
-  path: root://cmseos.fnal.gov//store/group/lpcmetx/SIDM/run3_samplegen/outputs/2022/
+  path: root://xcache//store/group/lpcmetx/SIDM/run3_samplegen/outputs/2022/
   samples:
     4Mu_1000GeV_0p25GeV_0p002mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p002/
@@ -725,7 +728,7 @@
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j003.root
 '2022EE':
-  path: root://cmseos.fnal.gov//store/group/lpcmetx/SIDM/run3_samplegen/outputs/2022EE/
+  path: root://xcache//store/group/lpcmetx/SIDM/run3_samplegen/outputs/2022EE/
   samples:
     4Mu_1000GeV_0p25GeV_0p002mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p002/
@@ -1448,7 +1451,7 @@
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022EE_j003.root
 '2023':
-  path: root://cmseos.fnal.gov//store/group/lpcmetx/SIDM/run3_samplegen/outputs/2023/
+  path: root://xcache//store/group/lpcmetx/SIDM/run3_samplegen/outputs/2023/
   samples:
     4Mu_1000GeV_0p25GeV_0p002mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p002/
@@ -2063,6 +2066,7 @@
       year: '2023'
       files:
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025_2023_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025_2023_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025_2023_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025_2023_j003.root
     4Mu_800GeV_0p25GeV_0p25mm:
@@ -2169,3 +2173,726 @@
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2023_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2023_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2023_j003.root
+'2023BPix':
+  path: root://xcache//store/group/lpcmetx/SIDM/run3_samplegen/outputs/2023BPix/
+  samples:
+    4Mu_1000GeV_0p25GeV_0p002mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p002/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p002_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p002_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p002_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p002_2023BPix_j003.root
+    4Mu_1000GeV_0p25GeV_0p02mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p02/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p02_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p02_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p02_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p02_2023BPix_j003.root
+    4Mu_1000GeV_0p25GeV_0p2mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2023BPix_j003.root
+    4Mu_1000GeV_0p25GeV_1p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-1p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-1p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-1p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-1p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-1p0_2023BPix_j003.root
+    4Mu_1000GeV_0p25GeV_2p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-2p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-2p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-2p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-2p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-2p0_2023BPix_j003.root
+    4Mu_1000GeV_1p2GeV_0p0096mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p0096/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p0096_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p0096_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p0096_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p0096_2023BPix_j003.root
+    4Mu_1000GeV_1p2GeV_0p096mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p096/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p096_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p096_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p096_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p096_2023BPix_j003.root
+    4Mu_1000GeV_1p2GeV_0p96mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2023BPix_j003.root
+    4Mu_1000GeV_1p2GeV_4p8mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-4p8/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-4p8_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-4p8_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-4p8_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-4p8_2023BPix_j003.root
+    4Mu_1000GeV_1p2GeV_9p6mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-9p6/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-9p6_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-9p6_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-9p6_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-9p6_2023BPix_j003.root
+    4Mu_1000GeV_5p0GeV_0p04mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p04/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p04_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p04_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p04_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p04_2023BPix_j003.root
+    4Mu_1000GeV_5p0GeV_0p4mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p4/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p4_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p4_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p4_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-0p4_2023BPix_j003.root
+    4Mu_1000GeV_5p0GeV_20p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-20p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-20p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-20p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-20p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-20p0_2023BPix_j003.root
+    4Mu_1000GeV_5p0GeV_40p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-40p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-40p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-40p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-40p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-40p0_2023BPix_j003.root
+    4Mu_1000GeV_5p0GeV_4p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2023BPix_j003.root
+    4Mu_100GeV_0p25GeV_0p02mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p02/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p02_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p02_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p02_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p02_2023BPix_j003.root
+    4Mu_100GeV_0p25GeV_0p2mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p2/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p2_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p2_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p2_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p2_2023BPix_j003.root
+    4Mu_100GeV_0p25GeV_10p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-10p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-10p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-10p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-10p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-10p0_2023BPix_j003.root
+    4Mu_100GeV_0p25GeV_20p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-20p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-20p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-20p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-20p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-20p0_2023BPix_j003.root
+    4Mu_100GeV_0p25GeV_2p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2023BPix_j003.root
+    4Mu_100GeV_1p2GeV_0p096mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p096/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p096_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p096_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p096_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p096_2023BPix_j003.root
+    4Mu_100GeV_1p2GeV_0p96mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p96/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p96_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p96_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p96_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p96_2023BPix_j003.root
+    4Mu_100GeV_1p2GeV_48p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-48p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-48p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-48p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-48p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-48p0_2023BPix_j003.root
+    4Mu_100GeV_1p2GeV_96p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-96p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-96p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-96p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-96p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-96p0_2023BPix_j003.root
+    4Mu_100GeV_1p2GeV_9p6mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2023BPix_j003.root
+    4Mu_100GeV_5p0GeV_0p4mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-0p4/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-0p4_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-0p4_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-0p4_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-0p4_2023BPix_j003.root
+    4Mu_100GeV_5p0GeV_200mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-200/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-200_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-200_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-200_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-200_2023BPix_j003.root
+    4Mu_100GeV_5p0GeV_400mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-400/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-400_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-400_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-400_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-400_2023BPix_j003.root
+    4Mu_100GeV_5p0GeV_40p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2023BPix_j003.root
+    4Mu_100GeV_5p0GeV_4p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-4p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-4p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-4p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-4p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-4p0_2023BPix_j003.root
+    4Mu_150GeV_0p25GeV_0p013mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p013/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p013_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p013_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p013_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p013_2023BPix_j003.root
+    4Mu_150GeV_0p25GeV_0p13mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p13/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p13_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p13_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p13_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-0p13_2023BPix_j003.root
+    4Mu_150GeV_0p25GeV_13p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-13p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-13p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-13p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-13p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-13p0_2023BPix_j003.root
+    4Mu_150GeV_0p25GeV_1p3mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2023BPix_j003.root
+    4Mu_150GeV_0p25GeV_6p7mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-6p7/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-6p7_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-6p7_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-6p7_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-6p7_2023BPix_j003.root
+    4Mu_150GeV_1p2GeV_0p064mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p064/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p064_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p064_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p064_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p064_2023BPix_j003.root
+    4Mu_150GeV_1p2GeV_0p64mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p64/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p64_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p64_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p64_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-0p64_2023BPix_j003.root
+    4Mu_150GeV_1p2GeV_32p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-32p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-32p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-32p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-32p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-32p0_2023BPix_j003.root
+    4Mu_150GeV_1p2GeV_64p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-64p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-64p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-64p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-64p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-64p0_2023BPix_j003.root
+    4Mu_150GeV_1p2GeV_6p4mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2023BPix_j003.root
+    4Mu_150GeV_5p0GeV_0p27mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-0p27/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-0p27_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-0p27_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-0p27_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-0p27_2023BPix_j003.root
+    4Mu_150GeV_5p0GeV_130p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-130p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-130p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-130p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-130p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-130p0_2023BPix_j003.root
+    4Mu_150GeV_5p0GeV_270p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-270p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-270p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-270p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-270p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-270p0_2023BPix_j003.root
+    4Mu_150GeV_5p0GeV_27p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2023BPix_j003.root
+    4Mu_150GeV_5p0GeV_2p7mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-2p7/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-2p7_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-2p7_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-2p7_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-2p7_2023BPix_j003.root
+    4Mu_200GeV_0p25GeV_0p01mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p01/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p01_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p01_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p01_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p01_2023BPix_j003.root
+    4Mu_200GeV_0p25GeV_0p1mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p1/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p1_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p1_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p1_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-0p1_2023BPix_j003.root
+    4Mu_200GeV_0p25GeV_10p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-10p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-10p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-10p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-10p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-10p0_2023BPix_j003.root
+    4Mu_200GeV_0p25GeV_1p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2023BPix_j003.root
+    4Mu_200GeV_0p25GeV_5p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-5p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-5p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-5p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-5p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-5p0_2023BPix_j003.root
+    4Mu_200GeV_1p2GeV_0p048mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p048/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p048_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p048_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p048_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p048_2023BPix_j003.root
+    4Mu_200GeV_1p2GeV_0p48mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p48/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p48_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p48_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p48_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-0p48_2023BPix_j003.root
+    4Mu_200GeV_1p2GeV_24p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-24p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-24p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-24p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-24p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-24p0_2023BPix_j003.root
+    4Mu_200GeV_1p2GeV_48p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-48p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-48p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-48p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-48p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-48p0_2023BPix_j003.root
+    4Mu_200GeV_1p2GeV_4p8mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2023BPix_j003.root
+    4Mu_200GeV_5p0GeV_0p2mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-0p2/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-0p2_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-0p2_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-0p2_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-0p2_2023BPix_j003.root
+    4Mu_200GeV_5p0GeV_100p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-100p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-100p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-100p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-100p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-100p0_2023BPix_j003.root
+    4Mu_200GeV_5p0GeV_200p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-200p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-200p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-200p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-200p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-200p0_2023BPix_j003.root
+    4Mu_200GeV_5p0GeV_20p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2023BPix_j003.root
+    4Mu_200GeV_5p0GeV_2p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-2p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-2p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-2p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-2p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-2p0_2023BPix_j003.root
+    4Mu_500GeV_0p25GeV_0p004mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p004/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p004_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p004_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p004_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p004_2023BPix_j003.root
+    4Mu_500GeV_0p25GeV_0p04mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p04/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p04_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p04_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p04_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p04_2023BPix_j003.root
+    4Mu_500GeV_0p25GeV_0p4mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2023BPix_j003.root
+    4Mu_500GeV_0p25GeV_2p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-2p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-2p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-2p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-2p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-2p0_2023BPix_j003.root
+    4Mu_500GeV_0p25GeV_4p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-4p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-4p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-4p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-4p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-4p0_2023BPix_j003.root
+    4Mu_500GeV_1p2GeV_0p019mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p019/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p019_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p019_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p019_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p019_2023BPix_j003.root
+    4Mu_500GeV_1p2GeV_0p19mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p19/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p19_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p19_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p19_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-0p19_2023BPix_j003.root
+    4Mu_500GeV_1p2GeV_19p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-19p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-19p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-19p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-19p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-19p0_2023BPix_j003.root
+    4Mu_500GeV_1p2GeV_1p9mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2023BPix_j003.root
+    4Mu_500GeV_1p2GeV_9p6mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-9p6/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-9p6_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-9p6_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-9p6_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-9p6_2023BPix_j003.root
+    4Mu_500GeV_5p0GeV_0p08mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p08/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p08_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p08_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p08_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p08_2023BPix_j003.root
+    4Mu_500GeV_5p0GeV_0p8mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p8/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p8_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p8_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p8_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-0p8_2023BPix_j003.root
+    4Mu_500GeV_5p0GeV_40p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-40p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-40p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-40p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-40p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-40p0_2023BPix_j003.root
+    4Mu_500GeV_5p0GeV_80p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-80p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-80p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-80p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-80p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-80p0_2023BPix_j003.root
+    4Mu_500GeV_5p0GeV_8p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2023BPix_j003.root
+    4Mu_800GeV_0p25GeV_0p0025mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p0025/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p0025_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p0025_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p0025_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p0025_2023BPix_j003.root
+    4Mu_800GeV_0p25GeV_0p025mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p025_2023BPix_j003.root
+    4Mu_800GeV_0p25GeV_0p25mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2023BPix_j003.root
+    4Mu_800GeV_0p25GeV_1p2mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-1p2/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-1p2_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-1p2_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-1p2_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-1p2_2023BPix_j003.root
+    4Mu_800GeV_0p25GeV_2p5mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-2p5/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-2p5_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-2p5_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-2p5_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-2p5_2023BPix_j003.root
+    4Mu_800GeV_1p2GeV_0p012mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p012/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p012_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p012_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p012_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p012_2023BPix_j003.root
+    4Mu_800GeV_1p2GeV_0p12mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p12/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p12_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p12_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p12_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-0p12_2023BPix_j003.root
+    4Mu_800GeV_1p2GeV_12p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-12p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-12p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-12p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-12p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-12p0_2023BPix_j003.root
+    4Mu_800GeV_1p2GeV_1p2mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2023BPix_j003.root
+    4Mu_800GeV_1p2GeV_6p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-6p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-6p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-6p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-6p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-6p0_2023BPix_j003.root
+    4Mu_800GeV_5p0GeV_0p05mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p05/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p05_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p05_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p05_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p05_2023BPix_j003.root
+    4Mu_800GeV_5p0GeV_0p5mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p5/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p5_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p5_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p5_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-0p5_2023BPix_j003.root
+    4Mu_800GeV_5p0GeV_25p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-25p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-25p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-25p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-25p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-25p0_2023BPix_j003.root
+    4Mu_800GeV_5p0GeV_50p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-50p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-50p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-50p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-50p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-50p0_2023BPix_j003.root
+    4Mu_800GeV_5p0GeV_5p0mm:
+      path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0/
+      year: '2023BPix'
+      files:
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2023BPix_j000.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2023BPix_j001.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2023BPix_j002.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2023BPix_j003.root
