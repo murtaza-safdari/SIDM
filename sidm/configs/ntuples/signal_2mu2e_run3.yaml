@@ -403,6 +403,7 @@
       path: SIDM_BsTo2DpTo2Mu2E_MBs-200_MDp-0p25_ctau-5p0/
       year: '2022'
       files:
+      - SIDM_BsTo2DpTo2Mu2E_MBs-200_MDp-0p25_ctau-5p0_2022_j000.root
       - SIDM_BsTo2DpTo2Mu2E_MBs-200_MDp-0p25_ctau-5p0_2022_j001.root
       - SIDM_BsTo2DpTo2Mu2E_MBs-200_MDp-0p25_ctau-5p0_2022_j002.root
       - SIDM_BsTo2DpTo2Mu2E_MBs-200_MDp-0p25_ctau-5p0_2022_j003.root
@@ -926,6 +927,7 @@
       year: '2022EE'
       files:
       - SIDM_BsTo2DpTo2Mu2E_MBs-100_MDp-1p2_ctau-9p6_2022EE_j000.root
+      - SIDM_BsTo2DpTo2Mu2E_MBs-100_MDp-1p2_ctau-9p6_2022EE_j001.root
       - SIDM_BsTo2DpTo2Mu2E_MBs-100_MDp-1p2_ctau-9p6_2022EE_j002.root
       - SIDM_BsTo2DpTo2Mu2E_MBs-100_MDp-1p2_ctau-9p6_2022EE_j003.root
     2Mu2E_100GeV_5p0GeV_0p4mm:
