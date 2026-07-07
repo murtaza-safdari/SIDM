@@ -81,6 +81,7 @@ def make_lpc_client(
     image=_DEFAULT_LPC_IMAGE,
     sidm_local_dir=_DEFAULT_SIDM_LOCAL_DIR,
     condor_config=_DEFAULT_LPC_CONFIG,
+    dashboard_port=None,
     **cluster_kwargs,
 ):
     """Create an LPCCondorCluster + Client for scaling SIDM jobs from a notebook on cmslpc.
@@ -110,6 +111,16 @@ def make_lpc_client(
             condor/lpc_condor_config in this repo, a minimal LPC interactive
             config that omits the cmslpc-local-conf.py include directive
             (which references a per-user file that does not exist on every node).
+        dashboard_port: pin the scheduler's Bokeh dashboard to this port on
+            the LPC side. None (default) uses dask's default of 8787. Pass an
+            int, e.g. 8790, to move the dashboard off 8787 when another one is
+            already there (coffea-casa also serves its Dask dashboard on
+            8787), then forward that same port in your
+            `ssh -L <port>:localhost:<port>` tunnel; or pass 0 to let dask
+            pick any free port. Any requested port (8787 or a pinned one) is
+            only a request: if it is already in use on the node, distributed
+            warns and rebinds to a random free port, so forward whatever port
+            `cluster.dashboard_link` actually prints.
         **cluster_kwargs: forwarded to LPCCondorCluster.
 
     Returns:
@@ -134,6 +145,18 @@ def make_lpc_client(
     # otherwise clobber the setting.
     if "JUPYTERHUB_SERVICE_PREFIX" not in os.environ:
         dask.config.set({"distributed.dashboard.link": "{scheme}://localhost:{port}/status"})
+
+    # Pin the scheduler's Bokeh dashboard to a specific port when asked, e.g. to
+    # avoid a clash with another dashboard already on 8787 (coffea-casa serves its
+    # Dask dashboard there too). The same port must be forwarded in the
+    # `ssh -L <port>:localhost:<port>` tunnel, because cluster.dashboard_link
+    # reports the scheduler's actual port. Merge into any caller-supplied
+    # scheduler_options without clobbering an explicit dashboard_address; left at
+    # dask's default when dashboard_port is None.
+    if dashboard_port is not None:
+        scheduler_options = dict(cluster_kwargs.pop("scheduler_options", None) or {})
+        scheduler_options.setdefault("dashboard_address", f":{dashboard_port}")
+        cluster_kwargs["scheduler_options"] = scheduler_options
 
     cluster = LPCCondorCluster(
         memory=memory,
