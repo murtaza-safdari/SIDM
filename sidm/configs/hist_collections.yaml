@@ -837,4 +837,7 @@ Muon_selection_bkg_base: &Muon_selection_bkg_base
   - "mulj_egmlj_invmass"
   - "mu_lj_isolation"
 
+trig_base: &trig_base
+  - "all_muon0_pt_vs_all_muon1_pt"
+
 

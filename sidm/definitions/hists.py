@@ -679,6 +679,25 @@ hist_defs = {
                    lambda objs, mask: dR(objs["dsaMuons"], objs["genMus"]))
         ],
     ),
+    #Leading vs subleading muon
+    "all_muon0_pt_vs_all_muon1_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(50, 0, 100, name="all_muon0_pt", 
+                                     label="Leading Event Muon (PF or DSA) pT [GeV]"),
+                   lambda objs, mask: ak.sort(
+                       ak.concatenate([objs["muons"].pt, objs["dsaMuons"].pt], axis=-1), 
+                       axis=-1, ascending=False
+                   )[mask, 0]),
+            h.Axis(hist.axis.Regular(50, 0, 100, name="all_muon1_pt", 
+                                     label="Sub-leading Event Muon (PF or DSA) pT [GeV]"),
+                   lambda objs, mask: ak.sort(
+                       ak.concatenate([objs["muons"].pt, objs["dsaMuons"].pt], axis=-1), 
+                       axis=-1, ascending=False
+                   )[mask, 1]),
+        ],
+        evt_mask=lambda objs: (ak.num(objs["muons"]) + ak.num(objs["dsaMuons"])) > 1,
+    ),
+    
     # lj
     "lj_n": obj_attr("ljs", "n"),
     "lj_iso": obj_attr("ljs", "isolation", nbins=50, xmax=2),
