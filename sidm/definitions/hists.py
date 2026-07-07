@@ -5408,6 +5408,11 @@ hist_defs = {
     "mu_lj_vyzSpread_mu": obj_attr("mu_ljs", "vyzSpread_mu", xmax=500, nbins=500),
     "mu_lj_vzxSpread_mu": obj_attr("mu_ljs", "vzxSpread_mu", xmax=500, nbins=500),
     "mu_lj_v3dSpread_mu": obj_attr("mu_ljs", "v3dSpread_mu", xmax=500, nbins=500),
-  
+    "dsaMu_pfMu_dR_closest": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, 0, 1, name="dsaMu_pfMu_dR_closest"),
+                   lambda objs, mask: dR(objs["dsaMuons"], objs["muons"])),
+        ],
+    ),
    
 }
