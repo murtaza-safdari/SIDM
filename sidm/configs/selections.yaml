@@ -2268,7 +2268,7 @@ data_control_region_1Lj_dzSpreadDSA5_pf5_vxySpreadDSA5_pf5: &data_control_region
     - "pass flags"
     -  "= 1 muLj or 1 egmLJ"
 
-data_control_region_1Lj_dzSpreadDSA50_pf10_vxySpreadDSA50_pf10: &data_control_region_1Lj_dzSpreadDSA5_pf5_vxySpreadDSA5_pf5
+data_control_region_1Lj_dzSpreadDSA50_pf10_vxySpreadDSA50_pf10: &data_control_region_1Lj_dzSpreadDSA50_pf10_vxySpreadDSA50_pf10
   obj_cuts:
     <<: *obj_ljsource_cuts
   postLj_obj_cuts:
