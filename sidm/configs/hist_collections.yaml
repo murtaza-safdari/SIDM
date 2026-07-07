@@ -1017,6 +1017,7 @@ cosmic_muons: &cosmic_muons
   - "mu_lj_vyzSpread_mu"
   - "mu_lj_vzxSpread_mu"
   - "mu_lj_v3dSpread_mu"
+  - "dsaMu_pfMu_dR_closest"
 
 data_base: &data_base
   - "egm_lj_n"
