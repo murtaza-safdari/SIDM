@@ -154,9 +154,10 @@ def make_lpc_client(
     # scheduler_options without clobbering an explicit dashboard_address; left at
     # dask's default when dashboard_port is None.
     if dashboard_port is not None:
-        scheduler_options = dict(cluster_kwargs.pop("scheduler_options", None) or {})
-        scheduler_options.setdefault("dashboard_address", f":{dashboard_port}")
-        cluster_kwargs["scheduler_options"] = scheduler_options
+        cluster_kwargs["scheduler_options"] = {
+            "dashboard_address": f":{dashboard_port}",
+            **(cluster_kwargs.pop("scheduler_options", None) or {}),
+        }
 
     cluster = LPCCondorCluster(
         memory=memory,
