@@ -683,9 +683,7 @@ hist_defs = {
     "lj_n": obj_attr("ljs", "n"),
     "lj_iso": obj_attr("ljs", "isolation", nbins=50, xmax=2),
     "egm_lj_n": obj_attr("egm_ljs", "n"),
-    "egm_lj_iso": obj_attr("egm_ljs", "isolation", nbins=50, xmax=2),
     "mu_lj_n": obj_attr("mu_ljs", "n"),
-    "mu_lj_iso": obj_attr("mu_ljs", "isolation", nbins=50, xmax=2),
     "lj_pt": obj_attr("ljs", "pt", xmax=700),
     "lj_e": h.Histogram(
         [
@@ -3316,7 +3314,6 @@ hist_defs = {
     "genAs_n": obj_attr("genAs", "n"),
     "genAs_toMu_n": obj_attr("genAs_toMu", "n"),
     "genAs_toE_n": obj_attr("genAs_toE", "n"),
-    "genAs_pt": obj_attr("genAs", "pt", xmax=200),
     "genAs_pt_highRange": obj_attr("genAs", "pt", xmax=700),
     "genAs_eta_phi": obj_eta_phi("genAs"),
     "genAs_toMu_matched_muLj_n": h.Histogram(
