@@ -188,11 +188,14 @@ class SidmProcessor(processor.ProcessorABC):
                 lj_selection = selection.JaggedSelection(cuts["lj"], self.verbose)
                 sel_objs = lj_selection.apply_obj_cuts(sel_objs)
 
-                # add post-lj objects to sel_objs
+                # add post-lj objects to sel_objs; keep the merge LOCAL so the
+                # MC-only objects never leak onto a later data chunk processed
+                # by the same instance
+                postLj_objs = self.postLj_objs
                 if not is_data:
-                    self.postLj_objs = {**self.postLj_objs, **self.postLj_objs_MC}
-                for obj in self.postLj_objs:
-                    sel_objs[obj] = self.postLj_objs[obj](sel_objs)
+                    postLj_objs = {**self.postLj_objs, **self.postLj_objs_MC}
+                for obj in postLj_objs:
+                    sel_objs[obj] = postLj_objs[obj](sel_objs)
 
                 # apply post-lj obj selection
                 postLj_selection = selection.JaggedSelection(cuts["postLj_obj"], self.verbose)
@@ -530,8 +533,14 @@ class SidmProcessor(processor.ProcessorABC):
             year = output["metadata"]["year"].pop()
             sum_weights = output["metadata"]["scaled_sum_weights"]
             lumixs_weight = utilities.get_lumixs_weight(sample, year, sum_weights)
-            for name in output["cutflow"]:
-                accumulator[sample]["cutflow"][name].scale(lumixs_weight)
+            for name, cf in output["cutflow"].items():
+                # with >1 lj_reco choice the cutflow keeps an extra
+                # {lj_reco: {channel: cutflow}} level (see process(), end)
+                if isinstance(cf, dict):
+                    for inner in cf.values():
+                        inner.scale(lumixs_weight)
+                else:
+                    cf.scale(lumixs_weight)
             if not self.unweighted_hist:
                 for name in output["hists"]:
                     accumulator[sample]["hists"][name] *= lumixs_weight
