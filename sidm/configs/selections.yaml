@@ -2284,4 +2284,66 @@ data_control_region_1Lj_dzSpreadDSA50_pf10_vxySpreadDSA50_pf10: &data_control_re
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"
+    - "= 1 muLj or 1 egmLJ"
+
+data_control_region_1Lj_modified: &data_control_region_1Lj_modified
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 muLj or 1 egmLJ"
+
+data_control_region_1Lj_modified_looseSpread: &data_control_region_1Lj_modified_looseSpread
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+      - "dzSpread_dsa <= 500000"
+      - "vxySpread_dsa <= 500000"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 muLj or 1 egmLJ"
+
+data_control_region_1Lj_modified_looseSpread_mu: &data_control_region_1Lj_modified_looseSpread_mu
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+      - "dzSpread_mu <= 500000"
+      - "vxySpread_mu <= 500000"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 muLj or 1 egmLJ"
+
+data_control_region_1Lj_dzSpreadPF5_vxySpreadPF5: &data_control_region_1Lj_dzSpreadPF5_vxySpreadPF5
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+      - "dzSpread_pf <= 5"
+      - "vxySpread_pf <= 5"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
     -  "= 1 muLj or 1 egmLJ"
