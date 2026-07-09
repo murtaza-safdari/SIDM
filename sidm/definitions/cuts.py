@@ -20,6 +20,7 @@ obj_cut_defs = {
         "pT > 50 GeV": lambda objs: objs["ljs"].pt > 50,
         "pT > 60 GeV": lambda objs: objs["ljs"].pt > 60,
         "pT < 150 GeV": lambda objs: objs["ljs"].pt < 150,
+        "pT < 650 GeV": lambda objs: objs["ljs"].pt < 650,
         "|eta| < 2.4": lambda objs: abs(objs["ljs"].eta) < 2.4,
         "barrel": lambda objs: abs(objs["ljs"].eta) < 1.479,
         "endcap": lambda objs: ((abs(objs["ljs"].eta) > 1.479)& (abs(objs["ljs"].eta) < 2.4)),
