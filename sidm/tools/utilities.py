@@ -317,7 +317,11 @@ def plot_ratio(num, den, **kwargs):
         num = [num]
 
     for i, x in enumerate(num):
-        plot(x, flow='none', label=label)
+        # per-curve labels (legend[0] is the denominator); tolerate a short or
+        # absent legend list, which d7e132a fixed the no-legend crash for
+        num_label = (kwargs["legend"][i + 1]
+                     if "legend" in kwargs and len(kwargs["legend"]) > i + 1 else None)
+        plot(x, flow='none', label=num_label)
 
     if "legend" in kwargs:
         ax1.legend(title = kwargs["text"], alignment="left")
