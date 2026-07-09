@@ -27,6 +27,6 @@ Diboson:
   - ZZ
 
 Background:
-  - DYtoMuMu
+  - DYJetsToMuMu
   - QCD
   - TTJets
