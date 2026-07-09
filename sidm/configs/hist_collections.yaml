@@ -278,17 +278,17 @@ egm_matched_jet_base: &egm_matched_jet_base
 isolation_base: &isolation_base
   - "lj_isolation"
   - "lj_isolation_zoom"
-  - "mu_lj_isolation"
+  - "mu_lj_iso"
   - "mu_lj_isolation_zoom"
-  - "pfmu_lj_isolation"
+  - "pfmu_lj_iso"
   - "pfmu_lj_isolation_zoom"
-  - "dsamu_lj_isolation"
+  - "dsamu_lj_iso"
   - "dsamu_lj_isolation_zoom"
-  - "egm_lj_isolation"
+  - "egm_lj_iso"
   - "egm_lj_isolation_zoom"
-  - "electron_lj_isolation"
+  - "electron_lj_iso"
   - "electron_lj_isolation_zoom"
-  - "photon_lj_isolation"
+  - "photon_lj_iso"
   - "photon_lj_isolation_zoom"
 
 abcd_base: &abcd_base
@@ -830,11 +830,11 @@ Muon_selection_base: &Muon_selection_base
   - "mu_lj_pt"
   - "muLj_genA_ptRatio"
   - "mulj_egmlj_invmass"
-  - "mu_lj_isolation"
+  - "mu_lj_iso"
 
 Muon_selection_bkg_base: &Muon_selection_bkg_base
   - "mu_lj_pt"
   - "mulj_egmlj_invmass"
-  - "mu_lj_isolation"
+  - "mu_lj_iso"
 
 
