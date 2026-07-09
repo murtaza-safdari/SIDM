@@ -217,7 +217,10 @@ obj_cut_defs = {
 
 evt_cut_defs = {
     # This following will be True for every event. There's probably a more intuitive way to do this
-    "Keep all evts": lambda objs: objs["pvs"].npvs >= 0,
+    # ak.flatten because pvs is promoted to a jagged count-1 collection in the
+    # processor; without it this mask is jagged and awkward silently truncates
+    # and cross-event-misaligns every jagged collection it is applied to
+    "Keep all evts": lambda objs: ak.flatten(objs["pvs"].npvs) >= 0,
     "pass triggers": lambda objs: (
           objs["hlt"].DoubleL2Mu23NoVtx_2Cha
         | objs["hlt"].DoubleL2Mu23NoVtx_2Cha_CosmicSeed
