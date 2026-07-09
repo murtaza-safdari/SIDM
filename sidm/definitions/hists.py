@@ -1388,7 +1388,7 @@ hist_defs = {
     "leading_egm_lj_electron_min_dxy": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 0.1, name=r"Leading $e\gamma$- type LJ  $e$ min $d_{xy}$"),
-                   lambda objs, mask: ak.max(abs(objs["egm_ljs"][mask, 0].electrons.dxy), axis=-1)),
+                   lambda objs, mask: ak.min(abs(objs["egm_ljs"][mask, 0].electrons.dxy), axis=-1)),
         ],
         evt_mask=lambda objs: (ak.num(objs["egm_ljs"]) > 0)
     ),
@@ -1402,7 +1402,7 @@ hist_defs = {
     "leading_mu_lj_pf_muon_min_dxy": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 0.1, name=r"Leading $\mu$- type LJ PF $\mu$ min $d_{xy}$"),
-                   lambda objs, mask: ak.max(abs(objs["mu_ljs"][mask, 0].pfMuons.dxy), axis=-1)),
+                   lambda objs, mask: ak.min(abs(objs["mu_ljs"][mask, 0].pfMuons.dxy), axis=-1)),
         ],
         evt_mask=lambda objs: (ak.num(objs["mu_ljs"]) > 0)
     ),
@@ -2762,14 +2762,14 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.05, name="genE_matched_lj_electron_dxy",
                                      label="genE_matched_lj_electron_dxy"),
-                   lambda objs, mask: abs(dxy(objs["electrons"].matched_gen[objs["electrons"].matched_gen.status == 1], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["egm_ljs"].electrons.matched_gen[objs["egm_ljs"].electrons.matched_gen.status == 1], ref=objs["pvs"]))),
         ],
     ),
     "genE_matched_lj_electron_dxy_XLowRange":  h.Histogram(
         [
-            h.Axis(hist.axis.Regular(100, 0, 0.01, name="genE_matched_electron_dxy",
-                                     label="genE_matched_electron_dxy"),
-                   lambda objs, mask: abs(dxy(objs["electrons"].matched_gen[objs["electrons"].matched_gen.status == 1], ref=objs["pvs"]))),
+            h.Axis(hist.axis.Regular(100, 0, 0.01, name="genE_matched_lj_electron_dxy",
+                                     label="genE_matched_lj_electron_dxy"),
+                   lambda objs, mask: abs(dxy(objs["egm_ljs"].electrons.matched_gen[objs["egm_ljs"].electrons.matched_gen.status == 1], ref=objs["pvs"]))),
         ],
     ),
     "genE_matched_electron_status":  h.Histogram(
