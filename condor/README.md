@@ -177,6 +177,11 @@ condor/job_args.txt
 condor/filelists/*.txt
 ```
 
+Each filelist starts with a `# metadata: year=... is_data=... skim_factor=...` header,
+taken from the location yaml, which `run_sidm_chunk.py` uses to build the processor
+metadata (a filelist without the header falls back to MC defaults — `is_data=False`,
+`skim_factor=1.0`, `year=2018` — with a warning; correct for unskimmed signal MC only).
+
 ### Backgrounds
 
 For backgrounds, use chunks of around 10 ROOT files per job:

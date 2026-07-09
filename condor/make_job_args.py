@@ -61,6 +61,11 @@ def main():
             else:
                 files = list(sample_info)
 
+            md = sample_info.get("metadata", {}) if isinstance(sample_info, dict) else {}
+            header = ("# metadata: "
+                      f"year={md.get('year', '2018')} "
+                      f"is_data={1 if md.get('is_data', False) else 0} "
+                      f"skim_factor={md.get('skim_factor', 1.0)}\n")
             for i in range(0, len(files), args.files_per_job):
                 chunk = i // args.files_per_job
                 chunk_files = files[i:i + args.files_per_job]
@@ -69,6 +74,9 @@ def main():
                 filelist_path = Path(args.outdir) / filelist_name
 
                 with open(filelist_path, "w") as f:
+                    # consumed by run_sidm_chunk.read_filelist_metadata; older
+                    # workers simply skip it as a comment
+                    f.write(header)
                     for root_file in chunk_files:
                         f.write(root_file + "\n")
 
