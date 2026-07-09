@@ -5414,5 +5414,11 @@ hist_defs = {
                    lambda objs, mask: dR(objs["dsaMuons"], objs["muons"])),
         ],
     ),
+    "dsaMu_pfMu_pt_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, -100, 100, name="dsaMu_pfMu_pt_diff"),
+                   lambda objs, mask: objs["dsaMuons"].pt - objs["dsaMuons"].nearest(objs["muons"], threshold=0.1).pt),
+        ],
+    ),
    
 }
