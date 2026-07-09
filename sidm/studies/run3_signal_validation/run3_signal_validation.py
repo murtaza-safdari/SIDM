@@ -23,14 +23,26 @@ def nominal_mm(sample):
     return float(sample.split("_")[-1].replace("mm", "").replace("p", "."))
 
 
-def analyze(sample, era, location_cfg, nfiles=4):
+def _fileset_files(sample, era, location_cfg, nfiles):
+    """File URLs for one sample, read straight from the location YAML. Unlike
+    utilities.make_fileset this tolerates entries without a per-sample 'path' key
+    (the v10 signal configs), so the same helper reads Run 3 and 2018 v10 samples."""
+    blk = utilities.load_yaml(f"{utilities.BASE_DIR}/configs/ntuples/{location_cfg}")[era]
+    entry = blk["samples"][sample]
+    urls = [blk["path"] + entry.get("path", "") + f for f in entry["files"]]
+    urls = [u.replace("root://xcache//", "root://cmseos.fnal.gov//") for u in urls]
+    return urls[:nfiles] if nfiles and nfiles > 0 else urls
+
+
+def analyze(sample, era, location_cfg, nfiles=4, lep_abseta_max=None, lep_pt_min=None):
     """Return gen-level quantities for one sample:
-    proper_mm and dR (ONE entry per dark photon), plus dpmass / lep_pt / lep_abseta (per lepton)."""
-    fs = utilities.make_fileset([sample], era, max_files=nfiles, location_cfg=location_cfg,
-                                replace_xcache=True)
+    proper_mm and dR (ONE entry per dark photon), plus dpmass / lep_pt / lep_abseta (per lepton).
+    lep_abseta_max / lep_pt_min: optional lepton acceptance cuts (used to emulate the gen-level
+    acceptance the 2018 v10 production applied); per-lepton for the flat spectra, both-leptons for
+    dR. proper_mm and dpmass are never cut."""
     proper, dR, dpmass, lpt, leta = [], [], [], [], []
     nmu = nel = 0
-    for f in fs[sample]["files"]:
+    for f in _fileset_files(sample, era, location_cfg, nfiles):
         a = uproot.open(f)["Events"].arrays(BR)
         pid, vx, vy, vz = a["GenPart_pdgId"], a["GenPart_vx"], a["GenPart_vy"], a["GenPart_vz"]
         pt, eta, phi, mass, mom = (a["GenPart_pt"], a["GenPart_eta"], a["GenPart_phi"],
@@ -39,12 +51,18 @@ def analyze(sample, era, location_cfg, nfiles=4):
         sel = ((abs(pid) == 11) | (abs(pid) == 13)) & (mom >= 0) & (abs(mom_pid) == 32)  # leptons from a dark photon
         # per-lepton kinematics (correct as per-lepton)
         dpmass.append(ak.to_numpy(ak.flatten(mass[abs(pid) == 32])))
-        lpt.append(ak.to_numpy(ak.flatten(pt[sel]))); leta.append(ak.to_numpy(ak.flatten(abs(eta[sel]))))
+        lsel = sel
+        if lep_abseta_max is not None:
+            lsel = lsel & (abs(eta) < lep_abseta_max)
+        if lep_pt_min is not None:
+            lsel = lsel & (pt > lep_pt_min)
+        lpt.append(ak.to_numpy(ak.flatten(pt[lsel]))); leta.append(ak.to_numpy(ak.flatten(abs(eta[lsel]))))
         nmu += int(ak.sum(sel & (abs(pid) == 13))); nel += int(ak.sum(sel & (abs(pid) == 11)))
         # per-dark-photon quantities: pair the two lepton daughters by their common mother index
-        for ev_eta, ev_phi, ev_mom, ev_vx, ev_vy, ev_vz, ev_apt, ev_aeta, ev_am, ev_avx, ev_avy, ev_avz in zip(
-                eta[sel], phi[sel], mom[sel], vx[sel], vy[sel], vz[sel],
+        for ev_lpt, ev_eta, ev_phi, ev_mom, ev_vx, ev_vy, ev_vz, ev_apt, ev_aeta, ev_am, ev_avx, ev_avy, ev_avz in zip(
+                pt[sel], eta[sel], phi[sel], mom[sel], vx[sel], vy[sel], vz[sel],
                 pt, eta, mass, vx, vy, vz):
+            ev_lpt = ak.to_numpy(ev_lpt)
             ev_eta = ak.to_numpy(ev_eta); ev_phi = ak.to_numpy(ev_phi); ev_mom = ak.to_numpy(ev_mom)
             ev_vx = ak.to_numpy(ev_vx); ev_vy = ak.to_numpy(ev_vy); ev_vz = ak.to_numpy(ev_vz)
             ev_apt = ak.to_numpy(ev_apt); ev_aeta = ak.to_numpy(ev_aeta); ev_am = ak.to_numpy(ev_am)
@@ -60,6 +78,12 @@ def analyze(sample, era, location_cfg, nfiles=4):
                 if bg > 0:
                     proper.append(dl / bg * 10.0)             # cm -> mm
                 if len(idx) == 2:
+                    if lep_abseta_max is not None and (abs(ev_eta[idx[0]]) >= lep_abseta_max
+                                                       or abs(ev_eta[idx[1]]) >= lep_abseta_max):
+                        continue
+                    if lep_pt_min is not None and (ev_lpt[idx[0]] <= lep_pt_min
+                                                   or ev_lpt[idx[1]] <= lep_pt_min):
+                        continue
                     d_phi = np.arctan2(np.sin(ev_phi[idx[0]] - ev_phi[idx[1]]),
                                        np.cos(ev_phi[idx[0]] - ev_phi[idx[1]]))
                     dR.append(np.hypot(ev_eta[idx[0]] - ev_eta[idx[1]], d_phi))
