@@ -26,7 +26,8 @@ ljsource_cuts: &ljsource_cuts
       - "pT > 10 GeV"
       - "|eta| < 2.4"
       - "displaced ID"
-      - "all" # cross-cleaning
+      # - "all" # cross-cleaning
+      - "all + segment fraction < 1"
 
 # require final-state gen e and mu
 gen_level_cuts: &gen_level_cuts
