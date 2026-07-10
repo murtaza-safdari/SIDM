@@ -161,6 +161,72 @@ def lab_pt_ratio(objs, mask, lep_name):
     subleading_pt = sorted_parts[:, 1].pt
     return subleading_pt / leading_pt
 
+# --- helpers for the ABCD plane-choice scan hists (sidm/studies/abcd_plane_study) ---
+# Every SR cut value used by the study is an exact bin edge; final catch-all bins
+# replace under/overflow (flow=False) so the N-dim hists stay at the budgeted size.
+abcd_iso_edges = [-0.02] + [round(0.025*i, 3) for i in range(29)] + [1000.0]
+abcd_dphi_edges = [0, 0.4, 0.8, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, math.pi]
+abcd_mjj_edges = [0, 50, 100, 150, 200, 250, 300, 400, 500, 700, 1000, 14000]
+abcd_iso3_mu_edges = [-0.02, 0.0, 0.25, 1000.0]   # sentinel / pass (< 0.25) / fail
+abcd_iso3_egm_edges = [-0.02, 0.0, 0.10, 1000.0]  # sentinel / pass (< 0.10) / fail
+abcd_pix4_edges = [-1.5, -0.5, 2.5, 3.5, 100.0]   # no-pix-info (DSA-only LJ or trackless PF mu, both -1) / <=2 / ==3 / >=4
+abcd_pix8_edges = [-1.5, -0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 100.0]
+abcd_pix2_edges = [-1.5, 2.5, 100.0]              # pass (DSA-only or <=2) / fail (>=3)
+abcd_lost2_edges = [-0.5, 0.5, 20.0, 1000.0]      # 0 / >=1 / photon-only (999 constituent fill)
+abcd_lost4_edges = [-0.5, 0.5, 1.5, 2.5, 20.0, 1000.0]  # 0 / 1 / 2 / >=3 / photon-only (999)
+
+def abcd_iso_sentinel(lj):
+    """LJ isolation with failed-jet-match sentinel (-0.01) and negative-iso clamp.
+
+    The processor fills isolation with 0 when no AK4 jet lies within dR < 0.4 of the
+    LJ (ak.fill_none), hiding those LJs among genuinely isolated ones; lepton_fraction
+    keeps the None, so it identifies them. Real isolation can go float-negative when
+    the matched jet's lepton fraction exceeds 1; clamp to 0 so it stays out of the
+    sentinel bin.
+    """
+    return ak.where(ak.is_none(lj.lepton_fraction), -0.01,
+                    ak.where(lj.isolation < 0, 0.0, lj.isolation))
+
+def abcd_max_pix(lj):
+    """Max pixel hits among an LJ's PF muons; -1 when the LJ has no PF muons (DSA-only)."""
+    return ak.fill_none(ak.max(lj.pfMuons.trkNumPixelHits, axis=-1), -1)
+
+def abcd_min_lost(lj):
+    """Min lost (missing inner) hits among an LJ's e/gamma constituents.
+
+    egm-type LJs always have >=1 e/gamma constituent, so the min is defined; the
+    fill_none(999) is symmetry hardening only (a None here would otherwise make
+    histogram.fill skip the whole hist for the chunk, silently).
+    """
+    return ak.fill_none(ak.min(lj.egamma.lostHits, axis=-1), 999)
+
+def abcd_mask_2mu2e(objs):
+    """The 2mu2e channel condition, so these hists stay empty in other channels."""
+    return ((ak.num(objs["ljs"]) >= 2)
+            & (ak.count_nonzero(objs["ljs"][:, :2].muon_n >= 2, axis=-1) == 1)
+            & (ak.count_nonzero(objs["ljs"][:, :2].muon_n == 0, axis=-1) == 1))
+
+def abcd_mask_4mu(objs):
+    """The 4mu channel condition, so these hists stay empty in other channels."""
+    return ((ak.num(objs["ljs"]) >= 2)
+            & (ak.count_nonzero(objs["ljs"][:, :2].muon_n >= 2, axis=-1) == 2))
+
+def abcd_axis(edges, name, label, fill):
+    return h.Axis(hist.axis.Variable(edges, name=name, label=label, flow=False), fill)
+
+def abcd_parity_axis():
+    return h.Axis(hist.axis.IntCategory([0, 1], name="parity", label="event number mod 2"),
+                  lambda objs, mask: objs["evtNum"][mask] % 2)
+
+def abcd_dphi_axis():
+    return abcd_axis(abcd_dphi_edges, "dphi", r"|$\Delta\phi$|($LJ_0$, $LJ_1$)",
+                     lambda objs, mask: abs(objs["ljs"][mask, 0].delta_phi(objs["ljs"][mask, 1])))
+
+def abcd_mjj_axis():
+    return abcd_axis(abcd_mjj_edges, "mjj", r"$m_{JJ}$($LJ_0$, $LJ_1$) (GeV)",
+                     lambda objs, mask: objs["ljs"][mask, :2].sum().mass)
+
+
 hist_defs = {
     # pv
     "pv_n": obj_attr("pvs", "npvs", nbins=50, label="Number of PVs"),
@@ -2709,6 +2775,138 @@ hist_defs = {
                    lambda objs, mask: objs["ljs"][mask, 0].pt / objs["ljs"][mask, 1].pt),
         ],
         evt_mask=lambda objs: ak.num(objs["ljs"]) > 1,
+    ),
+    # ABCD plane-choice scan hists (sidm/studies/abcd_plane_study): N-dim histograms
+    # so ABCD-boundary scans AND dPhi/mJJ/displacement event-cut scans happen offline
+    # from one processing pass. All fills are per-event scalars from the leading LJs;
+    # the parity axis supports selection on even events / confirmation on odd events.
+    "abcd_scan_2mu2e_iso_iso": h.Histogram(
+        [
+            abcd_axis(abcd_iso_edges, "muiso", "mu-LJ isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso_edges, "egmiso", "egm-LJ isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+            abcd_dphi_axis(),
+            abcd_mjj_axis(),
+            abcd_axis(abcd_pix4_edges, "mudisp", "mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_lost2_edges, "egmdisp", "egm-LJ min lost hits",
+                      lambda objs, mask: abcd_min_lost(objs["egm_ljs"][mask, 0])),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_2mu2e,
+    ),
+    "abcd_scan_2mu2e_muiso_mupix": h.Histogram(
+        [
+            abcd_axis(abcd_iso_edges, "muiso", "mu-LJ isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_pix8_edges, "mupix", "mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso3_egm_edges, "egmiso3", "egm-LJ isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+            abcd_axis(abcd_lost2_edges, "egmdisp", "egm-LJ min lost hits",
+                      lambda objs, mask: abcd_min_lost(objs["egm_ljs"][mask, 0])),
+            abcd_dphi_axis(),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_2mu2e,
+    ),
+    "abcd_scan_2mu2e_egmiso_egmlost": h.Histogram(
+        [
+            abcd_axis(abcd_iso_edges, "egmiso", "egm-LJ isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+            abcd_axis(abcd_lost4_edges, "egmlost", "egm-LJ min lost hits",
+                      lambda objs, mask: abcd_min_lost(objs["egm_ljs"][mask, 0])),
+            abcd_axis(abcd_iso3_mu_edges, "muiso3", "mu-LJ isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_pix2_edges, "mudisp2", "mu-LJ displacement pass/fail",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+            abcd_dphi_axis(),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_2mu2e,
+    ),
+    "abcd_scan_2mu2e_pix_lost": h.Histogram(
+        [
+            abcd_axis(abcd_pix8_edges, "mupix", "mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_lost4_edges, "egmlost", "egm-LJ min lost hits",
+                      lambda objs, mask: abcd_min_lost(objs["egm_ljs"][mask, 0])),
+            abcd_axis(abcd_iso3_mu_edges, "muiso3", "mu-LJ isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso3_egm_edges, "egmiso3", "egm-LJ isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+            abcd_dphi_axis(),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_2mu2e,
+    ),
+    "abcd_scan_4mu_iso_iso": h.Histogram(
+        [
+            abcd_axis(abcd_iso_edges, "muiso0", "leading mu-LJ isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso_edges, "muiso1", "subleading mu-LJ isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+            abcd_dphi_axis(),
+            abcd_mjj_axis(),
+            abcd_axis(abcd_pix4_edges, "mudisp0", "leading mu-LJ max PF-mu pixel hits",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_pix4_edges, "mudisp1", "subleading mu-LJ max PF-mu pixel hits",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 1])),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_4mu,
+    ),
+    "abcd_scan_4mu_iso_pix_lead": h.Histogram(
+        [
+            abcd_axis(abcd_iso_edges, "muiso0", "leading mu-LJ isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_pix8_edges, "mupix0", "leading mu-LJ max PF-mu pixel hits",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso3_mu_edges, "muiso3_1", "subleading mu-LJ isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+            abcd_axis(abcd_pix2_edges, "mudisp2_1", "subleading mu-LJ displacement pass/fail",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 1])),
+            abcd_dphi_axis(),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_4mu,
+    ),
+    "abcd_scan_4mu_iso_pix_sub": h.Histogram(
+        [
+            abcd_axis(abcd_iso_edges, "muiso1", "subleading mu-LJ isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+            abcd_axis(abcd_pix8_edges, "mupix1", "subleading mu-LJ max PF-mu pixel hits",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 1])),
+            abcd_axis(abcd_iso3_mu_edges, "muiso3_0", "leading mu-LJ isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_pix2_edges, "mudisp2_0", "leading mu-LJ displacement pass/fail",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+            abcd_dphi_axis(),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_4mu,
+    ),
+    "abcd_scan_4mu_pix_pix": h.Histogram(
+        [
+            abcd_axis(abcd_pix8_edges, "mupix0", "leading mu-LJ max PF-mu pixel hits",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_pix8_edges, "mupix1", "subleading mu-LJ max PF-mu pixel hits",
+                      lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 1])),
+            abcd_axis(abcd_iso3_mu_edges, "muiso3_0", "leading mu-LJ isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso3_mu_edges, "muiso3_1", "subleading mu-LJ isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+            abcd_dphi_axis(),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_4mu,
     ),
     # gen
     "gen_abspid": h.Histogram(

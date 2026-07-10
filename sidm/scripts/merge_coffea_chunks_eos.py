@@ -104,6 +104,75 @@ def parse_sample_chunk(path):
     return sample, chunk
 
 
+def unwrap_chunk(out):
+    """Normalize a loaded chunk to the bare {sample: output} dict.
+
+    condor/run_sidm_chunk.py saves coffea Runner.run()'s wrapped return value
+    {"out": {sample: ...}, "processed": set, "exception": int} (its all-empty
+    fallback uses the same shape); older chunk files saved the bare dict. The
+    per-chunk renormalization keys on sample outputs one level down, so unwrap
+    first -- otherwise the wrapped shape silently falls through to plain
+    accumulation and the merged yields inflate by roughly the chunk count.
+    """
+    if isinstance(out, dict) and "out" in out and "processed" in out:
+        return out["out"]
+    return out
+
+
+def _scaled_flags(meta, unweighted_override=None):
+    """(scale_cutflow, scale_hists): which objects postprocess scaled per chunk."""
+    is_data_set = meta.get("is_data")
+    if is_data_set and bool(next(iter(is_data_set))):
+        return False, False                       # data: nothing was scaled
+    uw_set = meta.get("unweighted_hist")
+    if uw_set:
+        unweighted = bool(next(iter(uw_set)))
+    elif unweighted_override is not None:
+        unweighted = bool(unweighted_override)
+    else:
+        print("  WARNING: chunk metadata lacks 'unweighted_hist' and no --unweighted-hist "
+              "override was given; assuming WEIGHTED. Pass --unweighted-hist if this run used "
+              "unweighted hists, else the hist normalization will be wrong.")
+        unweighted = False
+    return True, (not unweighted)
+
+
+def prescale_chunk(out, unweighted_override=None):
+    """Undo the per-chunk lumi*xs/sumw_chunk scaling (multiply back by sumw_chunk)."""
+    for sout in out.values():
+        if not isinstance(sout, dict) or "metadata" not in sout:
+            continue
+        sumw = sout["metadata"].get("scaled_sum_weights", 0) or 0
+        if not sumw:
+            continue
+        scale_cf, scale_h = _scaled_flags(sout["metadata"], unweighted_override)
+        if scale_cf:
+            for n in sout.get("cutflow", {}):
+                sout["cutflow"][n].scale(sumw)
+        if scale_h:
+            for n in sout.get("hists", {}):
+                sout["hists"][n] = sout["hists"][n] * sumw
+
+
+def finalize_merged(merged, unweighted_override=None):
+    """Divide the accumulated raw-equivalent objects once by the total sumw."""
+    for sout in merged.values():
+        if not isinstance(sout, dict) or "metadata" not in sout:
+            continue
+        sumw_full = sout["metadata"].get("scaled_sum_weights", 0) or 0
+        if not sumw_full:
+            continue
+        scale_cf, scale_h = _scaled_flags(sout["metadata"], unweighted_override)
+        inv = 1.0 / sumw_full
+        if scale_cf:
+            for n in sout.get("cutflow", {}):
+                sout["cutflow"][n].scale(inv)
+        if scale_h:
+            for n in sout.get("hists", {}):
+                sout["hists"][n] = sout["hists"][n] * inv
+    return merged
+
+
 def combine_normalized_chunks(outputs, unweighted_override=None):
     """Combine per-chunk SidmProcessor outputs that were normalized PER CHUNK in postprocess.
 
@@ -118,54 +187,11 @@ def combine_normalized_chunks(outputs, unweighted_override=None):
     unweighted_override is only for OLD outputs whose metadata predates the 'unweighted_hist' key;
     newer runs store it, so the merge is self-describing.
     """
-    def scaled(meta):
-        is_data_set = meta.get("is_data")
-        if is_data_set and bool(next(iter(is_data_set))):
-            return False, False                       # data: nothing was scaled
-        uw_set = meta.get("unweighted_hist")
-        if uw_set:
-            unweighted = bool(next(iter(uw_set)))
-        elif unweighted_override is not None:
-            unweighted = bool(unweighted_override)
-        else:
-            print("  WARNING: chunk metadata lacks 'unweighted_hist' and no --unweighted-hist "
-                  "override was given; assuming WEIGHTED. Pass --unweighted-hist if this run used "
-                  "unweighted hists, else the hist normalization will be wrong.")
-            unweighted = False
-        return True, (not unweighted)                 # (scale_cutflow, scale_hists)
-
+    outputs = [unwrap_chunk(out) for out in outputs]
     for out in outputs:
-        for sout in out.values():
-            if not isinstance(sout, dict) or "metadata" not in sout:
-                continue
-            sumw = sout["metadata"].get("scaled_sum_weights", 0) or 0
-            if not sumw:
-                continue
-            scale_cf, scale_h = scaled(sout["metadata"])
-            if scale_cf:
-                for n in sout.get("cutflow", {}):
-                    sout["cutflow"][n].scale(sumw)
-            if scale_h:
-                for n in sout.get("hists", {}):
-                    sout["hists"][n] = sout["hists"][n] * sumw
-
+        prescale_chunk(out, unweighted_override)
     merged = processor.accumulate(outputs)
-
-    for sout in merged.values():
-        if not isinstance(sout, dict) or "metadata" not in sout:
-            continue
-        sumw_full = sout["metadata"].get("scaled_sum_weights", 0) or 0
-        if not sumw_full:
-            continue
-        scale_cf, scale_h = scaled(sout["metadata"])
-        inv = 1.0 / sumw_full
-        if scale_cf:
-            for n in sout.get("cutflow", {}):
-                sout["cutflow"][n].scale(inv)
-        if scale_h:
-            for n in sout.get("hists", {}):
-                sout["hists"][n] = sout["hists"][n] * inv
-    return merged
+    return finalize_merged(merged, unweighted_override)
 
 
 def main():
@@ -297,15 +323,18 @@ def main():
 
         print(f"Loading and accumulating {len(local_paths)} chunks for {sample}")
 
-        outputs = []
-
+        # Load -> unwrap -> pre-scale -> accumulate one chunk at a time so peak
+        # memory stays at ~2 chunks (the dense N-dim scan hists make holding a
+        # whole sample's chunk list simultaneously prohibitively large).
+        override = True if args.unweighted_hist else None
+        merged = None
         for i, path in enumerate(sorted(local_paths)):
             if i % 50 == 0:
                 print(f"  loading chunk {i+1}/{len(local_paths)}")
-            outputs.append(load(path))
-
-        merged = combine_normalized_chunks(
-            outputs, unweighted_override=(True if args.unweighted_hist else None))
+            out = unwrap_chunk(load(path))
+            prescale_chunk(out, override)
+            merged = out if merged is None else processor.accumulate([merged, out])
+        merged = finalize_merged(merged, override)
 
         local_merged_path = os.path.join(local_merged_dir, f"{sample}.coffea")
         save(merged, local_merged_path)

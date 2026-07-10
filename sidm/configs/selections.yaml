@@ -136,6 +136,35 @@ base_sr: &base_sr
     - *evt_sr
     - "2mu2e"
 
+# ABCD plane-choice scan channels (sidm/studies/abcd_plane_study): "base" with the
+# team-final DSA-muon cross-cleaning; dPhi/mJJ/isolation/displacement are deliberately
+# NOT cut here -- they are histogram axes in the abcd_scan hist collections
+base_abcd_scan: &base_abcd_scan
+  obj_cuts: &obj_base_abcd_scan
+    <<: *obj_baseNoLj
+    dsaMuons:
+      - "pT > 10 GeV"
+      - "|eta| < 2.4"
+      - "displaced ID"
+      - "all + segment fraction < 1" # final cross-cleaning
+  postLj_obj_cuts:
+    <<: *base_postLj_obj_cuts
+  evt_cuts:
+    - *evt_base
+
+4mu_abcd_scan: &4mu_abcd_scan
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "4mu"
+
+2mu2e_abcd_scan: &2mu2e_abcd_scan
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "2mu2e"
+
+
 
 ### Control regions and specific studies ###
 

@@ -11,6 +11,9 @@ EOS_OUTDIR=$4
 # that don't pass them keep working.
 CHANNELS=${5:-base}
 HIST_COLLECTIONS=${6:-muon_base}
+# Optional positional arg 7: "weighted" keeps genWeight-weighted hists
+# (omits --unweighted-hist). Default preserves the historical unweighted behavior.
+HIST_WEIGHT_MODE=${7:-unweighted}
 
 echo "Host:"
 hostname
@@ -90,6 +93,11 @@ cat "${FILELIST_BASENAME}"
 # ------------------------------------------------------------
 # 5. Run processor using venv python
 # ------------------------------------------------------------
+UNWEIGHTED_FLAG="--unweighted-hist"
+if [[ "${HIST_WEIGHT_MODE}" == "weighted" ]]; then
+    UNWEIGHTED_FLAG=""
+fi
+
 python condor/run_sidm_chunk.py \
     --sample "${SAMPLE}" \
     --filelist "${FILELIST_BASENAME}" \
@@ -98,7 +106,7 @@ python condor/run_sidm_chunk.py \
     --workers 1 \
     --channels "${CHANNELS}" \
     --hist-collections "${HIST_COLLECTIONS}" \
-    --unweighted-hist
+    ${UNWEIGHTED_FLAG}
 
 echo "Output:"
 ls -lh "${OUTFILE}"

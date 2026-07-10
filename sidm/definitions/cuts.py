@@ -211,6 +211,12 @@ obj_cut_defs = {
         "segmatch veto + num seg": lambda objs, dsa: ak.all((dsa.good_matched_muons.numMatch < 1) | (dsa.good_matched_muons.numMatch/(dsa.nSegments[:,:,None]) < 0.34), axis=2),
         "all": lambda objs, dsa: ak.all((dsa.good_matched_muons.numMatch < 1) | (dR_outer(dsa[:,:,None], dsa.good_matched_muons) > 0.1) | (dsa.good_matched_muons.numMatch/(dsa.nSegments[:,:,None]) < 0.34), axis=2),
         "all + charge": lambda objs, dsa: ak.all((dsa.good_matched_muons.numMatch < 1) | (dsa.charge[:,:,None] != dsa.good_matched_muons.charge) | (dR_outer(dsa[:,:,None], dsa.good_matched_muons) > 0.1) | (dsa.good_matched_muons.numMatch/(dsa.nSegments[:,:,None]) < 0.34), axis=2),
+        # final cross-cleaning: "all" AND no PF muon sharing 100% of the DSA segments
+        "all + segment fraction < 1": lambda objs, dsa: ak.all(
+            ((dsa.good_matched_muons.numMatch < 1) | (dR_outer(dsa[:,:,None], dsa.good_matched_muons) > 0.1) | (dsa.good_matched_muons.numMatch/(dsa.nSegments[:,:,None]) < 0.34))
+            & ((dsa.good_matched_muons.numMatch < 1) | (dsa.good_matched_muons.numMatch/(dsa.nSegments[:,:,None]) < 1)),
+            axis=2,
+        ),
     },
 }
 
@@ -256,6 +262,7 @@ evt_cut_defs = {
     "genMus": lambda objs: ak.num(objs["genMus"]) > 1,
     "dR(Mu_0, Mu_1) > 0.03": lambda objs: objs["genMus"][:,0].delta_r(objs["genMus"][:,1]) > 0.03,
     "LJ-LJ dPhi > 2": lambda objs: abs(objs["ljs"][:, 0].delta_phi(objs["ljs"][:, 1])) > 2.0,
+    "mJJ >= 150 GeV": lambda objs: objs["ljs"][:, :2].sum().mass >= 150,
     "= 1 LJs": lambda objs: ak.num(objs["ljs"]) == 1,
     "= 1 muLJs": lambda objs: (ak.num(objs["mu_ljs"]) == 1) & (ak.num(objs["egm_ljs"]) == 0),
     "= 1 egmLJs": lambda objs: (ak.num(objs["mu_ljs"]) == 0) & (ak.num(objs["egm_ljs"]) == 1),
