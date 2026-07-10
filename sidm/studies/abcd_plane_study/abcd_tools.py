@@ -39,6 +39,7 @@ def project_plane(h, xaxis, yaxis, sel=None):
       "sum"            integrate the full axis
       ("lt", v)        integrate bins with upper edge <= v (v must be an edge)
       ("ge", v)        integrate bins with lower edge >= v
+      ("window", a, b) integrate bins in [a, b) (both must be edges)
       ("bin", i)       take bin index i only
       ("bins", [i,..]) sum a list of bin indices
     Any axis not in sel is integrated over ("sum").
@@ -58,6 +59,9 @@ def project_plane(h, xaxis, yaxis, sel=None):
         elif spec[0] == "ge":
             i = edge_index(np.asarray(out.axes[ax].edges), spec[1])
             out = out[{ax: slice(i, len(out.axes[ax].edges) - 1, sum)}]
+        elif spec[0] == "window":
+            e = np.asarray(out.axes[ax].edges)
+            out = out[{ax: slice(edge_index(e, spec[1]), edge_index(e, spec[2]), sum)}]
         elif spec[0] == "bin":
             out = out[{ax: slice(spec[1], spec[1] + 1, sum)}]
         elif spec[0] == "bins":
