@@ -74,6 +74,30 @@ def load_normalized(sample, sumw_pre_map, ttjets_nnlo=False):
     return {n: h * factor for n, h in o["hists"].items()}, o
 
 
+def accumulate_normalized(samples, sumw_pre_map, keep_prefix="abcd_scan", ttjets_nnlo=False):
+    """Memory-safe sums of normalized hists: (total, by_process).
+
+    Loads ONE sample at a time, keeps only hists whose name starts with keep_prefix
+    (the dense scan hists decompress to ~200 MB per sample — holding all 44 samples
+    OOMs the interactive node), and frees each sample before the next.
+    """
+    import gc
+    total, by_process = {}, {p: {} for p in PROCESSES}
+    for s in samples:
+        hists, _ = load_normalized(s, sumw_pre_map, ttjets_nnlo=ttjets_nnlo)
+        proc = BACKGROUNDS.get(s)
+        for n, h in hists.items():
+            if keep_prefix and not n.startswith(keep_prefix):
+                continue
+            total[n] = h if n not in total else total[n] + h
+            if proc is not None:
+                bp = by_process[proc]
+                bp[n] = h if n not in bp else bp[n] + h
+        del hists
+        gc.collect()
+    return total, by_process
+
+
 def sum_process(hists_by_sample, samples):
     """Sum one hist name across samples: {name: summed hist} for the given samples."""
     out = {}

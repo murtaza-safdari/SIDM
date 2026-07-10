@@ -352,12 +352,23 @@ def ttjets_xsec_rescale():
     return TTJETS_XSEC_NNLO / TTJETS_XSEC_CAMPAIGN
 
 
-def census_sumw_pre(summary_path):
-    """{sample: pre-skim/pre-filter sum of gen weights} from a census summary JSON."""
-    d = json.load(open(summary_path))
+def census_sumw_pre(path):
+    """{sample: pre-skim/pre-filter sum of gen weights} from a census JSON.
+
+    Accepts either a census SUMMARY ({"samples": [per-sample records]}) or a raw
+    MANIFEST ({"files": [per-file records]}), aggregating reachable files' Runs
+    genEventSumw in the latter case."""
+    d = json.load(open(path))
     out = {}
-    for rec in d["samples"]:
-        out[rec["sample"]] = rec.get("genEventSumw_reachable_raw") or 0.0
+    if "samples" in d:
+        for rec in d["samples"]:
+            out[rec["sample"]] = rec.get("genEventSumw_reachable_raw") or 0.0
+    elif "files" in d:
+        for f in d["files"]:
+            if f.get("status") == "reachable" and f.get("genEventSumw"):
+                out[f["sample"]] = out.get(f["sample"], 0.0) + f["genEventSumw"]
+    else:
+        raise ValueError(f"unrecognized census format in {path}: keys {list(d)[:5]}")
     return out
 
 
