@@ -248,6 +248,51 @@ def factorization_fit(vals, var, n_eff_floor=10.0, max_iter=500, tol=1e-10):
             "expected": expected, "rebinned": (v, w), "groups": (rows, cols)}
 
 
+def extended_prediction(vals, var, xedges, yedges, xspec, yspec,
+                        xlo=None, xhi=None, ylo=None, yhi=None,
+                        n_eff_floor=10.0, n_boot=300, seed=29):
+    """Extended-ABCD prediction of the A region from ALL sideband bins.
+
+    Fits mu_ij = a_i * b_j on the plane with the A quadrant masked out (adaptive
+    rebinning as in factorization_fit), then sums the fitted expectation over the
+    A quadrant. Statistically this is the per-object fake-factor method: each axis's
+    pass rate is measured from every sideband simultaneously, so the prediction
+    error is typically much smaller than B*C/D from three regions. Same core
+    independence assumption as plain ABCD.
+
+    Returns (A_obs, A_obs_var, A_pred, A_pred_var_bootstrap).
+    """
+    rng = np.random.default_rng(seed)
+    xp, xf = _axis_split(np.asarray(xedges), xspec, xlo, xhi)
+    yp, yf = _axis_split(np.asarray(yedges), yspec, ylo, yhi)
+    vals = np.asarray(vals, float)
+    var = np.asarray(var, float)
+
+    def predict(v, w):
+        # fit mu_ij = a_i b_j on the ORIGINAL grid with the A quadrant masked
+        # (no rebinning: a goodness-of-fit needs healthy bins, a prediction does
+        # not — the IPF marginals are well-defined on sparse grids), then sum the
+        # fitted expectation over the A quadrant.
+        m = np.ones_like(v, bool)
+        m[xp, yp] = False                       # mask the A quadrant
+        fit = factorization_fit(np.where(m, v, 0.0), np.where(m, w, 0.0),
+                                n_eff_floor=0.0)
+        a, b = fit["a"], fit["b"]
+        return float(np.outer(a, b)[xp, yp].sum())
+
+    a_obs = float(vals[xp, yp].sum())
+    a_var = float(var[xp, yp].sum())
+    central = predict(vals, var)
+    ne = np.where(var > 0, vals**2 / np.maximum(var, 1e-300), 0.0)
+    scale = np.where(ne > 0, vals / np.maximum(ne, 1e-300), 0.0)
+    draws = []
+    for _ in range(n_boot):
+        k = rng.poisson(ne)
+        draws.append(predict(scale * k, np.maximum(scale**2 * k, 1e-300)))
+    draws = np.array(draws)
+    return a_obs, a_var, float(central), float(np.var(draws[np.isfinite(draws)]))
+
+
 def weighted_correlation(vals, xedges, yedges):
     """Weighted Pearson correlation of the two plane variables from the 2D array
     (bin centers weighted by bin content). Descriptive only — the gate is the fit."""

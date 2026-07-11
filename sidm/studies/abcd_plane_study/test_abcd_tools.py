@@ -12,7 +12,7 @@ import pytest
 from abcd_tools import (edge_index, region_sums, abcd_prediction, closure_ratio, kappa,
                         n_eff, factorization_fit, weighted_correlation,
                         bootstrap_closures, asimov_z, leakage_ratios,
-                        prediction_bias_vs_mu, offline_norm_factor)
+                        prediction_bias_vs_mu, offline_norm_factor, extended_prediction)
 
 
 XE = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
@@ -179,3 +179,22 @@ def test_offline_norm_factor():
         pytest.approx(0.09666, rel=1e-3)
     with pytest.raises(ValueError):
         offline_norm_factor({"scaled_sum_weights": 1.0}, 0.0)
+
+
+def test_extended_prediction_unbiased_and_tighter():
+    """On factorizable toys the all-sidebands estimator must be unbiased and have a
+    smaller variance than plain B*C/D."""
+    rng = np.random.default_rng(21)
+    rs_plain, rs_ext = [], []
+    for _ in range(80):
+        vals, var, xe, ye = toy_plane(rng, mu=80.0, wspread=0.5)
+        reg = region_sums(vals, var, xe, ye, ("lt", 0.25), ("lt", 0.25))
+        rp, _ = closure_ratio(reg)
+        a_obs, _, pred, _ = extended_prediction(vals, var, xe, ye,
+                                                ("lt", 0.25), ("lt", 0.25), n_boot=10)
+        if np.isfinite(rp) and pred > 0:
+            rs_plain.append(rp)
+            rs_ext.append(a_obs / pred)
+    rs_plain, rs_ext = np.array(rs_plain), np.array(rs_ext)
+    assert abs(np.mean(rs_ext) - 1) < 0.05
+    assert np.std(rs_ext) < np.std(rs_plain)

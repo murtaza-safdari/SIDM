@@ -186,17 +186,21 @@ SCREENED_ONLY = {"2mu2e": ["P5_muiso_mupix", "P6_mupix_dphi", "P7_egmlost_dphi"]
                  "4mu": ["Q3_iso0_pix0", "Q4_pix_pix"]}
 
 
-def plane_arrays(hists, channel, plane, parity=None, prescription="i"):
+def plane_arrays(hists, channel, plane, parity=None, prescription="i", cuts_override=None):
     """(vals, var, xedges, yedges) for one candidate plane.
 
     parity: None (both), 0 (selection half) or 1 (confirmation half).
     prescription: iso-quirk handling — 'i' sentinel included, 'ii' sentinel events
     dropped wherever iso appears (axes handled by the caller via xlo/ylo in
     region_sums; event-cut iso axes handled here via window).
+    cuts_override: replace the SR event-cut menu (dict axis->spec; {} = presel,
+    axes not listed are integrated) — used by the staged-tightness ladder.
     """
     spec = PLANES[channel][plane]
     h = at.get_channel(hists[spec["hist"]], CHANNELS[channel])
-    sel = dict(spec["cuts"])
+    sel = dict(spec["cuts"]) if cuts_override is None else dict(cuts_override)
+    for ax in spec["cuts"]:
+        sel.setdefault(ax, "sum")
     if prescription == "ii":
         for ax, s in list(sel.items()):
             if "iso" in ax and s[0] == "lt":
@@ -204,3 +208,132 @@ def plane_arrays(hists, channel, plane, parity=None, prescription="i"):
     if parity is not None:
         sel["parity"] = ("bin", parity)
     return at.project_plane(h, spec["x"], spec["y"], sel)
+
+
+# ---------------------------------------------------------------------------
+# derived / discrete planes (built OFFLINE from the scan hists; user-directed
+# phase-space expansion). Each builder returns (vals, var, xedges, yedges) with
+# the categorical x axis encoded as integer bin edges [0, 1, ..., n].
+# ---------------------------------------------------------------------------
+import numpy as np
+
+
+def _grid3(hists, channel, hname, xa, ya, za, cuts, parity):
+    """3D (xa, ya, za) arrays from a scan hist with the remaining axes selected."""
+    import hist as _h  # noqa
+    h = at.get_channel(hists[hname], CHANNELS[channel])
+    sel = dict(cuts)
+    if parity is not None:
+        sel["parity"] = ("bin", parity)
+    axes = [a.name for a in h.axes]
+    out = h
+    for ax in axes:
+        if ax in (xa, ya, za):
+            continue
+        spec = sel.pop(ax, "sum")
+        if spec == "sum":
+            out = out[{ax: slice(None, None, sum)}]
+        elif spec[0] == "lt":
+            out = out[{ax: slice(0, at.edge_index(np.asarray(out.axes[ax].edges), spec[1]), sum)}]
+        elif spec[0] == "ge":
+            e = np.asarray(out.axes[ax].edges)
+            out = out[{ax: slice(at.edge_index(e, spec[1]), len(e) - 1, sum)}]
+        elif spec[0] == "window":
+            e = np.asarray(out.axes[ax].edges)
+            out = out[{ax: slice(at.edge_index(e, spec[1]), at.edge_index(e, spec[2]), sum)}]
+        elif spec[0] == "bin":
+            out = out[{ax: slice(spec[1], spec[1] + 1, sum)}]
+    order = [a.name for a in out.axes]
+    v = out.view()["value"]
+    w = out.view()["variance"]
+    perm = [order.index(a) for a in (xa, ya, za)]
+    v = np.transpose(v, perm); w = np.transpose(w, perm)
+    edges = [np.asarray(out.axes[a].edges) for a in (xa, ya, za)]
+    return v, w, edges
+
+
+def derived_plane_arrays(hists, channel, kind, parity=None, cuts_override=None):
+    """Derived-plane (vals, var, xedges, yedges) built from the scan hists.
+
+    kinds (2mu2e unless noted):
+      ntight_dphi    x = N(tight-iso LJs) in {0,1,2}, y = |dphi|      [from H1]
+      ntight_mjj     x = N(tight-iso LJs),            y = mJJ         [from H1]
+      jetmatch_dphi  x = N(jet-matched LJs) in {0,1,2}, y = |dphi|    [from H1]
+      photononly_dphi x = egm-LJ category {e-containing, photon-only}, y = |dphi| [from H3]
+      ntight_dphi_4mu x = N(tight) of the two mu-LJs (WP 0.25),  y = |dphi| [4mu H1]
+    Default event cuts (overridable): mjj >= 150 + standard displacement; iso cuts
+    are consumed by the derived axis where applicable.
+    """
+    cuts = cuts_override
+    if kind in ("ntight_dphi", "ntight_mjj", "jetmatch_dphi"):
+        xa, ya = ("muiso", "egmiso")
+        za = "dphi" if kind != "ntight_mjj" else "mjj"
+        if cuts is None:
+            cuts = {"mudisp": ("lt", 2.5), "egmdisp": ("ge", 0.5)}
+            cuts["mjj" if kind != "ntight_mjj" else "dphi"] =                 SR["mjj"] if kind != "ntight_mjj" else SR["dphi"]
+        v, w, (ex, ey, ez) = _grid3(hists, "2mu2e", "abcd_scan_2mu2e_iso_iso",
+                                    xa, ya, za, cuts, parity)
+        if kind == "jetmatch_dphi":
+            xm = ex[:-1] >= 0.0        # True = real iso (jet matched); sentinel bin < 0
+            ym = ey[:-1] >= 0.0
+            cats = (xm[:, None, None].astype(int) + ym[None, :, None].astype(int))
+        else:
+            wpx, wpy = 0.25, 0.10
+            xm = (ex[:-1] >= 0.0) & (ex[1:] <= wpx)   # bins fully below WP, sentinel excluded
+            ym = (ey[:-1] >= 0.0) & (ey[1:] <= wpy)
+            cats = (xm[:, None, None].astype(int) + ym[None, :, None].astype(int))
+        nz = v.shape[2]
+        out_v = np.zeros((3, nz)); out_w = np.zeros((3, nz))
+        for c in (0, 1, 2):
+            m = (cats == c)[:, :, 0]
+            out_v[c] = v[m].sum(axis=0)
+            out_w[c] = w[m].sum(axis=0)
+        return out_v, out_w, np.array([0., 1., 2., 3.]), ez
+    if kind == "photononly_dphi":
+        if cuts is None:
+            cuts = {"egmiso": ("window", 0.0, 0.10), "muiso3": ("lt", 0.25),
+                    "mudisp2": ("lt", 2.5), "mjj": SR["mjj"]}
+        sel = dict(cuts)
+        if parity is not None:
+            sel["parity"] = ("bin", parity)
+        h = at.get_channel(hists["abcd_scan_2mu2e_egmiso_egmlost"], CHANNELS["2mu2e"])
+        v, w, ex, ey = at.project_plane(h, "egmlost", "dphi", sel)
+        # egmlost edges [-0.5,0.5,1.5,2.5,20,1000]: photon-only = last bin (999 fill)
+        out_v = np.stack([v[:-1].sum(axis=0), v[-1]])
+        out_w = np.stack([w[:-1].sum(axis=0), w[-1]])
+        return out_v, out_w, np.array([0., 1., 2.]), ey
+    if kind == "ntight_dphi_4mu":
+        if cuts is None:
+            cuts = {"mudisp0": ("lt", 2.5), "mudisp1": ("lt", 2.5), "mjj": SR["mjj"]}
+        v, w, (ex, ey, ez) = _grid3(hists, "4mu", "abcd_scan_4mu_iso_iso",
+                                    "muiso0", "muiso1", "dphi", cuts, parity)
+        wp = 0.25
+        xm = (ex[:-1] >= 0.0) & (ex[1:] <= wp)
+        ym = (ey[:-1] >= 0.0) & (ey[1:] <= wp)
+        cats = (xm[:, None, None].astype(int) + ym[None, :, None].astype(int))
+        nz = v.shape[2]
+        out_v = np.zeros((3, nz)); out_w = np.zeros((3, nz))
+        for c in (0, 1, 2):
+            m = (cats == c)[:, :, 0]
+            out_v[c] = v[m].sum(axis=0)
+            out_w[c] = w[m].sum(axis=0)
+        return out_v, out_w, np.array([0., 1., 2., 3.]), ez
+    raise ValueError(kind)
+
+
+DERIVED_PLANES = {
+    "2mu2e": {
+        "D1_ntight_dphi": dict(kind="ntight_dphi", xspec=("ge", 2.0), yspec=("ge", 2.0),
+                               stage_axes=["mjj"]),
+        "D2_ntight_mjj": dict(kind="ntight_mjj", xspec=("ge", 2.0), yspec=("ge", 150.0),
+                              stage_axes=["dphi"]),
+        "D3_jetmatch_dphi": dict(kind="jetmatch_dphi", xspec=("ge", 2.0), yspec=("ge", 2.0),
+                                 stage_axes=["mjj"]),
+        "D4_photononly_dphi": dict(kind="photononly_dphi", xspec=("ge", 1.0), yspec=("ge", 2.0),
+                                   stage_axes=["mjj"]),
+    },
+    "4mu": {
+        "D5_ntight_dphi": dict(kind="ntight_dphi_4mu", xspec=("ge", 2.0), yspec=("ge", 2.0),
+                               stage_axes=["mjj"]),
+    },
+}

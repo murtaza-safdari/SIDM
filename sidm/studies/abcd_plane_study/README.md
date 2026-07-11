@@ -120,6 +120,27 @@ python -m pytest sidm/studies/abcd_plane_study/
 Merged inputs + `.meta.yaml` sidecars:
 `/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/abcd_plane_study/`.
 
+## Verdict of the 2018 MC round (summary — details in notebook 04)
+
+- Weighted MC cannot validate tight-WP closure for any plane (single large-weight
+  QCD events give effective counts ≈ 1 in every tight region); the decisive closure
+  test moves to data sidebands in round 2. The gates quantify this honestly instead
+  of quoting a fragile closure number.
+- The incumbent iso×iso plane fails total-background factorization at preselection
+  (p = 0.006, DY + process mixture) with presel closure R = 0.45 ± 0.20 — do not use
+  as-is. **muiso × mJJ** factorizes for every process and the total (p ≈ 0.9), closes
+  at presel, and provides the low/high-mass two-region split natively — the leading
+  candidate. muiso × |Δφ| shows real ~2× presel non-closure — disfavored.
+- Failed-jet-match (isolation = 0) events are 95–100% of the naive tight-SR
+  background and unconstrained by any isolation sideband; a jet-matched SR removes
+  them for 0–4% signal cost at short/mid cτ (30–50% at the longest lifetimes) —
+  recommended baseline, with the no-jet population as an explicit separate category.
+- 4mu is effectively background-free at the working points → counting treatment.
+- The extended-ABCD (per-LJ fake-factor) estimator is unbiased with smaller variance
+  than B·C/D on toys and reproduces it at preselection; its current implementation is
+  unstable in ultra-sparse tight MC regions, so it is a data-round upgrade candidate
+  (sparsity disappears there), with plain ABCD as the cross-check.
+
 ## Known deltas vs the study design doc
 
 - The legacy `abcd_base` lj_lj 2D histograms ride along but use unwrapped |φ₁−φ₀|
