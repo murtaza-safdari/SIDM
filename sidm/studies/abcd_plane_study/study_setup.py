@@ -49,6 +49,36 @@ CHANNELS = {"2mu2e": "2mu2e_abcd_scan", "4mu": "4mu_abcd_scan"}
 # ---------------------------------------------------------------------------
 FW = json.load(open(os.path.join(STUDY_DIR, "processed_fraction.json")))
 
+# --- DY generator-weight pathology (Phase-V review finding; see README) ---------
+# A handful of unskimmed powheg DY files carry per-event weights up to ~1e13x the
+# sample median (36 files listed in the study notes). For M10to50 the SKIMMED events
+# are clean (sumw_proc matches the rogue-free denominator), so its denominator is
+# repaired here. For M50 the rogue events contaminate the skims themselves
+# (sumw_proc ~3e4x the sane value), so the sample is EXCLUDED from weighted results
+# and bounded by counts in notebook 01. Both samples are superseded by the team's
+# in-progress DYJetsToLL migration.
+SUMW_PRE_OVERRIDES = {"DYJetsToMuMu_M10to50": 6.79123e10}  # rogue-free census sum
+EXCLUDED_BACKGROUNDS = {
+    "DYJetsToMuMu_M50": "rogue generator weights contaminate the skimmed events",
+}
+ANALYSIS_BACKGROUNDS = {s: p for s, p in BACKGROUNDS.items()
+                        if s not in EXCLUDED_BACKGROUNDS}
+
+# --- DY generator-weight pathology (Phase-V review finding; see README) ---------
+# A handful of unskimmed powheg DY files carry per-event weights up to ~1e13x the
+# sample median (36 files listed in the study notes). For M10to50 the SKIMMED events
+# are clean (sumw_proc matches the rogue-free denominator), so its denominator is
+# repaired here. For M50 the rogue events contaminate the skims themselves
+# (sumw_proc ~3e4x the sane value), so the sample is EXCLUDED from weighted results
+# and bounded by counts in notebook 01. Both samples are superseded by the team's
+# in-progress DYJetsToLL migration.
+SUMW_PRE_OVERRIDES = {"DYJetsToMuMu_M10to50": 6.79123e10}  # rogue-free census sum
+EXCLUDED_BACKGROUNDS = {
+    "DYJetsToMuMu_M50": "rogue generator weights contaminate the skimmed events",
+}
+ANALYSIS_BACKGROUNDS = {s: p for s, p in BACKGROUNDS.items()
+                        if s not in EXCLUDED_BACKGROUNDS}
+
 
 def fetch(sample):
     """xrdcp the merged output locally (once) and load it."""

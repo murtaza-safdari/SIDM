@@ -49,8 +49,8 @@ LJ isolation is `(E_jet/E_LJ)·(1 − lepton fraction)` of the nearest AK4 jet w
 bin ([−0.02, 0)) instead. Three prescriptions are compared everywhere: (i) sentinel
 merged into the first real bin (reproduces current behavior), (ii) sentinel events
 dropped, (iii) sentinel excluded from the plane (gap at the axis). Measured rates:
-~3% of signal mu-LJs, ~0% of egm-LJs (AK4 jets do cluster muons, so mu-LJ isolation
-is usually a real value). If failed-match events exceed ~20% of region A for a plane,
+0.02–36% of signal mu-LJs depending on ctau (~0% at the shortest lifetimes, rising
+steeply for displaced LJs), ~0% of egm-LJs. If failed-match events exceed ~20% of region A for a plane,
 prescription (i) is disqualified there — no sideband constrains that population.
 
 ## How the histograms work
@@ -122,24 +122,27 @@ Merged inputs + `.meta.yaml` sidecars:
 
 ## Verdict of the 2018 MC round (summary — details in notebook 04)
 
-- Weighted MC cannot validate tight-WP closure for any plane (single large-weight
-  QCD events give effective counts ≈ 1 in every tight region); the decisive closure
-  test moves to data sidebands in round 2. The gates quantify this honestly instead
-  of quoting a fragile closure number.
-- The incumbent iso×iso plane fails total-background factorization at preselection
-  (p = 0.006, DY + process mixture) with presel closure R = 0.45 ± 0.20 — do not use
-  as-is. **muiso × mJJ** factorizes for every process and the total (p ≈ 0.9), closes
-  at presel, and provides the low/high-mass two-region split natively — the leading
-  candidate. muiso × |Δφ| shows real ~2× presel non-closure — disfavored.
-- Failed-jet-match (isolation = 0) events are 95–100% of the naive tight-SR
-  background and unconstrained by any isolation sideband; a jet-matched SR removes
-  them for 0–4% signal cost at short/mid cτ (30–50% at the longest lifetimes) —
-  recommended baseline, with the no-jet population as an explicit separate category.
-- 4mu is effectively background-free at the working points → counting treatment.
-- The extended-ABCD (per-LJ fake-factor) estimator is unbiased with smaller variance
-  than B·C/D on toys and reproduces it at preselection; its current implementation is
-  unstable in ultra-sparse tight MC regions, so it is a data-round upgrade candidate
-  (sparsity disappears there), with plain ABCD as the cross-check.
+- **The jet-matched iso×iso plane survives every gate in 2mu2e** — the only surviving
+  configuration. The failed-jet-match (isolation = 0) population is what breaks the
+  incumbent plane: sentinel events are 95% of the naive tight-SR background, are
+  constrained by no sideband, and drive the factorization failure (p = 0.029 with
+  them, p = 0.48 without). Requiring jet-matched leading LJs costs ≤5% signal at
+  short cτ (~3–16% mid, 12–48% at the longest lifetimes) — the no-jet population
+  needs its own category in the data round for long-lifetime coverage.
+- **muiso × mJJ is the designated cross-check plane**: strongest independence
+  (p ≈ 0.76 under both prescriptions), closes at its anchor, native low/high-mass
+  two-region split; held back only by MC-statistics (one healthy ladder rung).
+  muiso × |Δφ| and |Δφ| × mJJ fail factorization outright.
+- Weighted MC cannot validate tight-WP closure directly for any plane (effective
+  counts ≈ 1 from single large-weight QCD events); the gates quantify this honestly
+  and the decisive re-test moves to (unweighted) data sidebands in round 2.
+- 4mu: no surviving plane; effectively background-free → counting treatment.
+- The extended-ABCD (per-LJ fake-factor) estimator is a data-round upgrade candidate
+  (unbiased + tighter on toys, matches at presel; unstable in ultra-sparse regions).
+- DY: rogue generator weights found in both powheg samples (M10to50 repaired via a
+  rogue-free denominator; M50 excluded and bounded — its skimmed events are
+  contaminated). Superseded by the DYJetsToLL migration. Rogue-file list saved for
+  the production team.
 
 ## Known deltas vs the study design doc
 
