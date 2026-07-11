@@ -64,21 +64,6 @@ EXCLUDED_BACKGROUNDS = {
 ANALYSIS_BACKGROUNDS = {s: p for s, p in BACKGROUNDS.items()
                         if s not in EXCLUDED_BACKGROUNDS}
 
-# --- DY generator-weight pathology (Phase-V review finding; see README) ---------
-# A handful of unskimmed powheg DY files carry per-event weights up to ~1e13x the
-# sample median (36 files listed in the study notes). For M10to50 the SKIMMED events
-# are clean (sumw_proc matches the rogue-free denominator), so its denominator is
-# repaired here. For M50 the rogue events contaminate the skims themselves
-# (sumw_proc ~3e4x the sane value), so the sample is EXCLUDED from weighted results
-# and bounded by counts in notebook 01. Both samples are superseded by the team's
-# in-progress DYJetsToLL migration.
-SUMW_PRE_OVERRIDES = {"DYJetsToMuMu_M10to50": 6.79123e10}  # rogue-free census sum
-EXCLUDED_BACKGROUNDS = {
-    "DYJetsToMuMu_M50": "rogue generator weights contaminate the skimmed events",
-}
-ANALYSIS_BACKGROUNDS = {s: p for s, p in BACKGROUNDS.items()
-                        if s not in EXCLUDED_BACKGROUNDS}
-
 
 def fetch(sample):
     """xrdcp the merged output locally (once) and load it."""
@@ -186,6 +171,10 @@ PLANES = {
                             xspec=("ge", 2.0), yspec=("ge", 150.0),
                             cuts={"muiso": ("lt", 0.25), "egmiso": ("lt", 0.10),
                                   "mudisp": ("lt", 2.5), "egmdisp": ("ge", 0.5)}),
+        "P9_egmiso_mjj": dict(hist="abcd_scan_2mu2e_iso_iso", x="egmiso", y="mjj",
+                              xspec=("lt", 0.10), yspec=("ge", 150.0),
+                              cuts={"muiso": ("lt", 0.25), "dphi": SR["dphi"],
+                                    "mudisp": ("lt", 2.5), "egmdisp": ("ge", 0.5)}),
     },
     "4mu": {
         "Q1_iso_iso": dict(hist="abcd_scan_4mu_iso_iso", x="muiso0", y="muiso1",
@@ -207,6 +196,10 @@ PLANES = {
         "Q5_dphi_mjj": dict(hist="abcd_scan_4mu_iso_iso", x="dphi", y="mjj",
                             xspec=("ge", 2.0), yspec=("ge", 150.0),
                             cuts={"muiso0": ("lt", 0.25), "muiso1": ("lt", 0.25),
+                                  "mudisp0": ("lt", 2.5), "mudisp1": ("lt", 2.5)}),
+        "Q6_iso0_mjj": dict(hist="abcd_scan_4mu_iso_iso", x="muiso0", y="mjj",
+                            xspec=("lt", 0.25), yspec=("ge", 150.0),
+                            cuts={"muiso1": ("lt", 0.25), "dphi": SR["dphi"],
                                   "mudisp0": ("lt", 2.5), "mudisp1": ("lt", 2.5)}),
     },
 }
@@ -238,6 +231,81 @@ def plane_arrays(hists, channel, plane, parity=None, prescription="i", cuts_over
     if parity is not None:
         sel["parity"] = ("bin", parity)
     return at.project_plane(h, spec["x"], spec["y"], sel)
+
+
+def snap_edge(edges, v, tie="low"):
+    """Nearest bin edge to v (boundary scales must land on exact edges).
+
+    tie: which edge wins an exact tie ("low" or "high"). The ladder passes the
+    LOOSENING direction of the axis: a loosened 'ge' boundary (150/2 = 75 on the
+    50-GeV mJJ grid) snaps to 50, a loosened 'lt' boundary snaps up — so the
+    loose->tight ladder stays monotone loose. The resolved boundary is what the
+    stage label's t means; notebook 04 documents the resolved values.
+    """
+    import numpy as _np
+    e = _np.asarray(edges)
+    d = _np.abs(e - v)
+    i = int(_np.argmin(d))          # argmin returns the LOWER edge on a tie
+    if tie == "high" and i + 1 < len(e) and abs(d[i + 1] - d[i]) < 1e-9:
+        i += 1
+    return float(e[i])
+
+
+def stage_menu(channel, plane):
+    """The staged loose->tight event-cut menu for one plane (see staged_points).
+
+    Returns [(stage_label, cuts_override_dict)] loosest first. Shared so notebook
+    04 can rebuild the anchor stage (for the odd-half look and the plateau check)
+    with cuts identical to the notebook-02 ladder.
+    """
+    spec = PLANES[channel][plane]
+    cuts = spec["cuts"]
+    disp = {k: v for k, v in cuts.items()
+            if "disp" in k or "pix" in k or "lost" in k or "iso3" in k
+            or k in ("muiso", "egmiso", "muiso0", "muiso1")}
+    stages = [("presel", {}), ("+disp/iso cuts", dict(disp))]
+    if "dphi" in cuts:
+        d2 = dict(disp)
+        d2["dphi"] = cuts["dphi"]
+        stages.append(("+dphi", d2))
+    if "mjj" in cuts:
+        d3 = dict(stages[-1][1])
+        d3["mjj"] = cuts["mjj"]
+        stages.append(("+mjj (SR)", d3))
+    return stages
+
+
+def staged_points(hists, channel, plane, prescription="i", parity=0):
+    """Closure R along the staged loose->tight ladder (notebooks 02 and 04).
+
+    Stages relax BOTH the event cuts and the plane boundaries (loosest first):
+    the stage_menu() event-cut stages, each at boundary scales t = 2.0, 1.5, 1.0.
+    Prescription 'iii' excludes the isolation sentinel bin from the plane axes.
+    """
+    import numpy as _np
+    spec = PLANES[channel][plane]
+    stages = stage_menu(channel, plane)
+    pts = []
+    for si, (slabel, scuts) in enumerate(stages):
+        vals, var, xe, ye = plane_arrays(hists, channel, plane, parity=parity,
+                                         cuts_override=scuts)
+        xlo = 0.0 if (prescription == "iii" and "iso" in spec["x"] and xe[0] < 0) else None
+        ylo = 0.0 if (prescription == "iii" and "iso" in spec["y"] and ye[0] < 0) else None
+        for t in (2.0, 1.5, 1.0):
+            xtie = "high" if spec["xspec"][0] == "lt" else "low"   # loosening side
+            ytie = "high" if spec["yspec"][0] == "lt" else "low"
+            xc = snap_edge(xe[1:-1], spec["xspec"][1] * (t if spec["xspec"][0] == "lt" else 1 / t), tie=xtie)
+            yc = snap_edge(ye[1:-1], spec["yspec"][1] * (t if spec["yspec"][0] == "lt" else 1 / t), tie=ytie)
+            reg = at.region_sums(vals, var, xe, ye, (spec["xspec"][0], xc),
+                                 (spec["yspec"][0], yc), xlo=xlo, ylo=ylo)
+            # health per the REGISTERED rule: n_eff in B, C, D (A is the
+            # prediction target, reported separately, not gated)
+            ne = min(at.n_eff(*reg[k]) for k in "BCD")
+            r, vr = at.closure_ratio(reg)
+            pts.append(dict(stage=si, label=f"{slabel} t={t}", R=r,
+                            err=float(_np.sqrt(max(vr, 0))), neff=float(ne),
+                            neff_A=float(at.n_eff(*reg["A"]))))
+    return pts
 
 
 # ---------------------------------------------------------------------------
