@@ -16,6 +16,8 @@ import abcd_tools as at
 # where things live
 # ---------------------------------------------------------------------------
 EOS_MERGED = "root://cmseos.fnal.gov//store/group/lpcmetx/SIDM/coffea_outputs/murtazas/abcd_plane_study"
+# round-2 member-isolation / mother-composition / cosmic-input campaign
+EOS_MERGED_MEMBER = EOS_MERGED + "_member"
 WORKDIR = "/uscms_data/d3/murtazas/abcd_study_local"       # local staging (coffea.util.load is local-open only)
 STUDY_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -65,23 +67,29 @@ ANALYSIS_BACKGROUNDS = {s: p for s, p in BACKGROUNDS.items()
                         if s not in EXCLUDED_BACKGROUNDS}
 
 
-def fetch(sample):
-    """xrdcp the merged output locally (once) and load it."""
+def fetch(sample, eos_dir=None, tag=""):
+    """xrdcp the merged output locally (once) and load it.
+
+    eos_dir/tag select the campaign: default = the plane-choice scan; pass
+    eos_dir=EOS_MERGED_MEMBER, tag=".member" for the round-2 member campaign
+    (the tag keeps the two local caches apart).
+    """
     os.makedirs(WORKDIR, exist_ok=True)
-    local = os.path.join(WORKDIR, f"{sample}.coffea")
+    local = os.path.join(WORKDIR, f"{sample}{tag}.coffea")
     if not os.path.exists(local):
-        subprocess.run(["xrdcp", "-s", f"{EOS_MERGED}/{sample}.coffea", local], check=True)
+        subprocess.run(["xrdcp", "-s", f"{eos_dir or EOS_MERGED}/{sample}.coffea", local],
+                       check=True)
     out = coffea.util.load(local)
     out = out["out"] if isinstance(out, dict) and "out" in out else out
     return out[sample]
 
 
-def load_normalized(sample, sumw_pre_map, ttjets_nnlo=False):
+def load_normalized(sample, sumw_pre_map, ttjets_nnlo=False, eos_dir=None, tag=""):
     """Merged output with hists scaled to lumi*xs/sumw_pre (and f_w corrected).
 
     Returns (hists_dict, merged_output). Cutflows are NOT corrected — relative only.
     """
-    o = fetch(sample)
+    o = fetch(sample, eos_dir=eos_dir, tag=tag)
     factor = at.offline_norm_factor(o["metadata"], sumw_pre_map[sample])
     factor /= FW.get(sample, 1.0)
     if ttjets_nnlo and sample == "TTJets":
@@ -89,7 +97,8 @@ def load_normalized(sample, sumw_pre_map, ttjets_nnlo=False):
     return {n: h * factor for n, h in o["hists"].items()}, o
 
 
-def accumulate_normalized(samples, sumw_pre_map, keep_prefix="abcd_scan", ttjets_nnlo=False):
+def accumulate_normalized(samples, sumw_pre_map, keep_prefix="abcd_scan", ttjets_nnlo=False,
+                          eos_dir=None, tag=""):
     """Memory-safe sums of normalized hists: (total, by_process).
 
     Loads ONE sample at a time, keeps only hists whose name starts with keep_prefix
@@ -99,7 +108,8 @@ def accumulate_normalized(samples, sumw_pre_map, keep_prefix="abcd_scan", ttjets
     import gc
     total, by_process = {}, {p: {} for p in PROCESSES}
     for s in samples:
-        hists, _ = load_normalized(s, sumw_pre_map, ttjets_nnlo=ttjets_nnlo)
+        hists, _ = load_normalized(s, sumw_pre_map, ttjets_nnlo=ttjets_nnlo,
+                                   eos_dir=eos_dir, tag=tag)
         proc = BACKGROUNDS.get(s)
         for n, h in hists.items():
             if keep_prefix and not n.startswith(keep_prefix):

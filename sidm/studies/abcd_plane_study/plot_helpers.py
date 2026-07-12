@@ -135,7 +135,8 @@ def plot_plane(vals, xe, ye, note, xspec=None, yspec=None, xname="", yname="",
 
 
 def stack1d(proc_entries, edges, xname="", signal_entries=(), log=True,
-            rlabel=LUMI_EVEN, note="", ylabel="events / bin"):
+            rlabel=LUMI_EVEN, note="", ylabel="events / bin", xlim=None,
+            sentinel=True):
     """Stacked per-process 1D distribution with optional signal overlays.
 
     proc_entries: [(process_name, values_array)] bottom-up; the isolation sentinel
@@ -158,7 +159,7 @@ def stack1d(proc_entries, edges, xname="", signal_entries=(), log=True,
         lo = bottom[bottom > 0]
         if lo.size:
             ax.set_ylim(max(lo.min() * 0.2, 1e-5), bottom.max() * 3e2)
-    if edges[0] < 0:
+    if sentinel and edges[0] < 0:
         import matplotlib.transforms as mtransforms
         tr = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
         ax.axvspan(edges[0], edges[1], color="gray", alpha=0.25, zorder=0)
@@ -168,6 +169,8 @@ def stack1d(proc_entries, edges, xname="", signal_entries=(), log=True,
     ax.set_ylabel(ylabel)
     if xname in AXIS_RANGES:
         ax.set_xlim(*AXIS_RANGES[xname])
+    if xlim is not None:
+        ax.set_xlim(*xlim)
     ax.legend(title=note, fontsize=11, title_fontsize=12, framealpha=0.85)
     cms_label(ax, rlabel=rlabel)
     plt.show()

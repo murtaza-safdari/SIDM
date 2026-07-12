@@ -325,6 +325,16 @@ abcd_scan: &abcd_scan
   - "mu_matched_jet_lj_dR"
   - "egm_matched_jet_lj_dR"
 
+# member-lepton isolation study + gen-origin composition + cosmic-veto inputs
+# (sidm/studies/abcd_plane_study round 2); MC-only (mother axes read genPartFlav)
+abcd_member: &abcd_member
+  - "abcd_member_2mu2e"
+  - "abcd_member_4mu"
+  - "abcd_mother_2mu2e"
+  - "abcd_mother_4mu"
+  - "abcd_cosmic_2mu2e"
+  - "abcd_cosmic_4mu"
+
 genBS_genA_kinematics: &genBS_genA_kinematics
   - "genBS_pt"
   - "genBS_eta"

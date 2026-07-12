@@ -447,6 +447,39 @@ class SidmProcessor(processor.ProcessorABC):
         ljs["isolation"] = ak.fill_none((ljs["matched_jet"].energy / ljs.energy) * (1 - (ljs["lepton_fraction"])), 0)
         ljs["dR_matched_jet"] = ljs.delta_r(ljs["matched_jet"])
 
+        # member-lepton isolation: the worst per-lepton PF isolation among the LJ's
+        # constituents, independent of AK4 jet matching. None when the LJ has no
+        # such constituent (DSA muons carry no isolation branches, so a DSA-only
+        # mu-LJ is None on the mu side; mu-type LJs are None on the egm side).
+        ljs["member_muiso"] = ak.max(ljs.pfMuons.pfRelIso03_all, axis=-1)
+        ljs["member_egmiso"] = ak.max(ljs.egamma.pfRelIso03_all, axis=-1)
+
+        # cosmic-veto INPUT variables (diagnostics, not an applied tag). dz spread
+        # across the LJ's muon constituents (a cosmic mis-split into two muons is
+        # spatially incoherent in dz). And min_cosalpha: the most back-to-back opening
+        # angle between any LJ muon and any muon in the event. A cosmic upper-leg
+        # partner leaves cos(alpha) ~ -1, BUT so does any genuine back-to-back muon
+        # pair -- crucially, in the 4mu channel the two recoiling dark-photon LJs are
+        # back-to-back, so an LJ-1 muon paired with an LJ-2 muon also gives ~ -1. This
+        # variable therefore does NOT isolate cosmics on its own: a real cosmic tag must
+        # exclude muons belonging to the reconstructed signal LJs (identity bookkeeping
+        # this raw input deliberately omits). Self-pairs give +1 and are harmless to the
+        # min; the min over all event muons is intended, its cosmic power is to be
+        # calibrated in a cosmic-enriched data sideband. See notebook 06.
+        ljs["dz_spread"] = (ak.max(ljs.muons.dz, axis=-1)
+                            - ak.min(ljs.muons.dz, axis=-1))
+
+        def _p3(c):
+            return ak.zip({"px": c.pt * np.cos(c.phi), "py": c.pt * np.sin(c.phi),
+                           "pz": c.pt * np.sinh(c.eta), "p": c.pt * np.cosh(c.eta)})
+        all_mu = ak.concatenate([_p3(objs["muons"]), _p3(objs["dsaMuons"])], axis=1)
+        mm = _p3(ljs.muons)
+        cosa = ((mm.px[:, :, :, None] * all_mu.px[:, None, None, :]
+                 + mm.py[:, :, :, None] * all_mu.py[:, None, None, :]
+                 + mm.pz[:, :, :, None] * all_mu.pz[:, None, None, :])
+                / (mm.p[:, :, :, None] * all_mu.p[:, None, None, :]))
+        ljs["min_cosalpha"] = ak.min(ak.min(cosa, axis=-1), axis=-1)
+
         # todo: add LJ displacement
 
         # pt order the new LJs

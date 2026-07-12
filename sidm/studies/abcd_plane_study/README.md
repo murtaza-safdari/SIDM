@@ -115,7 +115,12 @@ python -m pytest sidm/studies/abcd_plane_study/
 
 ## Notebooks
 
-All four notebooks carry the full figure program (mplhep CMS style, from the shared
+Notebook 01 opens with a first-principles primer (lepton jets, PF vs DSA muons,
+isolation and the sentinel, the ABCD method, closure R, n_eff, event-parity
+blinding) — the notebooks are written to read clearly from senior-undergrad level
+up, with jargon defined at first use in each notebook.
+
+All notebooks carry the full figure program (mplhep CMS style, from the shared
 `plot_helpers.py`): stacked scan-variable distributions, plane views with the
 A/B/C/D regions drawn, shape-invariance panels, factorization pull maps and
 p-value matrices, closure ladders with the acceptance band, leakage bar charts,
@@ -127,9 +132,11 @@ and the decision matrix.
 | 02_closure_scans | factorization-fit gates with p-value matrices and pull maps, staged loose→tight ladders, guard bands, sentinel-share + jet-match signal cost, low/high-mass regions, inverted-\|Δφ\| validation region |
 | 03_signal_sensitivity | which masses carry the search, per-point efficiency, sideband-leakage bars, prediction bias vs signal strength, Asimov ranking |
 | 04_selection_verdict | decision matrix (even events), declared primary + mechanical survivor, plateau maps, odd-event confirmations |
+| 05_member_isolation | member-lepton (PF) isolation as a jet-match-free alternative axis: distributions, sentinel rates at the SR working point, jet-vs-member migration, ROC, factorization of member-iso planes, egm parity. Conclusion: it relabels the sentinel (larger, 5.8% vs 0.1% at the SR WP), discriminates worse, and fails 2mu2e factorization — the jet-based plane is retained; its value is labeling the displaced DSA-only sentinel population for notebook 06 |
+| 06_mothers_and_cosmics | gen-origin (genPartFlav) composition per ABCD region (dominant prompt/b transport consistently along mJJ; subdominant c and light/DIF are inconclusive on partial stats) and cosmic-veto input distributions/costs (dz spread; min cos α — note this fires on the 4mu di-LJ back-to-back topology, not only cosmics, so it needs signal-LJ exclusion before it is a clean veto; rejection to be measured in a data sideband) |
 
 Merged inputs + `.meta.yaml` sidecars:
-`/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/abcd_plane_study/`.
+`/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/abcd_plane_study/` (notebooks 01–04) and `.../abcd_plane_study_member/` (notebooks 05–06).
 
 ## Verdict of the 2018 MC round (summary — details, figures and the look log in notebook 04)
 
