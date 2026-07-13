@@ -770,7 +770,7 @@ hist_defs = {
     ),
     "dsaMu_dsaMu_cosAlpha": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(100, -1, 1, name="dsa_dsa_cosAlpha",
+            h.Axis(hist.axis.Regular(200, -1, 1, name="dsa_dsa_cosAlpha",
                                      label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
                    lambda objs, mask: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
                                          (*ak.unzip(objs["dsaMuonPairs"]))),
@@ -778,7 +778,7 @@ hist_defs = {
     ),
     "muLj_dsaMu_dsaMu_cosAlpha": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(100, -1, 1, name="dsa_dsa_cosAlpha",
+            h.Axis(hist.axis.Regular(200, -1, 1, name="dsa_dsa_cosAlpha",
                                      label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
                    lambda objs, mask: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
                                          (*ak.unzip(objs["mu_lj_dsaMuonPairs"]))),
