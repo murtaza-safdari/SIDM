@@ -165,6 +165,27 @@ base_abcd_scan: &base_abcd_scan
     - "2mu2e"
 
 
+# Phase-3 data sidebands (branch abcd-data-sidebands only): the abcd_scan channels
+# plus the SR blind-box veto (union of region A over all examined working points)
+# and a deterministic 10% event fraction. Data is ONLY ever processed with these;
+# MC never is, so masked-vs-unmasked comparisons stay possible in simulation.
+4mu_abcd_scan_data: &4mu_abcd_scan_data
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "4mu"
+    - "ABCD SR blind box veto (data)"
+    - "evt number decile 0"
+
+2mu2e_abcd_scan_data: &2mu2e_abcd_scan_data
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "2mu2e"
+    - "ABCD SR blind box veto (data)"
+    - "evt number decile 0"
+
+
 
 ### Control regions and specific studies ###
 

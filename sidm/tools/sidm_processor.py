@@ -356,6 +356,12 @@ class SidmProcessor(processor.ProcessorABC):
 
         # Use electron/muon/photon/dsamuon collections with a custom distance parameter
         collections = ["muons", "dsaMuons", "electrons", "photons"]
+        # unified transverse reference-point radius, so the LJ vxy spread works across
+        # PF (innerVx/Vy) and DSA (vx/vy) muons; carried as a common constituent field.
+        objs["muons"] = ak.with_field(objs["muons"],
+            np.hypot(objs["muons"].innerVx, objs["muons"].innerVy), "vxy")
+        objs["dsaMuons"] = ak.with_field(objs["dsaMuons"],
+            np.hypot(objs["dsaMuons"].vx, objs["dsaMuons"].vy), "vxy")
         fields = [objs[c].fields for c in collections]
 
         unsafe_fields = ['muonIdxG','dsaIdxG','matched_muons','matched_dsa_muons','good_matched_muons','good_matched_dsa_muons']
@@ -446,6 +452,54 @@ class SidmProcessor(processor.ProcessorABC):
         ljs["lepton_fraction"] =  ljs["matched_jet"].chEmEF + ljs["matched_jet"].neEmEF + ljs["matched_jet"].muEF
         ljs["isolation"] = ak.fill_none((ljs["matched_jet"].energy / ljs.energy) * (1 - (ljs["lepton_fraction"])), 0)
         ljs["dR_matched_jet"] = ljs.delta_r(ljs["matched_jet"])
+
+        # member-lepton isolation: the worst per-lepton PF isolation among the LJ's
+        # constituents, independent of AK4 jet matching. None when the LJ has no
+        # such constituent (DSA muons carry no isolation branches, so a DSA-only
+        # mu-LJ is None on the mu side; mu-type LJs are None on the egm side).
+        ljs["member_muiso"] = ak.max(ljs.pfMuons.pfRelIso03_all, axis=-1)
+        ljs["member_egmiso"] = ak.max(ljs.egamma.pfRelIso03_all, axis=-1)
+
+        # cosmic-veto INPUT variables (diagnostics, not an applied tag). dz spread
+        # across the LJ's muon constituents (a cosmic mis-split into two muons is
+        # spatially incoherent in dz). And min_cosalpha: the most back-to-back opening
+        # angle between any LJ muon and any muon in the event. A cosmic upper-leg
+        # partner leaves cos(alpha) ~ -1, BUT so does any genuine back-to-back muon
+        # pair -- crucially, in the 4mu channel the two recoiling dark-photon LJs are
+        # back-to-back, so an LJ-1 muon paired with an LJ-2 muon also gives ~ -1. This
+        # variable therefore does NOT isolate cosmics on its own: a real cosmic tag must
+        # exclude muons belonging to the reconstructed signal LJs (identity bookkeeping
+        # this raw input deliberately omits). Self-pairs give +1 and are harmless to the
+        # min; the min over all event muons is intended, its cosmic power is to be
+        # calibrated in a cosmic-enriched data sideband. See notebook 06.
+        ljs["dz_spread"] = (ak.max(ljs.muons.dz, axis=-1)
+                            - ak.min(ljs.muons.dz, axis=-1))
+        ljs["vxy_spread"] = (ak.max(ljs.muons.vxy, axis=-1)
+                             - ak.min(ljs.muons.vxy, axis=-1))
+
+        def _p3(c):
+            return ak.zip({"px": c.pt * np.cos(c.phi), "py": c.pt * np.sin(c.phi),
+                           "pz": c.pt * np.sinh(c.eta), "p": c.pt * np.cosh(c.eta),
+                           "eta": c.eta, "phi": c.phi})
+        all_mu = ak.concatenate([_p3(objs["muons"]), _p3(objs["dsaMuons"])], axis=1)
+        mm = _p3(ljs.muons)
+        # Cosmic-partner pool: event muons NOT inside either of the two leading (signal)
+        # LJs. In 4mu the two signal LJs are themselves back-to-back, so pairing an LJ
+        # muon with the OTHER LJ's muon fakes a cosmic (cos alpha ~ -1) and self-vetoes
+        # genuine signal. Restrict partners to muons > 0.4 in dR from BOTH pt-leading LJs
+        # (antiKT-0.4 clustered a signal muon within 0.4 of its LJ axis, so this removes
+        # the signal's own constituents and keeps only the extra muons -- a cosmic upper
+        # leg, a third muon). The LJs are pt-ordered here so [:2] are the signal pair.
+        lead2 = ljs[ak.argsort(ljs.pt, ascending=False)][:, :2]
+        deta = all_mu.eta[:, :, None] - lead2.eta[:, None, :]
+        dphi = (all_mu.phi[:, :, None] - lead2.phi[:, None, :] + np.pi) % (2 * np.pi) - np.pi
+        dr_lead = np.sqrt(deta ** 2 + dphi ** 2)
+        extra = all_mu[ak.fill_none(ak.min(dr_lead, axis=-1), 999.0) > 0.4]
+        cosa = ((mm.px[:, :, :, None] * extra.px[:, None, None, :]
+                 + mm.py[:, :, :, None] * extra.py[:, None, None, :]
+                 + mm.pz[:, :, :, None] * extra.pz[:, None, None, :])
+                / (mm.p[:, :, :, None] * extra.p[:, None, None, :]))
+        ljs["min_cosalpha"] = ak.fill_none(ak.min(ak.min(cosa, axis=-1), axis=-1), 1.0)
 
         # todo: add LJ displacement
 

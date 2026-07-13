@@ -38,6 +38,10 @@ def main():
     parser.add_argument("--channels", default="base")
     parser.add_argument("--hist-collections", default="muon_base")
     parser.add_argument("--unweighted-hist", action="store_true")
+    parser.add_argument("--is-data", action="store_true",
+                        help="Process as real data: enables the blinding "
+                        "interlock (only SR-blinded channels + data-safe "
+                        "collections allowed) and unweighted running.")
 
     args = parser.parse_args()
 
@@ -49,7 +53,7 @@ def main():
         args.sample: {
             "files": files,
             "metadata": {
-                "is_data": False,
+                "is_data": args.is_data,
                 "skim_factor": 1.0,
                 "year": "2018",
             },
@@ -72,6 +76,38 @@ def main():
 
     channels = [x.strip() for x in args.channels.split(",") if x.strip()]
     hist_collections = [x.strip() for x in args.hist_collections.split(",") if x.strip()]
+
+    # ---- BLINDING INTERLOCK (Phase 3) ----------------------------------------
+    # Real data may ONLY be histogrammed through channels that carry the SR
+    # blind-box veto and through data-safe (reco-only, no gen branches) hist
+    # collections. Verify the veto is actually present in each channel's resolved
+    # event cuts (name-independent: catches a typo'd or veto-stripped channel) and
+    # that every collection is on the data-safe allowlist. Fail loud before any
+    # event is read, so a misrouted data submission can never expose the SR.
+    if args.is_data:
+        from sidm import BASE_DIR
+        from sidm.tools import utilities
+        BLIND_VETO = "ABCD SR blind box veto (data)"
+        DATA_SAFE_COLLECTIONS = {"abcd_data"}
+        sel_menu = utilities.load_yaml(f"{BASE_DIR}/configs/selections.yaml")
+        bad = []
+        for ch in channels:
+            spec = sel_menu.get(ch)
+            evtc = utilities.flatten(spec["evt_cuts"]) if spec and "evt_cuts" in spec else []
+            if BLIND_VETO not in evtc:
+                bad.append(f"channel '{ch}' lacks the blind-box veto")
+        for hc in hist_collections:
+            if hc not in DATA_SAFE_COLLECTIONS:
+                bad.append(f"collection '{hc}' is not data-safe "
+                           f"(allowed: {sorted(DATA_SAFE_COLLECTIONS)})")
+        if bad:
+            raise SystemExit(
+                "BLINDING INTERLOCK TRIPPED (is_data=True) -- refusing to run:\n  - "
+                + "\n  - ".join(bad)
+                + "\nData may only run through SR-blinded channels with data-safe "
+                  "collections. Aborting before any event is read.")
+        print(f"Blinding interlock OK: channels={channels} carry '{BLIND_VETO}'; "
+              f"collections={hist_collections} data-safe.")
 
     p = sidm_processor.SidmProcessor(
         channels,

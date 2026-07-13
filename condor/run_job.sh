@@ -14,6 +14,9 @@ HIST_COLLECTIONS=${6:-muon_base}
 # Optional positional arg 7: "weighted" keeps genWeight-weighted hists
 # (omits --unweighted-hist). Default preserves the historical unweighted behavior.
 HIST_WEIGHT_MODE=${7:-unweighted}
+# Optional positional arg 8: "data" enables real-data processing and the blinding
+# interlock (only SR-blinded channels + data-safe collections are accepted).
+IS_DATA_MODE=${8:-mc}
 
 echo "Host:"
 hostname
@@ -97,6 +100,10 @@ UNWEIGHTED_FLAG="--unweighted-hist"
 if [[ "${HIST_WEIGHT_MODE}" == "weighted" ]]; then
     UNWEIGHTED_FLAG=""
 fi
+IS_DATA_FLAG=""
+if [[ "${IS_DATA_MODE}" == "data" ]]; then
+    IS_DATA_FLAG="--is-data"
+fi
 
 python condor/run_sidm_chunk.py \
     --sample "${SAMPLE}" \
@@ -106,7 +113,7 @@ python condor/run_sidm_chunk.py \
     --workers 1 \
     --channels "${CHANNELS}" \
     --hist-collections "${HIST_COLLECTIONS}" \
-    ${UNWEIGHTED_FLAG}
+    ${UNWEIGHTED_FLAG} ${IS_DATA_FLAG}
 
 echo "Output:"
 ls -lh "${OUTFILE}"

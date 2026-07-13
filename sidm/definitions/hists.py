@@ -211,6 +211,33 @@ def abcd_mask_4mu(objs):
     return ((ak.num(objs["ljs"]) >= 2)
             & (ak.count_nonzero(objs["ljs"][:, :2].muon_n >= 2, axis=-1) == 2))
 
+# --- Phase-2 additions: member-lepton isolation, gen-origin, cosmic-veto inputs ---
+# member iso = worst per-lepton pfRelIso03_all among the LJ's PF constituents
+# (sentinel -0.01 when the LJ has none: DSA-only on the mu side). MC-only campaign:
+# the mother axes read genPartFlav, which data does not carry.
+abcd_memiso_edges = [-0.02] + [round(0.05*i, 3) for i in range(21)] + [2.0, 5.0, 1000.0]
+abcd_mother_cats = [0, 1, 2, 3, 4, 5, 6]  # fake/prompt/light/tau/c/b/no-PF-muon
+abcd_cosa_edges = [-1.0, -0.9999, -0.999, -0.99, -0.98, -0.97, -0.96, -0.95, -0.9, -0.5, 0.0, 1.0]
+abcd_dzspread_edges = [0.0, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 5.0, 10.0, 10000.0]
+abcd_vxyspread_edges = [0.0, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 5.0, 10.0, 10000.0]
+
+def abcd_member_iso(lj, side):
+    """Member-lepton isolation with the no-constituent sentinel (-0.01)."""
+    x = lj.member_muiso if side == "mu" else lj.member_egmiso
+    return ak.fill_none(x, -0.01)
+
+def abcd_mother_cat(lj):
+    """Gen-origin category of an LJ from its PF muons' genPartFlav, heavy-flavor
+    priority: 6 = no PF muon (DSA-only), 5 = b, 4 = c, 3 = tau, 2 = light hadron /
+    decay-in-flight, 1 = prompt, 0 = unmatched (fake)."""
+    flav = lj.pfMuons.genPartFlav
+    pri = ak.where(flav == 5, 5,
+          ak.where(flav == 4, 4,
+          ak.where(flav == 15, 3,
+          ak.where(flav == 3, 2,
+          ak.where(flav == 1, 1, 0)))))
+    return ak.fill_none(ak.max(pri, axis=-1), 6)
+
 def abcd_axis(edges, name, label, fill):
     return h.Axis(hist.axis.Variable(edges, name=name, label=label, flow=False), fill)
 
@@ -2888,6 +2915,88 @@ hist_defs = {
                       lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
             abcd_dphi_axis(),
             abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_4mu,
+    ),
+    # Phase-2 hists (member-lepton isolation study, gen-origin composition, cosmic
+    # veto inputs); same channels and leading-LJ conventions as the scan hists above.
+    "abcd_member_2mu2e": h.Histogram(
+        [
+            abcd_axis(abcd_memiso_edges, "memiso_mu", "mu-LJ member isolation (-0.01: no PF mu)",
+                      lambda objs, mask: abcd_member_iso(objs["mu_ljs"][mask, 0], "mu")),
+            abcd_axis(abcd_memiso_edges, "memiso_egm", "egm-LJ member isolation",
+                      lambda objs, mask: abcd_member_iso(objs["egm_ljs"][mask, 0], "egm")),
+            abcd_axis(abcd_iso3_mu_edges, "jetiso3_mu", "mu-LJ jet isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso3_egm_edges, "jetiso3_egm", "egm-LJ jet isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_2mu2e,
+    ),
+    "abcd_member_4mu": h.Histogram(
+        [
+            abcd_axis(abcd_memiso_edges, "memiso_mu0", "leading mu-LJ member isolation",
+                      lambda objs, mask: abcd_member_iso(objs["mu_ljs"][mask, 0], "mu")),
+            abcd_axis(abcd_memiso_edges, "memiso_mu1", "subleading mu-LJ member isolation",
+                      lambda objs, mask: abcd_member_iso(objs["mu_ljs"][mask, 1], "mu")),
+            abcd_axis(abcd_iso3_mu_edges, "jetiso3_mu0", "leading mu-LJ jet isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_4mu,
+    ),
+    "abcd_mother_2mu2e": h.Histogram(
+        [
+            h.Axis(hist.axis.IntCategory(abcd_mother_cats, name="mother",
+                                         label="mu-LJ gen origin (0 fake / 1 prompt / 2 light / 3 tau / 4 c / 5 b / 6 no-PF)"),
+                   lambda objs, mask: abcd_mother_cat(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso_edges, "muiso", "mu-LJ jet isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_2mu2e,
+    ),
+    "abcd_mother_4mu": h.Histogram(
+        [
+            h.Axis(hist.axis.IntCategory(abcd_mother_cats, name="mother0",
+                                         label="leading mu-LJ gen origin"),
+                   lambda objs, mask: abcd_mother_cat(objs["mu_ljs"][mask, 0])),
+            abcd_axis(abcd_iso_edges, "muiso0", "leading mu-LJ jet isolation",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_mjj_axis(),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_4mu,
+    ),
+    "abcd_cosmic_2mu2e": h.Histogram(
+        [
+            abcd_axis(abcd_cosa_edges, "mincosa", "min cos(alpha) (mu-LJ muons vs extra event muons)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].min_cosalpha, 1.0)),
+            abcd_axis(abcd_dzspread_edges, "dzspread", "mu-LJ muon dz spread (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].dz_spread, 0.0)),
+            abcd_axis(abcd_vxyspread_edges, "vxyspread", "mu-LJ muon vxy spread (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].vxy_spread, 0.0)),
+            abcd_axis(abcd_iso3_mu_edges, "muiso3", "mu-LJ jet isolation (coarse)",
+                      lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_2mu2e,
+    ),
+    "abcd_cosmic_4mu": h.Histogram(
+        [
+            abcd_axis(abcd_cosa_edges, "mincosa0", "leading mu-LJ min cos(alpha)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].min_cosalpha, 1.0)),
+            abcd_axis(abcd_cosa_edges, "mincosa1", "subleading mu-LJ min cos(alpha)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 1].min_cosalpha, 1.0)),
+            abcd_axis(abcd_dzspread_edges, "dzspread0", "leading mu-LJ muon dz spread (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].dz_spread, 0.0)),
+            abcd_axis(abcd_vxyspread_edges, "vxyspread0", "leading mu-LJ muon vxy spread (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].vxy_spread, 0.0)),
             abcd_parity_axis(),
         ],
         evt_mask=abcd_mask_4mu,

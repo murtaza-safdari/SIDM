@@ -271,3 +271,41 @@ evt_cut_defs = {
     "= 2 muLJs": lambda objs: (ak.num(objs["mu_ljs"]) == 2) & (ak.num(objs["egm_ljs"]) == 0),
     "all cos_alpha(dsa, dsa) > -0.9": lambda objs: ak.all(cosAlpha(objs["dsaMuons"]) > -0.9, axis=1),
 }
+
+
+# ---- ABCD data-sideband blinding (Phase 3, branch abcd-data-sidebands) ----
+def _abcd_blind_box(objs):
+    """True for a data event in ABCD region A of the declared muiso x mJJ plane at
+    its loosest examined (t=2.0) rung: leading mu-LJ isolation < 0.5 (the -0.01
+    no-jet-match sentinel bin lies inside) AND mJJ(LJ0, LJ1) >= 50 GeV. Every
+    tighter working point's A is a subset, so vetoing this box blinds all of them.
+
+    OVER-BLINDING NOTE: because the box is a full quadrant, at TIGHTER ladder rungs
+    (and at the nominal primary WP muiso<0.25 & mjj>=150) the sidebands B
+    (muiso in [0.25,0.5), mjj>=150) and C (muiso<0.5, mjj in [50,150)) also fall
+    inside it and are blinded in data. Only the t=2.0 rung's B/C/D are disjoint from
+    the box, so a DATA ABCD prediction is only valid at the t=2.0 (SR) rung; a
+    tighter-rung closure computed on data would be silently biased low. See
+    PHASE3_SAFETY.md.
+
+    muiso and mjj are computed with the SAME helpers the abcd_scan histograms fill
+    with (abcd_iso_sentinel on the leading mu-LJ; the leading-two-LJ invariant mass),
+    imported here to avoid a module-import cycle. NO topology factor is applied on
+    purpose: this veto is only ever an evt_cut INSIDE the *_abcd_scan_data selection
+    channels, whose "2mu2e"/"4mu" channel cut (after evt_base's ">=2 LJs") already
+    fixes the topology and guarantees a leading mu-LJ, so muiso/mjj are well-defined.
+    A second in-function topology mask (e.g. abcd_mask_*) would duplicate the channel
+    cut and could only NARROW the veto if the two ever diverged -> a leak; omitting it
+    keeps the box a pure superset of region A. If evaluated outside a channel, an
+    LJ-less / mu-LJ-less event maps muiso->999 and mjj->-1 (fill_none defaults), both
+    failing the SR predicate, so the box stays empty there too.
+    """
+    from sidm.definitions.hists import abcd_iso_sentinel
+    mjj = ak.fill_none(objs["ljs"][:, :2].sum().mass, -1.0)
+    muiso = ak.fill_none(abcd_iso_sentinel(ak.firsts(objs["mu_ljs"])), 999.0)
+    return (muiso < 0.5) & (mjj >= 50.0)
+
+evt_cut_defs.update({
+    "ABCD SR blind box veto (data)": lambda objs: ~_abcd_blind_box(objs),
+    "evt number decile 0": lambda objs: (objs["evtNum"] % 10) == 0,
+})

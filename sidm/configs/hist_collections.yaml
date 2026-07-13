@@ -860,3 +860,12 @@ Muon_selection_bkg_base: &Muon_selection_bkg_base
   - "mu_lj_iso"
 
 
+
+# Phase-3 data sidebands: reco-only ABCD content (scan planes + 1D isolation).
+# No gen-dependent histograms — this collection must stay safe to run on data.
+abcd_data: &abcd_data
+  - *abcd_scan_2mu2e
+  - *abcd_scan_4mu
+  - *isolation_base
+  - "abcd_cosmic_2mu2e"
+  - "abcd_cosmic_4mu"
