@@ -88,14 +88,19 @@ def main():
         from sidm import BASE_DIR
         from sidm.tools import utilities
         BLIND_VETO = "ABCD SR blind box veto (data)"
+        # The cosmic control region intentionally omits the blind box; its safety rests on
+        # the cosmic tag, which is signal-DEPLETED (verified in MC before any data run).
+        # A data channel is allowed if it carries EITHER protection.
+        COSMIC_TAG = "ABCD cosmic CR tag (data)"
         DATA_SAFE_COLLECTIONS = {"abcd_data"}
         sel_menu = utilities.load_yaml(f"{BASE_DIR}/configs/selections.yaml")
         bad = []
         for ch in channels:
             spec = sel_menu.get(ch)
             evtc = utilities.flatten(spec["evt_cuts"]) if spec and "evt_cuts" in spec else []
-            if BLIND_VETO not in evtc:
-                bad.append(f"channel '{ch}' lacks the blind-box veto")
+            if BLIND_VETO not in evtc and COSMIC_TAG not in evtc:
+                bad.append(f"channel '{ch}' carries neither the SR blind-box veto nor "
+                           f"the cosmic-CR tag")
         for hc in hist_collections:
             if hc not in DATA_SAFE_COLLECTIONS:
                 bad.append(f"collection '{hc}' is not data-safe "
@@ -106,8 +111,8 @@ def main():
                 + "\n  - ".join(bad)
                 + "\nData may only run through SR-blinded channels with data-safe "
                   "collections. Aborting before any event is read.")
-        print(f"Blinding interlock OK: channels={channels} carry '{BLIND_VETO}'; "
-              f"collections={hist_collections} data-safe.")
+        print(f"Blinding interlock OK: channels={channels} each carry the SR blind-box "
+              f"veto or the cosmic-CR tag; collections={hist_collections} data-safe.")
 
     p = sidm_processor.SidmProcessor(
         channels,

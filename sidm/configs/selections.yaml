@@ -185,6 +185,42 @@ base_abcd_scan: &base_abcd_scan
     - "ABCD SR blind box veto (data)"
     - "evt number decile 0"
 
+# Full-statistics blinded sidebands: the SAME SR blind box, but ALL events (no decile).
+# Used once blinding is validated, to populate B/C/D and the blinded A_pred = B*C/D.
+# The SR box stays masked; only the 10% decile is dropped.
+4mu_abcd_scan_data_full: &4mu_abcd_scan_data_full
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "4mu"
+    - "ABCD SR blind box veto (data)"
+
+2mu2e_abcd_scan_data_full: &2mu2e_abcd_scan_data_full
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "2mu2e"
+    - "ABCD SR blind box veto (data)"
+
+# Cosmic-ray control region: the cosmic-tag defining cut (back-to-back OR large spatial
+# spread) with NO SR blind box, exposing the cosmic-enriched SR corner for veto
+# calibration. Signal-depleted by construction (quantified in MC before any data run);
+# all events. These are the ONLY data channels permitted to omit the blind box, and the
+# interlock enforces that they carry the cosmic tag in exchange.
+4mu_cosmic_cr_data: &4mu_cosmic_cr_data
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "4mu"
+    - "ABCD cosmic CR tag (data)"
+
+2mu2e_cosmic_cr_data: &2mu2e_cosmic_cr_data
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "2mu2e"
+    - "ABCD cosmic CR tag (data)"
+
 
 
 ### Control regions and specific studies ###

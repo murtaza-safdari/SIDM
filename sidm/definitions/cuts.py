@@ -305,7 +305,30 @@ def _abcd_blind_box(objs):
     muiso = ak.fill_none(abcd_iso_sentinel(ak.firsts(objs["mu_ljs"])), 999.0)
     return (muiso < 0.5) & (mjj >= 50.0)
 
+def _abcd_cosmic_tag(objs):
+    """True for a data event enriched in cosmic-ray muons: the leading mu-LJ has an
+    extra muon back-to-back with one of its muons (min cos alpha < -0.98). The partner
+    pool excludes the two signal LJs (Phase-2 correction), so a tag requires a THIRD
+    muon opposite an LJ muon -- the cosmic upper leg -- which prompt OR displaced signal
+    essentially never has. Verified in fresh MC: signal cost 0.00-0.14% across ctau,
+    INCLUDING the most displaced points, so the control region is signal-free and safe
+    to expose (the SR box is omitted here on purpose, to reach the cosmic corner the
+    sidebands cannot).
+
+    Why cos alpha ALONE, not the spatial spread: an MC threshold scan (see kb notes)
+    showed dz_spread / vxy_spread cuts DESTROY displaced signal -- a displaced dark
+    photon gives an LJ with genuinely large internal dz/vxy spread (the two muons carry
+    the decay's displacement), so a spread veto at 0.5-10 cm costs 16-87% of the
+    ctau>=19 mm signal. Those variables are recorded in the cosmic histograms for
+    characterization but are NOT selection cuts. cos alpha is the only signal-safe
+    cosmic discriminant here. The blinding interlock permits a data channel to skip the
+    SR blind box ONLY if it carries this tag. fill_none(1.0) leaves an LJ-less event untagged."""
+    lj = ak.firsts(objs["mu_ljs"])
+    cosa = ak.fill_none(lj.min_cosalpha, 1.0)
+    return cosa < -0.98
+
 evt_cut_defs.update({
     "ABCD SR blind box veto (data)": lambda objs: ~_abcd_blind_box(objs),
     "evt number decile 0": lambda objs: (objs["evtNum"] % 10) == 0,
+    "ABCD cosmic CR tag (data)": lambda objs: _abcd_cosmic_tag(objs),
 })
