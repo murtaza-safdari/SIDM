@@ -2366,3 +2366,22 @@ data_control_region_1Lj_modified_Spread_mu: &data_control_region_1Lj_modified_Sp
     - *evt_baseNoLj
     - "pass flags"
     - "= 1 muLj or 1 egmLJ"
+
+data_control_region_1Lj_modified_Spread_mu_ljIso: &data_control_region_1Lj_modified_Spread_mu_ljIso
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+      - "lj_iso < 0.2"
+    mu_ljs:
+      - "Mu >= 2"
+      - "dzSpread_mu <= 50"
+      - "vxySpread_mu <= 50"
+      - "dzSpread_pf <= 10"
+      - "vxySpread_pf <= 10"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 muLj or 1 egmLJ"
