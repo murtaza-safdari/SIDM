@@ -217,8 +217,9 @@ def abcd_mask_4mu(objs):
 # the mother axes read genPartFlav, which data does not carry.
 abcd_memiso_edges = [-0.02] + [round(0.05*i, 3) for i in range(21)] + [2.0, 5.0, 1000.0]
 abcd_mother_cats = [0, 1, 2, 3, 4, 5, 6]  # fake/prompt/light/tau/c/b/no-PF-muon
-abcd_cosa_edges = [-1.0, -0.9999, -0.999, -0.99, -0.95, -0.9, -0.5, 0.0, 1.0]
+abcd_cosa_edges = [-1.0, -0.9999, -0.999, -0.99, -0.98, -0.97, -0.96, -0.95, -0.9, -0.5, 0.0, 1.0]
 abcd_dzspread_edges = [0.0, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 5.0, 10.0, 10000.0]
+abcd_vxyspread_edges = [0.0, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 5.0, 10.0, 10000.0]
 
 def abcd_member_iso(lj, side):
     """Member-lepton isolation with the no-constituent sentinel (-0.01)."""
@@ -2974,10 +2975,12 @@ hist_defs = {
     ),
     "abcd_cosmic_2mu2e": h.Histogram(
         [
-            abcd_axis(abcd_cosa_edges, "mincosa", "min cos(alpha) (mu-LJ muons vs any muon)",
+            abcd_axis(abcd_cosa_edges, "mincosa", "min cos(alpha) (mu-LJ muons vs extra event muons)",
                       lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].min_cosalpha, 1.0)),
             abcd_axis(abcd_dzspread_edges, "dzspread", "mu-LJ muon dz spread (cm)",
                       lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].dz_spread, 0.0)),
+            abcd_axis(abcd_vxyspread_edges, "vxyspread", "mu-LJ muon vxy spread (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].vxy_spread, 0.0)),
             abcd_axis(abcd_iso3_mu_edges, "muiso3", "mu-LJ jet isolation (coarse)",
                       lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
             abcd_parity_axis(),
@@ -2992,6 +2995,8 @@ hist_defs = {
                       lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 1].min_cosalpha, 1.0)),
             abcd_axis(abcd_dzspread_edges, "dzspread0", "leading mu-LJ muon dz spread (cm)",
                       lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].dz_spread, 0.0)),
+            abcd_axis(abcd_vxyspread_edges, "vxyspread0", "leading mu-LJ muon vxy spread (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].vxy_spread, 0.0)),
             abcd_parity_axis(),
         ],
         evt_mask=abcd_mask_4mu,
