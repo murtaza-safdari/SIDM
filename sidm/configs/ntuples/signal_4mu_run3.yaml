@@ -31,6 +31,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022_j119.root
     4Mu_1000GeV_0p25GeV_1p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-1p0/
       year: '2022'
@@ -71,6 +187,49 @@
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022_j108.root
     4Mu_1000GeV_1p2GeV_4p8mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-4p8/
       year: '2022'
@@ -127,6 +286,44 @@
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022_j098.root
     4Mu_100GeV_0p25GeV_0p02mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p02/
       year: '2022'
@@ -167,6 +364,46 @@
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022_j064.root
     4Mu_100GeV_1p2GeV_0p096mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p096/
       year: '2022'
@@ -207,6 +444,61 @@
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022_j098.root
     4Mu_100GeV_5p0GeV_0p4mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-0p4/
       year: '2022'
@@ -239,6 +531,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022_j039.root
     4Mu_100GeV_5p0GeV_4p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-4p0/
       year: '2022'
@@ -279,6 +607,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022_j039.root
     4Mu_150GeV_0p25GeV_6p7mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-6p7/
       year: '2022'
@@ -327,6 +691,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022_j039.root
     4Mu_150GeV_5p0GeV_0p27mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-0p27/
       year: '2022'
@@ -359,6 +759,47 @@
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022_j119.root
     4Mu_150GeV_5p0GeV_2p7mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-2p7/
       year: '2022'
@@ -399,6 +840,121 @@
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022_j119.root
     4Mu_200GeV_0p25GeV_5p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-5p0/
       year: '2022'
@@ -447,6 +1003,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022_j119.root
     4Mu_200GeV_5p0GeV_0p2mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-0p2/
       year: '2022'
@@ -479,6 +1151,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022_j119.root
     4Mu_200GeV_5p0GeV_2p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-2p0/
       year: '2022'
@@ -511,6 +1299,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022_j119.root
     4Mu_500GeV_0p25GeV_2p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-2p0/
       year: '2022'
@@ -559,6 +1463,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-1p9_2022_j119.root
     4Mu_500GeV_1p2GeV_9p6mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-1p2_ctau-9p6/
       year: '2022'
@@ -607,6 +1627,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-5p0_ctau-8p0_2022_j119.root
     4Mu_800GeV_0p25GeV_0p0025mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p0025/
       year: '2022'
@@ -631,6 +1767,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-0p25_2022_j119.root
     4Mu_800GeV_0p25GeV_1p2mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-0p25_ctau-1p2/
       year: '2022'
@@ -679,6 +1931,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-1p2_2022_j119.root
     4Mu_800GeV_1p2GeV_6p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-800_MDp-1p2_ctau-6p0/
       year: '2022'
@@ -727,6 +2095,122 @@
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j039.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j040.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j041.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j042.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j043.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j044.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j045.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j046.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j047.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j048.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j049.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j050.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j051.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j052.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j053.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j054.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j055.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j056.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j057.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j058.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j059.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j060.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j061.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j062.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j063.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j064.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j065.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j066.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j067.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j068.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j069.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j070.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j071.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j072.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j073.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j074.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j075.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j076.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j077.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j078.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j079.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j080.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j081.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j082.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j083.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j084.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j085.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j086.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j087.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j088.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j089.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j090.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j091.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j092.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j093.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j094.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j095.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j096.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j097.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j098.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j099.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j100.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j101.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j102.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j103.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j104.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j105.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j106.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j107.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j108.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j109.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j110.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j111.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j112.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j113.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j114.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j115.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j116.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j117.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j118.root
+      - SIDM_BsTo2DpTo4Mu_MBs-800_MDp-5p0_ctau-5p0_2022_j119.root
 '2022EE':
   path: root://xcache//store/group/lpcmetx/SIDM/run3_samplegen/outputs/2022EE/
   samples:
@@ -754,6 +2238,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-0p2_2022EE_j039.root
     4Mu_1000GeV_0p25GeV_1p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-0p25_ctau-1p0/
       year: '2022EE'
@@ -794,6 +2314,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-0p96_2022EE_j039.root
     4Mu_1000GeV_1p2GeV_4p8mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-1p2_ctau-4p8/
       year: '2022EE'
@@ -850,6 +2406,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-1000_MDp-5p0_ctau-4p0_2022EE_j039.root
     4Mu_100GeV_0p25GeV_0p02mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-0p02/
       year: '2022EE'
@@ -890,6 +2482,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-0p25_ctau-2p0_2022EE_j039.root
     4Mu_100GeV_1p2GeV_0p096mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-0p096/
       year: '2022EE'
@@ -930,6 +2558,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-1p2_ctau-9p6_2022EE_j039.root
     4Mu_100GeV_5p0GeV_0p4mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-0p4/
       year: '2022EE'
@@ -962,6 +2626,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-40p0_2022EE_j039.root
     4Mu_100GeV_5p0GeV_4p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-100_MDp-5p0_ctau-4p0/
       year: '2022EE'
@@ -1002,6 +2702,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-1p3_2022EE_j039.root
     4Mu_150GeV_0p25GeV_6p7mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-0p25_ctau-6p7/
       year: '2022EE'
@@ -1050,6 +2786,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-1p2_ctau-6p4_2022EE_j039.root
     4Mu_150GeV_5p0GeV_0p27mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-0p27/
       year: '2022EE'
@@ -1082,6 +2854,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-27p0_2022EE_j039.root
     4Mu_150GeV_5p0GeV_2p7mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-150_MDp-5p0_ctau-2p7/
       year: '2022EE'
@@ -1122,6 +2930,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-1p0_2022EE_j039.root
     4Mu_200GeV_0p25GeV_5p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-0p25_ctau-5p0/
       year: '2022EE'
@@ -1170,6 +3014,42 @@
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j031.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-1p2_ctau-4p8_2022EE_j039.root
     4Mu_200GeV_5p0GeV_0p2mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-0p2/
       year: '2022EE'
@@ -1202,6 +3082,41 @@
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j009.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j015.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j016.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j018.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j024.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j025.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j026.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j027.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j028.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j029.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j030.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j032.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j033.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j034.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j035.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j036.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j037.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j038.root
+      - SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-20p0_2022EE_j039.root
     4Mu_200GeV_5p0GeV_2p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-200_MDp-5p0_ctau-2p0/
       year: '2022EE'
@@ -1234,6 +3149,23 @@
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j001.root
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j002.root
       - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j003.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j004.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j005.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j006.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j007.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j008.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j010.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j011.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j012.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j013.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j014.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j017.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j019.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j020.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j021.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j022.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j023.root
+      - SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-0p4_2022EE_j024.root
     4Mu_500GeV_0p25GeV_2p0mm:
       path: SIDM_BsTo2DpTo4Mu_MBs-500_MDp-0p25_ctau-2p0/
       year: '2022EE'
