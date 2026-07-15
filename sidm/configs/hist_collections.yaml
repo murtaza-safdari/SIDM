@@ -1051,9 +1051,11 @@ data_base: &data_base
   - "mu_lj_pfMuon_pt"
   - "mu_lj_dsaMuon_pt"
 
-test_base: &test_base
-  - "dsaMu_pfMu_dR_closest"
-  - "dsaMu_pfMu_pt_diff"
+cosAlpha: &cosAlpha
+  - "cosAlpha_dsa"
+  - "cosAlpha_pf"
+  - "cosAlpha_mu"
+  - "dsaMu_dsaMu_cosAlpha"
 
 cosmic_muons: &cosmic_muons
   - *mu_ljSpread_dsa

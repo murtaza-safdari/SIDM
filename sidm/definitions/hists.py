@@ -722,14 +722,7 @@ hist_defs = {
         ],
         evt_mask=lambda objs: ak.num(objs["dsaMuons"]) > 1,
     ),
-    "dsaMu_dsaMu_cosAlpha": h.Histogram(
-        [
-            h.Axis(hist.axis.Regular(200, -1, 1, name="dsa_dsa_cosAlpha",
-                                     label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
-                   lambda objs, mask: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
-                                         (*ak.unzip(objs["dsaMuonPairs"]))),
-        ],
-    ),
+
     "muLj_dsaMu_dsaMu_cosAlpha": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, -1, 1, name="dsa_dsa_cosAlpha",
@@ -5420,5 +5413,48 @@ hist_defs = {
                    lambda objs, mask: objs["dsaMuons"].pt - objs["dsaMuons"].nearest(objs["muons"], threshold=0.1).pt),
         ],
     ),
-   
+    "muljMu_muljMu_cosAlpha": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, -1, 1, name="dsa_dsa_cosAlpha",
+                                     label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
+                   lambda objs, mask: cosAlpha(objs["mu_ljs"].muons)),
+        ],
+    ),
+  "cosAlpha_dsa": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, -1, 1, name="cosAlpha_dsa",
+                                     label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
+                   lambda objs, mask: cosAlpha(objs["dsaMuons"])),
+        ],
+    ),
+  "cosAlpha_pf": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, -1, 1, name="cosAlpha_pf",
+                                     label=r"CosAlpha(PF$\mu$, PF$\mu$)"),
+                   lambda objs, mask: cosAlpha(objs["muons"])),
+        ],
+    ),
+  "cosAlpha_mu": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, -1, 1, name="cosAlpha_mu",
+                                     label=r"CosAlpha($\mu$, $\mu$)"),
+                   lambda objs, mask: cosAlpha(objs["allMuons"])),
+        ],
+    ),
+    "dsaMu_dsaMu_cosAlpha": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, -1, 1, name="dsa_dsa_cosAlpha",
+                                     label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
+                   lambda objs, mask: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
+                                         (*ak.unzip(objs["dsaMuonPairs"]))),
+        ],
+    ),
+    "pfMu_pfMu_cosAlpha": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, -1, 1, name="dsa_dsa_cosAlpha",
+                                     label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
+                   lambda objs, mask: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
+                                         (*ak.unzip(objs["muonPairs"]))),
+        ],
+    ),
 }
