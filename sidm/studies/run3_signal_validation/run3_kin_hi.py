@@ -8,10 +8,10 @@ import sys, os, numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import mplhep as hep
-sys.path.insert(0, "/uscms_data/d3/murtazas/SIDM-wt-run3val/sidm/studies/run3_signal_validation")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # repo-relative: works in any checkout
 import run3_signal_validation as V
 plt.style.use(hep.style.CMS)
-RO = "/uscms_data/d3/murtazas/review_out"
+RO = os.environ.get("RUN3_EFF_OUT", "/uscms_data/d3/murtazas/review_out")
 NF = 12
 
 POINTS = {

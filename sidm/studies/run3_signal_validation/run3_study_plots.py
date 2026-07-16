@@ -75,14 +75,17 @@ def fig_geometry_agreement():
     return fig
 
 def fig_mu_multiplicity():
-    """mu-LJ multiplicity after the full object selection + DSA cross-cleaning, Run 3 vs Run 2."""
+    """mu-LJ multiplicity after the full object selection + DSA cross-cleaning, Run 3 vs Run 2.
+    Uses the IN-ACCEPTANCE histograms (nmu_hist_acc) so both eras share the same denominator:
+    v10 is gen-filtered at production (all events in acceptance) while Run 3 is full phase space,
+    so raw histograms would show a spurious ~10pp acceptance gap at the signal bin."""
     rows = [r for r in _load("lj_eff_real_2022.json") if r["run3"] and r["v10"]]
     fig, axes = plt.subplots(1, 2, figsize=(15, 6), sharey=True)
     xm = np.arange(5); lab = ["0", "1", "2", "3", r"$\geq$4"]
     for ax, chan in zip(axes, ["4Mu", "2Mu2E"]):
         rs = [r for r in rows if r["chan"] == chan]
-        h2 = np.sum([r["v10"]["nmu_hist"] for r in rs], axis=0); h2 = h2 / h2.sum()
-        h3 = np.sum([r["run3"]["nmu_hist"] for r in rs], axis=0); h3 = h3 / h3.sum()
+        h2 = np.sum([r["v10"]["nmu_hist_acc"] for r in rs], axis=0); h2 = h2 / h2.sum()
+        h3 = np.sum([r["run3"]["nmu_hist_acc"] for r in rs], axis=0); h3 = h3 / h3.sum()
         w = 0.38
         ax.bar(xm - w/2, h2*100, w, color="#d62728", alpha=0.8, label="Run 2 (2018 v10)")
         ax.bar(xm + w/2, h3*100, w, color="#2ca02c", alpha=0.85, label="Run 3 (2022)")
@@ -94,26 +97,42 @@ def fig_mu_multiplicity():
         if chan == "4Mu":
             ax.legend(loc="upper right", fontsize=12)
         hep.cms.label("", data=False, rlabel=RLAB, ax=ax)
-    axes[0].set_ylabel("fraction of events  [%]")
-    fig.suptitle(r"$\mu$-LJ multiplicity after full object selection + DSA segment-match cross-cleaning: collapses to the signal count in both eras", y=1.0, fontsize=12)
+    axes[0].set_ylabel("in-acceptance events  [%]", labelpad=8)
+    fig.suptitle(r"$\mu$-LJ multiplicity (in acceptance) after full object selection + DSA segment-match cross-cleaning: collapses to the signal count in both eras", y=1.0, fontsize=12)
     fig.tight_layout()
     return fig
 
 def fig_trigger():
+    """HLT efficiency vs ctau over the full 2022 grid. Small faint markers = 2000-event points
+    (stat error ~1%); large markers with Clopper-Pearson error bars = the 100k-event points that
+    the quoted mean gains are computed from. The VetoL3 group is drawn to show its genuine,
+    ctau-dependent firing (it peaks at the longest lifetimes)."""
     rows = _load("trig_grid_2022.json")
     fig, axes = plt.subplots(1, 2, figsize=(15, 6.5), sharey=True)
+    series = [("e2018", "#7f7f7f", "s", "2018-menu L2 paths"),
+              ("eOR", "#2ca02c", "D", "full Run 3 displaced-dimuon OR"),
+              ("eL3", "#1f77b4", "^", "Run 3 L3 DxyMin subset"),
+              ("eVeto", "#9467bd", "v", "Run 3 L2 VetoL3 subset")]
     for ax, chan in zip(axes, ["4Mu", "2Mu2E"]):
         rs = sorted([r for r in rows if r["chan"] == chan], key=lambda r: r["ctau"])
         if not rs:
             continue
-        x = [r["ctau"] for r in rs]
-        ax.plot(x, [r["e2018"] for r in rs], "s", color="#7f7f7f", ms=5, alpha=0.55, label="2018-menu L2 paths")
-        ax.plot(x, [r["eOR"] for r in rs], "D", color="#2ca02c", ms=5, alpha=0.75, label="full Run 3 displaced-dimuon OR")
-        ax.plot(x, [r["eL3"] for r in rs], "^", color="#1f77b4", ms=4, alpha=0.5, label="Run 3 L3 DxyMin subset")
+        lo = [r for r in rs if r["n"] <= 50000]; hi = [r for r in rs if r["n"] > 50000]
+        for key, col, mk, lab in series:
+            ax.plot([r["ctau"] for r in lo], [r[key] for r in lo], mk, color=col, ms=4,
+                    alpha=0.35, label=f"{lab}" if chan == "2Mu2E" else None)
+            if hi:
+                ys, los, his = [], [], []
+                for r in hi:
+                    k = round(r[key] / 100 * r["n"])
+                    p, l, h = _cp(k, r["n"]); ys.append(p); los.append(l); his.append(h)
+                ax.errorbar([r["ctau"] for r in hi], ys, yerr=np.array([los, his]), fmt=mk,
+                            color=col, ms=9, capsize=2, zorder=3)
         ax.set_xscale("log"); ax.set_xlabel(r"proper $c\tau$  [mm]"); ax.set_ylim(0, 105); ax.grid(alpha=0.25)
         ax.text(0.03, 0.06, chan, transform=ax.transAxes, fontsize=20, fontweight="bold")
-        if chan == "4Mu":
-            ax.legend(loc="lower left", fontsize=12, framealpha=0.9, bbox_to_anchor=(0.0, 0.12))
+        if chan == "2Mu2E":
+            ax.plot([], [], "o", color="k", ms=9, label="large = 100k-event points (with CP errors)")
+            ax.legend(loc="upper right", fontsize=10.5, framealpha=0.92)
         hep.cms.label("", data=False, com=13.6, ax=ax)
     axes[0].set_ylabel("HLT efficiency  [%]")
     fig.suptitle("Run 3 (2022) signal HLT: 2018-path subset vs full Run 3 displaced-dimuon OR (both on Run 3 MC)", y=0.99, fontsize=13)

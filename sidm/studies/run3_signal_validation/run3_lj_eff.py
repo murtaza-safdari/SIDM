@@ -20,7 +20,7 @@
 #       photon -- rejects soft/pileup photons the real SR would not accept).
 #   LJ multiplicity distributions (n_mu, n_egm) per point -> extra-LJ migration is visible.
 # Denominators: raw (all gen events) and acc (BOTH dark-photon lepton pairs in |eta|<2.4 & pT>1;
-#   the same gen acceptance the v10 production applied, imposed identically on both eras).
+#   a RECONSTRUCTION of the v10 gen acceptance, re-imposed identically on both eras).
 import sys, subprocess, os, re, json, numpy as np, awkward as ak, uproot, vector, fastjet
 from collections import Counter
 vector.register_awkward()
@@ -133,11 +133,16 @@ def lj_counts(files, is2e):
         k = int((mask & denom).sum()); nn = int(denom.sum())
         return dict(k=k, n=nn, p=(k / nn if nn else 0.0))
     allm = np.ones(n, dtype=bool)
+    # multiplicity histograms BOTH raw and in-acceptance: v10 is gen-filtered (acc ~100%) while
+    # Run3 is full phase space, so only the _acc histograms are era-comparable (same denominator).
+    def hist(arr, mask):
+        a = arr[mask]
+        return [int((a == k).sum()) for k in range(4)] + [int((a >= 4).sum())]
     d = dict(n=int(n), n_acc=int(acc.sum()),
              incl_raw=eff(incl, allm), incl_acc=eff(incl, acc),
              excl_raw=eff(excl, allm), excl_acc=eff(excl, acc),
-             nmu_hist=[int((nmu == k).sum()) for k in range(4)] + [int((nmu >= 4).sum())],
-             negm_hist=[int((negm == k).sum()) for k in range(4)] + [int((negm >= 4).sum())])
+             nmu_hist=hist(nmu, allm), negm_hist=hist(negm, allm),
+             nmu_hist_acc=hist(nmu, acc), negm_hist_acc=hist(negm, acc))
     ee = np.concatenate(egm_e) if egm_e else np.array([]); gg = np.concatenate(egm_g) if egm_g else np.array([])
     if is2e and len(ee):
         d["egm_photon_only_frac"] = float(((ee == 0) & (gg > 0)).mean())
@@ -151,7 +156,8 @@ def run3_files(name, nchunks):
 
 def v10_files(key, chan, nfiles):
     import yaml
-    cfg = f"/uscms_data/d3/murtazas/SIDM-wt-run3val/sidm/configs/ntuples/signal_{chan}_v10.yaml"
+    cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "configs",
+                       "ntuples", f"signal_{chan}_v10.yaml")   # repo-relative: works in any checkout
     blk = yaml.safe_load(open(cfg))["llpNanoAOD_v2"]; entry = blk["samples"][key]
     urls = [blk["path"] + entry.get("path", "") + f for f in entry["files"]]
     urls = [u.replace("root://xcache//", "root://cmseos.fnal.gov//") for u in urls]
@@ -196,6 +202,7 @@ if __name__ == "__main__":
         v = f"v10 excl_acc={v10['excl_acc']['p']*100:5.1f}%" if v10 else "v10 --"
         print(f"{key:28s} R3 incl_acc={r3['incl_acc']['p']*100:5.1f}% excl_acc={r3['excl_acc']['p']*100:5.1f}% "
               f"(n_acc={r3['n_acc']:6d}) | {v}")
-    OUT = "/uscms_data/d3/murtazas/review_out/lj_eff_%s_2022.json" % ("geom" if LOOSE else "real")
+    OUT_DIR = os.environ.get("RUN3_EFF_OUT", "/uscms_data/d3/murtazas/review_out")
+    OUT = "%s/lj_eff_%s_2022.json" % (OUT_DIR, "geom" if LOOSE else "real")
     json.dump(out, open(OUT, "w"), indent=1)
     print(f"\nwrote {OUT}: {len(out)} points")
