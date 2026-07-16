@@ -501,6 +501,38 @@ class SidmProcessor(processor.ProcessorABC):
                 / (mm.p[:, :, :, None] * extra.p[:, None, None, :]))
         ljs["min_cosalpha"] = ak.fill_none(ak.min(ak.min(cosa, axis=-1), axis=-1), 1.0)
 
+        # Vertex-consistency (collinearity) diagnostic for the cos(alpha) blind spot.
+        # Among ALL the event's DSA muons, take the MOST back-to-back pair (the cosmic
+        # candidate) and record its opening angle (cosmic_cosa), spatial separation
+        # (cosmic_sep), collinearity (cosmic_coll) and max |dxy| (cosmic_maxdxy). A cosmic
+        # is ONE straight track: the pair is back-to-back AND its two PCA points lie on that
+        # track, so the joining vector is COLLINEAR with the momenta (coll -> 1). Two muons
+        # from a common (displaced) vertex are back-to-back only by accident (e.g. the two
+        # recoiling 4mu dark-photon LJs) and DIVERGE (coll < 1), so collinearity makes
+        # "back-to-back + separated" cosmic-SPECIFIC and spares displaced signal. Stored DSA
+        # vx,vy,vz,dxy + momenta only; no vertex fit, no POG object. Per-event, broadcast.
+        _ad = objs["dsaMuons"]   # all DSA muons PASSING THE CHANNEL OBJECT CUTS (pt/eta/ID/segment), not just LJ constituents
+        _pr = ak.combinations(_ad, 2, axis=1)
+        _a, _b = ak.unzip(_pr)
+        _pax = _a.pt * np.cos(_a.phi); _pay = _a.pt * np.sin(_a.phi)
+        _paz = _a.pt * np.sinh(_a.eta); _pam = _a.pt * np.cosh(_a.eta)
+        _pbx = _b.pt * np.cos(_b.phi); _pby = _b.pt * np.sin(_b.phi)
+        _pbz = _b.pt * np.sinh(_b.eta); _pbm = _b.pt * np.cosh(_b.eta)
+        _cosa2 = (_pax * _pbx + _pay * _pby + _paz * _pbz) / (_pam * _pbm)
+        _drx = _a.vx - _b.vx; _dry = _a.vy - _b.vy; _drz = _a.vz - _b.vz
+        _rmag = np.sqrt(_drx ** 2 + _dry ** 2 + _drz ** 2)
+        _coll = np.abs((_drx * _pax + _dry * _pay + _drz * _paz) / (_rmag * _pam))
+        _mdxy = np.maximum(np.abs(_a.dxy), np.abs(_b.dxy))
+        _i = ak.argmin(_cosa2, axis=1, keepdims=True)
+        def _bc(_x, _d):
+            _pe = ak.fill_none(ak.firsts(_x[_i]), _d)
+            _pe = ak.where(np.isfinite(_pe), _pe, _d)   # degenerate pair (rmag==0 -> 0/0 NaN) -> sentinel
+            return _pe + 0.0 * ljs.pt   # materialized per-LJ broadcast (survives mu_ljs mask)
+        ljs["cosmic_cosa"] = _bc(_cosa2, 1.0)
+        ljs["cosmic_sep"] = _bc(_rmag, -1.0)
+        ljs["cosmic_coll"] = _bc(_coll, -1.0)
+        ljs["cosmic_maxdxy"] = _bc(_mdxy, -1.0)
+
         # todo: add LJ displacement
 
         # pt order the new LJs
