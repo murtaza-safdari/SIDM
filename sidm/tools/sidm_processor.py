@@ -497,6 +497,8 @@ class SidmProcessor(processor.ProcessorABC):
             ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerVzx_diff), axis=-1), axis=-1), 0)
         ljs["v3dSpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
             ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerV3d_diff), axis=-1), axis=-1), 0)
+        ljs["dzVzdiff_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.innerVz_diff_minus_dz_diff), axis=-1), axis=-1), 0)
 
         ljs["dxySpread_ele"] =  ak.fill_none(ak.max(ak.flatten(
             ljs["electrons"].metric_table(ljs["electrons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1), 0)

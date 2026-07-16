@@ -1417,3 +1417,6 @@ def innerVzx_diff(obj1, obj2):
 def innerVyz_diff(obj1, obj2):
     return ((obj1.innerVy-obj2.innerVy)**2 +
             (obj1.innerVz-obj2.innerVz)**2)**0.5
+
+def innerVz_diff_minus_dz_diff(obj1, obj2):
+    return abs(obj1.innerVz - obj2.innerVz) - abs(obj1.dz-obj2.dz)
