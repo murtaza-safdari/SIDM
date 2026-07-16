@@ -102,10 +102,10 @@ derived_objs["genAs_toMu_matched_muLj"] = lambda objs, r: matched(objs["genAs_to
 derived_objs["genAs_matched_egmLj"]     = lambda objs, r: matched(objs["genAs"], objs["egm_ljs"], r)
 derived_objs["genAs_toE_matched_egmLj"] = lambda objs, r: matched(objs["genAs_toE"], objs["egm_ljs"], r)
 derived_objs["mu_lj_matched_genAs_toMu"]   = lambda objs, r: matched(objs["mu_ljs"], objs["genAs_toMu"], r)
-derived_objs["back_to_back_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) <= -0.95])(objs["dsaMuonPairs"],*ak.unzip(objs["dsaMuonPairs"]))
-derived_objs["parallel_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= 0.95])(objs["dsaMuonPairs"],*ak.unzip(objs["dsaMuonPairs"]))
-derived_objs["back_to_back_dsa_pairs_in_MuLJ"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) <= -0.95])(objs["mu_lj_dsaMuonPairs"],*ak.unzip(objs["mu_lj_dsaMuonPairs"]))
-derived_objs["parallel_dsa_pairs_in_MuLj"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= 0.95])(objs["mu_lj_dsaMuonPairs"],*ak.unzip(objs["mu_lj_dsaMuonPairs"]))
+derived_objs["back_to_back_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) <= -0.99])(objs["dsaMuonPairs"],*ak.unzip(objs["dsaMuonPairs"]))
+derived_objs["parallel_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= 0.99])(objs["dsaMuonPairs"],*ak.unzip(objs["dsaMuonPairs"]))
+derived_objs["back_to_back_dsa_pairs_in_MuLJ"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) <= -0.99])(objs["mu_lj_dsaMuonPairs"],*ak.unzip(objs["mu_lj_dsaMuonPairs"]))
+derived_objs["parallel_dsa_pairs_in_MuLj"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= 0.99])(objs["mu_lj_dsaMuonPairs"],*ak.unzip(objs["mu_lj_dsaMuonPairs"]))
 
 # Gen-level objects that depend on PIDs not present in all samples (signal-only).
 # Defined as derived_objs so they're only evaluated when explicitly referenced by a histogram or cut.
