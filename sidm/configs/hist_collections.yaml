@@ -869,3 +869,8 @@ abcd_data: &abcd_data
   - *isolation_base
   - "abcd_cosmic_2mu2e"
   - "abcd_cosmic_4mu"
+  - "abcd_cosmic2_2mu2e"
+  - "abcd_cosmic2_4mu"
+  - "abcd_vtx_2mu2e"
+  - "abcd_vtx_4mu"
+  - "abcd_vtxplane_4mu"

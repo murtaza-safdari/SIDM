@@ -220,6 +220,14 @@ abcd_mother_cats = [0, 1, 2, 3, 4, 5, 6]  # fake/prompt/light/tau/c/b/no-PF-muon
 abcd_cosa_edges = [-1.0, -0.9999, -0.999, -0.99, -0.98, -0.97, -0.96, -0.95, -0.9, -0.5, 0.0, 1.0]
 abcd_dzspread_edges = [0.0, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 5.0, 10.0, 10000.0]
 abcd_vxyspread_edges = [0.0, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 5.0, 10.0, 10000.0]
+abcd_coll_edges = [-2.0, 0.0, 0.5, 0.9, 0.99, 0.999, 1.0001]   # collinearity; -1=undefined
+abcd_dxymax_edges = [-2.0, 0.0, 1.0, 5.0, 10.0, 20.0, 40.0, 10000.0]   # max|dxy| of the pair; -1=undefined
+# cosmic_cosa / cosmic_sep reuse the cos(alpha)/dz-spread binning but need a bin for
+# their no-DSA-pair sentinels (cosa->1.0, sep->-1.0). The plain reused edges drop those
+# on flow=False axes (1.0 == upper cosa edge -> overflow; -1.0 < 0.0 -> underflow), which
+# silently voided abcd_cosmic2 for pair-less events (all of them in prompt data).
+abcd_cosa2_edges = abcd_cosa_edges + [1.0001]      # top bin [1.0,1.0001) = no-pair sentinel
+abcd_sep_edges = [-2.0] + abcd_dzspread_edges       # first bin [-2.0,0.0) = no-pair sentinel
 
 def abcd_member_iso(lj, side):
     """Member-lepton isolation with the no-constituent sentinel (-0.01)."""
@@ -3001,6 +3009,34 @@ hist_defs = {
         ],
         evt_mask=abcd_mask_4mu,
     ),
+    "abcd_cosmic2_2mu2e": h.Histogram(
+        [
+            abcd_axis(abcd_cosa2_edges, "cosmic_cosa", "most back-to-back DSA-pair cos(alpha)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].cosmic_cosa, 1.0)),
+            abcd_axis(abcd_sep_edges, "cosmic_sep", "that pair 3D separation (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].cosmic_sep, -1.0)),
+            abcd_axis(abcd_coll_edges, "cosmic_coll", "that pair collinearity with leg-A momentum (1=cosmic one-track)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].cosmic_coll, -1.0)),
+            abcd_axis(abcd_dxymax_edges, "cosmic_maxdxy", "that pair max |dxy| (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].cosmic_maxdxy, -1.0)),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_2mu2e,
+    ),
+    "abcd_cosmic2_4mu": h.Histogram(
+        [
+            abcd_axis(abcd_cosa2_edges, "cosmic_cosa", "most back-to-back DSA-pair cos(alpha)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].cosmic_cosa, 1.0)),
+            abcd_axis(abcd_sep_edges, "cosmic_sep", "that pair 3D separation (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].cosmic_sep, -1.0)),
+            abcd_axis(abcd_coll_edges, "cosmic_coll", "that pair collinearity with leg-A momentum (1=cosmic one-track)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].cosmic_coll, -1.0)),
+            abcd_axis(abcd_dxymax_edges, "cosmic_maxdxy", "that pair max |dxy| (cm)",
+                      lambda objs, mask: ak.fill_none(objs["mu_ljs"][mask, 0].cosmic_maxdxy, -1.0)),
+            abcd_parity_axis(),
+        ],
+        evt_mask=abcd_mask_4mu,
+    ),
     "abcd_scan_4mu_pix_pix": h.Histogram(
         [
             abcd_axis(abcd_pix8_edges, "mupix0", "leading mu-LJ max PF-mu pixel hits",
@@ -4644,3 +4680,111 @@ hist_defs = {
     ),
     
 }
+
+
+# ---------------------------------------------------------------------------
+# ABCD dimuon-vertex study (Phase 4): within-LJ Kalman vertex quality from the
+# LLPNanoAOD DSAMuonVertex / PatMuonVertex / PatDSAMuonVertex collections.
+# A mu-LJ candidate vertex is one whose BOTH original muons are constituents of
+# that LJ, matched via the ntuple index fields (DSAMuon.idx / Muon.idx vs the
+# vertex originalMuonIdx1/2 + isDSAMuon1/2), which survive pt-reordering. The
+# producer stores only SUCCESSFUL fits, so "no within-LJ vertex" (sentinel -1)
+# means no compatible fitted dimuon exists inside the LJ. Values are clamped
+# below their top edges so flow=False cannot silently drop real fills; a real
+# fit with normChi2 > 8e5 is treated as no-vertex (fit garbage).
+import numpy as _np_vtx
+
+abcd_vchi2_edges = [-2.0, 0.0, 1.0, 2.0, 3.0, 5.0, 10.0, 20.0, 50.0, 100.0, 1e6]
+abcd_viso_edges = [-2.0, 0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 10000.0]
+# NOTE: vertex t/tErr are identically ZERO in all LLPNano v2 inputs (verified on
+# ~175k vertices, data+signal) -- timing hists deliberately NOT built here.
+
+
+def _vtx_in_pool(idxs, pool):
+    return ak.any(idxs[:, :, None] == pool[:, None, :], axis=-1)
+
+
+def _vtx_best(objs, mask, which, getter, sentinel=-1.0):
+    """getter(best-normChi2 within-LJ vertex) for mu-LJ index `which`, minimized
+    across the three vertex collections; sentinel where the LJ has no vertex."""
+    lj = objs["mu_ljs"][mask, which]
+    dsa_pool = lj.dsaMuons.idx
+    pf_pool = lj.pfMuons.idx
+    chi2s, vals = [], []
+    for name, kind in (("dsaMuonVertex", "dsa"), ("patMuonVertex", "pat"),
+                       ("patDsaMuonVertex", "mix")):
+        vtx = objs[name][mask]
+        i1, i2 = vtx.originalMuonIdx1, vtx.originalMuonIdx2
+        if kind == "dsa":
+            ok = _vtx_in_pool(i1, dsa_pool) & _vtx_in_pool(i2, dsa_pool)
+        elif kind == "pat":
+            ok = _vtx_in_pool(i1, pf_pool) & _vtx_in_pool(i2, pf_pool)
+        else:
+            ok = (ak.where(vtx.isDSAMuon1 == 1, _vtx_in_pool(i1, dsa_pool), _vtx_in_pool(i1, pf_pool))
+                  & ak.where(vtx.isDSAMuon2 == 1, _vtx_in_pool(i2, dsa_pool), _vtx_in_pool(i2, pf_pool)))
+        sel = vtx[ok & (vtx.isValid == 1)]
+        best = ak.firsts(sel[ak.argmin(sel.normChi2, axis=1, keepdims=True)])
+        chi2s.append(ak.fill_none(best.normChi2, 9e5))
+        vals.append(ak.fill_none(getter(best), sentinel))
+    c01 = _np_vtx.minimum(chi2s[0], chi2s[1])
+    v01 = ak.where(chi2s[0] <= chi2s[1], vals[0], vals[1])
+    val = ak.where(c01 <= chi2s[2], v01, vals[2])
+    chi = _np_vtx.minimum(c01, chi2s[2])
+    val = ak.where(chi > 8e5, sentinel, val)
+    val = ak.where(_np_vtx.isfinite(val), val, sentinel)
+    return val + 0.0 * lj.pt
+
+
+def abcd_vtx_chi2(objs, mask, which):
+    return _vtx_best(objs, mask, which, lambda b: _np_vtx.minimum(b.normChi2, 9e5))
+
+
+def abcd_vtx_isomax(objs, mask, which):
+    return _vtx_best(objs, mask, which,
+                     lambda b: _np_vtx.minimum(_np_vtx.maximum(b.displacedTrackIso03Dimuon1,
+                                                               b.displacedTrackIso03Dimuon2), 9e3))
+
+
+hist_defs["abcd_vtx_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2_edges, "vchi2lead", "leading mu-LJ best within-LJ vertex normChi2 (-1: none)",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_vchi2_edges, "vchi2sub", "subleading mu-LJ best within-LJ vertex normChi2 (-1: none)",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 1)),
+        abcd_axis(abcd_iso_edges, "muiso0", "leading mu-LJ isolation",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_pix4_edges, "mudisp0", "leading mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+        abcd_mjj_axis(),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
+hist_defs["abcd_vtxplane_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2_edges, "vchi2lead", "leading mu-LJ best within-LJ vertex normChi2 (-1: none)",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_iso_edges, "muiso1", "subleading mu-LJ isolation",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+        abcd_axis(abcd_pix4_edges, "mudisp1", "subleading mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 1])),
+        abcd_axis(abcd_viso_edges, "visomax", "leading-LJ vertex displacedTrackIso03 (max of legs; -1: none)",
+                  lambda objs, mask: abcd_vtx_isomax(objs, mask, 0)),
+        abcd_mjj_axis(),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
+hist_defs["abcd_vtx_2mu2e"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2_edges, "vchi2", "mu-LJ best within-LJ vertex normChi2 (-1: none)",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_iso_edges, "egmiso", "egm-LJ isolation",
+                  lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+        abcd_axis(abcd_pix4_edges, "mudisp", "mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+        abcd_mjj_axis(),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_2mu2e,
+)

@@ -70,6 +70,13 @@ preLj_objs["jets"]       = lambda evts: evts.Jet
 preLj_objs["flags"]      = lambda evts: evts.Flag
 preLj_objs["evtNum"]     = lambda evts: evts.event
 
+# Dimuon-vertex collections (LLPNanoAOD KalmanVertexFitter output; ABCD vertex study).
+# Only successful fits are stored upstream. vxy is copied into a dxy field so the
+# processor generic dxy-adder (which needs px/py/pt, absent here) skips these.
+preLj_objs["dsaMuonVertex"] = lambda evts: ak.with_field(evts.DSAMuonVertex, evts.DSAMuonVertex.vxy, "dxy")
+preLj_objs["patMuonVertex"] = lambda evts: ak.with_field(evts.PatMuonVertex, evts.PatMuonVertex.vxy, "dxy")
+preLj_objs["patDsaMuonVertex"] = lambda evts: ak.with_field(evts.PatDSAMuonVertex, evts.PatDSAMuonVertex.vxy, "dxy")
+
 # define objects whose that will be added to objs by the sidm_processor after LJs are clustered
 # and LJ cuts are applied. postLj_obj cuts can be applied to these
 postLj_objs = {}
