@@ -77,6 +77,13 @@ muon_base: &muon_base
   - "muon_muon_invmass"
   - "muon_muon_invmass_highRange"
   - "muon_muon_cosAlpha"
+  - "muon_innerVz"
+  - "muon_innerVy"
+  - "muon_innerVz"
+  - "muon_dz"
+  - "muon_dz_innerVz"
+  - "mu_lj_dzVzdiff_pf"
+  - "muon_dz_innerVz_diff"
 
 dsaMuon_base: &dsaMuon_base
   - "dsaMuon_n"
@@ -854,7 +861,6 @@ base_plus_gen_resolution: &base_plus_gen_resolution
   - *lepton_genLepton_genA_base
 
 dsaPair_1D: &dsaPair_1D
-  - "dsaMu_dsaMu_cosAlpha"
   - "dsa_pair_vx_diff"
   - "dsa_pair_vy_diff"
   - "dsa_pair_vz_diff"
@@ -1064,6 +1070,10 @@ cosmic_muons: &cosmic_muons
   - *number
   - *dsaPair_1D
   - *dsaPair_2D
+  - *cosAlpha
   - "mu_lj_pfN_dsaN"
   - "dsaMu_pfMu_dR_closest"
   - "dsaMu_pfMu_pt_diff"
+
+
+test: &test
