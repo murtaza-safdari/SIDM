@@ -5427,15 +5427,15 @@ hist_defs = {
     "mu_lj_vyzSpread_dsa": obj_attr("mu_ljs", "vyzSpread_dsa", xmax=500, nbins=500),
     "mu_lj_vzxSpread_dsa": obj_attr("mu_ljs", "vzxSpread_dsa", xmax=500, nbins=500),
     "mu_lj_v3dSpread_dsa": obj_attr("mu_ljs", "v3dSpread_dsa", xmax=500, nbins=500),
-    "mu_lj_vxSpread_pf": obj_attr("mu_ljs", "vxSpread_pf", xmax=500, nbins=500),
-    "mu_lj_vySpread_pf": obj_attr("mu_ljs", "vySpread_pf", xmax=500, nbins=500),
-    "mu_lj_vzSpread_pf": obj_attr("mu_ljs", "vzSpread_pf", xmax=500, nbins=500),
-    "mu_lj_dxySpread_pf": obj_attr("mu_ljs", "dxySpread_pf", xmax=500, nbins=500),
-    "mu_lj_dzSpread_pf": obj_attr("mu_ljs", "dzSpread_pf", xmax=500, nbins=500),
-    "mu_lj_vxySpread_pf": obj_attr("mu_ljs", "vxySpread_pf", xmax=500, nbins=500),
-    "mu_lj_vyzSpread_pf": obj_attr("mu_ljs", "vyzSpread_pf", xmax=500, nbins=500),
-    "mu_lj_vzxSpread_pf": obj_attr("mu_ljs", "vzxSpread_pf", xmax=500, nbins=500),
-    "mu_lj_v3dSpread_pf": obj_attr("mu_ljs", "v3dSpread_pf", xmax=500, nbins=500),
+    "mu_lj_vxSpread_pf": obj_attr("mu_ljs", "vxSpread_pf", xmax=100, nbins=100),
+    "mu_lj_vySpread_pf": obj_attr("mu_ljs", "vySpread_pf", xmax=100, nbins=100),
+    "mu_lj_vzSpread_pf": obj_attr("mu_ljs", "vzSpread_pf", xmax=100, nbins=100),
+    "mu_lj_dxySpread_pf": obj_attr("mu_ljs", "dxySpread_pf", xmax=100, nbins=100),
+    "mu_lj_dzSpread_pf": obj_attr("mu_ljs", "dzSpread_pf", xmax=100, nbins=100),
+    "mu_lj_vxySpread_pf": obj_attr("mu_ljs", "vxySpread_pf", xmax=100, nbins=100),
+    "mu_lj_vyzSpread_pf": obj_attr("mu_ljs", "vyzSpread_pf", xmax=100, nbins=100),
+    "mu_lj_vzxSpread_pf": obj_attr("mu_ljs", "vzxSpread_pf", xmax=100, nbins=100),
+    "mu_lj_v3dSpread_pf": obj_attr("mu_ljs", "v3dSpread_pf", xmax=100, nbins=100),
     "egm_lj_dxySpread_ele": obj_attr("egm_ljs", "dxySpread_ele", xmax=500, nbins=500),
     "egm_lj_dzSpread_ele": obj_attr("egm_ljs", "dzSpread_ele", xmax=500, nbins=500),
     "mu_lj_vxSpread_mu": obj_attr("mu_ljs", "vxSpread_mu", xmax=500, nbins=500),
@@ -5466,21 +5466,21 @@ hist_defs = {
                    lambda objs, mask: cosAlpha(objs["mu_ljs"].muons)),
         ],
     ),
-  "cosAlpha_dsa": h.Histogram(
+   "cosAlpha_dsa": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, -1, 1, name="cosAlpha_dsa",
                                      label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
                    lambda objs, mask: cosAlpha(objs["dsaMuons"])),
         ],
     ),
-  "cosAlpha_pf": h.Histogram(
+   "cosAlpha_pf": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, -1, 1, name="cosAlpha_pf",
                                      label=r"CosAlpha(PF$\mu$, PF$\mu$)"),
                    lambda objs, mask: cosAlpha(objs["muons"])),
         ],
     ),
-  "cosAlpha_mu": h.Histogram(
+   "cosAlpha_mu": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, -1, 1, name="cosAlpha_mu",
                                      label=r"CosAlpha($\mu$, $\mu$)"),
@@ -5501,6 +5501,27 @@ hist_defs = {
                                      label=r"CosAlpha(DSA $\mu$, DSA $\mu$)"),
                    lambda objs, mask: (lambda v1, v2: np.cos(v1.deltaangle(v2)))
                                          (*ak.unzip(objs["muonPairs"]))),
+        ],
+    ),
+    "muon_innerVz":obj_attr("muons", "innerVz"),
+    "muon_innerVy":obj_attr("muons", "innerVy"),
+    "muon_innerVx":obj_attr("muons", "innerVx"),
+    "muon_dz_innerVz": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="muon_dz",
+                                     label="muon_innerVz"),
+                  lambda objs, mask:objs["muons"].dz),
+            h.Axis(hist.axis.Regular(100, 0, 100, name="muon_innerVz",
+                                     label="muon_innerVz"),
+                  lambda objs, mask: objs["muons"].innerVz),
+        ],
+    ),
+    "mu_lj_dzVzdiff_pf": obj_attr("mu_ljs", "dzSpread_pf", xmax=50, nbins=300),
+    "muon_dz_innerVz_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 50, name="muon_dz_innerVz_diff",
+                                     label="muon_dz_innerVz_diff"),
+                  lambda objs, mask:abs(objs["muons"].dz - objs["muons"].innerVz)),
         ],
     ),
 }
