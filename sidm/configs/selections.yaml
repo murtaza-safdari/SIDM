@@ -182,7 +182,7 @@ base_abcd_scan: &base_abcd_scan
   evt_cuts:
     - *evt_base
     - "2mu2e"
-    - "ABCD SR blind box veto (data)"
+    - "ABCD SR blind box veto 2mu2e (data)"
     - "evt number decile 0"
 
 # Full-statistics blinded sidebands: the SAME SR blind box, but ALL events (no decile).
@@ -200,7 +200,7 @@ base_abcd_scan: &base_abcd_scan
   evt_cuts:
     - *evt_base
     - "2mu2e"
-    - "ABCD SR blind box veto (data)"
+    - "ABCD SR blind box veto 2mu2e (data)"
 
 # Cosmic-ray control region: the cosmic-tag defining cut (back-to-back OR large spatial
 # spread) with NO SR blind box, exposing the cosmic-enriched SR corner for veto

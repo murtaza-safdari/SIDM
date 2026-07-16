@@ -71,3 +71,30 @@ _abcd_blind_box docstring too.
 
 ## Data job-args must pass BOTH --unweighted-hist AND --is-data
 (data has no gen weights; --is-data enables the interlock + unweighted running.)
+
+
+## UPDATE (2026-07-16): two-box scheme
+This section supersedes the box definition above; the verification numbers above pertain
+to the SUPERSEDED loose box and must be re-verified on the first merged output under the
+new boxes.
+
+* The blind box is now per-channel:
+  - 4mu (and any non-2mu2e data channel): `_abcd_blind_box` = the SR corner
+    {leading mu-LJ iso < 0.25 AND mJJ >= 150}. Tightened from the original
+    {muiso < 0.5 AND mJJ >= 50} union box: the looser rungs A-regions are exposed
+    on purpose (pre-registered boundaries; sidebands signal-depleted per MC).
+  - 2mu2e data channels: `_abcd_blind_box_2mu2e` = region A of the DEPLOYED
+    egmiso x mudisp plane inside the SR: {muiso < 0.25 AND mJJ >= 150 AND
+    egmiso < 0.10 AND mudisp < 2.5}. The egmiso >= 0.10 / mudisp >= 2.5 sidebands at
+    mJJ >= 150 are deliberately VISIBLE to enable the real-SR B*C/D prediction
+    (plane closure R = 1.00 +- 0.14 in visible windows; approved by the analysis
+    owner 2026-07-16; exposed-region signal leakage 0.07-0.28 acknowledged).
+* Failure direction of both boxes is FAIL-CLOSED (over-blinding); LJ-less events are
+  kept out of the box only by the mJJ leg. See the cuts.py docstrings.
+* The condor interlock accepts either veto name but enforces topology pairing: a
+  channel whose evt_cuts contain "4mu" must carry the generic box (the 2mu2e box s
+  egmiso leg auto-passes on egm-LJ-less events and must never be a 4mu channel s
+  only protection).
+* First-output verification checklist under the new boxes: (i) 2mu2e egmiso x mudisp
+  A corner at mJJ >= 150 == 0; (ii) its B/C/D at mJJ >= 150 nonzero; (iii) 4mu
+  {muiso0 < 0.25 AND mJJ >= 150} == 0.

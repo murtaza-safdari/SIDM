@@ -87,7 +87,8 @@ def main():
     if args.is_data:
         from sidm import BASE_DIR
         from sidm.tools import utilities
-        BLIND_VETO = "ABCD SR blind box veto (data)"
+        BLIND_VETOS = {"ABCD SR blind box veto (data)",
+                       "ABCD SR blind box veto 2mu2e (data)"}
         # The cosmic control region intentionally omits the blind box; its safety rests on
         # the cosmic tag, which is signal-DEPLETED (verified in MC before any data run).
         # A data channel is allowed if it carries EITHER protection.
@@ -98,9 +99,17 @@ def main():
         for ch in channels:
             spec = sel_menu.get(ch)
             evtc = utilities.flatten(spec["evt_cuts"]) if spec and "evt_cuts" in spec else []
-            if BLIND_VETO not in evtc and COSMIC_TAG not in evtc:
-                bad.append(f"channel '{ch}' carries neither the SR blind-box veto nor "
+            has_generic = "ABCD SR blind box veto (data)" in evtc
+            has_2mu2e = "ABCD SR blind box veto 2mu2e (data)" in evtc
+            if not (has_generic or has_2mu2e) and COSMIC_TAG not in evtc:
+                bad.append(f"channel '{ch}' carries neither an SR blind-box veto nor "
                            f"the cosmic-CR tag")
+            elif has_2mu2e and not has_generic and "4mu" in evtc:
+                # topology pairing: the 2mu2e box blinds only the egmiso x mudisp A
+                # corner; on an egm-LJ-less (4mu) event its egmiso leg auto-passes,
+                # so it must never be a 4mu channel s only protection.
+                bad.append(f"channel '{ch}' is a 4mu channel but carries only the "
+                           f"2mu2e blind box")
         for hc in hist_collections:
             if hc not in DATA_SAFE_COLLECTIONS:
                 bad.append(f"collection '{hc}' is not data-safe "

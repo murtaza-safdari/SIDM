@@ -276,17 +276,18 @@ evt_cut_defs = {
 # ---- ABCD data-sideband blinding (Phase 3, branch abcd-data-sidebands) ----
 def _abcd_blind_box(objs):
     """True for a data event in ABCD region A of the declared muiso x mJJ plane at
-    its loosest examined (t=2.0) rung: leading mu-LJ isolation < 0.5 (the -0.01
-    no-jet-match sentinel bin lies inside) AND mJJ(LJ0, LJ1) >= 50 GeV. Every
-    tighter working point's A is a subset, so vetoing this box blinds all of them.
+    its NOMINAL PRIMARY working point (= the signal region): leading mu-LJ isolation
+    < 0.25 (the -0.01 no-jet-match sentinel bin lies inside) AND mJJ(LJ0, LJ1) >= 150 GeV.
 
-    OVER-BLINDING NOTE: because the box is a full quadrant, at TIGHTER ladder rungs
-    (and at the nominal primary WP muiso<0.25 & mjj>=150) the sidebands B
-    (muiso in [0.25,0.5), mjj>=150) and C (muiso<0.5, mjj in [50,150)) also fall
-    inside it and are blinded in data. Only the t=2.0 rung's B/C/D are disjoint from
-    the box, so a DATA ABCD prediction is only valid at the t=2.0 (SR) rung; a
-    tighter-rung closure computed on data would be silently biased low. See
-    PHASE3_SAFETY.md.
+    This is the SR corner itself, tightened from the earlier loose-quadrant box
+    (muiso<0.5 & mjj>=50). Tightening keeps region A -- the ABCD prediction target --
+    blinded while EXPOSING the tight-WP sidebands B (muiso>=0.25, mjj>=150), C
+    (muiso<0.25, mjj<150) and D (muiso>=0.25, mjj<150): a DATA ABCD prediction is now
+    computable AT THE SR working point, and the low-mJJ validation region (mjj<150)
+    is visible for a DIRECT data closure test of the muiso x mJJ plane. The relaxation
+    is safe because the ABCD boundaries are pre-registered (frozen from the 2018-MC
+    study), so exposing the looser ladder rungs' A cannot drive boundary tuning. The
+    sidebands are signal-depleted per the MC study. See PHASE3_SAFETY.md.
 
     muiso and mjj are computed with the SAME helpers the abcd_scan histograms fill
     with (abcd_iso_sentinel on the leading mu-LJ; the leading-two-LJ invariant mass),
@@ -296,14 +297,17 @@ def _abcd_blind_box(objs):
     fixes the topology and guarantees a leading mu-LJ, so muiso/mjj are well-defined.
     A second in-function topology mask (e.g. abcd_mask_*) would duplicate the channel
     cut and could only NARROW the veto if the two ever diverged -> a leak; omitting it
-    keeps the box a pure superset of region A. If evaluated outside a channel, an
-    LJ-less / mu-LJ-less event maps muiso->999 and mjj->-1 (fill_none defaults), both
-    failing the SR predicate, so the box stays empty there too.
+    keeps the box a pure superset of region A. Failure direction is FAIL-CLOSED
+    (over-blinding): for a mu-LJ-less event abcd_iso_sentinel(ak.firsts(...)) returns
+    its no-jet sentinel -0.01 (the is_none branch intercepts BEFORE the fill_none 999,
+    which is unreachable belt-and-braces), so muiso<0.25 PASSES; such events are kept
+    out of the box only by the mjj leg (fill_none -1 fails mjj>=150 when <2 LJs).
+    Events with >=2 LJs but no mu-LJ may therefore be blinded unnecessarily -- safe.
     """
     from sidm.definitions.hists import abcd_iso_sentinel
     mjj = ak.fill_none(objs["ljs"][:, :2].sum().mass, -1.0)
     muiso = ak.fill_none(abcd_iso_sentinel(ak.firsts(objs["mu_ljs"])), 999.0)
-    return (muiso < 0.5) & (mjj >= 50.0)
+    return (muiso < 0.25) & (mjj >= 150.0)
 
 def _abcd_cosmic_tag(objs):
     """True for a data event enriched in cosmic-ray muons: the leading mu-LJ has an
@@ -327,8 +331,30 @@ def _abcd_cosmic_tag(objs):
     cosa = ak.fill_none(lj.min_cosalpha, 1.0)
     return cosa < -0.98
 
+def _abcd_blind_box_2mu2e(objs):
+    """2mu2e-only blind box: region A of the DEPLOYED egmiso x mudisp plane inside
+    the SR -- {leading mu-LJ iso < 0.25 AND mJJ >= 150 AND leading egm-LJ iso < 0.10
+    AND leading mu-LJ max PF-mu pixel hits < 2.5 (incl -1 = DSA-only)}. Narrows the
+    previous {muiso<0.25 & mjj>=150} box: the egmiso>=0.10 and mudisp>=2.5 sidebands
+    at mjj>=150 become VISIBLE, enabling the real-SR B*C/D prediction for the
+    egmiso x mudisp plane (closure R=1.00+-0.14 in the visible windows; deployment
+    reviewed 2026-07-16, approved by analysis owner; exposed-region signal leakage
+    0.07-0.28 acknowledged). Sentinels stay INSIDE the box on the pass side (egmiso
+    sentinel [-0.02,0) < 0.10; mudisp -1 < 2.5), keeping the box a superset of A.
+    Failure direction is FAIL-CLOSED (over-blinding), same as _abcd_blind_box: empty
+    mu/egm-LJ lists give iso sentinel -0.01 (passes) and mudisp -1 (passes); only the
+    mjj leg (fill_none -1) keeps LJ-less events out. 4mu channels keep the old box."""
+    from sidm.definitions.hists import abcd_iso_sentinel, abcd_max_pix
+    mjj = ak.fill_none(objs["ljs"][:, :2].sum().mass, -1.0)
+    muiso = ak.fill_none(abcd_iso_sentinel(ak.firsts(objs["mu_ljs"])), 999.0)
+    egmiso = ak.fill_none(abcd_iso_sentinel(ak.firsts(objs["egm_ljs"])), 999.0)
+    mudisp = ak.fill_none(abcd_max_pix(ak.firsts(objs["mu_ljs"])), 999.0)
+    return (muiso < 0.25) & (mjj >= 150.0) & (egmiso < 0.10) & (mudisp < 2.5)
+
+
 evt_cut_defs.update({
     "ABCD SR blind box veto (data)": lambda objs: ~_abcd_blind_box(objs),
+    "ABCD SR blind box veto 2mu2e (data)": lambda objs: ~_abcd_blind_box_2mu2e(objs),
     "evt number decile 0": lambda objs: (objs["evtNum"] % 10) == 0,
     "ABCD cosmic CR tag (data)": lambda objs: _abcd_cosmic_tag(objs),
 })
