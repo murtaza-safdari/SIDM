@@ -4788,3 +4788,18 @@ hist_defs["abcd_vtx_2mu2e"] = h.Histogram(
     ],
     evt_mask=abcd_mask_2mu2e,
 )
+
+
+hist_defs["abcd_vtxcond_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2_edges, "vchi2lead", "leading mu-LJ best within-LJ vertex normChi2 (-1: none)",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_iso_edges, "muiso0", "leading mu-LJ isolation",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso_edges, "muiso1", "subleading mu-LJ isolation",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+        abcd_mjj_axis(),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
