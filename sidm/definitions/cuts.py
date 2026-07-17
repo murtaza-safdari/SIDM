@@ -360,4 +360,5 @@ evt_cut_defs = {
     & ~(objs["hlt"].DoubleL2Mu25NoVtx_2Cha_Eta2p4)
     & ~(objs["hlt"].DoubleL2Mu25NoVtx_2Cha_CosmicSeed_Eta2p4)
 ),
+    "all cosAlpha(mu, mu)>-0.99" : lambda objs: ak.all(cosAlpha(objs["allMuons"])> -0.99, axis=1),
 }
