@@ -4803,3 +4803,22 @@ hist_defs["abcd_vtxcond_4mu"] = h.Histogram(
     ],
     evt_mask=abcd_mask_4mu,
 )
+
+
+hist_defs["abcd_vtxcross2_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2_edges, "vchi2lead", "leading mu-LJ best within-LJ vertex normChi2 (-1: none)",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_iso_edges, "muiso0", "leading mu-LJ isolation",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso_edges, "muiso1", "subleading mu-LJ isolation",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+        abcd_axis(abcd_pix4_edges, "mudisp0", "leading mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_pix4_edges, "mudisp1", "subleading mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 1])),
+        abcd_mjj_axis(),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
