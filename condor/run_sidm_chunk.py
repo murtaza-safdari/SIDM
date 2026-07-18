@@ -93,7 +93,7 @@ def main():
         # the cosmic tag, which is signal-DEPLETED (verified in MC before any data run).
         # A data channel is allowed if it carries EITHER protection.
         COSMIC_TAG = "ABCD cosmic CR tag (data)"
-        DATA_SAFE_COLLECTIONS = {"abcd_data"}
+        DATA_SAFE_COLLECTIONS = {"abcd_data", "abcd_vtxcross"}
         sel_menu = utilities.load_yaml(f"{BASE_DIR}/configs/selections.yaml")
         bad = []
         for ch in channels:

@@ -6,7 +6,7 @@ transfer_input_files = sidm_code.tar.gz, requirements.txt, $(filelist)
 output = logs/$(sample)_$(chunk)_$(Cluster)_$(Process).out
 error  = logs/$(sample)_$(chunk)_$(Cluster)_$(Process).err
 log    = logs/$(sample)_$(chunk)_$(Cluster)_$(Process).log
-request_memory = 4000
+request_memory = 8000
 request_disk = 1000000
 +DesiredOS = "el9"
 queue sample, chunk, filelist from job_args_run2018_full.txt

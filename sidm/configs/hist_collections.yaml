@@ -876,3 +876,7 @@ abcd_data: &abcd_data
   - "abcd_vtxplane_4mu"
   - "abcd_vtxcond_4mu"
   - "abcd_vtxcross2_4mu"
+
+# Slim data-safe collection for the dedicated cross-plane pass (one hist, 4mu only).
+abcd_vtxcross:
+  - "abcd_vtxcross2_4mu"
