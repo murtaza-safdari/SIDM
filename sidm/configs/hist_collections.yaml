@@ -880,3 +880,8 @@ abcd_data: &abcd_data
 # Slim data-safe collection for the dedicated cross-plane pass (one hist, 4mu only).
 abcd_vtxcross:
   - "abcd_vtxcross2_4mu"
+
+# Fine-mJJ method-study collection (bump-hunt / transfer-factor; reco-only, data-safe).
+abcd_mjjfine:
+  - "abcd_mjjfine_2mu2e"
+  - "abcd_mjjfine_4mu"

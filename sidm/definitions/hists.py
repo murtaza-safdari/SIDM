@@ -4822,3 +4822,44 @@ hist_defs["abcd_vtxcross2_4mu"] = h.Histogram(
     ],
     evt_mask=abcd_mask_4mu,
 )
+
+
+# Fine-mJJ method-study hists (bump-hunt / transfer-factor trends): 10-GeV mJJ bins
+# with categorical vertex-quality and isolation axes. Small on purpose.
+abcd_mjjfine_edges = [10.0 * i for i in range(101)] + [14000.0]
+abcd_vchi2cat_edges = [-2.0, 0.0, 5.0, 1e6]   # no-vertex / good (chi2<5) / bad
+
+hist_defs["abcd_mjjfine_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2cat_edges, "vcat", "leading mu-LJ vertex: none / chi2<5 / worse",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_iso3_mu_edges, "muiso0c", "leading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso3_mu_edges, "muiso1c", "subleading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+        abcd_axis(abcd_mjjfine_edges, "mjjf", "mJJ (GeV), 10-GeV bins",
+                  lambda objs, mask: ak.fill_none(objs["ljs"][mask, :2].sum().mass, -1.0)),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
+hist_defs["abcd_mjjfine_2mu2e"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2cat_edges, "vcat", "mu-LJ vertex: none / chi2<5 / worse",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_iso3_mu_edges, "muisoc", "mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso3_egm_edges, "egmisoc", "egm-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+        abcd_axis(abcd_pix4_edges, "mudisp", "mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+        abcd_axis([0.0, 2.0, math.pi], "dphi2", "|dphi(LJ0,LJ1)| below/above 2",
+                  lambda objs, mask: abs(objs["ljs"][mask, 0].delta_phi(objs["ljs"][mask, 1]))),
+        abcd_axis([-0.5, 0.5, 1000.0], "egmdisp2", "egm-LJ min lost hits: 0 / >=1-or-photon",
+                  lambda objs, mask: abcd_min_lost(objs["egm_ljs"][mask, 0])),
+        abcd_axis(abcd_mjjfine_edges, "mjjf", "mJJ (GeV), 10-GeV bins",
+                  lambda objs, mask: ak.fill_none(objs["ljs"][mask, :2].sum().mass, -1.0)),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_2mu2e,
+)
