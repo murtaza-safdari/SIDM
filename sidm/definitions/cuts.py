@@ -358,3 +358,61 @@ evt_cut_defs.update({
     "evt number decile 0": lambda objs: (objs["evtNum"] % 10) == 0,
     "ABCD cosmic CR tag (data)": lambda objs: _abcd_cosmic_tag(objs),
 })
+
+
+# Pre-registered blind windows of the windowed resonance search (approved by the
+# analysis owner 2026-07-19, replacing the fixed mjj>=150 box for the *_data_win
+# channels). Chosen from SIGNAL MC ONLY (the 68% mJJ cores of the grid points,
+# notebook 03 Section 7) BEFORE any data look at the newly exposed regions:
+#   [80, 130)  covers the 100 GeV points (cores [90,110]-[90,130]);
+#   [380, 600) covers every 500 GeV point (widest core [390,590]);
+#   [780, inf) covers the 1000 GeV points (cores [830,1000] and up; the long-
+#              lifetime 9.6 mm point's core reaches down to ~670 -- its leakage
+#              into the open [600,780) sideband is an acknowledged sensitivity
+#              loss for that point, not a blinding leak).
+# Everything OUTSIDE the windows -- notably [130,380) and [600,780) -- is exposed
+# in the pass region, enabling local background fits across the spectrum.
+ABCD_BLIND_WINDOWS = ((80.0, 130.0), (380.0, 600.0), (780.0, None))
+
+
+def _abcd_mjj_in_blind_window(mjj):
+    """True where mjj falls inside any pre-registered blind window. The fill_none
+    sentinel -1 used for <2-LJ events lies in no window (windows start at 80), and
+    such events cannot reach the channels anyway (">=2 LJs" event cut)."""
+    m = None
+    for lo, hi in ABCD_BLIND_WINDOWS:
+        w = (mjj >= lo) if hi is None else ((mjj >= lo) & (mjj < hi))
+        m = w if m is None else (m | w)
+    return m
+
+
+def _abcd_blind_windows(objs):
+    """Windowed analog of _abcd_blind_box: True for a data event with (leading
+    mu-LJ isolation < 0.25, sentinel inside) AND mJJ inside any blind window.
+    Identical fail-closed construction and rationale as _abcd_blind_box (see its
+    docstring): the iso leg auto-passes on missing information, so the box is a
+    superset of the windowed signal regions; only the mjj leg (well-defined for
+    every channel-passing event) decides the window."""
+    from sidm.definitions.hists import abcd_iso_sentinel
+    mjj = ak.fill_none(objs["ljs"][:, :2].sum().mass, -1.0)
+    muiso = ak.fill_none(abcd_iso_sentinel(ak.firsts(objs["mu_ljs"])), 999.0)
+    return (muiso < 0.25) & _abcd_mjj_in_blind_window(mjj)
+
+
+def _abcd_blind_windows_2mu2e(objs):
+    """Windowed analog of _abcd_blind_box_2mu2e: the deployed-plane A corner
+    (muiso < 0.25 AND egmiso < 0.10 AND mudisp < 2.5, sentinels inside) AND mJJ
+    inside any blind window. Same fail-closed construction as
+    _abcd_blind_box_2mu2e: every non-mjj leg auto-passes on missing information."""
+    from sidm.definitions.hists import abcd_iso_sentinel, abcd_max_pix
+    mjj = ak.fill_none(objs["ljs"][:, :2].sum().mass, -1.0)
+    muiso = ak.fill_none(abcd_iso_sentinel(ak.firsts(objs["mu_ljs"])), 999.0)
+    egmiso = ak.fill_none(abcd_iso_sentinel(ak.firsts(objs["egm_ljs"])), 999.0)
+    mudisp = ak.fill_none(abcd_max_pix(ak.firsts(objs["mu_ljs"])), 999.0)
+    return (muiso < 0.25) & (egmiso < 0.10) & (mudisp < 2.5) & _abcd_mjj_in_blind_window(mjj)
+
+
+evt_cut_defs.update({
+    "ABCD window blind veto (data)": lambda objs: ~_abcd_blind_windows(objs),
+    "ABCD window blind veto 2mu2e (data)": lambda objs: ~_abcd_blind_windows_2mu2e(objs),
+})

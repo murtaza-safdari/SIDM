@@ -87,8 +87,11 @@ def main():
     if args.is_data:
         from sidm import BASE_DIR
         from sidm.tools import utilities
-        BLIND_VETOS = {"ABCD SR blind box veto (data)",
-                       "ABCD SR blind box veto 2mu2e (data)"}
+        GENERIC_VETOS = {"ABCD SR blind box veto (data)",
+                         "ABCD window blind veto (data)"}
+        VETOS_2MU2E = {"ABCD SR blind box veto 2mu2e (data)",
+                       "ABCD window blind veto 2mu2e (data)"}
+        BLIND_VETOS = GENERIC_VETOS | VETOS_2MU2E
         # The cosmic control region intentionally omits the blind box; its safety rests on
         # the cosmic tag, which is signal-DEPLETED (verified in MC before any data run).
         # A data channel is allowed if it carries EITHER protection.
@@ -99,8 +102,8 @@ def main():
         for ch in channels:
             spec = sel_menu.get(ch)
             evtc = utilities.flatten(spec["evt_cuts"]) if spec and "evt_cuts" in spec else []
-            has_generic = "ABCD SR blind box veto (data)" in evtc
-            has_2mu2e = "ABCD SR blind box veto 2mu2e (data)" in evtc
+            has_generic = bool(GENERIC_VETOS & set(evtc))
+            has_2mu2e = bool(VETOS_2MU2E & set(evtc))
             if not (has_generic or has_2mu2e) and COSMIC_TAG not in evtc:
                 bad.append(f"channel '{ch}' carries neither an SR blind-box veto nor "
                            f"the cosmic-CR tag")

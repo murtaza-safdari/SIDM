@@ -185,6 +185,23 @@ base_abcd_scan: &base_abcd_scan
     - "ABCD SR blind box veto 2mu2e (data)"
     - "evt number decile 0"
 
+# Windowed resonance-search data channels: identical to the *_data_full channels
+# except the fixed blind box is replaced by the pre-registered mass-window vetoes
+# (cuts.py ABCD_BLIND_WINDOWS; approved 2026-07-19).
+4mu_abcd_scan_data_win:
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "4mu"
+    - "ABCD window blind veto (data)"
+
+2mu2e_abcd_scan_data_win:
+  <<: *base_abcd_scan
+  evt_cuts:
+    - *evt_base
+    - "2mu2e"
+    - "ABCD window blind veto 2mu2e (data)"
+
 # Full-statistics blinded sidebands: the SAME SR blind box, but ALL events (no decile).
 # Used once blinding is validated, to populate B/C/D and the blinded A_pred = B*C/D.
 # The SR box stays masked; only the 10% decile is dropped.
