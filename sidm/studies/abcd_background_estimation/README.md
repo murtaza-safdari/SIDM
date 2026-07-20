@@ -10,11 +10,13 @@ before it is used.
 | `01_abcd_from_first_principles.ipynb` | The signal and the lepton-jet final states; the samples; the event selection; the ABCD method and its assumptions; the ABCD variables; the blinding scheme; the deployed 2mu2e estimate with its closure measurement and caveats |
 | `02_closure_tests_and_the_4mu_verdict.ipynb` | The full closure-test compendium at 2018 statistics: why every isolation-based ABCD plane fails in 4mu (dilution effect, conditioned and cross-object planes); the instrumental artifact in the isolated 4mu corner; the dimuon-vertex discriminant and its validations; era stability and the alternative-plane cross-check in 2mu2e; the 4mu verdict |
 | `03_method_tests_and_recommendation.ipynb` | The three non-ABCD methods (smooth-shape fits, transfer factors, MC-assisted) tested in both channels on a dedicated fine-binned mJJ campaign, every extrapolation validated in never-blinded regions; the failure of all three simple forms, the local-window construction that passes, and the unified windowed-resonance-search recommendation |
+| `04_windowed_pass_first_results.ipynb` | The approved windowed blinding (pre-registered mass windows replacing the fixed box), its verification, and first results of the windowed data pass: the pass-region spectra, in-region local-fit validation with the measured 4mu bias, first per-window background estimates, and the deployed 2mu2e ABCD's first data confrontation |
 
 The ABCD region counts, closure ratios, predictions, survival fractions, and
 method-test results in the notebooks are recomputed at execution time from the
 merged histograms of the blinded Condor campaigns (`AbcdVtx_Run2018_v1`,
-`AbcdVtxCross_Run2018_v2` for Parts 1–2; `AbcdMjjFine_Run2018_v1` for Part 3);
+`AbcdVtxCross_Run2018_v2` for Parts 1–2; `AbcdMjjFine_Run2018_v1` for Part 3;
+`AbcdMjjWin_Run2018_v1` for Part 4);
 a few quoted figures (the Z → μμ vertexing control, the cosmic-ray study) come
 from standalone campaign scripts and are cited as such where used. Part 3's
 weighted MC composition additionally reads the background file census
@@ -27,7 +29,8 @@ histogram and cut definitions live in `sidm/definitions/hists.py` and
 The notebooks read local copies of the merged campaign outputs (the `CACHE`
 variables at the top of each notebook). The shared masters live on EOS under
 `/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/abcd_vtx_run2018`,
-`.../abcd_vtxcross_run2018_v2`, and `.../abcd_mjjfine_run2018`; to re-execute
+`.../abcd_vtxcross_run2018_v2`, `.../abcd_mjjfine_run2018`, and
+`.../abcd_mjjwin_run2018`; to re-execute
 elsewhere, `xrdcp` those directories to local disk (reads work with a Kerberos
 ticket) and point the `CACHE` paths at the copies. The merges themselves were
 produced with `sidm/scripts/merge_coffea_chunks_eos.py` from the per-chunk
