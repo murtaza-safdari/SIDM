@@ -682,13 +682,13 @@ hist_defs = {
     #Leading vs subleading muon
     "all_muon0_pt_vs_all_muon1_pt": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(50, 0, 100, name="all_muon0_pt", 
+            h.Axis(hist.axis.Regular(100, 0, 100, name="all_muon0_pt", 
                                      label="Leading Event Muon (PF or DSA) pT [GeV]"),
                    lambda objs, mask: ak.sort(
                        ak.concatenate([objs["muons"].pt, objs["dsaMuons"].pt], axis=-1), 
                        axis=-1, ascending=False
                    )[mask, 0]),
-            h.Axis(hist.axis.Regular(50, 0, 100, name="all_muon1_pt", 
+            h.Axis(hist.axis.Regular(100, 0, 100, name="all_muon1_pt", 
                                      label="Sub-leading Event Muon (PF or DSA) pT [GeV]"),
                    lambda objs, mask: ak.sort(
                        ak.concatenate([objs["muons"].pt, objs["dsaMuons"].pt], axis=-1), 
@@ -697,6 +697,33 @@ hist_defs = {
         ],
         evt_mask=lambda objs: (ak.num(objs["muons"]) + ak.num(objs["dsaMuons"])) > 1,
     ),
+    # Muon pT score per lepton jet:
+        # 0 = no muons in the jet have pt > 26 GeV
+        # 1 = only the leading muon in the jet has pt > 26 GeV
+        # 1.5 = both the leading and subleading muon in the jet have pt > 26 GeV
+        #
+        # Interpretation of sum over two LJs:
+        # 3.0: All 4 muons have pt > 26 GeV
+        # 2.5: One LJ has two muons with pt > 26 and the other has one
+        # 2.0: Scenario B (each dark photon produces a muon with pt > 26)
+        # 1.5: Scenario A (a single dark photon contributes both muons)
+        # 1.0: Only 1 muon in the event has pt > 26 GeV
+        # 0.0: No muons in the event have pt > 26 GeV
+    "mu_lj_sum_pt_score": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(7, 0, 3.5, name="sum_pt_score",
+                                     label="Sum of LJ Muon pT Scores"),
+                   lambda objs, mask: (
+                       ak.where(ak.sum(objs["mu_ljs"][mask, 0].muons.pt > 26, axis=-1) >= 2, 1.5, 
+                                ak.sum(objs["mu_ljs"][mask, 0].muons.pt > 26, axis=-1))
+                       +
+                       ak.where(ak.sum(objs["mu_ljs"][mask, 1].muons.pt > 26, axis=-1) >= 2, 1.5, 
+                                ak.sum(objs["mu_ljs"][mask, 1].muons.pt > 26, axis=-1))
+                   )),
+        ],
+        evt_mask=lambda objs: ak.num(objs["mu_ljs"]) >= 2,
+    ),
+
     
     # lj
     "lj_n": obj_attr("ljs", "n"),

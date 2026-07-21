@@ -241,6 +241,10 @@ evt_cut_defs = {
         & objs["flags"].hfNoisyHitsFilter
     ),
     ">=1 muon": lambda objs: ak.num(objs["muons"]) >= 1,
+    ">=2 muons (pf or dsa) pT > 26 GeV": lambda objs: (
+        ak.sum(objs["muons"].pt > 26, axis=-1) + ak.sum(objs["dsaMuons"].pt > 26, axis=-1) >= 2
+    ),
+    
     "PV filter": lambda objs: ak.flatten(objs["pvs"].npvsGood) >= 1,
     #"Cosmic veto": lambda objs: objs["cosmicveto"].result,
     ">=2 LJs": lambda objs: ak.num(objs["ljs"]) >= 2,
