@@ -891,3 +891,11 @@ abcd_mjjfine:
 abcd_wincos:
   - "abcd_wincos_2mu2e"
   - "abcd_wincos_4mu"
+
+# Pair-resonance / charge / vertex-DCA candidate-axis collection (data-safe;
+# data fills come from the window-blinded channels).
+abcd_pairres:
+  - "abcd_dmrel_2mu2e"
+  - "abcd_dmrel_4mu"
+  - "abcd_qbal_4mu"
+  - "abcd_vdca_4mu"

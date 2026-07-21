@@ -1,0 +1,12 @@
+universe = vanilla
+executable = run_job.sh
+arguments = $(sample) $(chunk) $(filelist) root://cmseos.fnal.gov//store/user/$ENV(USER)/sidm_condor/AbcdPairRes_Run2018_v1 2mu2e_abcd_scan_data_win,4mu_abcd_scan_data_win,2mu2e_abcd_scan_data_wincv,4mu_abcd_scan_data_wincv abcd_pairres unweighted data
+x509userproxy = /uscms_data/d3/murtazas/x509_proxy.pem
+transfer_input_files = sidm_code.tar.gz, requirements.txt, $(filelist)
+output = logs/$(sample)_$(chunk)_$(Cluster)_$(Process).out
+error  = logs/$(sample)_$(chunk)_$(Cluster)_$(Process).err
+log    = logs/$(sample)_$(chunk)_$(Cluster)_$(Process).log
+request_memory = 4000
+request_disk = 1000000
++DesiredOS = "el9"
+queue sample, chunk, filelist from job_args_run2018_full.txt

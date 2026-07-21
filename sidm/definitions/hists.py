@@ -4912,3 +4912,147 @@ hist_defs["abcd_wincos_2mu2e"] = h.Histogram(
     ],
     evt_mask=abcd_mask_2mu2e,
 )
+
+
+# Pair-resonance / charge / vertex-DCA candidate axes for a future 4mu plane
+# (2mu2e gets the mass-equality mirror). Filled by the same window-blinded data
+# channels as abcd_mjjfine plus the MC scan channels for signal/background.
+# - dmrel = |m0-m1|/(m0+m1) of the two LJ resonance-candidate masses. Two decays
+#   of the SAME dark photon peak at 0 for any mass point (no mass scan needed);
+#   combinatoric background pairs are broad. DSA momentum resolution broadens
+#   signal (the per-LJ mass alone is a weak handle), so a pixel-content axis
+#   isolates the PF-quality subsample where the dimuon mass is sharp.
+# - qbal = how many of the two leading mu-LJs are exactly-2-muon SAME-SIGN
+#   pairs. Signal LJs are opposite-sign pairs (qbal=0) up to charge
+#   mis-assignment; same-sign LJs anchor combinatoric/fake background through a
+#   quantum number no isolation or displacement cut touches. LJs with a third
+#   clustered muon or a surviving PF/DSA duplicate track have ambiguous summed
+#   charge and are deliberately NOT tagged, keeping the same-sign anchor pure
+#   (an OS signal pair plus one duplicate DSA leg would otherwise sum to +-1
+#   and be mistagged same-sign).
+# - vdca = Kalman-fit 3D DCA of the best within-LJ dimuon vertex. No vertex =
+#   -1 sentinel; a valid fit (dcaStatus==1) fills its DCA clamped to 50 cm (so
+#   pathological-but-valid fits land in [5,100)); dcaStatus!=1 fills 9e3, the
+#   [100,1e4) top bin, which therefore contains ONLY status-failed fits. The
+#   proper-fit replacement for the straight-line DCA proxy, which muon
+#   curvature breaks.
+abcd_dmrel_edges = [-0.02, 0.05, 0.1, 0.2, 0.35, 0.5, 1.0001]
+abcd_qbal_edges = [-0.5, 0.5, 1.5, 2.5]
+abcd_vdca_edges = [-2.0, 0.0, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 100.0, 1e4]
+
+
+def _abcd_lj_q_ss(lj):
+    """True where the mu-LJ is an exactly-2-muon pair with nonzero summed
+    charge (a clean same-sign pair). Any other muon multiplicity (third muon,
+    surviving PF/DSA duplicate) is ambiguous and returns False."""
+    q = ak.sum(lj.pfMuons.charge, axis=-1) + ak.sum(lj.dsaMuons.charge, axis=-1)
+    n = ak.num(lj.pfMuons.charge, axis=-1) + ak.num(lj.dsaMuons.charge, axis=-1)
+    return (n == 2) & (_np_vtx.abs(q) > 0)
+
+
+def abcd_qbal_val(objs, mask):
+    lj = objs["mu_ljs"][mask]
+    n = (ak.values_astype(_abcd_lj_q_ss(lj[:, 0]), "float64")
+         + ak.values_astype(_abcd_lj_q_ss(lj[:, 1]), "float64"))
+    return ak.fill_none(n, 0.0)
+
+
+def abcd_dmrel_val(m0, m1):
+    tot = m0 + m1
+    dm = _np_vtx.abs(m0 - m1) / ak.where(tot > 0, tot, 1.0)
+    dm = ak.where(tot > 0, dm, 1.0)   # degenerate zero-mass pair -> top bin
+    return ak.values_astype(ak.fill_none(dm, 1.0), "float64")
+
+
+def abcd_vtx_dca(objs, mask, which):
+    # dcaStatus==1 is the success code. Verified on data: every STORED vertex in
+    # all three collections has dcaStatus==1 with physical dca in [0, 15] cm
+    # (the producer caps dca at 15 and stores only successful fits), so the
+    # status!=1 branch and the negative-value clamp are defensive guards.
+    # Valid DCAs are clamped to 50 cm; 9e3 marks a status-failed fit, giving it
+    # the dedicated [100,1e4) top bin should one ever appear.
+    return _vtx_best(objs, mask, which,
+                     lambda b: ak.where(b.dcaStatus == 1,
+                                        _np_vtx.minimum(_np_vtx.maximum(b.dca, 0.0), 50.0),
+                                        9e3))
+
+
+hist_defs["abcd_dmrel_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_dmrel_edges, "dmrel", "|m0-m1|/(m0+m1) of the two mu-LJ dimuon masses",
+                  lambda objs, mask: abcd_dmrel_val(objs["mu_ljs"][mask, 0].mass,
+                                                    objs["mu_ljs"][mask, 1].mass)),
+        abcd_axis(abcd_iso3_mu_edges, "muiso0c", "leading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso3_mu_edges, "muiso1c", "subleading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+        abcd_axis(abcd_vchi2cat_edges, "vcat", "leading mu-LJ vertex: none / chi2<5 / worse",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_pix2_edges, "pix0", "leading mu-LJ max PF-mu pixel hits: DSA-only-or-<=2 / >=3",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_mjjfine_edges, "mjjf", "mJJ (GeV), 10-GeV bins",
+                  lambda objs, mask: ak.fill_none(objs["ljs"][mask, :2].sum().mass, -1.0)),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
+hist_defs["abcd_qbal_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_qbal_edges, "qbal", "N of the 2 leading mu-LJs that are exactly-2-muon same-sign pairs",
+                  abcd_qbal_val),
+        abcd_axis(abcd_iso3_mu_edges, "muiso0c", "leading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso3_mu_edges, "muiso1c", "subleading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+        abcd_axis(abcd_vchi2cat_edges, "vcat", "leading mu-LJ vertex: none / chi2<5 / worse",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_pix2_edges, "pix0", "leading mu-LJ max PF-mu pixel hits: DSA-only-or-<=2 / >=3",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_mjjfine_edges, "mjjf", "mJJ (GeV), 10-GeV bins",
+                  lambda objs, mask: ak.fill_none(objs["ljs"][mask, :2].sum().mass, -1.0)),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
+hist_defs["abcd_vdca_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_vdca_edges, "vdca", "leading mu-LJ best-vertex 3D DCA (cm; -1: no vertex)",
+                  lambda objs, mask: abcd_vtx_dca(objs, mask, 0)),
+        abcd_axis(abcd_iso3_mu_edges, "muiso0c", "leading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso3_mu_edges, "muiso1c", "subleading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+        abcd_axis(abcd_vchi2cat_edges, "vcat", "leading mu-LJ vertex: none / chi2<5 / worse",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_pix2_edges, "pix0", "leading mu-LJ max PF-mu pixel hits: DSA-only-or-<=2 / >=3",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_mjjfine_edges, "mjjf", "mJJ (GeV), 10-GeV bins",
+                  lambda objs, mask: ak.fill_none(objs["ljs"][mask, :2].sum().mass, -1.0)),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
+# 2mu2e mirror: signal has one dark photon mass for BOTH legs, so the mu-LJ
+# dimuon mass and the egm-LJ mass agree; a photon-built egm LJ has mass ~0 and
+# lands in the top (maximally unequal) bin by construction. Carries all three
+# legs of the deployed-plane blinded corner (muiso, egmiso, mudisp) so the
+# window-blinded corner is directly assertable on this hist alone.
+hist_defs["abcd_dmrel_2mu2e"] = h.Histogram(
+    [
+        abcd_axis(abcd_dmrel_edges, "dmrel", "|m0-m1|/(m0+m1) of mu-LJ and egm-LJ masses",
+                  lambda objs, mask: abcd_dmrel_val(objs["mu_ljs"][mask, 0].mass,
+                                                    objs["egm_ljs"][mask, 0].mass)),
+        abcd_axis(abcd_iso3_mu_edges, "muisoc", "mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso3_egm_edges, "egmisoc", "egm-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+        abcd_axis(abcd_pix4_edges, "mudisp", "mu-LJ max PF-mu pixel hits (-1: DSA-only)",
+                  lambda objs, mask: abcd_max_pix(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_vchi2cat_edges, "vcat", "mu-LJ vertex: none / chi2<5 / worse",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_mjjfine_edges, "mjjf", "mJJ (GeV), 10-GeV bins",
+                  lambda objs, mask: ak.fill_none(objs["ljs"][mask, :2].sum().mass, -1.0)),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_2mu2e,
+)
