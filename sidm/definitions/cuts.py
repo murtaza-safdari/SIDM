@@ -327,9 +327,10 @@ def _abcd_cosmic_tag(objs):
     characterization but are NOT selection cuts. cos alpha is the only signal-safe
     cosmic discriminant here. The blinding interlock permits a data channel to skip the
     SR blind box ONLY if it carries this tag. fill_none(1.0) leaves an LJ-less event untagged."""
+    from sidm.definitions.hists import ABCD_COSMIC_COSA_MAX
     lj = ak.firsts(objs["mu_ljs"])
     cosa = ak.fill_none(lj.min_cosalpha, 1.0)
-    return cosa < -0.98
+    return cosa < ABCD_COSMIC_COSA_MAX
 
 def _abcd_blind_box_2mu2e(objs):
     """2mu2e-only blind box: region A of the DEPLOYED egmiso x mudisp plane inside
@@ -415,4 +416,16 @@ def _abcd_blind_windows_2mu2e(objs):
 evt_cut_defs.update({
     "ABCD window blind veto (data)": lambda objs: ~_abcd_blind_windows(objs),
     "ABCD window blind veto 2mu2e (data)": lambda objs: ~_abcd_blind_windows_2mu2e(objs),
+})
+
+
+evt_cut_defs.update({
+    # Complement of the refined collinearity tag above: drop events whose leading
+    # mu-LJ has a THIRD muon back-to-back with one of its muons (the cosmic upper
+    # leg). Signal cost measured in MC at 0.00-0.14% across the lifetime grid (see
+    # _abcd_cosmic_tag docstring). Failure direction: missing information leaves
+    # min_cosalpha at its fill_none(1.0) -> untagged -> KEPT, so the veto cannot
+    # silently remove signal; blinding is unaffected (the window vetoes are
+    # separate cuts carried by the same channels).
+    "ABCD cosmic veto (data)": lambda objs: ~_abcd_cosmic_tag(objs),
 })

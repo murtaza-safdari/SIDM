@@ -4863,3 +4863,52 @@ hist_defs["abcd_mjjfine_2mu2e"] = h.Histogram(
     ],
     evt_mask=abcd_mask_2mu2e,
 )
+
+
+# Cosmic-monitoring hists for the windowed search: the collinearity-tag rate of
+# the pass-region spectra vs mJJ, filled in the UNVETOED *_data_win channels so
+# the tagged fraction is measurable (the *_data_wincv channels remove tagged
+# events). The tag replicates cuts._abcd_cosmic_tag (leading mu-LJ min_cosalpha
+# < -0.98 against the third-muon partner pool; fill_none(1.0) = untagged) --
+# keep the threshold in sync with cuts.py.
+abcd_costag_edges = [-0.5, 0.5, 1.5]
+# Single source of truth for the collinearity threshold: cuts._abcd_cosmic_tag
+# imports this constant, so the applied veto and the measured tag cannot desync.
+ABCD_COSMIC_COSA_MAX = -0.98
+
+def _abcd_costag_value(objs, mask):
+    cosa = ak.fill_none(ak.firsts(objs["mu_ljs"]).min_cosalpha, 1.0)
+    return ak.values_astype(cosa < ABCD_COSMIC_COSA_MAX, "float64")[mask]
+
+hist_defs["abcd_wincos_4mu"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2cat_edges, "vcat", "leading mu-LJ vertex: none / chi2<5 / worse",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_iso3_mu_edges, "muiso0c", "leading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso3_mu_edges, "muiso1c", "subleading mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 1])),
+        abcd_axis(abcd_costag_edges, "costag", "cosmic collinearity tag (3rd-muon cos alpha < -0.98)",
+                  _abcd_costag_value),
+        abcd_axis(abcd_mjjfine_edges, "mjjf", "mJJ (GeV), 10-GeV bins",
+                  lambda objs, mask: ak.fill_none(objs["ljs"][mask, :2].sum().mass, -1.0)),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_4mu,
+)
+hist_defs["abcd_wincos_2mu2e"] = h.Histogram(
+    [
+        abcd_axis(abcd_vchi2cat_edges, "vcat", "mu-LJ vertex: none / chi2<5 / worse",
+                  lambda objs, mask: abcd_vtx_chi2(objs, mask, 0)),
+        abcd_axis(abcd_iso3_mu_edges, "muisoc", "mu-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["mu_ljs"][mask, 0])),
+        abcd_axis(abcd_iso3_egm_edges, "egmisoc", "egm-LJ isolation category",
+                  lambda objs, mask: abcd_iso_sentinel(objs["egm_ljs"][mask, 0])),
+        abcd_axis(abcd_costag_edges, "costag", "cosmic collinearity tag (3rd-muon cos alpha < -0.98)",
+                  _abcd_costag_value),
+        abcd_axis(abcd_mjjfine_edges, "mjjf", "mJJ (GeV), 10-GeV bins",
+                  lambda objs, mask: ak.fill_none(objs["ljs"][mask, :2].sum().mass, -1.0)),
+        abcd_parity_axis(),
+    ],
+    evt_mask=abcd_mask_2mu2e,
+)

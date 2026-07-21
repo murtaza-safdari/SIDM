@@ -885,3 +885,9 @@ abcd_vtxcross:
 abcd_mjjfine:
   - "abcd_mjjfine_2mu2e"
   - "abcd_mjjfine_4mu"
+
+# Cosmic-monitoring collection for the windowed search (data-safe; filled in the
+# unvetoed window channels so the tagged fraction is measurable).
+abcd_wincos:
+  - "abcd_wincos_2mu2e"
+  - "abcd_wincos_4mu"
