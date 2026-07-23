@@ -1,9 +1,11 @@
 # ABCD plane-choice study (2018 MC)
 
 Which ABCD plane, working points, and event-cut menu should the SIDM background
-estimate use — demonstrated, not assumed. Everything here is MC-only (2018); data
-control regions are deliberately deferred until the region definitions are settled and
-signal contamination is shown to be small.
+estimate use — demonstrated, not assumed, on 2018 Monte Carlo. Everything here is MC-only:
+signal and background simulation, no collision data. The measurements that
+require real data -- the ABCD closures, the cosmic rejection, and the
+windowed-fit backgrounds -- are named throughout as the continuation of this
+study, not shown here.
 
 ## What is being decided
 
@@ -76,8 +78,9 @@ reconstructs photon-like; these auto-pass the missing-hits requirement).
 
 Trigger (4-path DoubleL2Mu OR) + PV filter; LJ pT > 30 GeV, |η| < 2.4; ≥2 LJs;
 channel classifier on the leading two LJs; and the team-final DSA-muon cross-cleaning
-`"all + segment fraction < 1"` (identical definition adopted on Dongyub's and Maria's
-branches, 2026-07-09). No cosmic veto (MC-only round; cosmics are a data-side issue).
+`"all + segment fraction < 1"`. Cosmic rejection is a data-side measurement; the
+signal-safe collinearity veto and its (near-zero) signal cost are characterized in
+notebook 09.
 
 ## Normalization (read before quoting any yield)
 
@@ -134,62 +137,77 @@ and the decision matrix.
 | 04_selection_verdict | decision matrix (even events), declared primary + mechanical survivor, plateau maps, odd-event confirmations |
 | 05_member_isolation | member-lepton (PF) isolation as a jet-match-free alternative axis: distributions, sentinel rates at the SR working point, jet-vs-member migration, ROC, factorization of member-iso planes, egm parity. Conclusion: it relabels the sentinel (larger, 5.8% vs 0.1% at the SR WP), discriminates worse, and fails 2mu2e factorization — the jet-based plane is retained; its value is labeling the displaced DSA-only sentinel population for notebook 06 |
 | 06_mothers_and_cosmics | gen-origin (genPartFlav) composition per ABCD region (dominant prompt/b transport consistently along mJJ; subdominant c and light/DIF are inconclusive on partial stats) and cosmic-veto input distributions/costs (dz spread; min cos α — note this fires on the 4mu di-LJ back-to-back topology, not only cosmics, so it needs signal-LJ exclusion before it is a clean veto; rejection to be measured in a data sideband) |
+| 07_beyond_isolation_candidate_axes | the three structural candidate axes for a second 4mu ABCD axis (dimuon mass equality, opposite-sign charge, vertex DCA) on signal MC: their signal discrimination and its mass/lifetime pattern, the two-family argument for why none is independent of isolation, and the windowed dimuon-resonance mass fit that replaces the ABCD, with the signal mJJ line-shape cores that set the windows |
+| 08_vertex_fake_killer | the within-LJ dimuon vertex (normChi2 < 5) that cleans the isolated-4mu instrumental fake, shown signal-preserving on MC (58–93% across the grid, gentle lifetime decline) and contrasted with a resolution-limited DCA cut; the fake rejection is a data measurement |
+| 09_cosmic_collinearity_veto | the signal-safe cosmic veto — a third-muon collinearity tag that excludes the signal lepton-jets (plugging the cos α self-veto flagged in notebook 06) and its vertex-consistency variant — with its signal cost measured on MC; cosmic rejection deferred to a data control region |
 
 Merged inputs + `.meta.yaml` sidecars:
-`/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/abcd_plane_study/` (notebooks 01–04) and `.../abcd_plane_study_member/` (notebooks 05–06).
+`/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/abcd_plane_study/` (notebooks 01–04) and `.../abcd_plane_study_member/` (notebooks 05–06). Notebooks 07–09 read the
+pair-resonance / vertex / cosmic-tag signal-and-background MC from
+`.../abcd_plane_study_pairres/` (MC-only; contains no collision data).
 
-## Verdict of the 2018 MC round (summary — details, figures and the look log in notebook 04)
+## Verdict: the 4mu and 2mu2e background methods
 
-- **Primary: muiso × mJJ under prescription (i), single high-mass SR
-  (mJJ ≥ 150 GeV — a benchmark-scoped choice pending collaboration sign-off),
-  low-mJJ side as validation region.** Several planes factorize with the
-  failed-jet-match (sentinel) population included; P4 (p = 0.762/0.756 under both
-  prescriptions) is the only non-screened one that combines that with a measurable
-  closure ladder AND signal-pristine sidebands (mu-iso sideband ≤ 2.1% of SR
-  signal for every m_B ≥ 500 point; low-mJJ sideband leakage < 10⁻³). No jet-match
-  requirement is needed, so none of its lifetime-dependent signal cost is paid
-  (≤ 5% short cτ, 12–32% long in 2mu2e; up to 48% in 4mu) and DSA-only lepton-jets
-  stay in the search. In the orthogonal inverted-|Δφ| VR it keeps factorizing
-  (p = 0.18) where the incumbent-as-operated fails (p ≈ 0.000); its closure there
-  is inconclusive at MC statistics and is repeated in data. Its ladder anchor
-  closes (R = 0.77 ± 0.26, carried systematic ~49%; one-look odd-half consistency
-  R = 1.08 ± 0.40). The promotion over the mechanical gate survivor is amendment 6;
-  the rescope of the registered sentinel disqualifier that would otherwise reject
-  this primary is amendment 7 — both recorded openly in notebook 04.
-- **The load-bearing sentinel hypothesis is stated as such**: sentinel events (95%
-  of the naive tight-SR background) can only populate regions A and C here, and
-  predicting them through the mJJ direction is untested at weighted-MC statistics
-  (the factorization gate has no power on it; notebook 02 shows the preselection
-  shape comparison). The decisive test is data sidebands in round 2.
-- **mJJ regions**: at the dijet-constrained m_A = 750 GeV benchmark,
-  σ(m_B ≤ 200) < 0.05 fb (< 3 events produced in 2018), so the m_B = 100 samples
-  are illustrations. The single high-mass SR forecloses m_B ≤ 200 limits under
-  that scope — a collaboration-level decision; the two-region machinery is
-  retained as the fallback.
-- **Cross-check: jet-matched iso×iso (prescription iii)** — the mechanical
-  survivor of the pre-registered gates (p = 0.48, anchor R = 0.60 ± 0.24) — kept
-  with its lifetime-dependent signal cost quoted.
-- **Excluded**: muiso × |Δφ| (p = 0.011 + ~2× non-closure), |Δφ| × mJJ
-  (p = 0.000), the egm-iso axis in any pairing (its fail-sideband holds 5–86% of
-  the SR signal for displaced points; egmiso × mJJ also fails factorization,
-  TTJets p = 0.009), displacement planes (quasi-boolean, signal-defining).
-- Weighted MC cannot validate tight-WP closure directly for any plane (effective
-  counts ≈ 1 from single large-weight QCD events); the gates quantify this honestly
-  and the decisive re-test moves to (unweighted) data sidebands in round 2, with
-  the expected data counts per region quoted in notebook 03.
-- 4mu: effectively background-free → counting-experiment SR model whose Poisson
-  mean is constrained by observed sideband counts via likelihood-ABCD rateParams
-  on the Q6 muiso × mJJ structure — never an assumed zero. Q6 fails the registered
-  per-process gate for QCD (p = 0.037/0.044 at 1–2 ndf) while the total passes
-  (0.51/0.57); it is adopted as a scaffold to be tested on data, stated plainly in
-  notebook 04.
-- The extended-ABCD (per-LJ fake-factor) estimator is a data-round upgrade candidate
-  (unbiased + smaller variance on toys, matches at presel; unstable in ultra-sparse
-  regions).
-- DY: rogue generator weights found in both powheg samples (M10to50 repaired via a
-  rogue-free denominator; M50 excluded and bounded — its skimmed events are
-  contaminated). Superseded by the DYJetsToLL migration. Rogue-file list saved for
-  the production team.
+This branch is the Monte-Carlo foundation of the background estimate. The
+isolation-plane survey (notebooks 01–06) is summarized here; the two follow-up
+questions it left open — is there a second 4mu axis, and does the vertex/cosmic
+machinery spare signal — are answered on MC in notebooks 07–09; and the
+measurements that require real data are named as the continuation.
+
+**2mu2e — muiso × mJJ in the MC round, egmiso × mudisp adopted going forward.**
+Within the isolation-plane survey the best plane, and the one notebook 04
+designates the MC-round primary, is muiso × mJJ (P4: factorizes at
+p = 0.762/0.756, signal-pristine sidebands, ladder anchor R = 0.77 ± 0.26). The plane the analysis
+adopts, however, pairs two variables from *independent families*: electron/
+photon isolation (egm) and muon displacement (mudisp). The EGM leg is a third
+observable family — one a muon-only final state does not have — so these axes
+share no latent variable, exactly the condition an ABCD needs. On background MC
+the two variables factorize (notebook 07: unweighted A·D/(B·C) ≈ 0.95 at
+mJJ ≥ 150 — a variable-independence check, not a physically-weighted closure,
+since weighted 2mu2e MC is n_eff-limited). The physical closure, measured with real sideband
+statistics, is a data-sideband measurement and is the continuation of this study.
+
+**4mu — a windowed mass fit, because no ABCD exists.** Every isolation ABCD
+plane fails in 4mu: the isolated corner is saturated and dominated by an
+instrumental DSA-fake (notebooks 02, 04 — n_eff(A) ≈ 1, empty sidebands).
+Notebooks 07–08 close the question of whether *any* second axis independent of
+isolation exists: the three structural candidates — dimuon mass equality,
+opposite-sign charge, vertex DCA — all live in the muon-reconstruction family
+and are correlated with isolation; there is no third family to draw an
+independent axis from. The 4mu background is therefore estimated by a **windowed
+dimuon-resonance mass fit** (notebook 07): blind a mass window at each hypothesis,
+fit the smooth sidebands, integrate — a smoothness assumption in place of the
+factorization one 4mu cannot satisfy. The within-LJ vertex fake-killer
+(notebook 08, normChi2 < 5) defines the clean region the fit runs on and is
+signal-preserving (58–93% across the grid); its rejection of the fake is a data
+measurement.
+
+**Cosmics (notebook 09).** MC has no cosmics, so rejection is a data-sideband
+measurement; what MC establishes is that the signal-safe collinearity veto — a
+third-muon back-to-back tag that excludes the signal lepton-jets, and its
+vertex-consistency variant — costs essentially no signal, unlike a plain cos α
+cut, which self-vetoes the back-to-back 4mu topology (notebook 06).
+
+**Scope and honest limits.**
+- The single high-mass SR (mJJ ≥ 150 GeV) is a benchmark-scoped choice pending
+  collaboration sign-off; it forecloses m_B ≤ 200 limits (at m_A = 750 GeV,
+  σ(m_B ≤ 200) < 0.05 fb), and the windowed search is what recovers low-mass
+  points. The two-region machinery is retained as the fallback.
+- Weighted MC cannot validate tight-working-point closure directly for any plane
+  (effective counts ≈ 1 from single large-weight QCD events); the gates quantify
+  this honestly, and every closure normalization is a data-sideband measurement.
+- The sentinel (failed-jet-match) isolation population — 95% of the naive tight-SR
+  background — and its prediction through the mJJ direction is untested at
+  weighted-MC statistics; the decisive test is data.
+- The jet-matched iso × iso plane (prescription iii, anchor R = 0.60 ± 0.24) is
+  the mechanical survivor of the pre-registered gates, kept as a cross-check with
+  its lifetime-dependent signal cost quoted. Excluded: muiso × |Δφ| (p = 0.011),
+  |Δφ| × mJJ (p = 0.000), the egm-iso axis in any *isolation* pairing (fail-
+  sideband holds 5–86% of displaced signal), pure displacement planes
+  (quasi-boolean, signal-defining).
+- DY rogue generator weights (both powheg samples) were repaired (M10to50) or
+  excluded and bounded (M50); superseded by the DYJetsToLL migration. Rogue-file
+  list saved for the production team.
 
 ## Known deltas vs the study design doc
 

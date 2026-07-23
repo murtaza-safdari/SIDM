@@ -16,7 +16,7 @@ import abcd_tools as at
 # where things live
 # ---------------------------------------------------------------------------
 EOS_MERGED = "root://cmseos.fnal.gov//store/group/lpcmetx/SIDM/coffea_outputs/murtazas/abcd_plane_study"
-# round-2 member-isolation / mother-composition / cosmic-input campaign
+# member-isolation / mother-composition / cosmic-input campaign
 EOS_MERGED_MEMBER = EOS_MERGED + "_member"
 WORKDIR = "/uscms_data/d3/murtazas/abcd_study_local"       # local staging (coffea.util.load is local-open only)
 STUDY_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -71,7 +71,7 @@ def fetch(sample, eos_dir=None, tag=""):
     """xrdcp the merged output locally (once) and load it.
 
     eos_dir/tag select the campaign: default = the plane-choice scan; pass
-    eos_dir=EOS_MERGED_MEMBER, tag=".member" for the round-2 member campaign
+    eos_dir=EOS_MERGED_MEMBER, tag=".member" for the member campaign
     (the tag keeps the two local caches apart).
     """
     os.makedirs(WORKDIR, exist_ok=True)
