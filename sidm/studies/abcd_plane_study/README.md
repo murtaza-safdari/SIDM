@@ -7,6 +7,48 @@ require real data -- the ABCD closures, the cosmic rejection, and the
 windowed-fit backgrounds -- are named throughout as the continuation of this
 study, not shown here.
 
+## Start here: what was done, and what to continue
+
+This branch is the **Monte-Carlo foundation** of the SIDM ABCD background estimate: it fixes the
+estimation *method* on simulation and hands the measurements that need real data to the
+continuation. Everything here is MC-only (notebooks 07–09 even carry a guard that refuses any
+collision-data file); no real-data result is quoted.
+
+**What the MC round established** (detail and numbers in the Verdict section and notebooks 07–09):
+
+- **4mu has no second ABCD axis.** The isolated corner is an instrumental fake, and the three
+  structural candidates for an independent second axis — dimuon mass equality, opposite-sign
+  charge, vertex DCA — all sit in the muon-reconstruction family and correlate with isolation
+  (nb 07). A muon-only final state has no independent third family.
+- **4mu is therefore a windowed dimuon-resonance mass fit** (nb 07), not an ABCD: blind a mass
+  window at each hypothesis, fit the smooth sidebands, integrate; the window widths follow the
+  signal mJJ cores shown there.
+- **The within-LJ dimuon vertex (normChi2 < 5) cleans the 4mu fake and spares signal** (58–93%
+  efficient across the grid, gentle lifetime decline; nb 08).
+- **The cosmic collinearity veto is signal-safe** (≤ 0.21% signal cost across the grid; nb 09),
+  unlike a plain back-to-back cut, which self-vetoes 4mu signal.
+- **2mu2e can do an ABCD** because it has an independent third family: egmiso × mudisp factorizes
+  on MC (κ ≈ 0.95, unweighted; nb 07). Notebook 04's MC-round primary is muiso × mJJ;
+  egmiso × mudisp is the plane adopted going forward.
+
+**What the continuation must do on data** (none of it is on this branch):
+
+- Measure the **physical ABCD closures** on data sidebands — the MC checks here are
+  variable-independence only, not weighted closures.
+- Measure the **4mu vertex fake-rejection** in a data sideband (the fake is MC-invisible).
+- Measure the **cosmic rejection** in a cosmic-enriched data control region, and evaluate the
+  vertex-consistency `coll` variant (`COSMIC_VERTEX_CONSISTENCY.md`).
+- Build and validate the **windowed-fit backgrounds** on data.
+- Evaluate the **same-sign tag as a 4mu background-cleaning veto** — its signal cost is
+  characterized here (nb 07); its background rejection is a data question.
+
+**How to read it:** this file, then the notebook contents table and Verdict below; the new
+material is notebooks 07 → 08 → 09. All notebooks are committed with outputs (figures and printed
+numbers), so results are visible without re-running. MC inputs are on EOS under
+`/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/{abcd_plane_study, abcd_plane_study_member,
+abcd_plane_study_pairres}` (all MC-only).
+
+
 ## What is being decided
 
 The background estimate predicts the signal-region yield from sidebands via
