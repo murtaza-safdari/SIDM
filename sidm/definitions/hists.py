@@ -5509,14 +5509,14 @@ hist_defs = {
     "muon_dz_innerVz": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 100, name="muon_dz",
-                                     label="muon_innerVz"),
+                                     label="muon_dz"),
                   lambda objs, mask:objs["muons"].dz),
             h.Axis(hist.axis.Regular(100, 0, 100, name="muon_innerVz",
                                      label="muon_innerVz"),
                   lambda objs, mask: objs["muons"].innerVz),
         ],
     ),
-    "mu_lj_dzVzdiff_pf": obj_attr("mu_ljs", "dzSpread_pf", xmax=50, nbins=300),
+    "mu_lj_dzVzdiff_pf": obj_attr("mu_ljs", "dzVzdiff_pf", xmax=50, nbins=300),
     "muon_dz_innerVz_diff": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 50, name="muon_dz_innerVz_diff",
