@@ -13,7 +13,7 @@ import hist
 import awkward as ak
 # local
 from sidm.tools import histogram as h
-from sidm.tools.utilities import dR, lxy, lxyz, lxyz_proper, betagamma, matched, dxy, lepton_dxy_resolution, cosAlpha, cosAlpha_lj, nearest_lj_index
+from sidm.tools.utilities import dR, lxy, lxyz, lxyz_proper, betagamma, matched, dxy, lepton_dxy_resolution, cosAlpha, cosAlpha_lj, nearest_lj_index, get_pairs
 from sidm.definitions.objects import derived_objs
 # always reload local modules to pick up changes during development
 importlib.reload(h)
@@ -5478,4 +5478,65 @@ hist_defs = {
                   lambda objs, mask:abs(objs["muons"].dz - objs["muons"].innerVz)),
         ],
     ),
+    "muon_Vz_PVz_diff": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 50, name="muon_dz_innerVz_diff",
+                                     label="muon_dz_innerVz_diff"),
+                  lambda objs, mask:abs(objs["muons"].innerVz - objs["pvs"][:, 0].z)),
+        ],
+    ),
+    "muon_dxy_by_dxyErr": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 50, name="muon_dxy_by_dxyErr",
+                                     label=r"PF $\mu$ $d_{xy}/\sigma(d_{xy})$"),
+                  lambda objs, mask:abs(objs["muons"].dxy/objs["muons"].dxyErr)),
+        ],
+    ),
+    "muon_dz_by_dzErr": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 50, name="muon_dz_by_dzErr",
+                                     label=r"PF $\mu$ $d_{z}/\sigma(d_{z})$"),
+                  lambda objs, mask:abs(objs["muons"].dz/objs["muons"].dzErr)),
+        ],
+    ),
+    "muon_ptErr_by_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 1, name="muon_ptErr_by_pt",
+                                     label=r"PF $\mu$ $\sigma(p_{T})/p_{T}$"),
+                  lambda objs, mask:abs(objs["muons"].ptErr/objs["muons"].pt)),
+        ],
+    ),
+   "dsaMu_dsaMu_deltaR_cosmic": h.Histogram(
+       [
+        h.Axis(hist.axis.Regular(200, 0, 6, name="dsaMu_dsaMu_deltaR_cosmic2",
+                         label=r"$\Delta R_{\rm cosmic}$(DSA $\mu$, DSA $\mu$)",),
+            lambda objs, mask: (lambda mu1, mu2: np.sqrt(
+                    (mu1.eta + mu2.eta)**2 +
+                    (np.pi - np.abs(mu1.phi-mu2.phi))**2))(*ak.unzip(get_pairs(objs["dsaMuons"])))
+        ),
+     ],
+),
+   "muon_muon_deltaR_cosmic": h.Histogram(
+       [
+        h.Axis(hist.axis.Regular(200, 0, 6, name="muon_muon_deltaR_cosmic",
+                         label=r"$\Delta R_{\rm cosmic}$(PF $\mu$, PF $\mu$)",),
+            lambda objs, mask: (lambda mu1, mu2: np.sqrt(
+                    (mu1.eta + mu2.eta)**2 +
+                    (np.pi - np.abs(mu1.phi-mu2.phi))**2))(*ak.unzip(get_pairs(objs["muons"])))
+        ),
+     ],
+),
+
+   "Allmuon_Allmuon_deltaR_cosmic": h.Histogram(
+       [
+        h.Axis(hist.axis.Regular(200, 0, 6, name="Allmuon_Allmuon_deltaR_cosmic",
+                         label=r"$\Delta R_{\rm cosmic}$($\mu$, $\mu$)",),
+            lambda objs, mask: (lambda mu1, mu2: np.sqrt(
+                    (mu1.eta + mu2.eta)**2 +
+                    (np.pi - np.abs(mu1.phi-mu2.phi))**2))(*ak.unzip(get_pairs(objs["allMuons"])))
+        ),
+     ],
+),
+
+
 }

@@ -1063,6 +1063,8 @@ cosAlpha: &cosAlpha
   - "cosAlpha_mu"
   - "dsaMu_dsaMu_cosAlpha"
 
+
+
 cosmic_muons: &cosmic_muons
   - *mu_ljSpread_dsa
   - *mu_ljSpread_pf
@@ -1074,6 +1076,15 @@ cosmic_muons: &cosmic_muons
   - "mu_lj_pfN_dsaN"
   - "dsaMu_pfMu_dR_closest"
   - "dsaMu_pfMu_pt_diff"
+  - "muon_Vz_PVz_diff"
+  - "muon_dxy_by_dxyErr"
+  - "dsaMu_pfMu_pt_diff"
+  - "muon_Vz_PVz_diff"
+  - "muon_dz_by_dzErr"
+  - "muon_ptErr_by_pt"
+  - "dsaMu_dsaMu_deltaR_cosmic"
+  - "muon_muon_deltaR_cosmic"
+  - "Allmuon_Allmuon_deltaR_cosmic"
+  - "dsaMu_dsaMu_deltaR_cosmic"
+  - "muon_muon_deltaR_cosmic"
 
-
-test: &test
