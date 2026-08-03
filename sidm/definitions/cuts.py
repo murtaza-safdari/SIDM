@@ -82,6 +82,10 @@ obj_cut_defs = {
         "vxySpread_mu <= 500000": lambda objs: objs["mu_ljs"].vxySpread_mu <= 500000,
         "dzSpread_mu <= 50": lambda objs: objs["mu_ljs"].dzSpread_mu <= 50,
         "vxySpread_mu <= 50": lambda objs: objs["mu_ljs"].vxySpread_mu <= 50,
+        "dzSpread_mu > 50": lambda objs: objs["mu_ljs"].dzSpread_mu > 50,
+        "vxySpread_mu > 50": lambda objs: objs["mu_ljs"].vxySpread_mu > 50,
+        "dzSpread_pf > 10": lambda objs: objs["mu_ljs"].dzSpread_pf > 10,
+        "vxySpread_pf > 10": lambda objs: objs["mu_ljs"].vxySpread_pf > 10,
     },
     "genMus":{
         "pT >= 10 GeV": lambda objs: objs["genMus"].pt >= 10,
@@ -356,5 +360,6 @@ evt_cut_defs = {
     & ~(objs["hlt"].DoubleL2Mu25NoVtx_2Cha_Eta2p4)
     & ~(objs["hlt"].DoubleL2Mu25NoVtx_2Cha_CosmicSeed_Eta2p4)
 ),
-    "all cosAlpha(mu, mu)>-0.99" : lambda objs: ak.all(cosAlpha(objs["allMuons"])> -0.99, axis=1),
+    "all cosAlpha(mu, mu) > -0.99"  : lambda objs: ak.all(cosAlpha(objs["allMuons"]) > -0.99, axis=1),
+    "any cosAlpha(mu, mu) <= -0.99" : lambda objs: ak.any(cosAlpha(objs["allMuons"]) <= -0.99, axis=1),
 }

@@ -2366,4 +2366,24 @@ data_control_region_1Lj_modified_Spread_mu_ljIso_cosAlpha_mu: &data_control_regi
     - *evt_baseNoLj
     - "pass flags"
     - "= 1 muLj or 1 egmLJ"
-    - "all cosAlpha(mu, mu)>-0.99"
+    - "all cosAlpha(mu, mu) > -0.99" 
+
+data_control_region_1Lj_reverse_cosmic_cuts: &data_control_region_1Lj_reverse_cosmic_cuts
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+      - "lj_iso < 0.2"
+    mu_ljs:
+      - "Mu >= 2"
+      - "dzSpread_mu > 50"
+      - "vxySpread_mu > 50"
+      - "dzSpread_pf > 10"
+      - "vxySpread_pf > 10"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 muLj or 1 egmLJ"
+    - "any cosAlpha(mu, mu) <= -0.99"
