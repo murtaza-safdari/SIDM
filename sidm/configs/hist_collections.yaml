@@ -1063,6 +1063,11 @@ cosAlpha: &cosAlpha
   - "cosAlpha_mu"
   - "dsaMu_dsaMu_cosAlpha"
 
+deltaR_cosmic: &deltaR_cosmic
+  - "dsaMu_dsaMu_deltaR_cosmic"
+  - "muon_muon_deltaR_cosmic"
+  - "Allmuon_Allmuon_deltaR_cosmic"
+
 
 
 cosmic_muons: &cosmic_muons
@@ -1082,9 +1087,6 @@ cosmic_muons: &cosmic_muons
   - "muon_Vz_PVz_diff"
   - "muon_dz_by_dzErr"
   - "muon_ptErr_by_pt"
-  - "dsaMu_dsaMu_deltaR_cosmic"
-  - "muon_muon_deltaR_cosmic"
-  - "Allmuon_Allmuon_deltaR_cosmic"
-  - "dsaMu_dsaMu_deltaR_cosmic"
-  - "muon_muon_deltaR_cosmic"
+  - *deltaR_cosmic
+
 
