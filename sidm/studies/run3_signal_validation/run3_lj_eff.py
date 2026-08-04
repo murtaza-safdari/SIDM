@@ -71,7 +71,10 @@ def lj_counts(files, is2e):
               "Electron_pt","Electron_eta","Electron_phi","Photon_pt","Photon_eta","Photon_phi",
               "Photon_cutBased"] + GBR
         a = ev.arrays([b for b in br if b in keys])
-        ne = len(a); n += ne
+        ne = len(a)
+        if ne == 0:
+            continue          # empty chunk: zero-length jagged arrays have ambiguous depth downstream
+        n += ne
         def blk(coll, m, tid):
             # Apply the SIDM LJ-source object selection (selections.yaml obj_ljsource_cuts).
             if f"{coll}_pt" not in keys:

@@ -44,7 +44,7 @@ def fig_geometry_efficiency():
         ax.errorbar(x, y, yerr=e, fmt="D", ms=8, color="#2ca02c", capsize=3, label="Run 3 (2022), in acc.")
         x, y, e = _series(rs, "run3", "incl_raw")
         ax.errorbar(x, y, yerr=e, fmt="s", ms=6, color="#7f7f7f", alpha=0.7, capsize=2, label="Run 3, full phase space")
-        ax.set_xscale("log"); ax.set_xlabel(r"proper $c\tau$  [mm]"); ax.set_ylim(60, 103); ax.grid(alpha=0.25)
+        ax.set_xscale("log"); ax.set_xlabel(r"proper $c\tau$  [mm]"); ax.set_ylim(40, 103); ax.grid(alpha=0.25)
         ax.text(0.03, 0.08, _CHLAB[chan], transform=ax.transAxes, fontsize=13, fontweight="bold")
         if chan == "4Mu":
             ax.legend(loc="lower left", fontsize=12, framealpha=0.93, bbox_to_anchor=(0.0, 0.14))
@@ -57,7 +57,7 @@ def fig_geometry_efficiency():
 def fig_geometry_agreement():
     rows = [r for r in _load("lj_eff_geom_2022.json") if r["run3"] and r["v10"]]
     fig, ax = plt.subplots(figsize=(8.4, 7.8))
-    ax.plot([80, 101], [80, 101], "--", color="gray", lw=1.4, zorder=1, label="$y=x$")
+    ax.plot([65, 101], [65, 101], "--", color="gray", lw=1.4, zorder=1, label="$y=x$")
     for chan, col, mk in [("4Mu", "#1f77b4", "D"), ("2Mu2E", "#ff7f0e", "o")]:
         rs = [r for r in rows if r["chan"] == chan]
         xv = [_cp(r["v10"]["incl_acc"]["k"], r["v10"]["incl_acc"]["n"]) for r in rs]
@@ -68,7 +68,7 @@ def fig_geometry_agreement():
                     fmt=mk, ms=8, color=col, capsize=2, label=chan, zorder=3)
     ax.set_xlabel("Run 2 (v10) efficiency in acc.  [%]", labelpad=8)
     ax.set_ylabel("Run 3 (2022) efficiency in acc.  [%]", labelpad=8)
-    ax.set_xlim(88, 101); ax.set_ylim(88, 101); ax.grid(alpha=0.25)
+    ax.set_xlim(65, 101); ax.set_ylim(65, 101); ax.grid(alpha=0.25)
     ax.legend(loc="upper left", fontsize=13, framealpha=0.93)
     hep.cms.label("", data=False, rlabel=RLAB, ax=ax)
     fig.tight_layout()
@@ -151,5 +151,73 @@ def fig_kinematics(chan):
     axes[1].set_xlabel(r"gen lepton $p_T$  [GeV]"); axes[1].set_ylabel("a.u."); axes[1].legend(fontsize=13)
     hep.cms.label("", data=False, com=13.6, ax=axes[0]); hep.cms.label("", data=False, com=13.6, ax=axes[1])
     fig.suptitle(f"Run 3 (2022) {chan} gen kinematics vs boost ($M_{{Z_d}}$=1.2 GeV, high stats)", y=0.99, fontsize=15)
+    fig.tight_layout()
+    return fig
+
+
+# ---------- per-era extension (full-grid campaign complete: all four eras) ----------
+
+ERAS = ["2022", "2022EE", "2023", "2023BPix"]
+_ECOL = {"2022": "#1f77b4", "2022EE": "#2ca02c", "2023": "#d62728", "2023BPix": "#9467bd"}
+
+def parse_trigger_log(path):
+    """Parse a trigger_eff_grid.py log into row dicts. Handles both the original 10-number rows
+    and the canonical format with the hybrid + exclusive-marginal columns appended."""
+    import re
+    rows = []
+    for line in open(path):
+        m = re.match(r"^\s*(4Mu|2Mu2E)\s+(.*)", line)
+        if not m:
+            continue
+        nums = re.findall(r"-?\d+\.?\d*", m.group(2))
+        if len(nums) < 10:
+            continue
+        r = dict(chan=m.group(1), mbs=int(nums[0]), mdp=float(nums[1]), ctau=float(nums[2]),
+                 n=int(nums[3]), e2018=float(nums[4]), eL3=float(nums[5]), eHi=float(nums[6]),
+                 eVeto=float(nums[7]), eOR=float(nums[8]), gain=float(nums[9]))
+        if len(nums) >= 15:   # canonical: hybrid + x2018/xL3/xVeto/xHyb
+            r.update(eHyb=float(nums[10]), x2018=float(nums[11]), xL3=float(nums[12]),
+                     xVeto=float(nums[13]), xHyb=float(nums[14]))
+        rows.append(r)
+    return rows
+
+def fig_kinematics_eras(mbs=200):
+    """Gen kinematics of one grid point overlaid across all four eras: the generated content is
+    era-identical (same gridpacks + fragment; only detector conditions differ per era)."""
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+    for era in ERAS:
+        d = np.load(os.path.join(_DIR, f"kin_hi_{era}.npz"))
+        axes[0].hist(d[f"4Mu_{mbs}_dR"], bins=np.linspace(0, 0.3, 60), histtype="step", lw=1.8,
+                     density=True, color=_ECOL[era], label=era)
+        axes[1].hist(d[f"4Mu_{mbs}_pt"], bins=np.linspace(0, 150, 60), histtype="step", lw=1.8,
+                     density=True, color=_ECOL[era], label=era)
+    axes[0].set_xlabel(r"dilepton $\Delta R$ (per dark photon)"); axes[0].set_ylabel("a.u.")
+    axes[1].set_xlabel(r"gen lepton $p_T$  [GeV]"); axes[1].set_ylabel("a.u.")
+    axes[0].legend(fontsize=12, title=f"4Mu, $M_{{B_s}}$={mbs} GeV"); axes[1].legend(fontsize=12)
+    hep.cms.label("", data=False, com=13.6, ax=axes[0]); hep.cms.label("", data=False, com=13.6, ax=axes[1])
+    fig.suptitle("Generated kinematics are era-identical (curves coincide)", y=0.99, fontsize=14)
+    fig.tight_layout()
+    return fig
+
+def fig_geometry_eras():
+    """Per-era LJ-clustering geometry agreement: mean Run3-v10 in-acceptance efficiency difference
+    per channel, with the max |difference| across grid points as the whisker."""
+    fig, ax = plt.subplots(figsize=(10, 6))
+    xs = np.arange(len(ERAS))
+    for off, (chan, col, mk) in zip((-0.12, 0.12), [("4Mu", "#1f77b4", "D"), ("2Mu2E", "#ff7f0e", "o")]):
+        means, maxs = [], []
+        for era in ERAS:
+            rows = [r for r in _load(f"lj_eff_geom_{era}.json") if r["run3"] and r["v10"]]
+            d = np.array([100 * (r["run3"]["incl_acc"]["p"] - r["v10"]["incl_acc"]["p"])
+                          for r in rows if r["chan"] == chan])
+            means.append(d.mean()); maxs.append(np.abs(d).max())
+        ax.errorbar(xs + off, means, yerr=maxs, fmt=mk, ms=9, color=col, capsize=4, label=chan)
+    ax.axhline(0, color="gray", lw=1)
+    ax.set_xticks(xs); ax.set_xticklabels(ERAS)
+    ax.set_ylabel(r"Run 3 $-$ Run 2 eff. in acc.  [%]", labelpad=8)
+    ax.set_ylim(-2, 2); ax.grid(alpha=0.25, axis="y")
+    ax.legend(fontsize=13); ax.text(0.02, 0.04, "whiskers = max |difference| over grid points",
+                                    transform=ax.transAxes, fontsize=11, color="gray")
+    hep.cms.label("", data=False, rlabel=RLAB, ax=ax)
     fig.tight_layout()
     return fig
