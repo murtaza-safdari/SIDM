@@ -31,6 +31,7 @@ MU_PT, EG_PT, ETA, EL_ETA, GEN_PT, DR_MATCH = 3.0, 1.0, 2.4, 2.5, 1.0, 0.4
 # way in Run3 and Run2 (a sample property, driven by collimation/kinematics, not detector ID).
 # Default (not LOOSE) = the full SIDM LJ-source object selection + DSA segment-match cross-cleaning.
 LOOSE = "loose" in sys.argv
+ERA = os.environ.get("RUN3_ERA", "2022")   # era of the Run 3 samples to scan
 JETDEF = fastjet.JetDefinition(fastjet.antikt_algorithm, 0.4)
 MU_M, EL_M = 0.10566, 0.000511
 GBR = ["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_genPartIdxMother"]
@@ -149,7 +150,7 @@ def lj_counts(files, is2e):
     return d
 
 def run3_files(name, nchunks):
-    REDIR = "root://cmseos.fnal.gov/"; d = "/store/group/lpcmetx/SIDM/run3_samplegen/outputs/2022/" + name
+    REDIR = "root://cmseos.fnal.gov/"; d = "/store/group/lpcmetx/SIDM/run3_samplegen/outputs/%s/" % ERA + name
     fl = subprocess.run(["xrdfs","root://cmseos.fnal.gov","ls",d],capture_output=True,text=True,timeout=60).stdout.split()
     fl = [REDIR + f for f in fl if f.endswith(".root")]
     return fl[:nchunks] if nchunks else fl
@@ -179,7 +180,7 @@ if __name__ == "__main__":
                   f"excl_acc={d['excl_acc']['p']*100:.1f}% (k={d['excl_acc']['k']}/{d['excl_acc']['n']}) "
                   f"negm_hist={d['negm_hist']} gmatch_in_excl={'yes'}")
         sys.exit(0)
-    BASE = "/store/group/lpcmetx/SIDM/run3_samplegen/outputs/2022"
+    BASE = "/store/group/lpcmetx/SIDM/run3_samplegen/outputs/" + ERA
     subdirs = subprocess.run(["xrdfs","root://cmseos.fnal.gov","ls",BASE],capture_output=True,text=True).stdout.split()
     ready = []
     for d in subdirs:
@@ -203,6 +204,6 @@ if __name__ == "__main__":
         print(f"{key:28s} R3 incl_acc={r3['incl_acc']['p']*100:5.1f}% excl_acc={r3['excl_acc']['p']*100:5.1f}% "
               f"(n_acc={r3['n_acc']:6d}) | {v}")
     OUT_DIR = os.environ.get("RUN3_EFF_OUT", "/uscms_data/d3/murtazas/review_out")
-    OUT = "%s/lj_eff_%s_2022.json" % (OUT_DIR, "geom" if LOOSE else "real")
+    OUT = "%s/lj_eff_%s_%s.json" % (OUT_DIR, "geom" if LOOSE else "real", ERA)
     json.dump(out, open(OUT, "w"), indent=1)
     print(f"\nwrote {OUT}: {len(out)} points")
