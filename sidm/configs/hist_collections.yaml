@@ -1039,6 +1039,7 @@ mu_ljSpread_pf: &mu_ljSpread_pf
   - "mu_lj_vzSpread_pf"
   - "mu_lj_dxySpread_pf"
   - "mu_lj_dzSpread_pf"
+  - 'mu_lj_pfMu_vzSpread_dzSpread'
 
 data_base: &data_base
   - "egm_lj_n"

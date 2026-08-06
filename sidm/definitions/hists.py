@@ -5508,10 +5508,10 @@ hist_defs = {
     "muon_innerVx":obj_attr("muons", "innerVx"),
     "muon_dz_innerVz": h.Histogram(
         [
-            h.Axis(hist.axis.Regular(100, 0, 100, name="muon_dz",
+            h.Axis(hist.axis.Regular(100, 0, 30, name="muon_dz",
                                      label="muon_dz"),
                   lambda objs, mask:objs["muons"].dz),
-            h.Axis(hist.axis.Regular(100, 0, 100, name="muon_innerVz",
+            h.Axis(hist.axis.Regular(100, 0, 30, name="muon_innerVz",
                                      label="muon_innerVz"),
                   lambda objs, mask: objs["muons"].innerVz),
         ],
@@ -5561,7 +5561,7 @@ hist_defs = {
                     (np.pi - np.abs(mu1.phi-mu2.phi))**2))(*ak.unzip(get_pairs(objs["dsaMuons"])))
         ),
      ],
-),
+    ),
    "muon_muon_deltaR_cosmic": h.Histogram(
        [
         h.Axis(hist.axis.Regular(200, 0, 6, name="muon_muon_deltaR_cosmic",
@@ -5571,7 +5571,7 @@ hist_defs = {
                     (np.pi - np.abs(mu1.phi-mu2.phi))**2))(*ak.unzip(get_pairs(objs["muons"])))
         ),
      ],
-),
+    ),
 
    "Allmuon_Allmuon_deltaR_cosmic": h.Histogram(
        [
@@ -5582,7 +5582,16 @@ hist_defs = {
                     (np.pi - np.abs(mu1.phi-mu2.phi))**2))(*ak.unzip(get_pairs(objs["allMuons"])))
         ),
      ],
-),
-
+    ),
+    "mu_lj_pfMu_vzSpread_dzSpread": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 20, name="mu_lj_pfMu_vzSpread",
+                                     label="mu_lj_pfMu_vzSpread"),
+                  lambda objs, mask:objs["mu_ljs"].vzSpread_pf),
+            h.Axis(hist.axis.Regular(100, 0, 20, name="mu_lj_pfMu_dzSpread",
+                                     label="mu_lj_pfMu_dzSpread"),
+                  lambda objs, mask: objs["mu_ljs"].dzSpread_pf),
+        ],
+    ),
 
 }
