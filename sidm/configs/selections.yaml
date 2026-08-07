@@ -2406,7 +2406,7 @@ data_control_region_1Lj_modified_Spread_mu_ljIso_cosAlpha_mu: &data_control_regi
     - "= 1 muLj or 1 egmLJ"
     - "all cosAlpha(mu, mu) > -0.99" 
 
-data_control_region_1Lj_reverse_cosmic_cuts: &data_control_region_1Lj_reverse_cosmic_cuts
+cosmic_muons: &cosmic_muons
   obj_cuts:
     <<: *obj_ljsource_cuts
   postLj_obj_cuts:
