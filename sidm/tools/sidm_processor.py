@@ -360,7 +360,7 @@ class SidmProcessor(processor.ProcessorABC):
         if type_id == 3:
             forms["vx"] = forms["innerVx"]
             forms["vy"] = forms["innerVy"]
-            forms["vy"] = forms["innerVy"]
+            forms["vz"] = forms["innerVz"]
         if type_id == 4:
             forms["lostHits"] = 999*shape
         return vector.zip(forms)
