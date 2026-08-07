@@ -2378,10 +2378,7 @@ data_control_region_1Lj_reverse_cosmic_cuts: &data_control_region_1Lj_reverse_co
       - "lj_iso < 0.2"
     mu_ljs:
       - "Mu >= 2"
-      - "dzSpread_mu > 50"
-      - "vxySpread_mu > 50"
-      - "dzSpread_pf > 10"
-      - "vxySpread_pf > 10"
+      - "inverse_spread"
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"
