@@ -87,7 +87,12 @@ obj_cut_defs = {
         "dzSpread_pf > 10": lambda objs: objs["mu_ljs"].dzSpread_pf > 10,
         "vxySpread_pf > 10": lambda objs: objs["mu_ljs"].vxySpread_pf > 10,
         "vzSpread_pf <= 10": lambda objs: objs["mu_ljs"].vzSpread_pf <= 10,
-    },
+
+        "inverse_spread" : lambda objs: ((objs["mu_ljs"].vzSpread_pf > 10)
+                                         |(objs["mu_ljs"].vxySpread_pf > 10)
+                                         |(objs["mu_ljs"].vxySpread_mu > 50)
+                                         |(objs["mu_ljs"].vxySpread_mu > 50) )
+    }, 
     "genMus":{
         "pT >= 10 GeV": lambda objs: objs["genMus"].pt >= 10,
         "status 1": lambda objs: objs["genMus"].status == 1,
