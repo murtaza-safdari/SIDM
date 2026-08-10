@@ -1694,39 +1694,6 @@ baseNoLj_Two_Ormore_Muon_Displacement_EgmIso_MuIso: &baseNoLj_Two_Ormore_Muon_Di
   evt_cuts:
     - *evt_baseNoLj
 
-data_control_region_1Lj: &data_control_region_1Lj
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
-    mu_ljs:
-      - "Mu >= 2"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-
-
-data_control_region_1Lj_cosmic_veto: &data_control_region_1Lj_cosmic_veto
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-    dsaMuons:
-      - *dsaMuons_ljsource_cuts
-      - "|dxy| <= 40"
-      - "|dz| <= 60"
-  postLj_obj_cuts:
-    ljs:
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
-    mu_ljs:
-      - "Mu >= 2"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "all cos_alpha(dsa, dsa) > -0.9"
 
 data_control_region_1muLj: &data_control_region_1muLj
   obj_cuts:
@@ -1932,83 +1899,33 @@ ttjets_4j2btag: &ttjets_4j2btag
     - "pv_ndof >=4"
     - "pv_z <= 24"
 
-data_control_region: &data_control_region
+cr_1lj: &cr_1lj
   obj_cuts:
     <<: *obj_ljsource_cuts
   postLj_obj_cuts:
     ljs:
-      - *lj_base
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
     mu_ljs:
-      - "reverse_iso"
-      - "reverse_displaced"
-    egm_ljs:
-      - "reverse_iso"
-      - "reverse_displaced"
+      - "Mu >= 2"
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"
-    - "1 egm_ljs"
-    - "1 mu_ljs"
-    - "inv(lj1, lj2) <= 100"
+    - "= 1 LJs"
 
-data_control_region_noIso: &data_control_region_noIso
+cr_1egmOr1mu_lj: &cr_1egmOr1mu_lj
   obj_cuts:
     <<: *obj_ljsource_cuts
   postLj_obj_cuts:
     ljs:
-      - *lj_base
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
     mu_ljs:
-      - "reverse_displaced"
-    egm_ljs:
-      - "reverse_displaced"
+      - "Mu >= 2"
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"
-    - "1 egm_ljs"
-    - "1 mu_ljs"
-    - "inv(lj1, lj2) <= 100"
-
-data_control_region_noDisp: &data_control_region_noDisp
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-    mu_ljs:
-      - "reverse_iso"
-    egm_ljs:
-      -"reverse_iso"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "1 egm_ljs"
-    - "1 mu_ljs"
-    - "inv(lj1, lj2) <= 100"
-
-data_control_region_noIso_noDisp: &data_control_region_noIso_noDisp
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "1 egm_ljs"
-    - "1 mu_ljs"
-    - "inv(lj1, lj2) <= 100"
-
-data_control_region_1egLj: &data_control_region_1egLj
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "1 egm_ljs"
-    - "inv(lj1, lj2) <= 100"
+    - "= 1 muLj or 1 egmLJ"
 
 data_control_region_1Lj_cosmic_veto_combination: &data_control_region_1Lj_cosmic_veto_combination
   obj_cuts:
@@ -2022,90 +1939,6 @@ data_control_region_1Lj_cosmic_veto_combination: &data_control_region_1Lj_cosmic
     - "= 1 LJs"
     - "cosmic_mu_pair <= 6"
     - "cosmic_dsaMu_pair <= 6"
-
-data_control_region_1Lj_cosmic_dsa_6_pairs: &data_control_region_1Lj_cosmic_dsa_6_pairs
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "n_dsa >= 2"
-    - "n_pairs cos_alpha(dsa, dsa) <= -0.95 >= 6"
-
-data_control_region_1Lj_cosmic_veto_dsa_pf: &data_control_region_1Lj_cosmic_veto_dsa_pf
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "n_dsa >= 2"
-    - "all cos_alpha(dsa, dsa) > -0.95"
-    - "all cos_alpha(mu, mu) > -0.95"
-
-
-data_control_region_1Lj_cosmic_veto_dsa: &data_control_region_1Lj_cosmic_veto_dsa
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "n_dsa >= 2"
-    - "all cos_alpha(dsa, dsa) > -0.95"
-
-data_control_region_1Lj_cosmic_dsa: &data_control_region_1Lj_cosmic_dsa
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-    - "n_dsa >= 2"
-    - "any cos_alpha(dsa, dsa) <= -0.95"
-
-data_control_region_1Lj_back_to_back_dsa: &data_control_region_1Lj_back_to_back_dsa
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-    mu_ljs:
-      - "Mu >= 2"
-    dsaMuonPairs:
-      - "back_to_back_pairs"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
-
-data_control_region_1Lj_parallel_dsa: &data_control_region_1Lj_parallel_dsa
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - *lj_base
-    mu_ljs:
-      - "Mu >= 2"
-    dsaMuonPairs:
-      - "parallel_pairs"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 LJs"
 
 data_control_region_1Lj_1BackToBackDSA: &data_control_region_1Lj_1BackToBackDSA
   obj_cuts:
@@ -2249,51 +2082,7 @@ data_control_region_1Lj_dzSpreadDSA50_pf10_vxySpreadDSA50_pf10: &data_control_re
     - "pass flags"
     - "= 1 muLj or 1 egmLJ"
 
-data_control_region_1Lj_modified: &data_control_region_1Lj_modified
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
-    mu_ljs:
-      - "Mu >= 2"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 muLj or 1 egmLJ"
 
-data_control_region_1Lj_modified_looseSpread: &data_control_region_1Lj_modified_looseSpread
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
-    mu_ljs:
-      - "Mu >= 2"
-      - "dzSpread_dsa <= 500000"
-      - "vxySpread_dsa <= 500000"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 muLj or 1 egmLJ"
-
-data_control_region_1Lj_modified_looseSpread_mu: &data_control_region_1Lj_modified_looseSpread_mu
-  obj_cuts:
-    <<: *obj_ljsource_cuts
-  postLj_obj_cuts:
-    ljs:
-      - "pT > 30 GeV"
-      - "|eta| < 2.4"
-    mu_ljs:
-      - "Mu >= 2"
-      - "dzSpread_mu <= 500000"
-      - "vxySpread_mu <= 500000"
-  evt_cuts:
-    - *evt_baseNoLj
-    - "pass flags"
-    - "= 1 muLj or 1 egmLJ"
 
 data_control_region_1Lj_dzSpreadPF5_vxySpreadPF5: &data_control_region_1Lj_dzSpreadPF5_vxySpreadPF5
   obj_cuts:
