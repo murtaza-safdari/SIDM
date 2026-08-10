@@ -84,6 +84,7 @@ muon_base: &muon_base
   - "muon_dz_innerVz"
   - "mu_lj_dzVzdiff_pf"
   - "muon_dz_innerVz_diff"
+  - "mu_lj_pfN_dsaN"
 
 dsaMuon_base: &dsaMuon_base
   - "dsaMuon_n"
@@ -1069,6 +1070,13 @@ deltaR_cosmic: &deltaR_cosmic
   - "muon_muon_deltaR_cosmic"
   - "Allmuon_Allmuon_deltaR_cosmic"
 
+pf_dz_vz: &pf_dz_vz
+  - "muon_Vz_PVz_diff"
+  - "muon_dxy_by_dxyErr"
+  - "muon_Vz_PVz_diff"
+  - "muon_dz_by_dzErr"
+  - "muon_ptErr_by_pt"
+
 
 
 cosmic_muons: &cosmic_muons
@@ -1079,15 +1087,9 @@ cosmic_muons: &cosmic_muons
   - *dsaPair_1D
   - *dsaPair_2D
   - *cosAlpha
-  - "mu_lj_pfN_dsaN"
+  - *pf_dz_vz
   - "dsaMu_pfMu_dR_closest"
   - "dsaMu_pfMu_pt_diff"
-  - "muon_Vz_PVz_diff"
-  - "muon_dxy_by_dxyErr"
-  - "dsaMu_pfMu_pt_diff"
-  - "muon_Vz_PVz_diff"
-  - "muon_dz_by_dzErr"
-  - "muon_ptErr_by_pt"
   - *deltaR_cosmic
 
 
