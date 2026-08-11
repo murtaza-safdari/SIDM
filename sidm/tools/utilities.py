@@ -1386,34 +1386,8 @@ def v3d_diff(obj1, obj2):
             (obj1.vy-obj2.vy)**2 +
             (obj1.vz-obj2.vz)**2)**0.5
 
-def innerVx_diff(obj1, obj2):
-    return abs(obj1.innerVx - obj2.innerVx)
-
-def innerVy_diff(obj1, obj2):
-    return abs(obj1.innerVy - obj2.innerVy)
-
-def innerVz_diff(obj1, obj2):
-    return abs(obj1.innerVz - obj2.innerVz)
-
-def innerV3d_diff(obj1, obj2):
-    return ((obj1.innerVx-obj2.innerVx)**2 +
-            (obj1.innerVy-obj2.innerVy)**2 +
-            (obj1.innerVz-obj2.innerVz)**2)**0.5
-
-def innerVxy_diff(obj1, obj2):
-    return ((obj1.innerVx-obj2.innerVx)**2 +
-            (obj1.innerVy-obj2.innerVy)**2)**0.5
-
-def innerVzx_diff(obj1, obj2):
-    return ((obj1.innerVx-obj2.innerVx)**2 +
-            (obj1.innerVz-obj2.innerVz)**2)**0.5
-
-def innerVyz_diff(obj1, obj2):
-    return ((obj1.innerVy-obj2.innerVy)**2 +
-            (obj1.innerVz-obj2.innerVz)**2)**0.5
-
-def innerVz_diff_minus_dz_diff(obj1, obj2):
-    return abs(obj1.innerVz - obj2.innerVz) - abs(obj1.dz-obj2.dz)
+def vz_diff_minus_dz_diff(obj1, obj2):
+    return abs(obj1.vz - obj2.vz) - abs(obj1.dz-obj2.dz)
 
 
 def loadCutflow(sample, user, foldername):
