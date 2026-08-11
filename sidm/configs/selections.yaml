@@ -92,7 +92,7 @@ base_ljDisplacementIso: &base_ljDisplacementIso
   evt_cuts:
     - *evt_baseNoLj
 
-# add >=2 LJ requirement
+# add >=2 LJ requirement and >=2 high pt muons
 base: &base
   obj_cuts: &obj_base
     <<: *obj_baseNoLj
@@ -101,6 +101,7 @@ base: &base
   evt_cuts: &evt_base
     - *evt_baseNoLj
     - ">=2 LJs"
+    - ">=2 muons (pf or dsa) pT > 26 GeV"
 
 4mu: &4mu
   <<: *base
@@ -136,25 +137,27 @@ base_sr: &base_sr
     - *evt_sr
     - "2mu2e"
 
-# add event-level pt cut on muons 
-base_muPtCut: &base_muPtCut
-  <<: *base
-  evt_cuts: &evt_base_muPtCut
-    - *evt_base
-    - ">=2 muons (pf or dsa) pT > 26 GeV"
+# selections without the event-level pt cut on muons 
+base_noMuPtCut: &base_noMuPtCut
+  obj_cuts: &obj_base_noMuPtCut
+    <<: *obj_baseNoLj
+  postLj_obj_cuts:
+    <<: *base_postLj_obj_cuts
+  evt_cuts: &evt_base_noMuPtCut
+    - *evt_baseNoLj
+    - ">=2 LJs"
 
-4mu_muPtCut: &4mu_muPtCut
-  <<: *4mu
-  evt_cuts: &evt_4mu_muPtCut
-    - *evt_4mu
-    - ">=2 muons (pf or dsa) pT > 26 GeV"
+4mu_noMuPtCut: &4mu_noMuPtCut
+  <<: *base_noMuPtCut
+  evt_cuts: &evt_4mu_noMuPtCut
+    - *evt_base_noMuPtCut
+    - "4mu"
 
-2mu2e_muPtCut: &2mu2e_muPtCut
-  <<: *2mu2e
-  evt_cuts: &evt_2mu2e_muPtCut
-    - *evt_2mu2e
-    - ">=2 muons (pf or dsa) pT > 26 GeV"   
-
+2mu2e_noMuPtCut: &2mu2e_noMuPtCut
+  <<: *base_noMuPtCut
+  evt_cuts: &evt_2mu2e_noMuPtCut
+    - *evt_base_noMuPtCut
+    - "2mu2e"
 
 ### Control regions and specific studies ###
 
