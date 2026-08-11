@@ -5,6 +5,7 @@ import copy
 import numpy as np
 # columnar analysis
 from coffea import processor
+from coffea import lumi_tools
 from coffea.nanoevents.methods import nanoaod
 from coffea.nanoevents.methods import vector as cvec
 import awkward as ak
@@ -76,6 +77,7 @@ class SidmProcessor(processor.ProcessorABC):
         lj_reco_choices=["0.4"],
         selections_cfg="configs/selections.yaml",
         histograms_cfg="configs/hist_collections.yaml",
+        run_periods_cfg="configs/run_periods.yaml",
         unweighted_hist=False,
         verbose=False,
         debug=False,
@@ -88,6 +90,7 @@ class SidmProcessor(processor.ProcessorABC):
         self.lj_reco_choices = lj_reco_choices
         self.selections_cfg = selections_cfg
         self.histograms_cfg = histograms_cfg
+        self.run_periods_cfg = run_periods_cfg
         self.unweighted_hist = unweighted_hist
         self.obj_defs = preLj_objs
         self.postLj_objs = postLj_objs
@@ -119,6 +122,17 @@ class SidmProcessor(processor.ProcessorABC):
     def process(self, events):
         """Apply selections, make histograms and cutflow"""
         is_data = events.metadata["is_data"]
+        year = events.metadata["year"]
+
+        # apply golden json
+        if is_data:
+            run_periods_cfg = utilities.load_yaml(f"{BASE_DIR}/{self.run_periods_cfg}")
+            golden_mask = lumi_tools.LumiMask(f"{BASE_DIR}/data/{run_periods_cfg[year]["golden_json"]}")
+            n_original = len(events)
+            events = events[golden_mask(events.run, events.luminosityBlock)]
+            n_removed = n_original - len(events)
+            print(f"Applying {year} Golden JSON: {n_removed} events removed")
+
         # create object collections
         # fixme: only include objs used in cuts or hists
         objs = {}
@@ -256,8 +270,8 @@ class SidmProcessor(processor.ProcessorABC):
                 "n_evts": events.metadata["entrystop"] - events.metadata["entrystart"],
                 "scaled_sum_weights": ak.sum(evt_weights)/events.metadata["skim_factor"],
                 # add sample metadata as set_accumulator to only keep unique values during accumulation
-                "year": processor.set_accumulator([events.metadata["year"]]),
-                "is_data": processor.set_accumulator([events.metadata["is_data"]]),
+                "year": processor.set_accumulator([year]),
+                "is_data": processor.set_accumulator([is_data]),
                 "unweighted_hist": processor.set_accumulator([self.unweighted_hist]),
             },
         }
@@ -522,12 +536,12 @@ class SidmProcessor(processor.ProcessorABC):
                 print(f"WARNING: {sample} has more than one value for is_data or year. Not scaling histograms or cutflows.")
                 continue
 
-            if output["metadata"]["is_data"].pop():
+            if list(output["metadata"]["is_data"])[0]:
                 print(f"{sample} is data. Not scaling histograms or cutflows.")
                 continue
 
             print(f"{sample} is simulation. Scaling histograms or cutflows according to lumi*xs.")
-            year = output["metadata"]["year"].pop()
+            year = list(output["metadata"]["year"])[0]
             sum_weights = output["metadata"]["scaled_sum_weights"]
             lumixs_weight = utilities.get_lumixs_weight(sample, year, sum_weights)
             for name in output["cutflow"]:
