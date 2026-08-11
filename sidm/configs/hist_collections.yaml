@@ -830,12 +830,12 @@ Muon_selection_base: &Muon_selection_base
   - "mu_lj_pt"
   - "muLj_genA_ptRatio"
   - "mulj_egmlj_invmass"
-  - "mu_lj_isolation"
+  - "mu_lj_iso"
 
 Muon_selection_bkg_base: &Muon_selection_bkg_base
   - "mu_lj_pt"
   - "mulj_egmlj_invmass"
-  - "mu_lj_isolation"
+  - "mu_lj_iso"
 
 trig_base: &trig_base
   - "all_muon0_pt_vs_all_muon1_pt"
