@@ -346,9 +346,9 @@ hist_defs = {
             h.Axis(hist.axis.Regular(100, 0, 500, name="genA_lxy",
                                      label=r"Dark photon $L_{xy}$ [cm]"),
                    lambda objs, mask: lxy(objs["genAs_toE"])),
-            # number of electrons within dR=0.5 of a genA that decays to electrons
+            # electrons within dR=0.5, counted per dark photon (matches the per-genA lxy axis)
             h.Axis(hist.axis.Integer(0, 4, name="electron_nearGenA_n", label="$N_{e}$"),
-                   lambda objs, mask: ak.num(matched(objs["electrons"], objs["genAs_toE"], 0.5))),
+                   lambda objs, mask: ak.sum(objs["genAs_toE"].metric_table(objs["electrons"]) < 0.5, axis=-1)),
         ],
     ),
     "electron_genA_dR": h.Histogram(
@@ -403,9 +403,9 @@ hist_defs = {
             h.Axis(hist.axis.Regular(100, 0, 500, name="genA_lxy",
                                      label=r"Dark photon $L_{xy}$ [cm]"),
                    lambda objs, mask: lxy(objs["genAs_toE"])),
-            # number of photons within dR=0.5 of a genA that decays to electrons
+            # photons within dR=0.5, counted per dark photon (matches the per-genA lxy axis)
             h.Axis(hist.axis.Integer(0, 4, name="photon_nearGenA_n", label=r"$N_{\gamma}$"),
-                   lambda objs, mask: ak.num(matched(objs["photons"], objs["genAs_toE"], 0.5))),
+                   lambda objs, mask: ak.sum(objs["genAs_toE"].metric_table(objs["photons"]) < 0.5, axis=-1)),
         ],
     ),
     "photon_genA_dR": h.Histogram(
@@ -464,9 +464,9 @@ hist_defs = {
             h.Axis(hist.axis.Regular(100, 0, 500, name="genA_lxy",
                                      label=r"Dark photon $L_{xy}$ [cm]"),
                    lambda objs, mask: lxy(objs["genAs_toMu"])),
-            # number of muons within dR=0.5 of a genA that decays to muons
+            # PF muons within dR=0.5, counted per dark photon (matches the per-genA lxy axis)
             h.Axis(hist.axis.Integer(0, 4, name="muon_nearGenA_n", label=r"$N_{\mu^{PF}}$"),
-                   lambda objs, mask: ak.num(matched(objs["muons"], objs["genAs_toMu"], 0.5))),
+                   lambda objs, mask: ak.sum(objs["genAs_toMu"].metric_table(objs["muons"]) < 0.5, axis=-1)),
         ],
     ),
     "muon_genA_dR": h.Histogram(
@@ -659,9 +659,9 @@ hist_defs = {
             h.Axis(hist.axis.Regular(100, 0, 500, name="genA_lxy",
                                      label=r"Dark photon $L_{xy}$ [cm]"),
                    lambda objs, mask: lxy(objs["genAs_toMu"])),
-            # number of dsaMuons within dR=0.5 of a genA that decays to muons
+            # DSA muons within dR=0.5, counted per dark photon (matches the per-genA lxy axis)
             h.Axis(hist.axis.Integer(0, 4, name="dsaMuon_nearGenA_n", label=r"$N_{\mu^{DSA}}$"),
-                   lambda objs, mask: ak.num(matched(objs["dsaMuons"], objs["genAs_toMu"], 0.5))),
+                   lambda objs, mask: ak.sum(objs["genAs_toMu"].metric_table(objs["dsaMuons"]) < 0.5, axis=-1)),
         ],
     ),
     "dsaMuon_genA_dR": h.Histogram(
@@ -2847,7 +2847,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.1, name="genE0_dxy",
                                      label=r"Leading gen-level electron $d_{xy}$ [cm]"),
-                   lambda objs, mask: abs(dxy(objs["genEs"][mask, 0], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["genEs"][mask, 0], ref=objs["pvs"][mask]))),
         ],
         evt_mask=lambda objs: ak.num(objs["genEs"]) > 0,
     ),
@@ -2855,7 +2855,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.01, name="genE0_dxy",
                                      label=r"Leading gen-level electron $d_{xy}$ [cm]"),
-                   lambda objs, mask: abs(dxy(objs["genEs"][mask, 0], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["genEs"][mask, 0], ref=objs["pvs"][mask]))),
         ],
         evt_mask=lambda objs: ak.num(objs["genEs"]) > 0,
     ),
@@ -2879,7 +2879,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.1, name="genE1_dxy",
                                      label=r"Sub-leading gen-level electron $d_{xy}$ [cm]"),
-                   lambda objs, mask: abs(dxy(objs["genEs"][mask, 1], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["genEs"][mask, 1], ref=objs["pvs"][mask]))),
         ],
         evt_mask=lambda objs: ak.num(objs["genEs"]) > 1,
     ),
@@ -2887,7 +2887,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.01, name="genE1_dxy",
                                      label=r"Sub-leading gen-level electron $d_{xy}$ [cm]"),
-                   lambda objs, mask: abs(dxy(objs["genEs"][mask, 1], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["genEs"][mask, 1], ref=objs["pvs"][mask]))),
         ],
         evt_mask=lambda objs: ak.num(objs["genEs"]) > 1,
     ),
@@ -3056,7 +3056,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.1, name="genMu0_dxy",
                                      label=r"Leading gen-level muon $d_{xy}$ [cm]"),
-                   lambda objs, mask: abs(dxy(objs["genMus"][mask, 0], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["genMus"][mask, 0], ref=objs["pvs"][mask]))),
         ],
         evt_mask=lambda objs: ak.num(objs["genMus"]) > 0,
     ),
@@ -3064,7 +3064,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.01, name="genMu0_dxy",
                                      label=r"Leading gen-level muon $d_{xy}$ [cm]"),
-                   lambda objs, mask: abs(dxy(objs["genMus"][mask, 0], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["genMus"][mask, 0], ref=objs["pvs"][mask]))),
         ],
         evt_mask=lambda objs: ak.num(objs["genMus"]) > 0,
     ),
@@ -3088,7 +3088,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.1, name="genMu1_dxy",
                                      label=r"Sub-leading gen-level muon $d_{xy}$ [cm]"),
-                   lambda objs, mask: abs(dxy(objs["genMus"][mask, 1], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["genMus"][mask, 1], ref=objs["pvs"][mask]))),
         ],
         evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
     ),
@@ -3096,7 +3096,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 0.01, name="genMu1_dxy",
                                      label=r"Sub-leading gen-level muon $d_{xy}$ [cm]"),
-                   lambda objs, mask: abs(dxy(objs["genMus"][mask, 1], ref=objs["pvs"]))),
+                   lambda objs, mask: abs(dxy(objs["genMus"][mask, 1], ref=objs["pvs"][mask]))),
         ],
         evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
     ),
@@ -4303,6 +4303,16 @@ hist_defs = {
     "genEs_fromA_status":    obj_attr("genEs_fromA", "status"),
     "genMus_fromA_eta":      obj_attr("genMus_fromA", "eta"),
     "genEs_fromA_eta":       obj_attr("genEs_fromA", "eta"),
+    "genMus_fromA_pt":       obj_attr("genMus_fromA", "pt"),
+    "genEs_fromA_pt":        obj_attr("genEs_fromA", "pt"),
+    "genMus_fromA_dxy":            obj_attr("genMus_fromA", "dxy", absval=True, xmax=10, nbins=100),
+    "genMus_fromA_dxy_lowRange":   obj_attr("genMus_fromA", "dxy", absval=True, xmax=1, nbins=100),
+    "genMus_fromA_dxy_XLowRange":  obj_attr("genMus_fromA", "dxy", absval=True, xmax=0.1, nbins=100),
+    "genMus_fromA_dxy_XXLowRange": obj_attr("genMus_fromA", "dxy", absval=True, xmax=0.01, nbins=100),
+    "genEs_fromA_dxy":             obj_attr("genEs_fromA", "dxy", absval=True, xmax=10, nbins=100),
+    "genEs_fromA_dxy_lowRange":    obj_attr("genEs_fromA", "dxy", absval=True, xmax=1, nbins=100),
+    "genEs_fromA_dxy_XLowRange":   obj_attr("genEs_fromA", "dxy", absval=True, xmax=0.1, nbins=100),
+    "genEs_fromA_dxy_XXLowRange":  obj_attr("genEs_fromA", "dxy", absval=True, xmax=0.01, nbins=100),
     "genMu_AFrame_pt": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 3, name="genMu_AFrame_pt", 

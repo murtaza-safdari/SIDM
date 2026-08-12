@@ -1863,3 +1863,37 @@ data_control_region_2muLj_cosmic_veto: &data_control_region_2muLj_cosmic_veto
     - "= 2 LJs"
     - "= 2 muLJs"
     - "all cos_alpha(dsa, dsa) > -0.9"
+
+
+### Generator-truth channels: no reconstruction, trigger, or vertex requirements ###
+
+# final-state gen leptons only; no event cuts at all
+genOnly: &genOnly
+  obj_cuts:
+    genMus:
+      - "status 1"
+    genEs:
+      - "status 1"
+
+# born-level (status 23) gen leptons, for rest-frame/polarization comparisons
+genOnly_born: &genOnly_born
+  obj_cuts:
+    genMus:
+      - "status 23"
+    genEs:
+      - "status 23"
+
+# re-application of the central-production gen filter. The v10 samples were
+# produced WITH this filter, so the cutflow row is a re-pass/validation rate
+# (0.84-1.00, mass-dependent) -- NOT a filter efficiency; per-point production
+# efficiencies: sidm/studies/truth_kinematics_forAN/central_genFilterEfficiencies.yml.
+genFilterEmulation: &genFilterEmulation
+  obj_cuts: {}
+  evt_cuts:
+    - "pass gen filter"
+
+# same, with the piedpiper template's isHardProcess statusFlags variant
+genFilterEmulation_isHardProcess: &genFilterEmulation_isHardProcess
+  obj_cuts: {}
+  evt_cuts:
+    - "pass gen filter isHardProcess"
