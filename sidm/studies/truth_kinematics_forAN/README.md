@@ -4,7 +4,10 @@ Generator-level characterization of the 2018 v10 signal samples for the
 `signal_kinematics` section of AN-23-107: proper-lifetime validation, lepton
 impact parameter, boost, dark-photon polarization, reconstruction migration,
 and the production gen-filter story. Three executed notebooks with their
-figures in `figures/` (vector PDF, CMS Simulation style).
+figures in `figures/` (vector PDF, CMS Simulation style; the repo-wide
+`*.pdf` ignore keeps them untracked — they regenerate on notebook execution,
+render inline in the committed notebooks, and are copied into the analysis
+note repository).
 
 ## The canonical output
 
