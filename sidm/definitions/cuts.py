@@ -219,9 +219,42 @@ obj_cut_defs = {
     },
 }
 
+def _gen_filter_count(leps, flag_bits, status=None):
+    # Count leptons passing the RunIIFall18 production gen filter: pT > 5 GeV,
+    # |eta| < 2.4, production vertex rho < 740 cm and |z| < 960 cm, plus the
+    # statusFlags bits required by the filter's cut string
+    # (0=isPrompt, 7=isHardProcess, 8=fromHardProcess, 13=isLastCopy).
+    if status is not None:
+        leps = leps[leps.status == status]
+    passing = (
+        (leps.pt > 5.0)
+        & (abs(leps.eta) < 2.4)
+        & (rho(leps, use_v=True) < 740.0)
+        & (abs(leps.vz) < 960.0)
+        & check_bits(leps.statusFlags, flag_bits)
+    )
+    return ak.num(leps[passing])
+
 evt_cut_defs = {
     # This following will be True for every event. There's probably a more intuitive way to do this
     "Keep all evts": lambda objs: objs["pvs"].npvs >= 0,
+    # Re-application of the central-production gen filter. The v10 signal samples
+    # were PRODUCED with this filter (their GenFilterInfo records the tried/passed
+    # counts), so on them the cutflow of these cuts is a re-pass/validation rate
+    # (0.84-1.00, mass-dependent) -- NOT a filter efficiency. Per-point production
+    # efficiencies are recorded in
+    # sidm/studies/truth_kinematics_forAN/central_genFilterEfficiencies.yml.
+    # "pass gen filter" follows the McM request's cut string (isLastCopy &&
+    # isPromptFinalState && fromHardProcessFinalState); the isHardProcess variant
+    # follows the piedpiper template. Both count electrons and muons together, >= 4.
+    "pass gen filter": lambda objs: (
+        _gen_filter_count(objs["genMus"], [0, 8, 13], status=1)
+        + _gen_filter_count(objs["genEs"], [0, 8, 13], status=1)
+    ) >= 4,
+    "pass gen filter isHardProcess": lambda objs: (
+        _gen_filter_count(objs["genMus"], [7])
+        + _gen_filter_count(objs["genEs"], [7])
+    ) >= 4,
     "pass triggers": lambda objs: (
           objs["hlt"].DoubleL2Mu23NoVtx_2Cha
         | objs["hlt"].DoubleL2Mu23NoVtx_2Cha_CosmicSeed
