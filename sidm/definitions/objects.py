@@ -2,7 +2,7 @@
 
 import awkward as ak
 import numpy as np
-from sidm.tools.utilities import matched, get_pairs, get_pairs_lj
+from sidm.tools.utilities import matched, get_pairs
 
 # define helper functions
 def pid(part, val):
