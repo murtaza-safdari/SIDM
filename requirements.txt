@@ -11,5 +11,10 @@ PyYAML==6.0.2
 scipy==1.17.1
 setuptools==80.1.0
 tabulate==0.9.0
+# uproot is imported directly (sidm/tools/file_census.py, condor/run_job.sh) as
+# well as through coffea, and was left floating here while
+# condor/requirements.txt already pinned it. 5.7.5 is the version CI has been
+# resolving since 2026-07-04.
+uproot==5.7.5
 vector==1.6.3
 xrootd==5.7.0
