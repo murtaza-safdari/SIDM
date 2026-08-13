@@ -80,9 +80,6 @@ postLj_objs["pfmu_ljs"]     = lambda objs: noDsa(objs["mu_ljs"])
 postLj_objs["dsamu_ljs"]    = lambda objs: noPf(objs["mu_ljs"])
 postLj_objs["electron_ljs"] = lambda objs: noPhoton(objs["egm_ljs"])
 postLj_objs["photon_ljs"]   = lambda objs: noE(objs["egm_ljs"])
-postLj_objs["dsaMuonPairs"] = lambda objs: get_pairs(objs["dsaMuons"])
-postLj_objs["muonPairs"] = lambda objs: get_pairs(objs["muons"])
-postLj_objs["mu_lj_dsaMuonPairs"] = lambda objs: get_pairs_lj(objs["mu_ljs"].dsaMuons)
 postLj_objs["pf"] = lambda objs: ak.with_name(objs["muons"],"PtEtaPhiMLorentzVector")
 postLj_objs["dsa"] = lambda objs: ak.with_name(objs["dsaMuons"],"PtEtaPhiMLorentzVector")
 postLj_objs["allMuons"] = lambda objs: ak.concatenate([objs["pf"],objs["dsa"]],axis=1)
@@ -102,10 +99,8 @@ derived_objs["genAs_toMu_matched_muLj"] = lambda objs, r: matched(objs["genAs_to
 derived_objs["genAs_matched_egmLj"]     = lambda objs, r: matched(objs["genAs"], objs["egm_ljs"], r)
 derived_objs["genAs_toE_matched_egmLj"] = lambda objs, r: matched(objs["genAs_toE"], objs["egm_ljs"], r)
 derived_objs["mu_lj_matched_genAs_toMu"]   = lambda objs, r: matched(objs["mu_ljs"], objs["genAs_toMu"], r)
-derived_objs["back_to_back_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) <= -0.99])(objs["dsaMuonPairs"],*ak.unzip(objs["dsaMuonPairs"]))
-derived_objs["parallel_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= 0.99])(objs["dsaMuonPairs"],*ak.unzip(objs["dsaMuonPairs"]))
-derived_objs["back_to_back_dsa_pairs_in_MuLJ"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) <= -0.99])(objs["mu_lj_dsaMuonPairs"],*ak.unzip(objs["mu_lj_dsaMuonPairs"]))
-derived_objs["parallel_dsa_pairs_in_MuLj"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= 0.99])(objs["mu_lj_dsaMuonPairs"],*ak.unzip(objs["mu_lj_dsaMuonPairs"]))
+derived_objs["back_to_back_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) <= -0.99])(get_pairs(objs["dsaMuons"]),*ak.unzip(get_pairs(objs["dsaMuons"])))
+derived_objs["parallel_dsa_pairs"]   = lambda objs: (lambda pairs, v1, v2: pairs[np.cos(v1.deltaangle(v2)) >= 0.99])(get_pairs(objs["dsaMuons"]),*ak.unzip(get_pairs(objs["dsaMuons"])))
 
 # Gen-level objects that depend on PIDs not present in all samples (signal-only).
 # Defined as derived_objs so they're only evaluated when explicitly referenced by a histogram or cut.
