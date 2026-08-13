@@ -127,7 +127,7 @@ class SidmProcessor(processor.ProcessorABC):
         # apply golden json
         if is_data:
             run_periods_cfg = utilities.load_yaml(f"{BASE_DIR}/{self.run_periods_cfg}")
-            golden_mask = lumi_tools.LumiMask(f"{BASE_DIR}/data/{run_periods_cfg[year]["golden_json"]}")
+            golden_mask = lumi_tools.LumiMask(f"{BASE_DIR}/data/{run_periods_cfg[year]['golden_json']}")
             n_original = len(events)
             events = events[golden_mask(events.run, events.luminosityBlock)]
             n_removed = n_original - len(events)
