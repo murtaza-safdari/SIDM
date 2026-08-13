@@ -4682,7 +4682,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_dsa",
                                      label=r"N DSA $\mu$ pairs"),
-                   lambda objs, mask: ak.num(objs["dsaMuonPairs"])),
+                   lambda objs, mask: ak.num(get_pairs(objs["dsaMuons"]))),
         ],
     ),
     "N_back_to_back_dsa": h.Histogram(
@@ -4704,11 +4704,11 @@ hist_defs = {
             h.Axis(hist.axis.Regular(10, 0, 10, name="N_back_to_back_dsa",
                                      label=r"N cos (DSA $\mu$, DSA $\mu$) <= -0.95 "),
                    lambda objs, mask: (lambda v1, v2: ak.sum(np.cos(v1.deltaangle(v2)) <= -0.95, axis=1))
-                                  (*ak.unzip(objs["dsaMuonPairs"]))),
+                                  (*ak.unzip(get_pairs(objs["dsaMuons"])))),
             h.Axis(hist.axis.Regular(10, 0, 10, name="N_parallel_dsa",
                                      label=r"N cos (DSA $\mu$, DSA $\mu$) >= 0.95 "),
                    lambda objs, mask: (lambda v1, v2: ak.sum(np.cos(v1.deltaangle(v2)) >= 0.95, axis=1))
-                                  (*ak.unzip(objs["dsaMuonPairs"]))),
+                                  (*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ],
     ),
     "dsa_pair_3d_distance": h.Histogram(
@@ -4717,7 +4717,7 @@ hist_defs = {
                                      label=r" DSA-DSA 3D Distance "),
                   lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +
                                                                         (v1.vy - v2.vy)**2 +(v1.vz - v2.vz)**2))
-                                                        (*ak.unzip(objs["dsaMuonPairs"])))
+                                                        (*ak.unzip(get_pairs(objs["dsaMuons"]))))
         ],
     ),
     "back_to_back_dsa_pair_3d_distance": h.Histogram(
@@ -4743,7 +4743,7 @@ hist_defs = {
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_xz_distance",
                                      label=r" DSA-DSA xz Distance "),
                   lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +(v1.vz - v2.vz)**2))
-                                                        (*ak.unzip(objs["dsaMuonPairs"])))
+                                                        (*ak.unzip(get_pairs(objs["dsaMuons"]))))
         ],
     ),
     "back_to_back_dsa_pair_xz_distance": h.Histogram(
@@ -4767,7 +4767,7 @@ hist_defs = {
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_yz_distance",
                                      label=r" DSA-DSA yz Distance "),
                   lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vy - v2.vy)**2 +(v1.vz - v2.vz)**2))
-                                                        (*ak.unzip(objs["dsaMuonPairs"])))
+                                                        (*ak.unzip(get_pairs(objs["dsaMuons"]))))
         ],
     ),
     "back_to_back_dsa_pair_yz_distance": h.Histogram(
@@ -4791,7 +4791,7 @@ hist_defs = {
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_xy_distance",
                                      label=r" DSA-DSA xz Distance "),
                   lambda objs, mask: (lambda v1, v2: np.sqrt((v1.vx - v2.vx)**2 +(v1.vy - v2.vy)**2))
-                                                        (*ak.unzip(objs["dsaMuonPairs"])))
+                                                        (*ak.unzip(get_pairs(objs["dsaMuons"]))))
         ],
     ),
     "back_to_back_dsa_pair_xy_distance": h.Histogram(
@@ -4814,7 +4814,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(15, 0, 15, name="dsa_pair_nearest_lj_index_diff",
                                      label=r" DSA-DSA pair abs( nearest LJ index) "),
-                  lambda objs, mask: (lambda v1, v2, objs: abs(nearest_lj_index(v1, objs)  - nearest_lj_index(v2, objs)))(*ak.unzip(objs["dsaMuonPairs"]), objs["ljs"])),
+                  lambda objs, mask: (lambda v1, v2, objs: abs(nearest_lj_index(v1, objs)  - nearest_lj_index(v2, objs)))(*ak.unzip(get_pairs(objs["dsaMuons"])), objs["ljs"])),
         ],
     ),
     "back_to_back_dsa_pair_nearest_lj_index_diff": h.Histogram(
@@ -4835,7 +4835,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_vx_diff",
                                      label=r" abs(DSA $\mu$1 Vx - , DSA $\mu$2 Vx ) "),
-                  lambda objs, mask: (lambda v1, v2: abs(v1.vx - v2.vx))(*ak.unzip(objs["dsaMuonPairs"]))),
+                  lambda objs, mask: (lambda v1, v2: abs(v1.vx - v2.vx))(*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ],
     ),
     "back_to_back_dsa_pair_vx_diff": h.Histogram(
@@ -4856,7 +4856,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_vx_diff",
                                      label=r" abs(DSA $\mu$1 Vy - DSA $\mu$2 Vy ) "),
-                  lambda objs, mask: (lambda v1, v2: abs(v1.vy - v2.vy))(*ak.unzip(objs["dsaMuonPairs"]))),
+                  lambda objs, mask: (lambda v1, v2: abs(v1.vy - v2.vy))(*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ],
     ),
     "back_to_back_dsa_pair_vy_diff": h.Histogram(
@@ -4877,7 +4877,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_vx_diff",
                                      label=r" abs(DSA $\mu$1 Vz - DSA $\mu$2 Vz ) "),
-                   lambda objs, mask: (lambda v1, v2: abs(v1.vz - v2.vz))(*ak.unzip(objs["dsaMuonPairs"]))),
+                   lambda objs, mask: (lambda v1, v2: abs(v1.vz - v2.vz))(*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ],
     ),
     "back_to_back_dsa_pair_vz_diff": h.Histogram(
@@ -4898,7 +4898,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_dxy_diff",
                                      label=r" abs(DSA $\mu$1 $d_{xy}$ - DSA $\mu$2 $d_{xy}$ ) "),
-                   lambda objs, mask: (lambda v1, v2: abs(v1.dxy - v2.dxy))(*ak.unzip(objs["dsaMuonPairs"]))),
+                   lambda objs, mask: (lambda v1, v2: abs(v1.dxy - v2.dxy))(*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ]
     ),
     "back_to_back_dsa_pair_dxy_diff": h.Histogram(
@@ -4919,7 +4919,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(500, 0, 500, name="dsa_pair_dz_diff",
                                      label=r" abs(DSA $\mu$1 $d_z$ - DSA $\mu$2 $d_z$ ) "),
-                   lambda objs, mask: (lambda v1, v2: abs(v1.dz - v2.dz))(*ak.unzip(objs["dsaMuonPairs"]))),
+                   lambda objs, mask: (lambda v1, v2: abs(v1.dz - v2.dz))(*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ],
     ),
     "back_to_back_dsa_pair_dz_diff": h.Histogram(
@@ -4940,7 +4940,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 6, name="dsa_pair_eta_diff",
                                      label=r" abs(DSA $\mu$1 $\eta$ - DSA $\mu$2 $\eta$ ) "),
-                   lambda objs, mask: (lambda v1, v2: abs(v1.eta - v2.eta))(*ak.unzip(objs["dsaMuonPairs"]))),
+                   lambda objs, mask: (lambda v1, v2: abs(v1.eta - v2.eta))(*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ],
     ),
     "back_to_back_dsa_pair_eta_diff": h.Histogram(
@@ -4961,7 +4961,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(100, 0, 7, name="dsa_pair_phi_diff",
                                      label=r" abs(DSA $\mu$1 $\phi$ - DSA $\mu$2 $\phi$ ) "),
-                   lambda objs, mask: (lambda v1, v2: abs(v1.phi - v2.phi))(*ak.unzip(objs["dsaMuonPairs"]))),
+                   lambda objs, mask: (lambda v1, v2: abs(v1.phi - v2.phi))(*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ],
     ),
     "back_to_back_dsa_pair_phi_diff": h.Histogram(
@@ -4982,7 +4982,7 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(5, 0, 5, name="dsa_pair_charge_diff",
                                      label=r" abs(DSA $\mu$1 charge - DSA $\mu$2 charge ) "),
-                  lambda objs, mask: (lambda v1, v2: abs(v1.charge - v2.charge))(*ak.unzip(objs["dsaMuonPairs"]))),
+                  lambda objs, mask: (lambda v1, v2: abs(v1.charge - v2.charge))(*ak.unzip(get_pairs(objs["dsaMuons"])))),
         ],
     ),
     "back_to_back_dsa_pair_charge_diff": h.Histogram(
@@ -5003,10 +5003,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(200, 0, 500, name="dsa_pair_pt1",
                                      label=r" DSA $\mu$1 $p_T$"),
-                  lambda objs, mask: (lambda v1: v1.pt)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.pt)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(200, 0, 500, name="dsa_pair_pt2",
                                      label=r" DSA $\mu$2 $p_T$"),
-                  lambda objs, mask: (lambda v2: v2.pt)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.pt)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_pt": h.Histogram(
@@ -5033,10 +5033,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_vx 1",
                                      label=r" DSA $\mu$1 Vx"),
-                  lambda objs, mask: (lambda v1: v1.vx)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.vx)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_vx 2",
                                      label=r" DSA $\mu$2 Vx"),
-                  lambda objs, mask: (lambda v2: v2.vx)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.vx)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_vx": h.Histogram(
@@ -5063,10 +5063,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_vy1",
                                      label=r" DSA $\mu$1 Vy"),
-                  lambda objs, mask: (lambda v1: v1.vy)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.vy)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_vy2",
                                      label=r" DSA $\mu$2 Vy"),
-                  lambda objs, mask: (lambda v2: v2.vy)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.vy)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_vy": h.Histogram(
@@ -5093,10 +5093,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_vz1",
                                      label=r" DSA $\mu$1 Vz"),
-                  lambda objs, mask: (lambda v1: v1.vz)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.vz)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_vz2",
                                      label=r" DSA $\mu$2 Vz"),
-                  lambda objs, mask: (lambda v2: v2.vz)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.vz)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_vz": h.Histogram(
@@ -5123,10 +5123,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_dxy1",
                                      label=r" DSA $\mu$1 dxy"),
-                  lambda objs, mask: (lambda v1: v1.dxy)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.dxy)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_dxy2",
                                      label=r" DSA $\mu$2 dxy"),
-                  lambda objs, mask: (lambda v2: v2.dxy)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.dxy)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_dxy": h.Histogram(
@@ -5153,10 +5153,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_dz1",
                                      label=r" DSA $\mu$1 dz"),
-                  lambda objs, mask: (lambda v1: v1.dz)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.dz)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(200, -500, 500, name="dsa_pair_dz2",
                                      label=r" DSA $\mu$2 dz"),
-                  lambda objs, mask: (lambda v2: v2.dz)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.dz)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_dz": h.Histogram(
@@ -5183,10 +5183,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(200, -7, 7, name="dsa_pair_eta1",
                                      label=r" DSA $\mu$1 $\eta$"),
-                  lambda objs, mask: (lambda v1: v1.eta)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.eta)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(200, -7, 7, name="dsa_pair_eta2",
                                      label=r" DSA $\mu$2 $\eta$"),
-                  lambda objs, mask: (lambda v2: v2.eta)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.eta)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_eta": h.Histogram(
@@ -5213,10 +5213,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(200, -3.2, 3.2, name="dsa_pair_phi1",
                                      label=r" DSA $\mu$1 $\phi$"),
-                  lambda objs, mask: (lambda v1: v1.phi)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.phi)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(200, -3.2, 3.2, name="dsa_pair_phi2",
                                      label=r" DSA $\mu$2 $\phi$"),
-                  lambda objs, mask: (lambda v2: v2.phi)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.phi)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_phi": h.Histogram(
@@ -5243,10 +5243,10 @@ hist_defs = {
         [
             h.Axis(hist.axis.Regular(10, -5, 5, name="dsa_pair_charge1",
                                      label=r" DSA $\mu$1 charge"),
-                  lambda objs, mask: (lambda v1: v1.charge)(*ak.unzip(objs["dsaMuonPairs"])[0:1])),
+                  lambda objs, mask: (lambda v1: v1.charge)(*ak.unzip(get_pairs(objs["dsaMuons"]))[0:1])),
             h.Axis(hist.axis.Regular(10, -5, 5, name="dsa_pair_charge2",
                                      label=r" DSA $\mu$2 charge"),
-                  lambda objs, mask: (lambda v2: v2.charge)(*ak.unzip(objs["dsaMuonPairs"])[1:2])),
+                  lambda objs, mask: (lambda v2: v2.charge)(*ak.unzip(get_pairs(objs["dsaMuons"]))[1:2])),
         ],
     ),
     "back_to_back_dsa_pair_charge": h.Histogram(
