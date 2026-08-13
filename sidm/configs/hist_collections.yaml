@@ -610,9 +610,6 @@ gen_base: &gen_base
   - *genA_toE_base
   - "gen_abspid"
 
-
-
-
 muon_displacement: &muon_displacement
   - "mu_lj_pfMuon_dxy_XLowRange"
   - "mu_lj_pfMuon_max_dxy_XLowRange"
@@ -1038,8 +1035,6 @@ pf_dz_vz: &pf_dz_vz
   - "muon_Vz_PVz_diff"
   - "muon_dz_by_dzErr"
   - "muon_ptErr_by_pt"
-
-
 
 cosmic_muons: &cosmic_muons
   - *mu_ljSpread_dsa
