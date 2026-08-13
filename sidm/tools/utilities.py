@@ -95,17 +95,6 @@ def matched(obj1, obj2, r):
 def add_matched_dsamuon_mass(obj):
     obj["mass"] = ak.full_like(obj.pt, 0.105712890625)
     return obj
-
-def cosAlpha(muons): #could work for any object
-    pairs = ak.combinations(muons, 2, axis=1)
-    v1, v2 = ak.unzip(pairs)
-    cos_alpha = np.cos(v1.deltaangle(v2))
-    return (cos_alpha)
-
-def get_pairs(obj):
-    pairs = pairs = ak.combinations(obj, 2, axis=1)
-    v1, v2 = ak.unzip(pairs)
-    return (v1, v2)
     
 def lj_combination_dR(obj):
     pair = ak.combinations(obj, 2, axis=1, fields=["lj1", "lj2"])
@@ -1325,19 +1314,16 @@ def plot_data_mc(
         plt.show()
 
     return fig, ax_main, ax_ratio
-def get_pairs(obj):
-    pairs = ak.combinations(obj, 2, axis=1)
-    return (pairs)
 
-def get_pairs_lj(obj):
-    pairs = ak.combinations(obj, 2, axis=-1)
-    return (pairs)
-
-def cosAlpha_lj(muons): #could work for any object
-    pairs = ak.combinations(muons, 2, axis=-1)
+def cosAlpha(muons): #could work for any object
+    pairs = ak.combinations(muons, 2, axis=1)
     v1, v2 = ak.unzip(pairs)
     cos_alpha = np.cos(v1.deltaangle(v2))
     return (cos_alpha)
+
+def get_pairs(obj):
+    pairs = ak.combinations(obj, 2, axis=1)
+    return (pairs)
 
 def nearest_lj_index(obj, lj):
     nearest=obj.nearest(lj, threshold=0.4)
@@ -1395,8 +1381,8 @@ def v3d_diff(obj1, obj2):
 def vz_diff_minus_dz_diff(obj1, obj2):
     return abs(obj1.vz - obj2.vz) - abs(obj1.dz-obj2.dz)
 
-
 def loadCutflow(sample, user, foldername):
+    ##only works for Data MC not signal
     LFN = f"/store/group/lpcmetx/SIDM/coffea_outputs/{user}/{foldername}/{sample}.coffea"
     tmp = tempfile.mkdtemp()
     prefix = "root://xcache/"
