@@ -1875,6 +1875,18 @@ genOnly: &genOnly
     genEs:
       - "status 1"
 
+# gen-level selection plus the analysis dimuon triggers: the ratio of any
+# histogram to its genOnly counterpart is the trigger efficiency vs that
+# variable, and the cutflow records the per-sample trigger efficiency
+genOnly_trigger: &genOnly_trigger
+  obj_cuts:
+    genMus:
+      - "status 1"
+    genEs:
+      - "status 1"
+  evt_cuts:
+    - "pass triggers"
+
 # born-level (status 23) gen leptons, for rest-frame/polarization comparisons
 genOnly_born: &genOnly_born
   obj_cuts:

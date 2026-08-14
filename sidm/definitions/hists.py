@@ -14,7 +14,7 @@ import awkward as ak
 # local
 from sidm.tools import histogram as h
 from sidm.tools.utilities import dR, lxy, lxyz, lxyz_proper, betagamma, matched, dxy, lepton_dxy_resolution, cosAlpha
-from sidm.definitions.objects import derived_objs
+from sidm.definitions.objects import derived_objs, withMass
 # always reload local modules to pick up changes during development
 importlib.reload(h)
 import numpy as np
@@ -160,6 +160,16 @@ def lab_pt_ratio(objs, mask, lep_name):
     leading_pt = sorted_parts[:, 0].pt
     subleading_pt = sorted_parts[:, 1].pt
     return subleading_pt / leading_pt
+
+def decayed_daughter_pairs(objs, mask, obj_name):
+    """Dark photons with at least two recorded children, for pairwise daughter quantities."""
+    parts = objs[obj_name][mask]
+    return parts[ak.num(parts.children, axis=2) >= 2]
+
+def daughters_dR(objs, mask, obj_name):
+    """dR between the two daughters of each dark photon (one entry per dark photon)."""
+    children = decayed_daughter_pairs(objs, mask, obj_name).children
+    return children[:, :, 0].delta_r(children[:, :, 1])
 
 hist_defs = {
     # pv
@@ -3182,6 +3192,112 @@ hist_defs = {
                    lambda objs, mask: objs["genMus"][mask, :2].sum().pt),
         ],
         evt_mask=lambda objs: ak.num(objs["genMus"]) > 1,
+    ),
+    # per-dark-photon daughter-pair opening angle (collimation)
+    "genA_toMu_daughters_dR": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 1.0, name="genA_toMu_daughters_dR",
+                                     label=r"$\Delta R(\mu, \mu)$ from same $Z_d$"),
+                   lambda objs, mask: daughters_dR(objs, mask, "genAs_toMu")),
+        ],
+    ),
+    "genA_toMu_daughters_dR_logx": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(80, 1e-4, 1.0, name="genA_toMu_daughters_dR_logx",
+                                     label=r"$\Delta R(\mu, \mu)$ from same $Z_d$",
+                                     transform=hist.axis.transform.log),
+                   lambda objs, mask: daughters_dR(objs, mask, "genAs_toMu")),
+        ],
+    ),
+    "genA_toMu_daughters_dR_vs_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 5, 1000, name="genA_toMu_pt",
+                                     label=r"$Z_d \rightarrow \mu\mu$ $p_{T}$ [GeV]",
+                                     transform=hist.axis.transform.log),
+                   lambda objs, mask: decayed_daughter_pairs(objs, mask, "genAs_toMu").pt),
+            h.Axis(hist.axis.Regular(60, 1e-4, 1.0, name="genA_toMu_daughters_dR",
+                                     label=r"$\Delta R(\mu, \mu)$ from same $Z_d$",
+                                     transform=hist.axis.transform.log),
+                   lambda objs, mask: daughters_dR(objs, mask, "genAs_toMu")),
+        ],
+    ),
+    "genA_toE_daughters_dR": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 1.0, name="genA_toE_daughters_dR",
+                                     label=r"$\Delta R(e, e)$ from same $Z_d$"),
+                   lambda objs, mask: daughters_dR(objs, mask, "genAs_toE")),
+        ],
+    ),
+    "genA_toE_daughters_dR_logx": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(80, 1e-4, 1.0, name="genA_toE_daughters_dR_logx",
+                                     label=r"$\Delta R(e, e)$ from same $Z_d$",
+                                     transform=hist.axis.transform.log),
+                   lambda objs, mask: daughters_dR(objs, mask, "genAs_toE")),
+        ],
+    ),
+    "genA_toE_daughters_dR_vs_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 5, 1000, name="genA_toE_pt",
+                                     label=r"$Z_d \rightarrow ee$ $p_{T}$ [GeV]",
+                                     transform=hist.axis.transform.log),
+                   lambda objs, mask: decayed_daughter_pairs(objs, mask, "genAs_toE").pt),
+            h.Axis(hist.axis.Regular(60, 1e-4, 1.0, name="genA_toE_daughters_dR",
+                                     label=r"$\Delta R(e, e)$ from same $Z_d$",
+                                     transform=hist.axis.transform.log),
+                   lambda objs, mask: daughters_dR(objs, mask, "genAs_toE")),
+        ],
+    ),
+    # invariant mass of the visible (status-1) signal final state
+    "gen4Mu_invmass": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(120, 0, 1200, name="gen4Mu_invmass",
+                                     label=r"$m(4\mu)$ [GeV]"),
+                   lambda objs, mask: withMass(objs["genMus"][mask, :4], 0.105658).sum().mass),
+        ],
+        evt_mask=lambda objs: ak.num(objs["genMus"]) > 3,
+    ),
+    "gen2Mu2E_invmass": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(120, 0, 1200, name="gen2Mu2E_invmass",
+                                     label=r"$m(2\mu 2e)$ [GeV]"),
+                   lambda objs, mask: (withMass(objs["genMus"][mask, :2], 0.105658).sum()
+                                       + withMass(objs["genEs"][mask, :2], 0.000511).sum()).mass),
+        ],
+        evt_mask=lambda objs: (ak.num(objs["genMus"]) > 1) & (ak.num(objs["genEs"]) > 1),
+    ),
+    # leading/subleading reco muon pT (trigger-threshold context)
+    "muon0_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="muon0_pt",
+                                     label=r"Leading PF muon $p_{T}$ [GeV]"),
+                   lambda objs, mask: objs["muons"][mask, 0].pt),
+        ],
+        evt_mask=lambda objs: ak.num(objs["muons"]) > 0,
+    ),
+    "muon1_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="muon1_pt",
+                                     label=r"Sub-leading PF muon $p_{T}$ [GeV]"),
+                   lambda objs, mask: objs["muons"][mask, 1].pt),
+        ],
+        evt_mask=lambda objs: ak.num(objs["muons"]) > 1,
+    ),
+    "dsaMuon0_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="dsaMuon0_pt",
+                                     label=r"Leading DSA muon $p_{T}$ [GeV]"),
+                   lambda objs, mask: objs["dsaMuons"][mask, 0].pt),
+        ],
+        evt_mask=lambda objs: ak.num(objs["dsaMuons"]) > 0,
+    ),
+    "dsaMuon1_pt": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 100, name="dsaMuon1_pt",
+                                     label=r"Sub-leading DSA muon $p_{T}$ [GeV]"),
+                   lambda objs, mask: objs["dsaMuons"][mask, 1].pt),
+        ],
+        evt_mask=lambda objs: ak.num(objs["dsaMuons"]) > 1,
     ),
     #dsamuon-genAs_toMu
     "dsamuon_absd0_genAs_toMu_lxy": h.Histogram(

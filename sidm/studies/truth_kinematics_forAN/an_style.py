@@ -21,7 +21,17 @@ def set_style():
 
 
 def cms_sim_label(ax, com=13):
-    """CMS Simulation label + sqrt(s); data=False everywhere at truth level."""
+    """CMS Simulation label + sqrt(s); data=False everywhere at truth level.
+
+    The canvas is drawn first so constrained-layout geometry is final before
+    mplhep computes the label offsets -- otherwise multi-panel figures with
+    colorbars render the label pieces overlapping."""
+    fig = ax.figure
+    fig.canvas.draw()
+    if fig.get_layout_engine() is not None:
+        # freeze the settled geometry: placing a label on a later panel must
+        # not reflow the layout and shift labels already placed on earlier ones
+        fig.set_layout_engine("none")
     hep.cms.label(ax=ax, data=False, com=com)
 
 
