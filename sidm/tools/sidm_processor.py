@@ -13,6 +13,7 @@ import vector
 #local
 from sidm import BASE_DIR
 from sidm.tools import selection, cutflow, utilities
+from sidm.tools.lj_vertex_chi2 import lj_best_vertex_chi2
 from sidm.definitions.hists import hist_defs, counter_defs
 from sidm.definitions.objects import preLj_objs, postLj_objs, postLj_objs_MC
 import coffea.nanoevents.transforms as tr
@@ -513,6 +514,23 @@ class SidmProcessor(processor.ProcessorABC):
         ljs["lepton_fraction"] =  ljs["matched_jet"].chEmEF + ljs["matched_jet"].neEmEF + ljs["matched_jet"].muEF
         ljs["isolation"] = ak.fill_none((ljs["matched_jet"].energy / ljs.energy) * (1 - (ljs["lepton_fraction"])), 0)
         ljs["dR_matched_jet"] = ljs.delta_r(ljs["matched_jet"])
+
+        # best within-LJ dimuon-vertex fit quality. -1 = no stored vertex whose
+        # both legs are constituents of this LJ; -1 FAILS the keep-cuts by
+        # design, the opposite convention to the *Spread_* variables, which
+        # fill 0 (= passes) when a muon category is absent. The vertex tables
+        # only exist in LLPNanoAOD inputs; on inputs without them the objs
+        # entries are skipped upstream and vtx_chi2 is NaN, in which case every
+        # vtx_chi2 cut (keep and inverse alike) selects nothing.
+        # See sidm/tools/lj_vertex_chi2.py for the full semantics.
+        vtx_tables = [(objs[name], kind) for name, kind in
+                      [("dsaMuonVertex", "dsa"), ("patMuonVertex", "pat"),
+                       ("patDsaMuonVertex", "mix")] if name in objs]
+        if vtx_tables:
+            ljs["vtx_chi2"] = lj_best_vertex_chi2(
+                ljs.pfMuons.idx, ljs.dsaMuons.idx, vtx_tables)
+        else:
+            ljs["vtx_chi2"] = ak.full_like(ljs.pt, np.nan)
 
         # todo: add LJ displacement
 

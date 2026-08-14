@@ -1943,6 +1943,26 @@ cosmic_muons: &cosmic_muons
     - "= 1 muLj or 1 egmLJ"
     - "any cosAlpha(mu, mu) <= -0.99"
 
+# Exact complement of the "0 <= vtx_chi2 < 5" keep-cut used by data_control_region_1Lj_vtxChi2_5.
+# Note that cosmic_muons ("inverse_spread") is NOT the exact complement of the dsa-spread CR cuts,
+# so compare the two regions with that in mind.
+cosmic_muons_vtxChi2_5: &cosmic_muons_vtxChi2_5
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+      - "lj_iso < 0.2"
+    mu_ljs:
+      - "Mu >= 2"
+      - "no vtx or vtx_chi2 >= 5"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - "= 1 muLj or 1 egmLJ"
+    - "any cosAlpha(mu, mu) <= -0.99"
+
 cr_1egmOr1mu_lj_spreadMu_spreadPfMu_CosMu: &cr_1egmOr1mu_lj_spreadMu_spreadPfMu_CosMu
   obj_cuts:
     <<: *obj_ljsource_cuts
@@ -2097,6 +2117,24 @@ data_control_region_1Lj_dzSpreadDSA_vxySpreadDSA: &data_control_region_1Lj_dzSpr
       - "Mu >= 2"
       - "dzSpread_dsa <= 50"
       - "vxySpread_dsa <= 50"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    -  "= 1 muLj or 1 egmLJ"
+
+# Vertex-fit analogue of the spread control region above: "0 <= vtx_chi2 < 5" also rejects LJs with
+# no stored vertex (vtx_chi2 = -1), unlike the Spread cuts, which pass when a muon category is
+# absent. Thresholds 2 and 10 are also defined in cuts.py; scan mu_lj_vtx_chi2 to choose.
+data_control_region_1Lj_vtxChi2_5: &data_control_region_1Lj_vtxChi2_5
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+      - "0 <= vtx_chi2 < 5"
   evt_cuts:
     - *evt_baseNoLj
     - "pass flags"

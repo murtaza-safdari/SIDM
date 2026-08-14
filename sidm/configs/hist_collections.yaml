@@ -145,6 +145,7 @@ mu_lj_base: &mu_lj_base
   - "mu_lj_pfMuon_dxy"
   - "mu_lj_dsaMuon_dxy"
   - "mu_lj_dsaMuon_dz"
+  - "mu_lj_vtx_chi2"
   - "mu_lj_e"
   - "pfmu_lj_e"
   - "dsamu_lj_e"
@@ -1040,6 +1041,7 @@ cosmic_muons: &cosmic_muons
   - *mu_ljSpread_dsa
   - *mu_ljSpread_pf
   - *mu_ljSpread_mu
+  - "mu_lj_vtx_chi2"
   - *number
   - *dsaPair_1D
   - *dsaPair_2D

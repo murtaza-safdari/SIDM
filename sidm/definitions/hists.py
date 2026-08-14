@@ -4555,6 +4555,7 @@ hist_defs = {
     "mu_lj_vyzSpread_mu": obj_attr("mu_ljs", "vyzSpread_mu", xmax=500, nbins=500),
     "mu_lj_vzxSpread_mu": obj_attr("mu_ljs", "vzxSpread_mu", xmax=500, nbins=500),
     "mu_lj_v3dSpread_mu": obj_attr("mu_ljs", "v3dSpread_mu", xmax=500, nbins=500),
+    "mu_lj_vtx_chi2": obj_attr("mu_ljs", "vtx_chi2", nbins=52, xmin=-2, xmax=50),  # xmin=-2 keeps the -1 no-vertex sentinel in its own unit-width bin
     "dsaMu_pfMu_dR_closest": h.Histogram(
         [
             h.Axis(hist.axis.Regular(200, 0, 1, name="dsaMu_pfMu_dR_closest"),

@@ -336,6 +336,16 @@ I suggest the following workflow for performing a physics study:
 
 One runtime guard to know: `plot_MC_sig_vs_bkg_panels` warns *"background '<name>' has integer variances (looks unweighted) ... check that it is lumi*xsec-weighted"* when a background's per-bin variances are integers -- the hist looks like raw counts rather than lumi*xsec-weighted MC. If you meant to show normalized MC, confirm the weights were applied. It is a guard, not an error; the plot still renders.
 
+### Cosmic veto via dimuon vertex fit
+
+`mu_ljs.vtx_chi2` is the best (smallest) `normChi2` of any stored dimuon vertex built from two of the LJ's own muons, taken from the LLPNanoAOD `DSAMuonVertex`, `PatMuonVertex` and `PatDSAMuonVertex` tables. The matching lives in [lj_vertex_chi2.py](sidm/tools/lj_vertex_chi2.py) and `sidm_processor` fills the field for every LJ, so there is nothing to switch on.
+
+A value of -1 means no such vertex was stored, and it *fails* the keep-cuts by design: the producer only writes pairs whose fit converged, so an LJ whose muons never form a vertex is the signature of a fake or cosmic pairing. The variable is only defined for LJs with at least two muons, so pair any cut or plot with `Mu >= 2`.
+
+The cuts in `cuts.py` are `0 <= vtx_chi2 < 2`, `0 <= vtx_chi2 < 5`, `0 <= vtx_chi2 < 10`, and the exact complement of the middle one, `no vtx or vtx_chi2 >= 5`. Two selections use them: `data_control_region_1Lj_vtxChi2_5` (the control region) and `cosmic_muons_vtxChi2_5` (its complement, cosmic-enriched). The distribution is the `mu_lj_vtx_chi2` histogram, carried by the `mu_lj_base` and `cosmic_muons` collections, with the -1 entries in their own bin at the left edge.
+
+If a channel using one of these cuts comes back exactly empty, the input files carry no vertex tables: `vtx_chi2` is then NaN and every vtx_chi2 cut selects nothing, so check the worker logs for `dsaMuonVertex not found`. The samples in `sidm/configs/ntuples/` (`signal_2mu2e_v10.yaml`, `signal_4mu_v10.yaml`, `data_skimmed.yaml`, `backgrounds.yaml`) all carry them.
+
 ## Miscellaneous how-tos
 
 ### How to update requirements.txt

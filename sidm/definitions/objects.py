@@ -70,6 +70,11 @@ preLj_objs["rho_PFIso"]  = lambda evts: evts.fixedGridRhoFastjetAll
 preLj_objs["jets"]       = lambda evts: evts.Jet
 preLj_objs["flags"]       = lambda evts: evts.Flag
 preLj_objs["bjets"] = lambda evts: evts.Jet[evts.Jet.btagDeepFlavB >=  0.7100]
+# dimuon-vertex tables (vxy copied into a dxy field so the processor's
+# automatic dxy post-processing is a no-op on them)
+preLj_objs["dsaMuonVertex"]    = lambda evts: ak.with_field(evts.DSAMuonVertex, evts.DSAMuonVertex.vxy, "dxy")
+preLj_objs["patMuonVertex"]    = lambda evts: ak.with_field(evts.PatMuonVertex, evts.PatMuonVertex.vxy, "dxy")
+preLj_objs["patDsaMuonVertex"] = lambda evts: ak.with_field(evts.PatDSAMuonVertex, evts.PatDSAMuonVertex.vxy, "dxy")
 # define objects whose that will be added to objs by the sidm_processor after LJs are clustered
 # and LJ cuts are applied. postLj_obj cuts can be applied to these
 postLj_objs = {}
