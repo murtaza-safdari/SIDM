@@ -75,8 +75,9 @@ $R$-$z$ view therefore shows anything from a clean up-down mirror to a
 narrow "V" opening toward one side, all with exact transverse balance.
 
 The first four samples step through roughly a decade of displacement each
-while also scanning the collimation; the last two illustrate specific
-features of the signature rather than a displacement scale:
+while also scanning the collimation; the remaining displays illustrate
+specific features of the signature, with both channels represented across
+the feature set:
 
 | sample | $\langle l_{xy}\rangle$ scale | what it illustrates |
 |---|---|---|
@@ -88,6 +89,9 @@ features of the signature rather than a displacement scale:
 | `4Mu_200GeV_1p2GeV_48p0mm` | ~4 m | beyond-tracker decays: the displaced-standalone-muon regime |
 | `4Mu_200GeV_1p2GeV_48p0mm` (target 350 cm) | -- | just upstream of the muon system: no tracker or calorimeter handle, full DSA lever arm |
 | `4Mu_500GeV_0p25GeV_4p0mm` (target 550 cm) | -- | inside the muon system: an extreme-collimation pair appearing between stations |
+| `2Mu2E_200GeV_1p2GeV_0p48mm` | ~4 cm | the sweet spot in the electron channel: a displaced electron jet inside the pixels |
+| `2Mu2E_100GeV_0p25GeV_0p2mm` | ~4 cm | the hardest trigger corner of the electron channel: one soft tight muon pair carries the trigger |
+| `2Mu2E_200GeV_1p2GeV_48p0mm` (target 250 cm) | -- | a late decay past the calorimeters: an electron pair born there is lost entirely |
 """
 
 SETUP = r"""
@@ -515,6 +519,28 @@ SAMPLES = [
      "arm degrades the standalone momentum measurement and the two muons "
      "share chambers -- the far edge of reconstructability in displacement "
      "and collimation at once.", 550.0),
+    ("2Mu2E_200GeV_1p2GeV_0p48mm", "signal_2mu2e_v10.yaml",
+     "display_2mu2e_200_1p2",
+     "**The sweet spot in the electron channel.** The same mass and lifetime "
+     "point as the 4Mu sweet-spot display: here one cone is a displaced "
+     "*electron* jet, produced centimeters from the beamline inside the "
+     "pixel detector -- the regime where displaced-electron reconstruction "
+     "and the photon-like lepton-jet constituents matter."),
+    ("2Mu2E_100GeV_0p25GeV_0p2mm", "signal_2mu2e_v10.yaml",
+     "display_2mu2e_100_0p25",
+     "**The hardest trigger corner of the electron channel.** The lightest "
+     "bound state with the lightest mediator in 2Mu2E: the single soft, "
+     "tightly collimated muon pair must fire the dimuon trigger alone (the "
+     "electron pair cannot), which is where the 2Mu2E efficiency maps of "
+     "`trigger_context_forAN.ipynb` reach their minimum."),
+    ("2Mu2E_200GeV_1p2GeV_48p0mm", "signal_2mu2e_v10.yaml",
+     "display_2mu2e_200_1p2_late",
+     "**A late decay past the calorimeters** (event chosen at "
+     "$l_{xy} \\approx 250$ cm). Muons decaying this late still appear in "
+     "the muon system as displaced-standalone tracks, but an electron pair "
+     "born beyond the ECAL leaves no usable signal at all -- the acceptance "
+     "cost unique to this channel, and the reason its efficiency falls "
+     "faster with lifetime than 4Mu's.", 250.0),
 ]
 
 OUTRO = (
