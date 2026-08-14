@@ -59,7 +59,18 @@ Each figure has two panels:
 **Event choice rule:** among the first file's events in which every signal
 lepton has $|\eta| < 2.4$, take the event whose larger dark-photon $l_{xy}$
 is closest to the sample median of that quantity -- a typical event, not a
-tail event.
+tail event. The two muon-system displays instead target a stated $l_{xy}$
+(350 and 550 cm): the region they illustrate lies in the lifetime tail,
+above any sample's median, and the rule stays deterministic.
+
+**Reading the longitudinal view:** back-to-back is a transverse-plane
+statement. $|\Delta\phi(Z_d, Z_d)| \approx \pi$ in every event (quoted on
+each panel), but $\Delta\eta$ is not protected -- the colliding partons
+carry unequal momentum fractions, so the pair recoils with a longitudinal
+boost and both dark photons often fly toward the same end of the detector
+(the wide long-lived corner below has $|\Delta\eta| = 0.03$). The signed
+$R$-$z$ view therefore shows anything from a clean up-down mirror to a
+narrow "V" opening toward one side, all with exact transverse balance.
 
 The first four samples step through roughly a decade of displacement each
 while also scanning the collimation; the last two illustrate specific
@@ -73,6 +84,8 @@ features of the signature rather than a displacement scale:
 | `2Mu2E_100GeV_5p0GeV_200mm` | ~1 m | wide pairs near the cone size, decays reaching beyond the tracker in the tail |
 | `4Mu_100GeV_0p25GeV_0p2mm` | ~4 cm | the trigger-marginal corner: ~25 GeV muons straddling the dimuon thresholds |
 | `4Mu_200GeV_1p2GeV_48p0mm` | ~4 m | beyond-tracker decays: the displaced-standalone-muon regime |
+| `4Mu_200GeV_1p2GeV_48p0mm` (target 350 cm) | -- | just upstream of the muon system: no tracker or calorimeter handle, full DSA lever arm |
+| `4Mu_500GeV_0p25GeV_4p0mm` (target 550 cm) | -- | inside the muon system: an extreme-collimation pair appearing between stations |
 """
 
 SETUP = r"""
@@ -149,9 +162,10 @@ def load_dark_photons(sample, location_cfg):
         out[flav] = col[ak.num(col.children, axis=2) >= 2]
     return out
 
-def pick_event(As):
+def pick_event(As, target_lxy=None):
     '''Deterministic representative event: all daughters |eta| < 2.4, larger
-    dark-photon lxy closest to the sample median of that quantity.'''
+    dark-photon lxy closest to the sample median of that quantity -- or to
+    an explicit target_lxy for displays that illustrate the lifetime tail.'''
     ok = None
     lxy_parts = []
     for col in As.values():
@@ -164,8 +178,8 @@ def pick_event(As):
     ok = ok.to_numpy()
     if not ok.any():
         ok = np.ones_like(ok, dtype=bool)
-    med = np.median(max_lxy[ok])
-    return int(np.argmin(np.where(ok, abs(max_lxy - med), np.inf))), float(med)
+    goal = np.median(max_lxy[ok]) if target_lxy is None else target_lxy
+    return int(np.argmin(np.where(ok, abs(max_lxy - goal), np.inf))), float(goal)
 
 def event_record(As, idx):
     '''Plain-number record of one event: per dark photon, its kinematics,
@@ -328,9 +342,9 @@ def draw_rz(ax, rec, label):
     ax.set_ylim(-top, top)
     stamp(ax, label, avoid, corners=[(0.97, 0.97), (0.03, 0.97)])
 
-def display(sample, location_cfg, fname_tag):
+def display(sample, location_cfg, fname_tag, target_lxy=None):
     As = load_dark_photons(sample, location_cfg)
-    idx, med = pick_event(As)
+    idx, goal = pick_event(As, target_lxy=target_lxy)
     rec = event_record(As, idx)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE,
                                    layout="constrained")
@@ -340,7 +354,9 @@ def display(sample, location_cfg, fname_tag):
     for ax in (ax1, ax2):
         an_style.cms_sim_label(ax)
     an_style.save(fig, fname_tag)
-    print(f"{sample}: event index {idx} (sample median max-lxy = {med:.3g} cm)")
+    how = ("sample median max-lxy" if target_lxy is None
+           else "chosen closest to target lxy")
+    print(f"{sample}: event index {idx} ({how} = {goal:.3g} cm)")
     for a in rec:
         ds = ", ".join(f"{d['pt']:.1f}" for d in a["daughters"])
         print(f"  Zd->{a['flavor']}{a['flavor']}: pT = {a['pt']:.0f} GeV, "
@@ -389,6 +405,23 @@ SAMPLES = [
      "displaced-standalone (DSA) muons reconstructed in the muon system -- "
      "the regime that motivates including DSA muons as lepton-jet "
      "constituents."),
+    ("4Mu_200GeV_1p2GeV_48p0mm", "signal_4mu_v10.yaml",
+     "display_4mu_200_1p2_premuon",
+     "**Just upstream of the muon system** (same mass point, event chosen at "
+     "$l_{xy} \\approx 350$ cm). The decay happens past the calorimeters and "
+     "the solenoid, just inside the first muon station at $r \\approx 400$ "
+     "cm: nothing upstream records these muons -- no tracker hits, no "
+     "calorimeter deposits -- but the full muon-system lever arm remains. "
+     "This is the cleanest displaced-standalone reconstruction case.", 350.0),
+    ("4Mu_500GeV_0p25GeV_4p0mm", "signal_4mu_v10.yaml",
+     "display_4mu_500_0p25_muonsys",
+     "**Inside the muon system** (the extreme-collimation point at "
+     "$\\beta\\gamma \\sim 10^3$, event chosen at $l_{xy} \\approx 550$ cm). "
+     "A $\\Delta R \\sim 10^{-3}$ muon pair materializes between the muon "
+     "stations, leaving hits only in the outer chambers: the shortened lever "
+     "arm degrades the standalone momentum measurement and the two muons "
+     "share chambers -- the far edge of reconstructability in displacement "
+     "and collimation at once.", 550.0),
 ]
 
 OUTRO = (
@@ -403,9 +436,14 @@ OUTRO = (
     "`final_state_anatomy_forAN.ipynb`.")
 
 cells = [md(INTRO), code(SETUP), code(DRAW)]
-for sample, cfg, tag, blurb in SAMPLES:
+for entry in SAMPLES:
+    sample, cfg, tag, blurb = entry[:4]
+    target = entry[4] if len(entry) > 4 else None
     cells.append(md(blurb))
-    cells.append(code(f'rec = display("{sample}", "{cfg}", "{tag}")'))
+    call = f'rec = display("{sample}", "{cfg}", "{tag}"'
+    if target is not None:
+        call += f", target_lxy={target:g}"
+    cells.append(code(call + ")"))
 cells.append(md(OUTRO))
 
 nb = {
