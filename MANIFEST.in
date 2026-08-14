@@ -1,2 +1,3 @@
 include sidm/configs/*yaml
 include sidm/configs/ntuples/*yaml
+include sidm/data/*txt
