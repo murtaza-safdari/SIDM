@@ -125,6 +125,7 @@ class SidmProcessor(processor.ProcessorABC):
         year = events.metadata["year"]
 
         # apply golden json
+        n_removed = 0
         if is_data:
             run_periods_cfg = utilities.load_yaml(f"{BASE_DIR}/{self.run_periods_cfg}")
             golden_mask = lumi_tools.LumiMask(f"{BASE_DIR}/data/{run_periods_cfg[year]['golden_json']}")
@@ -273,6 +274,7 @@ class SidmProcessor(processor.ProcessorABC):
                 "year": processor.set_accumulator([year]),
                 "is_data": processor.set_accumulator([is_data]),
                 "unweighted_hist": processor.set_accumulator([self.unweighted_hist]),
+                "n_removed_golden_json": n_removed,
             },
         }
 
