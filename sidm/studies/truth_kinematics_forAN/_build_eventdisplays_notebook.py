@@ -139,6 +139,7 @@ def stamp(ax, text, avoid_xy, corners):
             ha="right" if best[0] > 0.5 else "left",
             va="top" if best[1] > 0.5 else "bottom",
             fontsize=13, bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
+    return best
 
 def first_file(sample, location_cfg):
     '''Resolve the first ntuple file of a sample from the location YAML.'''
@@ -255,7 +256,7 @@ def draw_etaphi(ax, rec, label):
     if "e" in flavors:
         handles.append(Line2D([], [], ls="none", marker="s",
                               color=FLAV_STYLE["e"]["color"], label=r"$e$"))
-    ax.legend(handles=handles, loc="upper left", fontsize=12)
+    ax.legend(handles=handles, loc="upper left", fontsize=13)
     ax.set_xlabel(r"$\eta$")
     ax.set_ylabel(r"$\phi$")
     ax.set_xlim(-3.4, 3.4)
@@ -351,7 +352,19 @@ def draw_rz(ax, rec, label):
     ax.set_ylabel(r"signed $R$ [cm]   (sign of $\phi$)")
     ax.set_xlim(-zmax, zmax)
     ax.set_ylim(-top, top)
-    stamp(ax, label, avoid, corners=[(0.97, 0.97), (0.03, 0.97)])
+    best = stamp(ax, label, avoid, corners=[(0.97, 0.97), (0.03, 0.97)])
+    # the dashed line means something different here than on the left panel,
+    # so this panel carries its own legend, in the top corner the stamp left free
+    handles = [
+        Line2D([], [], ls="none", marker="o", color="black",
+               label="production vertex"),
+        Line2D([], [], ls="--", color="gray", label=r"$Z_d$ flight path"),
+        Line2D([], [], ls="none", marker="*", ms=12, color="gray", mec="black",
+               label=r"$Z_d$ decay vertex"),
+        Line2D([], [], color="gray", lw=2, label="daughter leptons"),
+    ]
+    ax.legend(handles=handles, fontsize=13,
+              loc="upper left" if best[0] > 0.5 else "upper right")
 
 def display(sample, location_cfg, fname_tag, target_lxy=None):
     As = load_dark_photons(sample, location_cfg)
