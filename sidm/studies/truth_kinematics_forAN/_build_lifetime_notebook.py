@@ -79,19 +79,41 @@ md("""## Every fit, batched by mass point
 One panel per mass point with the cτ scan overlaid; the curve is the
 acceptance-corrected fit `exp(−x/cτ)·Fβγ(R_max/x)` with its ±1σ band. The fit follows
 the data through the turn-over where the lab cap bites.
+
+One figure per (channel, m(A)) column of the grid — six panels, the m(Φ) scan — so
+each figure fits a single analysis-note page, with the in-panel text sized to stay
+legible once the figure is scaled to the page width.
 """),
-code("""fig = la.plot_fit_grid(output, groups, "4Mu", kind="acceptance", channel=CH)
+code("""MZD_ORDER = ["0p25GeV", "1p2GeV", "5p0GeV"]
+
+def fit_grid_pages(ch):
+    for mzd in MZD_ORDER:
+        keys = sorted([k for k in groups if k[0] == ch and k[2] == mzd],
+                      key=lambda k: la.mass_gev(k[1]))
+        fig = la.plot_fit_grid(output, groups, ch, kind="acceptance", channel=CH,
+                               ncols=2, keys=keys, legend_fontsize=16,
+                               legend_title_fontsize=17, cms_fontsize=20,
+                               tag_fontsize=18, two_line_tag=True)
+        an_style.save(fig, f"lifetime_fits_{ch}_{mzd}")
+        plt.show()
+
+fit_grid_pages("4Mu")
 """),
-code("""fig = la.plot_fit_grid(output, groups, "2Mu2E", kind="acceptance", channel=CH)
+code("""fit_grid_pages("2Mu2E")
 """),
 md("""## Recovery across the full grid
 
 The histogram mean (×) falls below 1 once the lab cap truncates the tail; the
 acceptance-corrected fit (●, ±1σ) folds the cap back in. The correction recovers a
 median `measured / nominal` of 1.002 over the full grid, with 119/180 samples within
-±5% of nominal; in the most-truncated samples the residuals are one-sided (the fit
-returns up to +10–30% above nominal), the systematic of approximating the filter's
-`ρ/z` cylinder by a single radius. This is the analysis-note body figure.
+±5% of nominal. The residual is a function of truncation depth alone: the 108 samples
+the cap leaves untouched (histogram mean within 5% of nominal) close to better than
+0.5%; the 36 mildly-truncated samples sit at a median of +5%; and the 36 points beyond
++10% (up to +30%) are exactly the longest-cτ sample of each of the 36 mass points,
+where the cap removes a third of the decays. All of those are high, none low, with fit
+pulls of +6 to +20 — a one-sided model systematic (the single-radius approximation to
+the filter's `ρ/z` cylinder), not statistics and not a property of the samples. This
+is the analysis-note body figure.
 """),
 code("""fig, ax = plt.subplots(figsize=(13, 8))
 colors = {"4Mu": "#1f77b4", "2Mu2E": "#d62728"}
@@ -110,7 +132,7 @@ ax.set_xscale("log")
 ax.set_ylim(0, 1.8)
 ax.set_xlabel(r"Nominal $c\\tau$  [cm]")
 ax.set_ylabel(r"Measured / nominal $c\\tau$")
-ax.legend(fontsize=13, loc="lower left", framealpha=0.9)
+ax.legend(fontsize=16, loc="lower left", framealpha=0.9)
 ax.minorticks_on()
 hep.cms.label(ax=ax, data=False)
 an_style.save(fig, "lifetime_grid_summary")
@@ -119,13 +141,20 @@ corr = [r["acceptance"] / r["nominal"] for r in rows.values()
         if np.isfinite(r["acceptance"])]
 print(f"acceptance-corrected, full grid: median measured/nominal "
       f"= {np.median(corr):.3f} (N={len(corr)})")
-faith = [r["mean"] / r["nominal"] for r in rows.values() if r["nominal"] <= 1.0]
-print(f"faithful regime (ctau <= 1 cm): median mean/nominal = {np.median(faith):.4f} "
-      f"(N={len(faith)})")
+sel = [r for r in rows.values()
+       if np.isfinite(r["acceptance"]) and r["mean"] / r["nominal"] >= 0.95]
+print(f"untruncated tier (mean/nominal >= 0.95): N={len(sel)}")
+print(f"  histogram mean / nominal: median = "
+      f"{np.median([r['mean'] / r['nominal'] for r in sel]):.4f}")
+acc = [r["acceptance"] / r["nominal"] for r in sel]
+print(f"  corrected fit / nominal:  median = {np.median(acc):.4f}, "
+      f"max deviation = {max(abs(x - 1) for x in acc):.1%}")
 """),
 md("""### The corrected values on their own
 
 The acceptance-corrected `measured / nominal cτ` on a zoomed scale; the band is ±5%.
+The printout underneath quantifies the deviation tiers described above and verifies
+that every point beyond +10% is the longest-cτ sample of its mass point.
 """),
 code("""fig, ax = plt.subplots(figsize=(13, 8))
 colors = {"4Mu": "#1f77b4", "2Mu2E": "#d62728"}
@@ -149,7 +178,7 @@ if n_out:
             transform=ax.transAxes, fontsize=11)
 ax.set_xlabel(r"Nominal $c\\tau$  [cm]")
 ax.set_ylabel(r"Acceptance-corrected / nominal $c\\tau$")
-ax.legend(fontsize=13, loc="lower left", framealpha=0.9)
+ax.legend(fontsize=16, loc="lower left", framealpha=0.9)
 ax.minorticks_on()
 hep.cms.label(ax=ax, data=False)
 an_style.save(fig, "lifetime_corrected_zoom")
@@ -157,6 +186,20 @@ an_style.save(fig, "lifetime_corrected_zoom")
 within5 = [abs(r["acceptance"] / r["nominal"] - 1) <= 0.05 for r in rows.values()
            if np.isfinite(r["acceptance"])]
 print(f"acceptance-corrected within +/-5% of nominal: {sum(within5)}/{len(within5)} samples")
+
+tiers = [(0.95, np.inf, "untruncated (mean/nom >= 0.95)"),
+         (0.80, 0.95, "mildly truncated [0.80, 0.95)"),
+         (0.00, 0.80, "heavily truncated (< 0.80)")]
+for lo, hi, tag in tiers:
+    dd = [r["acceptance"] / r["nominal"] - 1 for r in rows.values()
+          if np.isfinite(r["acceptance"]) and lo <= r["mean"] / r["nominal"] < hi]
+    print(f"{tag:33s} N={len(dd):3d}  median dev = {np.median(dd):+.1%}  "
+          f"max dev = {max(dd, key=abs):+.1%}")
+over10 = {s for s, r in rows.items()
+          if np.isfinite(r["acceptance"]) and r["acceptance"] / r["nominal"] > 1.10}
+longest = {max(ss, key=la.ctau_cm) for ss in groups.values()}
+print(f"beyond +10%: {len(over10)} samples, all high, none low; identical to the "
+      f"longest-ctau sample of each of the {len(longest)} mass points: {over10 == longest}")
 """),
 md("""## Is the truncation really a single, sharp, lab-frame cap?
 
@@ -182,7 +225,7 @@ axL.set_xscale("log")
 axL.set_ylim(0, 2 * med)
 axL.set_xlabel(r"Nominal $c\\tau$  [cm]")
 axL.set_ylabel(r"Fitted lab decay-length cap  $R_\\mathrm{max}$  [cm]")
-axL.legend(fontsize=14)
+axL.legend(fontsize=22)
 axL.minorticks_on()
 hep.cms.label(ax=axL, data=False)
 
@@ -205,12 +248,12 @@ p16, p84 = np.percentile(prod, [16, 84])
 axR.scatter(onset[:, 0], onset[:, 1], s=55, color="#d62728", alpha=0.6)
 bgg = np.geomspace(onset[:, 0].min(), onset[:, 0].max(), 50)
 axR.plot(bgg, C / bgg, "k--", lw=1.5,
-         label=rf"median guide  $C/\\langle\\beta\\gamma\\rangle$,  $C$ = {C:.0f} cm = {C/med:.2f} $R_\\mathrm{{max}}$")
+         label=rf"$C/\\langle\\beta\\gamma\\rangle$,  $C$ = {C:.0f} cm = {C/med:.2f} $R_\\mathrm{{max}}$")
 axR.set_xscale("log")
 axR.set_yscale("log")
 axR.set_xlabel(r"$\\langle\\beta\\gamma\\rangle$")
 axR.set_ylabel(r"Truncation onset $c\\tau$  [cm]")
-axR.legend(fontsize=14)
+axR.legend(fontsize=22, loc="upper right")
 axR.minorticks_on()
 hep.cms.label(ax=axR, data=False)
 an_style.save(fig, "lifetime_rmax_validation")
@@ -222,16 +265,31 @@ print(f"onset lab length C = onset*<bg> = {C:.0f} cm (16-84%: {p16:.0f}-{p84:.0f
 md("""## Result
 
 A single lab decay-length cap, consistent across all mass points and both channels,
-describes the truncation well. In the faithful regime (cτ ≤ 1 cm), where no correction
-is needed, the samples deliver the nominal proper lifetime at the per-mille level
-(median measured/nominal = 0.9999, N = 130). Folding the cap back in as the acceptance
-`ε(x) = Fβγ(R_max/x)` extends the recovery to the truncated regime with a median of
-1.002 and 119/180 samples within ±5%; the residuals there are one-sided (up to +10–30%
-for the most-truncated samples), reflecting the single-radius approximation to the
-filter's `ρ < 740 cm` / `|z| < 960 cm` cylinder. Statistics are ~50× the original
-`max_files=1` pass (0.994 faithful median, 120/178 within ±5%, R_max ≈ 825 cm from 36
-samples); the coverage metric is comparable, the faithful-regime closure is much
-sharper, and the lab-frame-scaling test now includes every mass point.
+describes the truncation well. Wherever the cap leaves the distribution intact —
+histogram mean within 5% of nominal, 108 of 180 samples — the samples deliver the
+nominal proper lifetime at the per-mille level, for the histogram mean and the
+corrected fit alike. (Note the tier is defined by truncation depth, not by cτ: about
+a dozen sub-centimeter-cτ samples at the highest boosts are heavily truncated too.)
+Folding the cap back in as the acceptance `ε(x) = Fβγ(R_max/x)` extends the recovery
+to the truncated regime with a full-grid median of 1.002 and 119/180 samples within
+±5%.
+
+The residuals beyond that are one-sided and structured: +5% (median) where the cap is
+mild, +14–30% on the single most-truncated (longest-cτ) sample of each mass point,
+with fit pulls of +6 to +20. That is the signature of a model systematic, not of
+mis-generated samples — the generator applies one decay routine with cτ as a scale
+parameter, and the same mass points close at the per-mille level wherever the cap
+does not bite. The systematic is the single sharp radius standing in for the filter's
+`ρ < 740 cm` / `|z| < 960 cm` cylinder: the true path-length cap runs from 740 cm
+(central) to ~1210 cm (through the corner of the cylinder) depending on polar angle,
+so the real turnover is smeared, and a sharp-`R_max` fit accounts for the unmodeled
+far tail by lengthening cτ. Nothing downstream consumes the fitted cτ — this notebook
+is a closure test of the sample production, the analysis uses the samples as
+generated, and the decays the cap removes lie beyond the muon system in any case.
+
+Statistics are ~50× the original `max_files=1` pass (0.994 faithful median, 120/178
+within ±5%, R_max ≈ 825 cm from 36 samples); the coverage metric is comparable, the
+closure is much sharper, and the lab-frame-scaling test now includes every mass point.
 
 The same cap independently explains why the central production's gen-filter vertex cut
 cannot be emulated on these samples: decays beyond `R_max` are absent by construction,
