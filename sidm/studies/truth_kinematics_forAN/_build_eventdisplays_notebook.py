@@ -37,25 +37,33 @@ Each figure has two panels:
   marker area grows with $p_T$). This panel shows the collimation -- both
   daughters of a dark photon sit inside one clustering cone -- and the
   back-to-back topology, $\Delta\phi(Z_d, Z_d) \approx \pi$.
-- **Right ($R$-$z$):** the same event in the longitudinal view. Each dark
-  photon flies from its production vertex (the bound-state decay point,
-  black dot -- drawn at its true $z$, which the beamspot spreads by
-  centimeters) to its decay vertex (star); the dashed segment spans a
-  transverse displacement $l_{xy}$, computed decay-minus-production, and
-  the daughter leptons emerge as straight rays from the decay vertex. Gray
-  lines mark the tracker outer radius ($r = 110$ cm, $|z| = 280$ cm) and
-  the start of the muon system where the axis range reaches them. Rays are
-  drawn without magnetic-field curvature: at the lepton $p_T$ shown here
-  the bending radius is several to tens of meters, far larger than the
-  tracker.
+- **Right (signed $R$-$z$):** the same event in the longitudinal view,
+  with the two halves of the detector unfolded: objects at $\phi > 0$ are
+  drawn at positive $R$ and objects at $\phi < 0$ at negative $R$ (the
+  hemisphere is assigned by the parent dark photon's $\phi$), so the
+  back-to-back topology shows in this view as well, and the
+  $|\Delta\phi|$/$|\Delta\eta|$ between the two dark photons is quoted on
+  the panel. Each dark photon flies from its production vertex (the
+  bound-state decay point, black dot -- drawn at its true $z$, which the
+  beamspot spreads by centimeters) to its decay vertex (star, annotated
+  with the decay flavor, $p_T$, and $l_{xy}$ computed
+  decay-minus-production); the daughter leptons emerge as straight rays
+  from the decay vertex. Gray bands mark the schematic barrel radial
+  extents of the pixel detector (3-16 cm), the outer tracker (20-110 cm),
+  the ECAL (129-177 cm), and the muon system (400-740 cm), drawn only
+  where the axis range reaches them (HCAL and solenoid omitted for
+  clarity); the dotted line is the beam pipe. Rays are drawn without
+  magnetic-field curvature: at the lepton $p_T$ shown here the bending
+  radius is several to tens of meters, far larger than the tracker.
 
 **Event choice rule:** among the first file's events in which every signal
 lepton has $|\eta| < 2.4$, take the event whose larger dark-photon $l_{xy}$
 is closest to the sample median of that quantity -- a typical event, not a
 tail event.
 
-The four samples step through one decade of displacement each while also
-scanning the collimation:
+The first four samples step through roughly a decade of displacement each
+while also scanning the collimation; the last two illustrate specific
+features of the signature rather than a displacement scale:
 
 | sample | $\langle l_{xy}\rangle$ scale | what it illustrates |
 |---|---|---|
@@ -63,6 +71,8 @@ scanning the collimation:
 | `4Mu_200GeV_1p2GeV_0p48mm` | ~4 cm | the sweet spot: collimated pairs, vertices beyond the beampipe, inside the pixels |
 | `4Mu_1000GeV_0p25GeV_0p2mm` | ~20 cm | extreme collimation, $\Delta R \sim 10^{-3}$, mid-tracker vertices |
 | `2Mu2E_100GeV_5p0GeV_200mm` | ~1 m | wide pairs near the cone size, decays reaching beyond the tracker in the tail |
+| `4Mu_100GeV_0p25GeV_0p2mm` | ~4 cm | the trigger-marginal corner: ~25 GeV muons straddling the dimuon thresholds |
+| `4Mu_200GeV_1p2GeV_48p0mm` | ~4 m | beyond-tracker decays: the displaced-standalone-muon regime |
 """
 
 SETUP = r"""
@@ -89,6 +99,31 @@ an_style.set_style()
 
 def dphi(a, b):
     return np.mod(a - b + np.pi, 2 * np.pi) - np.pi
+
+def format_sample_2line(name):
+    p = lib.parse_sample(name)
+    return (rf"{p['mode']}, $m_{{B_s}}$ = {p['mbs']:g} GeV" "\n"
+            rf"$m_{{Z_d}}$ = {p['mzd']:g} GeV, $c\tau$ = {p['ctau_mm']:g} mm")
+
+def stamp(ax, text, avoid_xy, corners):
+    '''Place the sample stamp in the least-occupied of the candidate corners.
+
+    avoid_xy: data-coordinate points the stamp must keep clear of;
+    corners: candidate (x, y) positions in axes fraction, in preference order.
+    The first corner with Chebyshev clearance > 0.22 (axes fraction) from all
+    avoid points wins; otherwise the corner with the largest clearance.'''
+    pts = [ax.transLimits.transform(p) for p in avoid_xy]
+
+    def clearance(c):
+        return min((max(abs(px - c[0]), abs(py - c[1])) for px, py in pts),
+                   default=1.0)
+
+    best = next((c for c in corners if clearance(c) > 0.22),
+                max(corners, key=clearance))
+    ax.text(best[0], best[1], text, transform=ax.transAxes,
+            ha="right" if best[0] > 0.5 else "left",
+            va="top" if best[1] > 0.5 else "bottom",
+            fontsize=11, bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
 
 def first_file(sample, location_cfg):
     '''Resolve the first ntuple file of a sample from the location YAML.'''
@@ -161,7 +196,7 @@ DRAW = r"""
 FLAV_STYLE = {"mu": dict(color="#0072B2", marker="o", label=r"$\mu$"),
               "e":  dict(color="#D55E00", marker="s", label=r"$e$")}
 
-def draw_etaphi(ax, rec):
+def draw_etaphi(ax, rec, label):
     for a in rec:
         st = FLAV_STYLE[a["flavor"]]
         ax.add_patch(Circle((a["eta"], a["phi"]), 0.4, fill=False, ls="--",
@@ -175,11 +210,17 @@ def draw_etaphi(ax, rec):
         d0, d1 = a["daughters"][0], a["daughters"][1]
         dr = np.hypot(d0["eta"] - d1["eta"], dphi(d0["phi"], d1["phi"]))
         lep = r"\mu" if a["flavor"] == "mu" else "e"
+        # anchor the text in data coordinates just outside the dR = 0.4 cone,
+        # flipped away from the nearest panel edges
+        dxd, ha = (-0.55, "right") if a["eta"] > 1.4 else (0.55, "left")
+        dyd, va = (-0.55, "top") if a["phi"] > 1.6 else (0.55, "bottom")
         ax.annotate(rf"$Z_d \to {lep}{lep}$" "\n"
                     rf"$p_T$ = {a['pt']:.0f} GeV" "\n"
                     rf"$\Delta R$ = {dr:.3g}",
-                    (a["eta"], a["phi"]), textcoords="offset points",
-                    xytext=(14, 14), fontsize=11)
+                    (a["eta"], a["phi"]), textcoords="data",
+                    xytext=(a["eta"] + dxd, a["phi"] + dyd), ha=ha, va=va,
+                    fontsize=11,
+                    bbox=dict(facecolor="white", alpha=0.6, edgecolor="none"))
     flavors = {a["flavor"] for a in rec}
     handles = [Line2D([], [], ls="none", marker="*", ms=12, color="gray",
                       mec="black", label=r"$Z_d$ direction"),
@@ -196,51 +237,96 @@ def draw_etaphi(ax, rec):
     ax.set_ylabel(r"$\phi$")
     ax.set_xlim(-3.4, 3.4)
     ax.set_ylim(-np.pi - 0.6, np.pi + 0.6)
+    avoid = []
+    for a in rec:
+        for ddx in (-0.4, 0.0, 0.4):
+            for ddy in (-0.4, 0.0, 0.4):
+                avoid.append((a["eta"] + ddx, a["phi"] + ddy))
+    stamp(ax, label, avoid,
+          corners=[(0.97, 0.97), (0.97, 0.03), (0.03, 0.03)])
 
-def draw_rz(ax, rec):
-    rmax = 1.6 * max(max(a["dec_R"] for a in rec), 1.0)
+DETECTOR_BANDS = [  # schematic barrel radial extents, cm
+    (3.0, 16.0, "pixel"),
+    (20.0, 110.0, "tracker"),
+    (129.0, 177.0, "ECAL"),
+    (400.0, 740.0, "muon system"),
+]
+BEAMPIPE_R = 2.2
+
+def draw_rz(ax, rec, label):
+    top = 1.6 * max(max(a["dec_R"] for a in rec), 1.0)
     zspan = max(max(abs(a["dec_z"]) for a in rec),
                 max(abs(a["prod_z"]) for a in rec) + 1.0, 2.0)
     zmax = 1.6 * zspan
-    ray_r = 0.45 * rmax
+    ray_r = 0.45 * top
+    ax.axhline(0, color="gray", lw=0.6, alpha=0.6)
+    # draw only elements that are visually resolvable at this event's scale
+    # (one 5% rule for everything); labels go on the mirrored (negative-R)
+    # side so they stay clear of the upper-hemisphere annotations
+    if 0.05 * top < BEAMPIPE_R < 0.9 * top:
+        for s in (1, -1):
+            ax.axhline(s * BEAMPIPE_R, color="gray", lw=0.7, ls=":", alpha=0.7)
+        ax.text(0.985, -BEAMPIPE_R - 0.02 * top, "beam pipe", fontsize=9,
+                color="gray", transform=ax.get_yaxis_transform(),
+                ha="right", va="top")
+    for r1, r2, band_label in DETECTOR_BANDS:
+        if r1 < 0.9 * top and (min(r2, top) - r1) > 0.05 * top:
+            for s in (1, -1):
+                ax.axhspan(s * r1, s * min(r2, 1.5 * top), color="gray", alpha=0.08)
+            ax.text(0.985, -r1 - 0.005 * top, band_label, fontsize=9,
+                    color="gray", transform=ax.get_yaxis_transform(),
+                    ha="right", va="top")
+    avoid = []
     for a in rec:
+        s = 1.0 if a["phi"] >= 0 else -1.0
         st = FLAV_STYLE[a["flavor"]]
-        ax.plot([a["prod_z"], a["dec_z"]], [a["prod_R"], a["dec_R"]],
+        ax.plot([a["prod_z"], a["dec_z"]], [s * a["prod_R"], s * a["dec_R"]],
                 ls="--", color=st["color"], alpha=0.8)
-        ax.plot(a["dec_z"], a["dec_R"], marker="*", ms=15, color=st["color"],
-                mec="black", mew=0.5, ls="none")
-        near_right = a["dec_z"] > 0.55 * zmax
-        ax.annotate(rf"$l_{{xy}}$ = {a['lxy']:.3g} cm", (a["dec_z"], a["dec_R"]),
-                    textcoords="offset points",
-                    xytext=(-10, -16) if near_right else (10, -16),
-                    ha="right" if near_right else "left", fontsize=11)
+        ax.plot(a["dec_z"], s * a["dec_R"], marker="*", ms=15, color=st["color"],
+                mec="black", mew=0.5, ls="none", zorder=5)
+        avoid.append((a["dec_z"], s * a["dec_R"]))
+        mean_cos = 0.0
         for d in a["daughters"]:
             theta = 2 * np.arctan(np.exp(-d["eta"]))
+            mean_cos += np.cos(theta) / len(a["daughters"])
             scale = ray_r / max(np.sin(theta), 0.05)
-            ax.plot([a["dec_z"], a["dec_z"] + scale * np.cos(theta)],
-                    [a["dec_R"], a["dec_R"] + scale * np.sin(theta)],
+            tip = (a["dec_z"] + scale * np.cos(theta),
+                   s * (a["dec_R"] + scale * np.sin(theta)))
+            ax.plot([a["dec_z"], tip[0]], [s * a["dec_R"], tip[1]],
                     color=st["color"], alpha=0.65,
                     lw=1.0 + 0.3 * np.sqrt(d["pt"]))
-    # bound-state decay point = the dark photons' common production vertex
-    ax.plot(rec[0]["prod_z"], rec[0]["prod_R"], marker="o", color="black", ms=6)
-    top = rmax
-    if rmax > 55:
-        ax.axhline(110, color="gray", lw=0.8, alpha=0.7)
-        ax.text(0.02, 112, "tracker r = 110 cm", fontsize=9, color="gray",
-                transform=ax.get_yaxis_transform(), va="bottom")
-        top = max(top, 135)
-    if zmax > 200:
-        for zline in (-280, 280):
-            ax.axvline(zline, color="gray", lw=0.8, alpha=0.7)
-    if rmax > 250:
-        ax.axhline(400, color="gray", lw=0.8, alpha=0.7, ls=":")
-        ax.text(0.02, 405, "muon system", fontsize=9, color="gray",
-                transform=ax.get_yaxis_transform(), va="bottom")
-        top = max(top, 430)
+            avoid.append(tip)
+            avoid.append(((a["dec_z"] + tip[0]) / 2, (s * a["dec_R"] + tip[1]) / 2))
+        # annotate on the side opposite the ray fan, flipping back only if
+        # that would push the text off the panel edge
+        side = -1 if mean_cos > 0 else 1
+        if (side > 0 and a["dec_z"] > 0.5 * zmax) or \
+           (side < 0 and a["dec_z"] < -0.5 * zmax):
+            side = -side
+        lep = r"\mu\mu" if a["flavor"] == "mu" else "ee"
+        ax.annotate(rf"$Z_d \to {lep}$, $p_T$ = {a['pt']:.0f} GeV" "\n"
+                    rf"$l_{{xy}}$ = {a['lxy']:.3g} cm",
+                    (a["dec_z"], s * a["dec_R"]), textcoords="offset points",
+                    xytext=(16 * side, 12 if s > 0 else -12),
+                    ha="left" if side > 0 else "right",
+                    va="bottom" if s > 0 else "top", fontsize=10,
+                    bbox=dict(facecolor="white", alpha=0.55, edgecolor="none"))
+    # the dark photons' common production vertex; its transverse offset
+    # (the beamspot, ~0.02 cm) is invisible at every display scale, so pin
+    # the marker on the beamline rather than pick one hemisphere for it
+    ax.plot(rec[0]["prod_z"], 0.0, marker="o", color="black", ms=6, zorder=4)
+    dphi_zd = abs(dphi(rec[0]["phi"], rec[1]["phi"]))
+    deta_zd = abs(rec[0]["eta"] - rec[1]["eta"])
+    ax.text(0.03, 0.03,
+            rf"$|\Delta\phi(Z_d, Z_d)|$ = {dphi_zd:.2f}" "\n"
+            rf"$|\Delta\eta(Z_d, Z_d)|$ = {deta_zd:.2f}",
+            transform=ax.transAxes, ha="left", va="bottom", fontsize=10,
+            bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
     ax.set_xlabel(r"$z$ [cm]")
-    ax.set_ylabel(r"$R$ [cm]")
+    ax.set_ylabel(r"signed $R$ [cm]   (sign of $\phi$)")
     ax.set_xlim(-zmax, zmax)
-    ax.set_ylim(0, top)
+    ax.set_ylim(-top, top)
+    stamp(ax, label, avoid, corners=[(0.97, 0.97), (0.03, 0.97)])
 
 def display(sample, location_cfg, fname_tag):
     As = load_dark_photons(sample, location_cfg)
@@ -248,11 +334,11 @@ def display(sample, location_cfg, fname_tag):
     rec = event_record(As, idx)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE,
                                    layout="constrained")
-    draw_etaphi(ax1, rec)
-    draw_rz(ax2, rec)
+    label = format_sample_2line(sample)
+    draw_etaphi(ax1, rec, label)
+    draw_rz(ax2, rec, label)
     for ax in (ax1, ax2):
         an_style.cms_sim_label(ax)
-    fig.suptitle(lib.format_sample(sample), fontsize=14)
     an_style.save(fig, fname_tag)
     print(f"{sample}: event index {idx} (sample median max-lxy = {med:.3g} cm)")
     for a in rec:
@@ -289,6 +375,20 @@ SAMPLES = [
      "$\\beta\\gamma \\sim 10$ puts decay vertices at the meter scale -- "
      "beyond the tracker, where only the muon pair remains reconstructable "
      "(as DSA muons)."),
+    ("4Mu_100GeV_0p25GeV_0p2mm", "signal_4mu_v10.yaml", "display_4mu_100_0p25",
+     "**The trigger-marginal corner.** The lightest bound state with the "
+     "lightest mediator: each muon carries roughly $m_{B_s}/4 \\sim 25$ GeV, "
+     "straddling the 23-25 GeV dimuon thresholds (marker areas scale with "
+     "$p_T$ -- compare the corners above), while the pairs remain tightly "
+     "collimated. This is the column where the trigger-efficiency maps of "
+     "`trigger_context_forAN.ipynb` bottom out."),
+    ("4Mu_200GeV_1p2GeV_48p0mm", "signal_4mu_v10.yaml", "display_4mu_200_1p2_long",
+     "**Beyond-tracker decays.** The longest lifetime of the sweet-spot mass "
+     "point: decay vertices near or beyond the tracker envelope, where "
+     "standard tracking is impossible and the event survives only through "
+     "displaced-standalone (DSA) muons reconstructed in the muon system -- "
+     "the regime that motivates including DSA muons as lepton-jet "
+     "constituents."),
 ]
 
 OUTRO = (
