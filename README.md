@@ -90,22 +90,23 @@ python -m pip install --upgrade pip setuptools wheel
 
 After creation the venv's `bin/python` is a symlink to the cvmfs binary, so you don't need to re-source LCG_107 to run it later.
 
-### 3. Install requirements (skipping the xrootd PyPI build)
-
-The `xrootd` PyPI wheel tries to compile the xrootd C library from source and fails on LPC. We get the same functionality by symlinking LCG's prebuilt `XRootD` and `pyxrootd` packages into the venv:
+### 3. Install requirements
 
 ```bash
-grep -v "^xrootd" requirements.txt | python -m pip install -c constraints.txt -r /dev/stdin
+python -m pip install -c constraints.txt -r requirements.txt
 python -m pip install -c constraints.txt "distributed==2025.3.0"   # required by sidm/tools/scaleout.py
 python -m pip install "htcondor<25" "git+https://github.com/CoffeaTeam/lpcjobqueue.git@4c6dae0b85838be0c42f7fa7d7dad0527920d56b"  # needed by step 7
 python -m pip install -e .
 python -m pip install jupyter ipykernel pyarrow
-
-cd sidm_venv/lib/python3.11/site-packages
-ln -sfn /cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc13-opt/lib/python3.11/site-packages/XRootD   XRootD
-ln -sfn /cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc13-opt/lib/python3.11/site-packages/pyxrootd pyxrootd
-cd -
 ```
+
+`xrootd` installs as an ordinary wheel and needs no special handling. It used to:
+version 5.7.0 was published as a source distribution only, so pip tried to compile
+the XRootD C library and failed on LPC, and the recipe worked around that by
+stripping the line out of `requirements.txt` and symlinking LCG's prebuilt
+`XRootD` and `pyxrootd` into the venv. Upstream has shipped manylinux wheels since
+6.x, so both workarounds are gone. `fsspec-xrootd` pulls `xrootd` in anyway, which
+is why the pinned version is the one that was already being installed.
 
 The `-c constraints.txt` flag pins every transitive dependency as well as the
 direct ones, so you get the same environment the CI tests against rather than
