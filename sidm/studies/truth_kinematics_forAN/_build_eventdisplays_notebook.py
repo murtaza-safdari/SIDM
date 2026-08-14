@@ -120,21 +120,22 @@ def format_sample_2line(name):
     return (rf"{p['mode']}, $m_{{B_s}}$ = {p['mbs']:g} GeV" "\n"
             rf"$m_{{Z_d}}$ = {p['mzd']:g} GeV, $c\tau$ = {p['ctau_mm']:g} mm")
 
-def stamp(ax, text, avoid_xy, corners):
-    '''Place the sample stamp in the least-occupied of the candidate corners.
+def corner_clearance(pts_ax, corner):
+    '''Chebyshev distance (axes fraction) from a corner to the nearest point.'''
+    return min((max(abs(px - corner[0]), abs(py - corner[1])) for px, py in pts_ax),
+               default=1.0)
 
-    avoid_xy: data-coordinate points the stamp must keep clear of;
-    corners: candidate (x, y) positions in axes fraction, in preference order.
-    The first corner with Chebyshev clearance > 0.22 (axes fraction) from all
-    avoid points wins; otherwise the corner with the largest clearance.'''
-    pts = [ax.transLimits.transform(p) for p in avoid_xy]
+def pick_corner(pts_ax, corners, need=0.22):
+    '''First candidate corner with clearance > need, else the clearest one.
+    `need` scales with the element's footprint (a legend needs more room
+    than a two-line stamp).'''
+    return next((c for c in corners if corner_clearance(pts_ax, c) > need),
+                max(corners, key=lambda c: corner_clearance(pts_ax, c)))
 
-    def clearance(c):
-        return min((max(abs(px - c[0]), abs(py - c[1])) for px, py in pts),
-                   default=1.0)
-
-    best = next((c for c in corners if clearance(c) > 0.22),
-                max(corners, key=clearance))
+def stamp(ax, text, pts_ax, corners):
+    '''Place the sample stamp in the least-occupied candidate corner
+    (pts_ax: occupied points in axes fraction).'''
+    best = pick_corner(pts_ax, corners)
     ax.text(best[0], best[1], text, transform=ax.transAxes,
             ha="right" if best[0] > 0.5 else "left",
             va="top" if best[1] > 0.5 else "bottom",
@@ -266,7 +267,8 @@ def draw_etaphi(ax, rec, label):
         for ddx in (-0.4, 0.0, 0.4):
             for ddy in (-0.4, 0.0, 0.4):
                 avoid.append((a["eta"] + ddx, a["phi"] + ddy))
-    stamp(ax, label, avoid,
+    avoid_ax = [ax.transLimits.transform(p) for p in avoid]
+    stamp(ax, label, avoid_ax,
           corners=[(0.97, 0.97), (0.97, 0.03), (0.03, 0.03)])
 
 DETECTOR_BANDS = [  # schematic barrel radial extents, cm
@@ -289,20 +291,18 @@ def draw_rz(ax, rec, label):
     # draw only elements that are visually resolvable at this event's scale
     # (one 5% rule for everything); labels go on the mirrored (negative-R)
     # side so they stay clear of the upper-hemisphere annotations
+    deferred_labels = []  # (data-y, text) drawn after legend/stamp placement
     if 0.05 * top < BEAMPIPE_R < 0.9 * top:
         for s in (1, -1):
             ax.axhline(s * BEAMPIPE_R, color="gray", lw=0.7, ls=":", alpha=0.7)
-        ax.text(0.985, -BEAMPIPE_R - 0.02 * top, "beam pipe", fontsize=11,
-                color="gray", transform=ax.get_yaxis_transform(),
-                ha="right", va="top")
+        deferred_labels.append((-BEAMPIPE_R - 0.02 * top, "beam pipe"))
     for r1, r2, band_label in DETECTOR_BANDS:
         if r1 < 0.9 * top and (min(r2, top) - r1) > 0.05 * top:
             for s in (1, -1):
                 ax.axhspan(s * r1, s * min(r2, 1.5 * top), color="gray", alpha=0.08)
-            ax.text(0.985, -r1 - 0.005 * top, band_label, fontsize=11,
-                    color="gray", transform=ax.get_yaxis_transform(),
-                    ha="right", va="top")
+            deferred_labels.append((-r1 - 0.005 * top, band_label))
     avoid = []
+    ann_info = []  # (z, signed R, text side, hemisphere) per annotation
     for a in rec:
         s = 1.0 if a["phi"] >= 0 else -1.0
         st = FLAV_STYLE[a["flavor"]]
@@ -324,10 +324,11 @@ def draw_rz(ax, rec, label):
             avoid.append(tip)
             avoid.append(((a["dec_z"] + tip[0]) / 2, (s * a["dec_R"] + tip[1]) / 2))
         # annotate on the side opposite the ray fan, flipping back only if
-        # that would push the text off the panel edge
+        # that would push the text off the panel edge (judged in axes fraction,
+        # since the text block is ~0.3 of the panel wide)
         side = -1 if mean_cos > 0 else 1
-        if (side > 0 and a["dec_z"] > 0.5 * zmax) or \
-           (side < 0 and a["dec_z"] < -0.5 * zmax):
+        x_frac = (a["dec_z"] + zmax) / (2 * zmax)
+        if (side > 0 and x_frac > 0.62) or (side < 0 and x_frac < 0.38):
             side = -side
         lep = r"\mu\mu" if a["flavor"] == "mu" else "ee"
         ax.annotate(rf"$Z_d \to {lep}$, $p_T$ = {a['pt']:.0f} GeV" "\n"
@@ -335,8 +336,9 @@ def draw_rz(ax, rec, label):
                     (a["dec_z"], s * a["dec_R"]), textcoords="offset points",
                     xytext=(16 * side, 12 if s > 0 else -12),
                     ha="left" if side > 0 else "right",
-                    va="bottom" if s > 0 else "top", fontsize=13,
-                    bbox=dict(facecolor="white", alpha=0.55, edgecolor="none"))
+                    va="bottom" if s > 0 else "top", fontsize=13, zorder=6,
+                    bbox=dict(facecolor="white", alpha=0.85, edgecolor="none"))
+        ann_info.append((a["dec_z"], s * a["dec_R"], side, 1.0 if s > 0 else -1.0))
     # the dark photons' common production vertex; its transverse offset
     # (the beamspot, ~0.02 cm) is invisible at every display scale, so pin
     # the marker on the beamline rather than pick one hemisphere for it
@@ -352,9 +354,43 @@ def draw_rz(ax, rec, label):
     ax.set_ylabel(r"signed $R$ [cm]   (sign of $\phi$)")
     ax.set_xlim(-zmax, zmax)
     ax.set_ylim(-top, top)
-    best = stamp(ax, label, avoid, corners=[(0.97, 0.97), (0.03, 0.97)])
-    # the dashed line means something different here than on the left panel,
-    # so this panel carries its own legend, in the top corner the stamp left free
+    # every floating element registers in axes-fraction space; the stamp takes
+    # the clearer top corner, then the legend is placed by rectangle-overlap
+    # tests against everything, reshaping to a compact two-column strip when
+    # no corner can hold the tall one-column block
+    # placement runs biggest-first: the legend (large, few viable shapes)
+    # claims space against the TEXT blocks (hard: annotations, band labels,
+    # the dphi/deta box) with track points as soft tie-breakers, and the
+    # two-line stamp then adapts around everything including the legend
+    def touches(r1, r2, pad=0.02):
+        return not (r1[2] + pad < r2[0] or r2[2] + pad < r1[0]
+                    or r1[3] + pad < r2[1] or r2[3] + pad < r1[1])
+
+    # TEXT blocks (hard) and track points (soft), all in axes fraction
+    hard = []
+    for zz, rr, side, sv in ann_info:
+        bx, by = ax.transLimits.transform((zz, rr))
+        x0, x1 = (bx, bx + 0.34) if side > 0 else (bx - 0.34, bx)
+        y0, y1 = (by, by + 0.11) if sv > 0 else (by - 0.11, by)
+        hard.append((x0, y0, x1, y1))
+    band_rects = []
+    for y, _t in deferred_labels:
+        ly = ax.transLimits.transform((0.0, y))[1]
+        band_rects.append((0.72, ly - 0.045, 0.99, ly + 0.01))
+    hard.append((0.02, 0.02, 0.24, 0.15))  # dphi/deta box
+    soft = []
+    for p_ in avoid:
+        px, py = ax.transLimits.transform(p_)
+        soft.append((px - 0.02, py - 0.02, px + 0.02, py + 0.02))
+
+    def rank(cands, blocks_hard, blocks_soft):
+        return sorted(
+            enumerate(cands),
+            key=lambda ic: (sum(touches(ic[1][-1], b) for b in blocks_hard),
+                            sum(touches(ic[1][-1], b, pad=0.0) for b in blocks_soft),
+                            ic[0]))[0][1]
+
+    # the legend places first (largest block, fewest viable shapes)
     handles = [
         Line2D([], [], ls="none", marker="o", color="black",
                label="production vertex"),
@@ -363,8 +399,41 @@ def draw_rz(ax, rec, label):
                label=r"$Z_d$ decay vertex"),
         Line2D([], [], color="gray", lw=2, label="daughter leptons"),
     ]
-    ax.legend(handles=handles, fontsize=13,
-              loc="upper left" if best[0] > 0.5 else "upper right")
+    lg_cands = [("upper right", 1, (0.63, 0.72, 0.97, 0.97)),
+                ("upper left", 1, (0.03, 0.72, 0.37, 0.97)),
+                ("lower right", 1, (0.63, 0.03, 0.97, 0.28)),
+                ("upper right", 2, (0.40, 0.85, 0.97, 0.97)),
+                ("upper left", 2, (0.03, 0.85, 0.60, 0.97)),
+                ("lower center", 2, (0.30, 0.03, 0.82, 0.16))]
+    loc, ncol, lrect = rank(lg_cands, hard + band_rects, soft)
+    kw = dict(fontsize=13) if ncol == 1 else dict(fontsize=12, columnspacing=0.9,
+                                                  handlelength=1.5)
+    ax.legend(handles=handles, loc=loc, ncol=ncol, framealpha=1.0, **kw)
+
+    # the stamp places next, rectangle-tested like the legend
+    st_cands = [((0.97, 0.97), (0.65, 0.86, 0.97, 0.97)),
+                ((0.03, 0.97), (0.03, 0.86, 0.35, 0.97)),
+                ((0.97, 0.03), (0.65, 0.03, 0.97, 0.14))]
+    (scx, scy), srect = rank(st_cands, hard + band_rects + [lrect], soft)
+    ax.text(scx, scy, label, transform=ax.transAxes,
+            ha="right" if scx > 0.5 else "left",
+            va="top" if scy > 0.5 else "bottom", fontsize=13, zorder=6,
+            bbox=dict(facecolor="white", alpha=0.85, edgecolor="none"))
+
+    # band labels last: right edge unless the legend or stamp claimed it;
+    # a relocated label additionally steps right of the dphi/deta box when
+    # its left-edge position would land on it
+    dphi_rect = (0.02, 0.02, 0.24, 0.15)
+    for (y, text), rect in zip(deferred_labels, band_rects):
+        if touches(rect, lrect) or touches(rect, srect):
+            yfrac = ax.transLimits.transform((0.0, y))[1]
+            lx = 0.27 if touches((0.015, yfrac - 0.05, 0.25, yfrac + 0.01),
+                                 dphi_rect) else 0.015
+            ax.text(lx, y - 0.005 * top, text, fontsize=11, color="gray",
+                    transform=ax.get_yaxis_transform(), ha="left", va="top")
+        else:
+            ax.text(0.985, y, text, fontsize=11, color="gray",
+                    transform=ax.get_yaxis_transform(), ha="right", va="top")
 
 def display(sample, location_cfg, fname_tag, target_lxy=None):
     As = load_dark_photons(sample, location_cfg)
