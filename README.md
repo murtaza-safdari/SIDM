@@ -95,9 +95,9 @@ After creation the venv's `bin/python` is a symlink to the cvmfs binary, so you 
 The `xrootd` PyPI wheel tries to compile the xrootd C library from source and fails on LPC. We get the same functionality by symlinking LCG's prebuilt `XRootD` and `pyxrootd` packages into the venv:
 
 ```bash
-grep -v "^xrootd" requirements.txt | python -m pip install -r /dev/stdin
-python -m pip install "distributed==2025.3.0"   # required by sidm/tools/scaleout.py
-python -m pip install "htcondor<25" "git+https://github.com/CoffeaTeam/lpcjobqueue.git"  # needed by step 7
+grep -v "^xrootd" requirements.txt | python -m pip install -c constraints.txt -r /dev/stdin
+python -m pip install -c constraints.txt "distributed==2025.3.0"   # required by sidm/tools/scaleout.py
+python -m pip install "htcondor<25" "git+https://github.com/CoffeaTeam/lpcjobqueue.git@4c6dae0b85838be0c42f7fa7d7dad0527920d56b"  # needed by step 7
 python -m pip install -e .
 python -m pip install jupyter ipykernel pyarrow
 
@@ -106,6 +106,19 @@ ln -sfn /cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc13-opt/lib/python3.11
 ln -sfn /cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc13-opt/lib/python3.11/site-packages/pyxrootd pyxrootd
 cd -
 ```
+
+The `-c constraints.txt` flag pins every transitive dependency as well as the
+direct ones, so you get the same environment the CI tests against rather than
+whatever PyPI happens to serve today. `requirements.txt` remains the file to
+edit when the analysis needs a new package; `constraints.txt` is generated, and
+its header documents how to regenerate it after a deliberate bump. Condor
+workers use their own `condor/constraints.txt`, because they run CMSSW's Python
+3.9 and resolve to a different set.
+
+This matters more than it looks. Before these files existed, roughly 68 of the
+84 packages in this venv were unpinned, and on 2026-08-11 a numba release began
+miscompiling one of coffea's kernels and broke every CI run until it was pinned
+by hand.
 
 Verify the scale-out dependencies used by step 7 are all installed (no `MISSING:` list = success):
 
@@ -336,16 +349,121 @@ I suggest the following workflow for performing a physics study:
 
 One runtime guard to know: `plot_MC_sig_vs_bkg_panels` warns *"background '<name>' has integer variances (looks unweighted) ... check that it is lumi*xsec-weighted"* when a background's per-bin variances are integers -- the hist looks like raw counts rather than lumi*xsec-weighted MC. If you meant to show normalized MC, confirm the weights were applied. It is a guard, not an error; the plot still renders.
 
+## Continuous integration
+
+Three checks run on pull requests and one runs on a schedule. They are split so
+that each answers exactly one question.
+
+* **The pull-request checks ask "did this change break something?"** They
+  install from the frozen `constraints.txt`, so a dependency released overnight
+  cannot colour the result. A red check is about the diff.
+* **The weekly check asks "has anything upstream moved?"** It deliberately
+  installs *without* the constraints. It is about whether a future upgrade is
+  safe, not about anything being broken now.
+
+The two used to be a single signal, which is why the separation exists: in
+August 2026 a numba release broke the chain report on every open pull request,
+and it took a full reproduction to show that the failing PR was not at fault.
+
+### On a pull request
+
+| check | runs on | red means |
+|---|---|---|
+| `report` | every PR | the diff introduces a new error in the processing chain |
+| `pylint` | every PR | score below 8, new errors in changed files, or the coffea versions disagree |
+| `resolve` | PRs touching `condor/requirements.txt` | the Condor pins no longer install on CMSSW's Python 3.9 |
+
+**`report`** runs the processor over a small committed fixture twice, once with
+`main` and once with the PR, and writes a current-vs-PR diff to the run's **job
+summary** (Actions tab, then the run). Open that summary first: it names what
+moved — a hist collection that lost a definition, a cut that stopped evaluating,
+a channel whose cutflow changed. It is advisory and does not block a merge.
+
+If the summary reports that the chain crashed on **both** sides, the PR is not
+at fault: either the environment broke or `main` is broken. The constraints
+files make that rare.
+
+**`pylint`** also runs `tests/check_worker_image.py`, which fails when
+`requirements.txt`, `constraints.txt` and the apptainer image tag in
+`sidm/tools/scaleout.py` disagree about the coffea version. See the upgrade
+how-to below.
+
+**`resolve`** appears only on pull requests that touch `condor/requirements.txt`;
+its absence elsewhere is normal rather than a skipped check. Condor workers
+build their venv from CMSSW, whose Python is 3.9, while everything else here is
+3.11 — so a pin that needs Python 3.10 or newer installs cleanly everywhere it
+gets tested and then fails on every worker.
+
+### The weekly check
+
+`scheduled-env-check` runs on Tuesdays and can also be triggered by hand from
+the Actions tab. It installs the stack **unfrozen** and runs the same chain on
+`main`.
+
+**Green** means a fresh, unpinned resolve still works, so regenerating
+`constraints.txt` would be safe right now. There is nothing to do, but this is
+the signal to consult *before* upgrading anything.
+
+**Red** means something released upstream that breaks the stack. Nothing is
+broken for you: the CI, your venv and Condor jobs all install from the frozen
+files and are unaffected. It is a warning about the future, not an incident.
+
+1. Do not regenerate `constraints.txt` for now.
+2. To find the culprit, open the failing run's `pip freeze` step, which records
+   exactly what PyPI served that day, and compare it against the last green run.
+3. If the upgrade is needed anyway, pin around the offending package in
+   `requirements.txt`, as was done for `numba` and `llvmlite`.
+
+A permanently red weekly check is worse than no check, because it stops being
+read. If it stays red, either pin past the problem or decide consciously to live
+with it.
+
+Failures show up as a red run in the Actions tab and an email from GitHub to
+whoever last committed to the workflow file. No issue is opened, because Issues
+are disabled on this repository.
+
+### What the checks do not cover
+
+* **Physics correctness.** `report` verifies that the chain executes and that
+  nothing regressed against `main`. A wrong cut or a mis-scaled histogram runs
+  cleanly and passes.
+* **Dask workers.** No job starts an apptainer worker. `check_worker_image.py`
+  verifies that the versions agree, not that workers run.
+* **coffea-casa**, where `make_dask_client` installs SIDM from an unpinned git
+  branch.
+
 ## Miscellaneous how-tos
 
-### How to update requirements.txt
-```
-cd SIDM/
-pip install pipreqs
-pipreqs . --force # overwrites current requirements.txt
-```
+### How to change or upgrade a dependency
 
-`pipreqs` derives requirements from `import` statements, so import-less runtime dependencies are silently dropped on regeneration and must be re-added by hand: `bokeh` (loaded by `distributed` for the Dask dashboard — see step 7), plus the scale-out packages installed manually in step 3 (`lpcjobqueue`, `htcondor`, `distributed`).
+`requirements.txt` says what the analysis needs. `constraints.txt` pins every
+package, transitive ones included, and is generated. Condor workers have their
+own pair under `condor/`, because they run CMSSW's Python 3.9 and resolve to a
+different set. Edit the requirements file; never hand-edit a constraints file.
+
+1. Check that the last weekly `scheduled-env-check` run was green. Red means a
+   fresh resolve is currently broken, so this is not the moment to upgrade.
+2. Edit `requirements.txt`.
+3. Regenerate `constraints.txt` using the recipe in its own header.
+4. If coffea moved, update `_DEFAULT_LPC_IMAGE` in `sidm/tools/scaleout.py` to
+   the matching tag, and confirm that tag exists under
+   `/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/`. Dask workers
+   take coffea from that image rather than from these files, so otherwise the
+   client and the workers end up on different versions and fail at runtime. The
+   `pylint` check fails if you forget this step.
+5. Rebuild the venv (step 3 above) and run the chain locally, or let the pull
+   request's `report` check do it for you.
+6. Condor needs nothing extra: every job builds its venv fresh from the files it
+   is sent.
+
+`pipreqs` is useful for spotting a package you forgot to declare —
+`pipreqs . --force` derives requirements from `import` statements — but do not
+use it to regenerate `requirements.txt` wholesale. It drops runtime
+dependencies that are never imported directly (`bokeh`, loaded by `distributed`
+for the Dask dashboard) along with the scale-out packages installed by hand in
+step 3 (`lpcjobqueue`, `htcondor`, `distributed`) and the pins added to work
+around upstream breakage (`numba`, `llvmlite`), and it leaves `constraints.txt`
+stale.
 
 ### How to use DASK
 

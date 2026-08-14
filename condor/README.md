@@ -311,7 +311,7 @@ arguments = $(sample) $(chunk) $(filelist) root://cmseos.fnal.gov//store/user/$E
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 
-transfer_input_files = sidm_code.tar.gz, requirements.txt, $(filelist)
+transfer_input_files = sidm_code.tar.gz, requirements.txt, constraints.txt, $(filelist)
 transfer_output_files = ""
 
 output = logs/$(sample)_$(chunk)_$(Cluster)_$(Process).out
@@ -752,7 +752,7 @@ Cause: Condor worker Python does not have Coffea.
 Fix: ensure `run_job.sh` creates the venv and installs:
 
 ```bash
-python -m pip install --no-cache-dir -r requirements.txt
+python -m pip install --no-cache-dir -r requirements.txt -c constraints.txt
 ```
 
 ### `KeyError: is_data` (or `skim_factor`, `year`)

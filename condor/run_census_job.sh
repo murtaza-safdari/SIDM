@@ -27,7 +27,7 @@ python3 -m venv sidm_venv --system-site-packages
 source sidm_venv/bin/activate
 export PIP_CACHE_DIR="${_CONDOR_SCRATCH_DIR}/pip_cache"
 python -m pip install --upgrade pip setuptools wheel
-python -m pip install --no-cache-dir -r requirements.txt
+python -m pip install --no-cache-dir -r requirements.txt -c constraints.txt
 
 tar -xzf sidm_code.tar.gz
 export PYTHONPATH="${_CONDOR_SCRATCH_DIR}:${PYTHONPATH:-}"
