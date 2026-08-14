@@ -32,13 +32,6 @@
 # sidm/tools/scaleout.py: dask workers take their coffea from that image, not
 # from these files, and a split between client and workers fails at runtime.
 # tests/check_worker_image.py enforces this and runs in the Pylint workflow.
-#
-# One wrinkle: requirements.txt still carries `xrootd==5.7.0`, but that line is
-# bypassed on every documented path -- the workflows and the README recipe grep
-# it out because its PyPI wheel builds the C library from source, and the LPC
-# venv symlinks LCG's prebuilt XRootD instead. What actually installs is xrootd
-# 6.1.1, pulled in transitively, so that is what is pinned below. The stale
-# 5.7.0 line is worth cleaning up separately.
 
 aiohappyeyeballs==2.7.1
 aiohttp==3.14.3
