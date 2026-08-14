@@ -845,6 +845,21 @@ trig_base: &trig_base
 
 # Gen-truth subset of genE_base + genMu_base: only hists that read generator
 # objects, so gen-only channels do not fill meaningless reco histograms
+anatomy_extra: &anatomy_extra
+  - "genA_toMu_daughters_dR"
+  - "genA_toMu_daughters_dR_logx"
+  - "genA_toMu_daughters_dR_vs_pt"
+  - "genA_toE_daughters_dR"
+  - "genA_toE_daughters_dR_logx"
+  - "genA_toE_daughters_dR_vs_pt"
+  - "gen4Mu_invmass"
+  - "gen2Mu2E_invmass"
+  - "muon0_pt"
+  - "muon1_pt"
+  - "dsaMuon0_pt"
+  - "dsaMuon1_pt"
+  - "mulj_egmlj_invmass"
+
 gen_truth: &gen_truth
   - "genE_n"
   - "genE_pt"

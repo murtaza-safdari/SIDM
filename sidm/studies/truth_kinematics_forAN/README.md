@@ -44,6 +44,43 @@ channel YAML; 1833 jobs), merged with
 configuration and serve for small reruns; a full-grid Dask driver does not
 survive the login node.
 
+## The anatomy extension (v3)
+
+A second production for the final-state-anatomy and trigger figures:
+`/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/truth_kinematics_forAN/anatomy_v3/`
+(same format and statistics as v2: 180 merged per-sample `.coffea` + sidecars,
+every file, unweighted). Load with
+`_anatomy_lib.load_v3()` (local cache, `ANATOMY_CACHE` env to relocate).
+
+Channels: `genOnly`, **`genOnly_trigger`** (new: identical generator-level
+object definitions plus one event cut, the analysis dimuon-trigger OR — the
+ratio of a per-event histogram to its `genOnly` counterpart is the
+absolute signal trigger efficiency vs that variable (per-object
+histograms fold in the partner pair in 4Mu, so the trigger notebook
+uses the 2Mu2E samples for per-dark-photon efficiencies)), `baseNoLj_noTrigger`, `baseNoLj`, and
+`base` (the reconstruction-level figures state their selections explicitly).
+
+Hist collections: `gen_truth`, `genA_lifetime`, `genBS_genA_kinematics`,
+`genA_base`, `genA_ratio`, `lj_base`, `lj_lj_base`, `muon_base`, and
+`anatomy_extra` (new: per-dark-photon daughter-pair `dR` on linear and log
+axes and the log-log `dR` vs `pT` map, built from the recorded decay
+daughters so 4Mu pairing is unambiguous; status-1 four-lepton invariant
+masses `gen4Mu_invmass`/`gen2Mu2E_invmass`; leading/sub-leading PF and DSA
+muon `pT`; the `mulj_egmlj_invmass` reco pair mass). Known-empty in this
+production: the two `genA_*Lj_lxyRatio` histograms of `genA_ratio`
+fail to fill in every job (`AttributeError: no field named 'kinvtx'`
+-- they reference an LJ kinematic-vertex field the current LJ
+reconstruction does not produce; pre-existing upstream, flagged for
+an upstream report).
+
+Produced with `condor/submit_truthkin_v3.sub` and
+`condor/job_args_truthkin_v3.txt` regenerated exactly as for v2 (same sample
+lists, `--files-per-job 5 --replace-xcache`, once per channel YAML, then
+concatenated; 1833 jobs; nine chunks failed on transient xrootd
+errors and were resubmitted with a copy of the submit file pointed at
+the failing (sample, chunk) lines), merged with the same
+`sidm/scripts/merge_coffea_chunks_eos.py` invocation into `anatomy_v3/`.
+
 ## Notebooks
 
 - `lifetime_forAN.ipynb` — proper-lifetime faithfulness and the
@@ -59,6 +96,25 @@ survive the login node.
   (transverse alpha ~ 1 in the analysis sweet spot; muon velocity suppression
   at M_Zd = 0.25 GeV) and the reconstruction-migration maps
   (electron-to-photon and PF-to-DSA handoff vs Lxy).
+- `final_state_anatomy_forAN.ipynb` — the first-principles anatomy, from v3:
+  production system, back-to-back topology and the Zd momentum scale,
+  gen and reco self-consistency masses (m(4l) and m(LJ,LJ) at m_Bs, pair
+  masses at m_Zd, LJ/Zd pT response at unity), the collimation scan with the
+  2 m/pT law and the grid median-dR map, lepton pT vs the mass scan, the
+  pT-asymmetry vs cos(theta*) relation with the muon-velocity floor, and the
+  displacement ladder of the display corners.
+- `trigger_context_forAN.ipynb` — the signal muons against the four L2 NoVtx
+  dimuon paths, from v3: sub-leading-muon spectra vs the 23/25 GeV
+  thresholds, efficiency turn-ons from the stored HLT bits
+  (`genOnly_trigger`/`genOnly` ratios), efficiency vs displacement and pair
+  opening angle, median-efficiency grid maps per channel, efficiency vs
+  lifetime, and the truth-level retention maps for the 26 GeV plateau cut
+  under study (Allie Hall, fork branch `trigger_pt`, unmerged).
+- `event_displays_forAN.ipynb` — generator-level eta-phi and R-z displays of
+  one deterministically chosen typical event from each of four grid corners,
+  a decade of displacement apart (0.4 cm to 2 m), reading the ntuples
+  directly (no v2/v3 dependence).
+
 
 Builder scripts (`_build_*_notebook.py`) regenerate each notebook
 deterministically; execute with
@@ -119,3 +175,13 @@ and agree: 0.8607 +- 0.0035 vs 0.8593 recorded, and 0.6060 +- 0.0049 vs
   matching dark photon (all 4Mu content and ~10% of 2Mu2E events). Both axes
   now count per dark photon; the canonical production carries the fixed
   definitions.
+- `sidm/configs/selections.yaml`: the `genOnly_trigger` channel (anatomy
+  extension).
+- `sidm/definitions/hists.py`: the `anatomy_extra` histogram definitions and
+  the `decayed_daughter_pairs`/`daughters_dR` helpers (per-dark-photon
+  daughter pairing via the generator children links; `ak.num` needs the
+  explicit `axis=2` there).
+- `sidm/configs/hist_collections.yaml`: the `anatomy_extra` collection.
+- `sidm/tools/histogram.py`: the fill-failure warning now prints the caught
+  exception, so a broken fill function is diagnosable from job logs instead
+  of failing silently per chunk.
