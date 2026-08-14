@@ -53,7 +53,7 @@ python --version
 export PIP_CACHE_DIR="${_CONDOR_SCRATCH_DIR}/pip_cache"
 
 python -m pip install --upgrade pip setuptools wheel
-python -m pip install --no-cache-dir -r requirements.txt
+python -m pip install --no-cache-dir -r requirements.txt -c constraints.txt
 
 # ------------------------------------------------------------
 # 3. Verify dependencies before running analysis
