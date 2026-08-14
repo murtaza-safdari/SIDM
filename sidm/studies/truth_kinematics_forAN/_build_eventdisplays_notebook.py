@@ -61,7 +61,9 @@ lepton has $|\eta| < 2.4$, take the event whose larger dark-photon $l_{xy}$
 is closest to the sample median of that quantity -- a typical event, not a
 tail event. The two muon-system displays instead target a stated $l_{xy}$
 (350 and 550 cm): the region they illustrate lies in the lifetime tail,
-above any sample's median, and the rule stays deterministic.
+above any sample's median, and the rule stays deterministic. Those two
+displays additionally require the dark photons in opposite $\phi$
+hemispheres, so the unfolded longitudinal view separates them.
 
 **Reading the longitudinal view:** back-to-back is a transverse-plane
 statement. $|\Delta\phi(Z_d, Z_d)| \approx \pi$ in every event (quoted on
@@ -136,7 +138,7 @@ def stamp(ax, text, avoid_xy, corners):
     ax.text(best[0], best[1], text, transform=ax.transAxes,
             ha="right" if best[0] > 0.5 else "left",
             va="top" if best[1] > 0.5 else "bottom",
-            fontsize=11, bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
+            fontsize=13, bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
 
 def first_file(sample, location_cfg):
     '''Resolve the first ntuple file of a sample from the location YAML.'''
@@ -165,17 +167,24 @@ def load_dark_photons(sample, location_cfg):
 def pick_event(As, target_lxy=None):
     '''Deterministic representative event: all daughters |eta| < 2.4, larger
     dark-photon lxy closest to the sample median of that quantity -- or to
-    an explicit target_lxy for displays that illustrate the lifetime tail.'''
+    an explicit target_lxy for displays that illustrate the lifetime tail.
+    Target mode additionally requires the two dark photons in opposite phi
+    hemispheres, so the unfolded R-z view separates them.'''
     ok = None
     lxy_parts = []
+    phi_parts = []
     for col in As.values():
         ch = col.children
         ok_f = ak.all(ak.all(abs(ch.eta) < 2.4, axis=2), axis=1)
         ok = ok_f if ok is None else (ok & ok_f)
         lxy_parts.append(np.sqrt((ch.vx[:, :, 0] - col.vx) ** 2
                                  + (ch.vy[:, :, 0] - col.vy) ** 2))
+        phi_parts.append(col.phi)
     max_lxy = ak.max(ak.concatenate(lxy_parts, axis=1), axis=1).to_numpy()
     ok = ok.to_numpy()
+    if target_lxy is not None:
+        phis = ak.to_numpy(ak.concatenate(phi_parts, axis=1))
+        ok = ok & (phis[:, 0] * phis[:, 1] < 0)
     if not ok.any():
         ok = np.ones_like(ok, dtype=bool)
     goal = np.median(max_lxy[ok]) if target_lxy is None else target_lxy
@@ -226,14 +235,14 @@ def draw_etaphi(ax, rec, label):
         lep = r"\mu" if a["flavor"] == "mu" else "e"
         # anchor the text in data coordinates just outside the dR = 0.4 cone,
         # flipped away from the nearest panel edges
-        dxd, ha = (-0.55, "right") if a["eta"] > 1.4 else (0.55, "left")
-        dyd, va = (-0.55, "top") if a["phi"] > 1.6 else (0.55, "bottom")
+        dxd, ha = (-0.45, "right") if a["eta"] > 1.4 else (0.45, "left")
+        dyd, va = (-0.45, "top") if a["phi"] > 1.6 else (0.45, "bottom")
         ax.annotate(rf"$Z_d \to {lep}{lep}$" "\n"
                     rf"$p_T$ = {a['pt']:.0f} GeV" "\n"
                     rf"$\Delta R$ = {dr:.3g}",
                     (a["eta"], a["phi"]), textcoords="data",
                     xytext=(a["eta"] + dxd, a["phi"] + dyd), ha=ha, va=va,
-                    fontsize=11,
+                    fontsize=13,
                     bbox=dict(facecolor="white", alpha=0.6, edgecolor="none"))
     flavors = {a["flavor"] for a in rec}
     handles = [Line2D([], [], ls="none", marker="*", ms=12, color="gray",
@@ -246,7 +255,7 @@ def draw_etaphi(ax, rec, label):
     if "e" in flavors:
         handles.append(Line2D([], [], ls="none", marker="s",
                               color=FLAV_STYLE["e"]["color"], label=r"$e$"))
-    ax.legend(handles=handles, loc="upper left", fontsize=11)
+    ax.legend(handles=handles, loc="upper left", fontsize=12)
     ax.set_xlabel(r"$\eta$")
     ax.set_ylabel(r"$\phi$")
     ax.set_xlim(-3.4, 3.4)
@@ -271,7 +280,9 @@ def draw_rz(ax, rec, label):
     top = 1.6 * max(max(a["dec_R"] for a in rec), 1.0)
     zspan = max(max(abs(a["dec_z"]) for a in rec),
                 max(abs(a["prod_z"]) for a in rec) + 1.0, 2.0)
-    zmax = 1.6 * zspan
+    # keep the z range comparable to the R range: a near-central decay
+    # otherwise compresses z to centimeters against meters of R
+    zmax = max(1.6 * zspan, 0.6 * top)
     ray_r = 0.45 * top
     ax.axhline(0, color="gray", lw=0.6, alpha=0.6)
     # draw only elements that are visually resolvable at this event's scale
@@ -280,14 +291,14 @@ def draw_rz(ax, rec, label):
     if 0.05 * top < BEAMPIPE_R < 0.9 * top:
         for s in (1, -1):
             ax.axhline(s * BEAMPIPE_R, color="gray", lw=0.7, ls=":", alpha=0.7)
-        ax.text(0.985, -BEAMPIPE_R - 0.02 * top, "beam pipe", fontsize=9,
+        ax.text(0.985, -BEAMPIPE_R - 0.02 * top, "beam pipe", fontsize=11,
                 color="gray", transform=ax.get_yaxis_transform(),
                 ha="right", va="top")
     for r1, r2, band_label in DETECTOR_BANDS:
         if r1 < 0.9 * top and (min(r2, top) - r1) > 0.05 * top:
             for s in (1, -1):
                 ax.axhspan(s * r1, s * min(r2, 1.5 * top), color="gray", alpha=0.08)
-            ax.text(0.985, -r1 - 0.005 * top, band_label, fontsize=9,
+            ax.text(0.985, -r1 - 0.005 * top, band_label, fontsize=11,
                     color="gray", transform=ax.get_yaxis_transform(),
                     ha="right", va="top")
     avoid = []
@@ -323,7 +334,7 @@ def draw_rz(ax, rec, label):
                     (a["dec_z"], s * a["dec_R"]), textcoords="offset points",
                     xytext=(16 * side, 12 if s > 0 else -12),
                     ha="left" if side > 0 else "right",
-                    va="bottom" if s > 0 else "top", fontsize=10,
+                    va="bottom" if s > 0 else "top", fontsize=13,
                     bbox=dict(facecolor="white", alpha=0.55, edgecolor="none"))
     # the dark photons' common production vertex; its transverse offset
     # (the beamspot, ~0.02 cm) is invisible at every display scale, so pin
@@ -334,7 +345,7 @@ def draw_rz(ax, rec, label):
     ax.text(0.03, 0.03,
             rf"$|\Delta\phi(Z_d, Z_d)|$ = {dphi_zd:.2f}" "\n"
             rf"$|\Delta\eta(Z_d, Z_d)|$ = {deta_zd:.2f}",
-            transform=ax.transAxes, ha="left", va="bottom", fontsize=10,
+            transform=ax.transAxes, ha="left", va="bottom", fontsize=13,
             bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
     ax.set_xlabel(r"$z$ [cm]")
     ax.set_ylabel(r"signed $R$ [cm]   (sign of $\phi$)")
