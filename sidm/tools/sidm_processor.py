@@ -8,6 +8,7 @@ from coffea import processor
 from coffea import lumi_tools
 from coffea.nanoevents.methods import nanoaod
 from coffea.nanoevents.methods import vector as cvec
+import coffea.nanoevents.transforms as tr
 import awkward as ak
 import fastjet
 import vector
@@ -16,7 +17,6 @@ from sidm import BASE_DIR
 from sidm.tools import selection, cutflow, utilities
 from sidm.definitions.hists import hist_defs, counter_defs
 from sidm.definitions.objects import preLj_objs, postLj_objs, postLj_objs_MC
-import coffea.nanoevents.transforms as tr
 
 def _patched_local2global(stack):
     """
@@ -122,7 +122,7 @@ class SidmProcessor(processor.ProcessorABC):
     def process(self, events):
         """Apply selections, make histograms and cutflow"""
         is_data = events.metadata["is_data"]
-        year = events.metadata["year"]
+        year = str(events.metadata["year"])
 
         # apply golden json
         n_removed = 0
@@ -363,7 +363,7 @@ class SidmProcessor(processor.ProcessorABC):
 
     def make_constituent(self, consts, type_ids, name, fields):
         """Return array of particles of given type_ids, name, and only specified fields"""
-        relevant_consts = consts[ak.any((consts.part_type == x for x in type_ids), axis=0)]
+        relevant_consts = consts[ak.any((consts.part_type == x for x in type_ids), axis=0)] # dask profile implies this may be a bottleneck
         forms = {f: relevant_consts.__getattr__(f) for f in fields}
         return ak.zip(forms, with_name=name, behavior=nanoaod.behavior)
 
