@@ -67,11 +67,7 @@ jobs:
           # you a deliberate dependency bump is safe, or that a new release has
           # broken the stack. Constraining it would make this job green forever
           # and silently useless.
-          #
-          # The xrootd line is skipped for the same reason chain-report.yml
-          # skips it: its PyPI wheel builds the C library from source, and no
-          # XRootD is needed to read a local fixture.
-          grep -v '^xrootd' requirements.txt | pip install -r /dev/stdin
+          pip install -r requirements.txt
           pip install "distributed==2025.3.0"
           pip install -e .
 
