@@ -961,9 +961,6 @@ gen2D: &gen2D
   - "genE_leading_vs_subleading_dxy"
 
 number: &number
-  - "mu_lj_muonN"
-  - "mu_lj_pfMu_n"
-  - "mu_lj_dsaMu_n"
   - "N_dsa_pairs"
   - "N_back_to_back_dsa"
   - "N_parallel_dsa"
@@ -1059,8 +1056,6 @@ cosmic_muons: &cosmic_muons
   - *mu_ljSpread_pf
   - *mu_ljSpread_mu
   - *number
-  - *dsaPair_1D
-  - *dsaPair_2D
   - *cosAlpha
   - *pf_dz_vz
   - "dsaMu_pfMu_dR_closest"
