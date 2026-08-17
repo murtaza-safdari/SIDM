@@ -99,6 +99,17 @@ pass — which also fills its one collection, so it can emit hist warnings for i
 all channels — and the 14-representative-channel × valid-collections pass). The committed
 fixture (`tests/data/events_2mu2e_500GeV_200ev.root`, a 200-event 2Mu2E skim — a
 full-width snapshot, all branches retained) lets the chain run on a stock CI runner with
-no EOS/XRootD/cvmfs access. The data path (`is_data: True`) is not exercised. The harness
-runs with a deliberately non-unit `skim_factor` so the skim-scaling path of the weighted
-cutflow column is genuinely tested.
+no EOS/XRootD/cvmfs access. The harness runs with a deliberately non-unit `skim_factor`
+so the skim-scaling path of the weighted cutflow column is genuinely tested.
+
+The data path (`is_data: True`) is exercised by a second fixture,
+`tests/data/events_DoubleMuon2018C_200ev.root`: a 200-event slice of a real DoubleMuon
+2018C skim (`skimmed_output_583.root`, entries 11649-11849) chosen to span a golden-JSON
+dead-run boundary. Its first 100 events are run 320007, which is absent from the 2018
+golden JSON entirely; the last 100 are run 319993, which is fully golden. Both fixtures
+are processed at `chunksize=100`, so the data fixture's first chunk is 100% non-golden:
+any data-only code that filters on the golden JSON produces a zero-event chunk here, the
+exact configuration that crashed real 2018C processing and that an MC fixture can never
+probe (the mask only runs when `is_data` is true). The report carries a separate
+data-fixture cutflow diff and goes red if the data pass crashes on the PR side. MC counts
+are unaffected by the chunking: accumulation is a sum over chunks.

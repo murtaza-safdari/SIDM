@@ -23,7 +23,8 @@ concurrency:
 jobs:
   report:
     runs-on: ubuntu-latest
-    timeout-minutes: 30   # the chain runs ~11 min; cap so a hang can't burn the 6 h default
+    timeout-minutes: 50   # ~28 min since the data-fixture pass (two computes at ~13 min
+                          # each); cap so a hang can't burn the 6 h default
     steps:
       - uses: actions/checkout@v4
         with:

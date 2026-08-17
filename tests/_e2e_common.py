@@ -29,6 +29,22 @@ FIXTURE = os.path.join(_HERE, "data", "events_2mu2e_500GeV_200ev.root")
 # A signal-shaped dataset name so the processor takes its "assume 1 fb" path
 # instead of failing the cross-section lookup.
 DATASET = "2Mu2E_500GeV_1p2GeV_1p9mm"
+
+# Real-data fixture: a 200-event slice of a DoubleMuon 2018C skim
+# (skimmed_output_583.root, entries 11649-11849) chosen to SPAN a golden-JSON
+# dead-run boundary. Events 0-99 are run 320007, which is absent from the 2018
+# golden JSON entirely; events 100-199 are run 319993, which is fully golden.
+# With CHUNKSIZE=100 the first chunk is 100% non-golden, so any code that
+# filters data by the golden JSON produces a ZERO-EVENT chunk here -- the
+# configuration that crashed real 2018C processing (PR #42) and that MC
+# fixtures can never probe, because the mask only runs when is_data is true.
+DATA_FIXTURE = os.path.join(_HERE, "data", "events_DoubleMuon2018C_200ev.root")
+DATA_DATASET = "DoubleMuon_2018C_slice"
+
+# Two chunks per 200-event fixture. For the MC fixture this only splits the
+# accumulation (sums are chunk-order independent, so all counts are unchanged);
+# for the data fixture it is load-bearing -- see DATA_FIXTURE above.
+CHUNKSIZE = 100
 # Deliberately non-unit: postprocess scales the weighted column by
 # lumi*xs/(sum_w/skim_factor), so at skim_factor=1.0 (with the fixture's
 # genWeights identically 1.0) the /skim_factor path is a numerical no-op and a
@@ -96,20 +112,28 @@ def _normalize_warning(line):
     return line.strip()
 
 
-def run_chain(channels, collections):
-    """Run the processor over the fixture. Returns (per_sample_output, warning_set)."""
+def run_chain(channels, collections, data=False):
+    """Run the processor over a fixture. Returns (per_sample_output, warning_set).
+    data=False runs the MC signal fixture; data=True runs the real-data fixture
+    (is_data metadata, so data-only code paths like golden-JSON filtering run)."""
     unknown = [c for c in channels if c not in set(all_channels())]
     if unknown:
         raise ValueError(f"Unknown channel(s) not defined as selections with obj_cuts: {unknown}")
     from coffea import processor
     from sidm.tools import sidm_processor, llpnanoaodschema
-    fileset = {DATASET: {"files": [FIXTURE],
-                         "metadata": {"is_data": False, "year": "2018",
-                                      "skim_factor": SKIM_FACTOR}}}
+    if data:
+        fileset = {DATA_DATASET: {"files": [DATA_FIXTURE],
+                                  "metadata": {"is_data": True, "year": "2018",
+                                               "skim_factor": 1.0}}}
+    else:
+        fileset = {DATASET: {"files": [FIXTURE],
+                             "metadata": {"is_data": False, "year": "2018",
+                                          "skim_factor": SKIM_FACTOR}}}
     runner = processor.Runner(
         executor=processor.IterativeExecutor(),
         schema=llpnanoaodschema.LLPNanoAODSchema,
         skipbadfiles=False,
+        chunksize=CHUNKSIZE,
     )
     proc = sidm_processor.SidmProcessor(channels, collections, verbose=False)
     buf = io.StringIO()
@@ -117,7 +141,7 @@ def run_chain(channels, collections):
         out = runner.run(fileset, treename="Events", processor_instance=proc)
     warnings = {_normalize_warning(l) for l in buf.getvalue().splitlines()
                 if l.lstrip().startswith("Warning:")}
-    return out["out"][DATASET], warnings
+    return out["out"][DATA_DATASET if data else DATASET], warnings
 
 
 def cutflow_counts(per_sample_output):
