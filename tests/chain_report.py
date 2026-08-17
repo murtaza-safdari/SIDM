@@ -56,6 +56,8 @@ def compute_state():
         "dropped_representative_channels": [], "reps_used": [],
         "cutflow_collection": None,
         "scaled_sum_weights": None, "error": None, "inventory_error": None,
+        "cutflows_data": {}, "cutflows_data_weighted": {},
+        "n_channels_data": 0, "error_data": None,
     }
     # Static inventory FIRST, in its own try: these are pure config reads that need
     # no chain run, and keeping them independent means a chain crash cannot blank
@@ -89,7 +91,21 @@ def compute_state():
         state["dropped_representative_channels"] = sorted(
             set(e2e.REPRESENTATIVE_CHANNELS) - known)
         _, warns_hist = e2e.run_chain(reps, state["valid_collections"])
-        warnings = sorted(warns_sel | warns_hist)
+        # Data-fixture pass: the same channel sweep over a real 2018C data
+        # slice spanning a golden-JSON dead-run boundary (see DATA_FIXTURE in
+        # _e2e_common). Data-only code paths -- golden-JSON filtering above
+        # all -- are invisible to the MC fixture. Own try so a data-only crash
+        # is reported as exactly that and the MC results above survive.
+        warns_data = set()
+        try:
+            out_data, warns_data = e2e.run_chain(
+                sorted(known), [state["cutflow_collection"]], data=True)
+            state["cutflows_data"] = e2e.cutflow_counts(out_data)
+            state["cutflows_data_weighted"] = e2e.cutflow_weighted(out_data)
+            state["n_channels_data"] = len(state["cutflows_data"])
+        except Exception:
+            state["error_data"] = traceback.format_exc()
+        warnings = sorted(warns_sel | warns_hist | warns_data)
         state["warnings"] = warnings
         state["skipped_hists"] = sorted({m.group(1) for w in warnings
                                          for m in [_SKIPPED_HIST_RE.search(w)] if m})
@@ -190,6 +206,15 @@ def new_errors(base, pr):
                            "other PRs' reports are red too); tracebacks in the report")
         else:
             reasons.append("the chain crashed on this PR (traceback in the report)")
+    if pr.get("error_data"):
+        if base.get("error_data"):
+            reasons.append("the chain crashed on the DATA fixture on BOTH sides -- "
+                           "either an environment or harness change in this PR broke "
+                           "it, or `main` itself is currently broken for data")
+        else:
+            reasons.append("the chain crashed on the DATA fixture on this PR "
+                           "(traceback in the report); the MC fixture alone cannot "
+                           "see data-only code paths such as golden-JSON filtering")
     if pr.get("inventory_error") and not base.get("inventory_error"):
         reasons.append("the hist-collection inventory failed to build on this PR "
                        "(traceback in the report)")
@@ -228,6 +253,12 @@ def render(base, pr):
     if pr.get("error"):
         out += ["### ❌ The chain ERRORED on this PR", "",
                 "```", pr["error"].strip()[-2500:], "```", ""]
+    if pr.get("error_data"):
+        out += ["### ❌ The chain ERRORED on the DATA fixture on this PR", "",
+                "```", pr["error_data"].strip()[-2500:], "```", ""]
+    if base.get("error_data"):
+        out += ["<details><summary>Base-side DATA-fixture traceback</summary>", "",
+                "```", base["error_data"].strip()[-2500:], "```", "", "</details>", ""]
     if base.get("error"):
         out += ["> Note: the base (`main`) chain errored; the cutflow/warning comparison "
                 "below is unavailable. The static collection inventory is unaffected.", ""]
@@ -253,6 +284,13 @@ def render(base, pr):
     removed_ch = sorted(set(cf_b) - set(cf_p)) if chain_ok else []
     sw_b, sw_p = base.get("scaled_sum_weights"), pr.get("scaled_sum_weights")
     sw_changed = chain_ok and sw_b != sw_p
+    data_ok = not base.get("error_data") and not pr.get("error_data")
+    cfd_b, cfd_p = base.get("cutflows_data", {}), pr.get("cutflows_data", {})
+    cfdw_b = base.get("cutflows_data_weighted", {})
+    cfdw_p = pr.get("cutflows_data_weighted", {})
+    changed_data = sorted(c for c in set(cfd_b) & set(cfd_p)
+                          if cfd_b[c] != cfd_p[c]
+                          or cfdw_b.get(c, {}) != cfdw_p.get(c, {})) if data_ok else []
 
     def _sw(v):
         return "—" if v is None else str(v)
@@ -270,6 +308,8 @@ def render(base, pr):
         f"| channels with no event-cut rows (only the initial total) | {len(bh_b.get('no_cut_rows',[]))} | {len(bh_p.get('no_cut_rows',[]))} |",
         f"| scaled Σ genWeight (Σw / skim_factor) | {_sw(sw_b)} | {_sw(sw_p)} |",
         f"| channels with changed cutflow | — | {len(changed) if chain_ok else '—'} |",
+        f"| channels executed on the data fixture | {base.get('n_channels_data', 0)} | {pr.get('n_channels_data', 0)} |",
+        f"| channels with changed DATA cutflow | — | {len(changed_data) if data_ok else '—'} |",
         "",
     ]
     if not chain_ok:
@@ -290,7 +330,9 @@ def render(base, pr):
     out += ["### What this PR changes", ""]
     any_change = (worsened or repaired or deleted_brk or vc_added or vc_removed
                   or new_warn or gone_warn or changed or added_ch or removed_ch
-                  or sw_changed or pr.get("error") or pr.get("inventory_error"))
+                  or changed_data or sw_changed
+                  or pr.get("error") or pr.get("inventory_error")
+                  or pr.get("error_data"))
     if chain_ok and inv_ok and not any_change:
         out += ["No change to chain execution, collections, warnings, or cutflows. ✅", ""]
     else:
@@ -335,6 +377,23 @@ def render(base, pr):
                         out.append(f"| {c} | {cut} | {row[0]} | {row[1]} | {row[2]} | {row[3]} |")
             if len(changed) > 50:
                 out.append(f"\n_…and {len(changed) - 50} more changed channels._")
+            out.append("")
+        if changed_data:
+            out += [f"**Data-fixture cutflow changed in {len(changed_data)} channel(s)** "
+                    "_(raw and weighted, as above but over the 2018C data slice)_:", "",
+                    "| channel | cut | raw current | raw PR | weighted current | weighted PR |",
+                    "|---|---|--:|--:|--:|--:|"]
+            for c in changed_data[:50]:
+                cuts = sorted(set(cfd_b[c]) | set(cfd_p[c])
+                              | set(cfdw_b.get(c, {})) | set(cfdw_p.get(c, {})))
+                for cut in cuts:
+                    a, b_ = cfd_b[c].get(cut), cfd_p[c].get(cut)
+                    wa, wb = cfdw_b.get(c, {}).get(cut), cfdw_p.get(c, {}).get(cut)
+                    if a != b_ or wa != wb:
+                        row = [str(x) if x is not None else "—" for x in (a, b_, wa, wb)]
+                        out.append(f"| {c} | {cut} | {row[0]} | {row[1]} | {row[2]} | {row[3]} |")
+            if len(changed_data) > 50:
+                out.append(f"\n_…and {len(changed_data) - 50} more changed channels._")
             out.append("")
     if coverage_note:
         out += ["_The hist pass covered different channels/collections on the two sides "
