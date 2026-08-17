@@ -1417,4 +1417,15 @@ def plot_cutflow (samples, channel_name, user,  raw=False):
     plt.show()
     plt.close()
 
-    
+def sum_bg_cutflow(bg_list, channel_name, user, raw=False):
+    summed_cutflow = None
+    cut = None
+    for s in bg_list:
+        cutflow = loadCutflow(s, user, channel_name)
+        cuts, N = get_cutflow_list (cutflow, channel_name, raw)
+        if summed_cutflow is None:
+            summed_cutflow = np.array(N)
+        else:
+            summed_cutflow += N
+        cut = cuts
+    return (cut, summed_cutflow)
