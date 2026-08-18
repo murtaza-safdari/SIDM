@@ -235,6 +235,7 @@ obj_cut_defs = {
     "dsaMuons": {
         "pT > 10 GeV": lambda objs, dsa: dsa.pt > 10,
         "pT > 100 GeV": lambda objs, dsa: dsa.pt > 100,
+        "pixel_defect" : lambda objs, dsa: ~ ((dsa.eta <= 1.2) & (dsa.eta >= 0.3) & (dsa.phi >= 0.4) & (dsa.phi <=0.8) ),
         "|dxy| <= 40": lambda objs, dsa: abs(dsa.dxy) <= 40,
         "|dz| <= 60": lambda objs, dsa: abs(dsa.dz) <= 60,
         "|eta| < 2.4": lambda objs, dsa: abs(dsa.eta) < 2.4,
