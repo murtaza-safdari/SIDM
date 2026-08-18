@@ -137,6 +137,10 @@ base_sr: &base_sr
     - *evt_sr
     - "2mu2e"
 
+
+
+### Control regions and specific studies ###
+
 # selections without the event-level pt cut on muons 
 base_noMuPtCut: &base_noMuPtCut
   obj_cuts: &obj_base_noMuPtCut
@@ -159,8 +163,20 @@ base_noMuPtCut: &base_noMuPtCut
     - *evt_base_noMuPtCut
     - "2mu2e"
 
-### Control regions and specific studies ###
+# Cuts to apply to a skim
+trigger_muPtCut: &trigger_muPtCut
+  obj_cuts: {}
+  evt_cuts: &evt_trigger_muPtCut
+    - "pass triggers"
+    - ">=2 muons (pf or dsa) pT > 26 GeV"
+    
+trigger_muPtCut_muID: &trigger_muPtCut_muID
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  evt_cuts:
+    - *evt_trigger_muPtCut
 
+# Cross cleaning studies
 ljsource_cuts_chargeCC: &ljsource_cuts_chargeCC
   obj_cuts: &obj_ljsource_cuts_chargeCC
       <<: *obj_ljsource_cuts
