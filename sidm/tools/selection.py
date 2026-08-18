@@ -33,6 +33,13 @@ class Selection:
                 mask = evt_cut_defs[cut](sel_objs)
             except Exception as e:
                 print(f"Warning: Unable to evaluate {cut} Skipping.",e)
+                # Skip this cut entirely. Event cuts were once collected and
+                # applied together as a single AND after the loop, where falling
+                # through here was harmless. They are now evaluated and applied
+                # one at a time against the progressively slimmed collections,
+                # so without this the loop below would re-apply the PREVIOUS
+                # cut's mask and log a cutflow row under this cut's name.
+                continue
 
             # apply to all object collections
             for name, obj in sel_objs.items():
