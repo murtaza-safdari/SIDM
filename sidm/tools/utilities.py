@@ -444,6 +444,8 @@ def select_numbersPhoton(number, var1, var2):
     return selected
 
 def returnBitMapTArrayPhoton(bitMap, var1, var2):
+    if len(bitMap) == 0:
+        return ak.zeros_like(bitMap, dtype=bool)
     tList = []
     for i in range(len(bitMap)):
         temp = []
