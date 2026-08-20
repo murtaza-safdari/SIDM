@@ -1056,4 +1056,24 @@ cosmic_muons: &cosmic_muons
   - "dsaMu_pfMu_pt_diff"
   - *deltaR_cosmic
 
+cosmic_veto: &cosmic_veto ##final set of histograms for slides and AN
+  - *cosAlpha
+  - "egm_lj_pt"
+  - "mu_lj_pt"
+  - "mu_lj_muonN"
+  - "mu_lj_pfMu_n"
+  - "mu_lj_dsaMu_n"
+  - "mu_lj_muon_pt"
+  - "mu_lj_pfMuon_pt"
+  - "mu_lj_dsaMuon_pt"
+  - "electron_eta_phi"
+  - "muon_eta_phi"
+  - "dsaMuon_eta_phi"
+  - "electron_pt"
+  - "muon_pt"
+  - "dsaMuon_pt"
+  - "mu_lj_dzSpread_mu"
+  - "mu_lj_vxySpread_mu"
+  - "mu_lj_dzSpread_pf"
+  - "mu_lj_vxySpread_pf"
 
