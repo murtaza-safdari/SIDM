@@ -1381,39 +1381,3 @@ def v3d_diff(obj1, obj2):
 def vz_diff_minus_dz_diff(obj1, obj2):
     return abs(obj1.vz - obj2.vz) - abs(obj1.dz-obj2.dz)
 
-def loadCutflow(sample, user, foldername):
-    ##only works for Data MC not signal
-    LFN = f"/store/group/lpcmetx/SIDM/coffea_outputs/{user}/{foldername}/{sample}.coffea"
-    tmp = tempfile.mkdtemp()
-    prefix = "root://xcache/"
-    local = os.path.join(tmp, os.path.basename(LFN))
-    subprocess.run(["xrdcp", "-f", "-s", prefix + LFN, local], check=True)
-    output = coffea.util.load(local)
-    cutflow = output["out"][sample]["cutflow"]
-    return(cutflow)
-
-def get_cutflow_list(cutflow, channel_name, raw=False):
-    rows = cutflow[channel_name].rows
-    cuts = rows.keys()
-    N = []
-    for x in cuts:
-        if raw:
-            N.append(rows[x]["raw"])
-        else:
-            N.append(rows[x]["weighted"])
-    return cuts, N
-
-def plot_cutflow (samples, channel_name, user,  raw=False):
-    ##This works only for outputs store in the EOS folder in LPC, folder_name should be selection name
-    for s in samples:
-        print(s)
-        cutflow = loadCutflow(s, user, channel_name)
-        cuts, N = get_cutflow_list (cutflow, channel_name, raw)
-        plt.plot(cuts, N, label = s, marker = "o")
-    plt.yscale("log")
-    plt.legend()
-    plt.xticks(rotation=45)
-    plt.ylim(1e-1, 1e9)
-    plt.show()
-    plt.close()
-
