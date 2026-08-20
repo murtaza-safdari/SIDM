@@ -12,21 +12,25 @@ ljsource_cuts: &ljsource_cuts
       - "pT > 10 GeV"
       - "|eta| < 2.4"
       - 'MVANonIsoWPL'
+      - "eta-phi_veto"
     muons: &muons_ljsource_cuts
       - "looseID"
       - "pT > 5 GeV"
       - "|eta| < 2.4"
+      - "eta-phi_veto"
     photons: &photons_ljsource_cuts
       - "pT > 20 GeV"
       - "|eta| < 2.5"
       - 'Custom Cutbased'
       - "pixelSeed"
       - 'Photon DR Veto 0p025'
+      - "eta-phi_veto"
     dsaMuons: &dsaMuons_ljsource_cuts
       - "pT > 10 GeV"
       - "|eta| < 2.4"
       - "displaced ID"
       - "all" # cross-cleaning
+      - "eta-phi_veto"
 
 # require final-state gen e and mu
 gen_level_cuts: &gen_level_cuts

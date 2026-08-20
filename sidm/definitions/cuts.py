@@ -160,6 +160,10 @@ obj_cut_defs = {
         "pT > 10 GeV": lambda objs: objs["electrons"].pt > 10,
         "pT > 30 GeV": lambda objs: objs["electrons"].pt > 30,
         "|eta| < 1.479": lambda objs: abs(objs["electrons"].eta) < 1.479,
+        "eta-phi_veto" : lambda objs: ~ ((objs["electrons"].eta <= 1.4)
+                                         & (objs["electrons"].eta >= -0.1)
+                                         & (objs["electrons"].phi >= 0.4)
+                                         & (objs["electrons"].phi <=0.8)),
         "1.479 < |eta| < 2.4": lambda objs: ((abs(objs["electrons"].eta) > 1.479)
                                              & (abs(objs["electrons"].eta) < 2.4)),
         "|eta| < 2.4": lambda objs: abs(objs["electrons"].eta) < 2.4,
@@ -202,6 +206,10 @@ obj_cut_defs = {
         "tightID": lambda objs, muons: muons.tightId,
         "pT > 5 GeV": lambda objs, muons: muons.pt > 5,
         "pT > 30 GeV": lambda objs, muons: muons.pt > 30,
+        "eta-phi_veto" : lambda objs, muons: ~ ((muons.eta <= 1.4)
+                                              & (muons.eta >= -0.1)
+                                              & (muons.phi >= 0.4)
+                                              & (muons.phi <=0.8)),
         "|eta| < 2.4": lambda objs, muons: abs(muons.eta) < 2.4,
          "|eta| < 2.1": lambda objs, muons: abs(muons.eta) < 2.1,
         "dR(mu, A) < 0.5": lambda objs, muons: dR(muons, objs["genAs_toMu"]) < 0.5,
@@ -216,6 +224,10 @@ obj_cut_defs = {
     "photons":{
         "pT > 20 GeV": lambda objs: objs["photons"].pt > 20,
         "pT > 30 GeV": lambda objs: objs["photons"].pt > 30,
+        "eta-phi_veto" : lambda objs: ~ ((objs["photons"].eta <= 1.4)
+                                         & (objs["photons"].eta >= -0.1)
+                                         & (objs["photons"].phi >= 0.4)
+                                         & (objs["photons"].phi <=0.8)),
         "|eta| < 2.5": lambda objs: abs(objs["photons"].eta) < 2.5, # fixme: do we want eta or scEta
         "eta": lambda objs: objs["photons"].isScEtaEB | objs["photons"].isScEtaEE,
         "barrel": lambda objs: objs["photons"].isScEtaEB,
@@ -235,7 +247,10 @@ obj_cut_defs = {
     "dsaMuons": {
         "pT > 10 GeV": lambda objs, dsa: dsa.pt > 10,
         "pT > 100 GeV": lambda objs, dsa: dsa.pt > 100,
-        "pixel_defect" : lambda objs, dsa: ~ ((dsa.eta <= 1.2) & (dsa.eta >= 0.3) & (dsa.phi >= 0.4) & (dsa.phi <=0.8) ),
+        "eta-phi_veto" : lambda objs, dsa: ~ ((dsa.eta <= 1.4)
+                                              & (dsa.eta >= -0.1)
+                                              & (dsa.phi >= 0.4)
+                                              & (dsa.phi <=0.8)),
         "|dxy| <= 40": lambda objs, dsa: abs(dsa.dxy) <= 40,
         "|dz| <= 60": lambda objs, dsa: abs(dsa.dz) <= 60,
         "|eta| < 2.4": lambda objs, dsa: abs(dsa.eta) < 2.4,
