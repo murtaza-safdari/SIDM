@@ -57,6 +57,7 @@ baseNoLjNoLjsource: &baseNoLjNoLjsource
   evt_cuts: &evt_baseNoLjNoljsource
     - *trigger
     - *evt_pv_cuts
+    - ">=2 muons (pf or dsa) pT > 26 GeV"
 
 # apply trigger, gen cuts, pv filter, and lj-source cuts
 baseNoLj: &baseNoLj
@@ -105,7 +106,7 @@ base: &base
   evt_cuts: &evt_base
     - *evt_baseNoLj
     - ">=2 LJs"
-    - ">=2 muons (pf or dsa) pT > 26 GeV"
+
 
 4mu: &4mu
   <<: *base
