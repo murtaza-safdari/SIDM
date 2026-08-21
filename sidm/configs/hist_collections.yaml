@@ -1032,6 +1032,9 @@ cosAlpha: &cosAlpha
   - "cosAlpha_dsa"
   - "cosAlpha_pf"
   - "cosAlpha_mu"
+  - "min_cosAlpha_mu"
+  - "min_cosAlpha_pf"
+  - "min_cosAlpha_dsa"
 
 deltaR_cosmic: &deltaR_cosmic
   - "dsaMu_dsaMu_deltaR_cosmic"

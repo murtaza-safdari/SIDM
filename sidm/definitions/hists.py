@@ -4634,6 +4634,27 @@ hist_defs = {
                    lambda objs, mask: cosAlpha(objs["allMuons"])),
         ],
     ),
+   "min_cosAlpha_mu": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, -1, 1, name="min_cosAlpha_mu",
+                                     label=r"Min CosAlpha($\mu$, $\mu$)"),
+                   lambda objs, mask: ak.min(cosAlpha(objs["allMuons"]), axis=1)),
+        ],
+    ),
+   "min_cosAlpha_pf": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, -1, 1, name="min_cosAlpha_pf",
+                                     label=r"Min CosAlpha(PF $\mu$, PF $\mu$)"),
+                   lambda objs, mask: ak.min(cosAlpha(objs["dsaMuons"]), axis=1)),
+        ],
+    ),
+   "min_cosAlpha_dsa": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(200, -1, 1, name="min_cosAlpha_dsa",
+                                     label=r"Min CosAlpha(DSA $\mu$, DSA $\mu$)"),
+                   lambda objs, mask: ak.min(cosAlpha(objs["muons"]), axis=1)),
+        ],
+    ),
     "muon_innerVz":obj_attr("muons", "innerVz"),
     "muon_innerVy":obj_attr("muons", "innerVy"),
     "muon_innerVx":obj_attr("muons", "innerVx"),
