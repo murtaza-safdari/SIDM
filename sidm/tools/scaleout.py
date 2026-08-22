@@ -2,10 +2,12 @@
 
 import os
 import subprocess
+import warnings
 from pathlib import Path
 
 import dask
 from dask.distributed import Client, PipInstall
+from distributed.diagnostics.plugin import UploadDirectory
 
 
 def make_dask_client(address):
@@ -26,6 +28,24 @@ _DEFAULT_LPC_IMAGE = (
 )
 _DEFAULT_SIDM_LOCAL_DIR = _REPO_ROOT / "sidm"
 _PROXY_RENEW_CMD = "voms-proxy-init --valid 192:00 -voms cms"
+
+# What NOT to ship to workers via UploadDirectory. Workers import sidm.tools and
+# sidm.definitions and read sidm/configs + sidm/data; they never open a notebook.
+# UploadDirectory zips the tree into memory, and the scheduler -- which for
+# LPCCondorCluster runs inside this very notebook process -- keeps a serialized
+# copy and pushes it to every worker, including every worker an adaptive cluster
+# starts later. So whatever is left in the payload is paid for repeatedly out of
+# the notebook's own memory. sidm/studies alone is several hundred MB of
+# committed notebook outputs, enough to OOM a shared cmslpc interactive node.
+_UPLOAD_SKIP_WORDS = (
+    # UploadDirectory's own defaults, which are replaced rather than extended
+    # when skip_words is passed explicitly.
+    ".git", ".github", ".pytest_cache", "tests", "docs",
+    # SIDM: notebooks and their committed outputs.
+    "studies", "test_notebooks", "__pycache__", ".ipynb_checkpoints", "ffNtuple_tests",
+)
+_UPLOAD_SKIP_EXTS = (".pyc", ".ipynb", ".coffea", ".root", ".png", ".pdf", ".html")
+_UPLOAD_WARN_BYTES = 32 * 1024**2
 
 
 def check_voms_proxy(min_seconds_left=3600):
@@ -71,6 +91,35 @@ def check_voms_proxy(min_seconds_left=3600):
     return proxy
 
 
+def _make_upload_plugin(sidm_local_dir):
+    """Build the UploadDirectory plugin that ships the local sidm/ tree to workers.
+
+    Excludes notebooks and their committed outputs (see _UPLOAD_SKIP_WORDS), which
+    workers never read and which dominate the tree's size. Warns if the resulting
+    payload is still large enough to threaten the notebook process, since the
+    scheduler holds it and re-sends it per worker.
+    """
+    plugin = UploadDirectory(
+        str(sidm_local_dir),
+        restart_workers=False,
+        skip_words=_UPLOAD_SKIP_WORDS,
+        skip=(lambda fn: os.path.splitext(fn)[1] in _UPLOAD_SKIP_EXTS,),
+    )
+    if len(plugin.data) > _UPLOAD_WARN_BYTES:
+        warnings.warn(
+            f"UploadDirectory payload for {sidm_local_dir} is "
+            f"{len(plugin.data) / 1024**2:.0f} MB. The scheduler runs in this "
+            f"notebook process and re-sends that payload to every worker, so a "
+            f"large tree can exhaust the interactive node's memory and get the "
+            f"kernel OOM-killed. Remove large files from the sidm/ tree, extend "
+            f"scaleout._UPLOAD_SKIP_WORDS, or pass sidm_local_dir=None and rely "
+            f"on the image.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    return plugin
+
+
 def make_lpc_client(
     min_workers=1,
     max_workers=10,
@@ -105,8 +154,12 @@ def make_lpc_client(
             under /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/.
         sidm_local_dir: path to a local sidm/ source tree to upload to each
             worker. The local checkout (including uncommitted changes) is what
-            workers see. Set to None to skip; the worker then sees only what is
-            already in the apptainer image.
+            workers see. Notebooks and their committed outputs are excluded from
+            the upload (_UPLOAD_SKIP_WORDS): workers only need the importable
+            modules plus configs/ and data/, and shipping sidm/studies would add
+            hundreds of MB that the in-process scheduler then holds and re-sends
+            to every worker. Set to None to skip the upload entirely; the worker
+            then sees only what is already in the apptainer image.
         condor_config: path to a CONDOR_CONFIG file. Defaults to
             condor/lpc_condor_config in this repo, a minimal LPC interactive
             config that omits the cmslpc-local-conf.py include directive
@@ -133,7 +186,6 @@ def make_lpc_client(
     os.environ["CONDOR_CONFIG"] = str(condor_config)
 
     from lpcjobqueue import LPCCondorCluster
-    from distributed.diagnostics.plugin import UploadDirectory
 
     # Point the dashboard link at localhost so it matches the documented SSH
     # tunnel (`ssh -L 8787:localhost:8787`, README step 7). Importing lpcjobqueue
@@ -172,8 +224,6 @@ def make_lpc_client(
     client = Client(cluster)
 
     if sidm_local_dir is not None:
-        client.register_plugin(
-            UploadDirectory(str(sidm_local_dir), restart_workers=False)
-        )
+        client.register_plugin(_make_upload_plugin(sidm_local_dir))
 
     return cluster, client
