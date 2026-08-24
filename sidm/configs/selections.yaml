@@ -97,6 +97,32 @@ base_ljDisplacementIso: &base_ljDisplacementIso
   evt_cuts:
     - *evt_baseNoLj
 
+# add LJ isolation, displacement cuts and cosAlpha
+base_ljDisplacementIso_cosAlpha: &base_ljDisplacementIso_cosAlpha
+  obj_cuts:
+    <<: *obj_baseNoLj
+  postLj_obj_cuts:
+    <<: *lj_displacementIso
+  evt_cuts:
+    - *evt_baseNoLj
+    - "all cosAlpha(mu, mu) > -0.99"
+
+# add LJ isolation, displacement cuts and cosAlpha
+base_ljDisplacementIso_cosAlpha_ljSpread: &base_ljDisplacementIso_cosAlpha_ljSpread
+  obj_cuts:
+    <<: *obj_baseNoLj
+  postLj_obj_cuts:
+    <<: *lj_displacementIso
+    mu_ljs:
+      - *mu_lj_displacementIso
+      - "dzSpread_mu <= 50"
+      - "vxySpread_mu <= 50"
+      - "dzSpread_pf <= 10"
+      - "vxySpread_pf <= 10"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "all cosAlpha(mu, mu) > -0.99"
+
 # add >=2 LJ requirement and >=2 high pt muons
 base: &base
   obj_cuts: &obj_base
