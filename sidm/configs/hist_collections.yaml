@@ -1079,6 +1079,8 @@ cosmic_veto: &cosmic_veto ##final set of histograms for slides and AN
   - "mu_lj_vxySpread_mu"
   - "mu_lj_dzSpread_pf"
   - "mu_lj_vxySpread_pf"
+  - "mu_lj_dxySpread_pf"
+  - "mu_lj_dxySpread_mu"
   - "muon_n"
   - "electron_n"
   - "dsaMuon_n"
