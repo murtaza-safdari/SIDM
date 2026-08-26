@@ -1086,3 +1086,4 @@ cosmic_veto: &cosmic_veto ##final set of histograms for slides and AN
   - "dsaMuon_n"
   - "photon_n"
   - "photon_pt"
+  - "photon_eta_phi"
