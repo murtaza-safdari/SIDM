@@ -88,18 +88,22 @@ def sample_label(mxx, mzd):
 md("""## Polarization fits, α summary
 
 For each sample the lepton `|cosθ*|` distribution in the dark-photon rest frame is fit
-with `1 + α·cos²θ*` over `[0, 0.6]` at `m_XX ≤ 200 GeV` and `[0, 0.8]` at
-`m_XX ≥ 500 GeV`, for the reasons in the next section. A spin-1 dark photon decaying
-to relativistic leptons gives `α → 1` (transverse polarization); velocity suppression
-drives `α → 0` as `m_ℓ/m_Zd` grows, visible for muons at `m_Zd = 0.25 GeV`, where
-`m_μ` eats half the two-body momentum.
+with `1 + α·cos²θ*` over a range chosen per sample, for the reasons in the next
+section: at `m_Zd ≥ 1.2 GeV`, `[0, 0.6]` at `m_XX = 100 GeV` and `[0, 0.8]` at
+`m_XX ≥ 200 GeV`; at `m_Zd = 0.25 GeV`, `[0, 0.8]` only at `m_XX = 200 GeV` and
+`[0, 0.6]` everywhere else on that row. A spin-1 dark photon decaying to relativistic
+leptons gives `α → 1` (transverse polarization); velocity suppression drives `α → 0`
+as `m_ℓ/m_Zd` grows, visible for muons at `m_Zd = 0.25 GeV`, where `m_μ` eats half
+the two-body momentum.
 """),
-code("""# [0, 0.6] at m_XX <= 200 GeV, where the gen filter's acceptance edge sits too
-# close to 0.8 to leave a clean range; [0, 0.8] at m_XX >= 500 GeV. Applied to
-# every m_Zd, including 0.25 GeV, where the fit stays poor at either range (see
-# the prose below) and there is no benefit to protecting it with a tighter one.
+code("""# m_Zd >= 1.2 GeV: [0, 0.6] at m_XX = 100 GeV, where the gen filter's
+# acceptance edge sits too close to 0.8; [0, 0.8] at m_XX >= 200 GeV, where it
+# does not. m_Zd = 0.25 GeV does not follow that same split -- see the prose
+# below -- and only m_XX = 200 GeV is safe to widen there.
 def fit_range_for(mxx, mzd):
-    return (0.0, 0.6) if mxx <= 200 else (0.0, 0.8)
+    if mzd <= 0.25:
+        return (0.0, 0.8) if mxx == 200 else (0.0, 0.6)
+    return (0.0, 0.6) if mxx <= 100 else (0.0, 0.8)
 
 def fit_alpha(h, fit_range):
     raw = h.values().flatten().astype(float)
@@ -154,66 +158,73 @@ an_style.save(fig, "polarization_alpha_summary")
 for row in rows:
     print("  m_XX=%4d  m_Zd=%.2f  %-9s %-2s  alpha = %6.3f +- %.3f" % row)
 """),
-md("""**Reading the summary.** The fit range is chosen per sample (the next section says
-how): several samples carry a sharp statistical collapse in `|cosθ*|` starting around
-0.7-0.85, most severe at the lightest bound-state mass and lightest `m_Zd`. This is
-generator-level truth (channel `genOnly`, no reconstruction), so it cannot be a detector
-collimation effect; it is the production gen filter's per-lepton `pT > 5` GeV cut. As
+md("""**Reading the summary.** Two unrelated things restrict the fit range, and they do
+not affect the same points. The first is a generator-level acceptance cliff, present
+at every `m_Zd`: several samples carry a sharp statistical collapse in `|cosθ*|`
+starting around 0.7-0.85, worst at the lightest bound-state mass. This is
+generator-level truth (channel `genOnly`, no reconstruction), so it cannot be a
+detector effect; it is the production gen filter's per-lepton `pT > 5` GeV cut. As
 `|cosθ*| → 1` the two-body decay becomes maximally asymmetric (the sub-leading
-lepton's `pT` falls as `(1-β* cosθ*)/(1+β* cosθ*)`
-relative to the leading one, section 6 of the anatomy notebook), and once it drops below
-5 GeV the *whole event* fails the filter and was never generated: at `m_XX = 100 GeV`,
-`m_Zd = 1.2 GeV` muons, the fraction of surviving events with `pT`(sub)/`pT`(lead) `< 0.15`
-jumps from 5% to 100% between `|cosθ*| = 0.75` and `0.81`, exactly where the raw event
-count collapses from its peak. A fit range that reaches into that collapse is measuring
-the filter's edge, not the polarization. That is why `m_XX ≤ 200 GeV` fits stop at
-`0.6`; the one place `[0, 0.8]` still costs something at `m_XX ≥ 500 GeV` is
-`m_Zd = 0.25 GeV`, where the fit is poor at either range for an unrelated reason
-(below) and `χ²/dof` at `[0, 0.8]` is worse than it would be at `[0, 0.6]`
-(`21.9` against `6.0` for `m_XX = 500 GeV` muons) -- accepted here rather than
-protected against, since neither range makes that corner\'s numbers precise. Across
-the rest of the grid the median `χ²/dof` is `1.9`.
+lepton's `pT` falls as `(1-β* cosθ*)/(1+β* cosθ*)` relative to the leading one,
+section 6 of the anatomy notebook), and once it drops below 5 GeV the *whole event*
+fails the filter and was never generated: at `m_XX = 100 GeV`, `m_Zd = 1.2 GeV`
+muons, the fraction of surviving events with `pT`(sub)/`pT`(lead) `< 0.15` jumps
+from 5% to 100% between `|cosθ*| = 0.75` and `0.81`, exactly where the raw event
+count collapses from its peak. This is what keeps `m_XX = 100 GeV` at `[0, 0.6]`
+everywhere on the grid, including `m_Zd = 0.25 GeV`: the electron fit there reads
+`χ²/dof = 20.2` at `[0, 0.8]` despite `m_Zd = 0.25 GeV` muons themselves being
+immune to this particular mechanism (below).
 
-Electrons recover transverse polarization (`α ≈ 1`) at every point on the grid, within
-errors, once the range is tightened -- including at `m_XX = 100 GeV`, where the earlier
-`[0, 0.8]` fit had read `α ≈ 0.5–0.7` and the gap was attributed to gen-filter sculpting.
-That attribution does not survive the corrected fit: the low values were the boundary
-excursion pulling the fit down, not a real acceptance effect. Muons track electrons
-(`α ≈ 1`) everywhere except `m_Zd = 0.25` GeV, where `m_μ/m_Zd` is no longer negligible
-and the velocity suppression is real and large. There the fitted values still move
-around with `m_XX` in a way pure velocity suppression -- which depends only on `m_Zd`,
-not on the bound-state mass or its boost -- cannot explain on its own, and this corner
-keeps the largest residual `χ²/dof` in the grid even at the tightened range. The
-earlier `lepton_kinematics_summary_grid.ipynb` study identified the mechanism at this
-`m_Zd` directly: at the highest boost (`m_XX = 1000 GeV`, `γ_Zd ~ 10^3`) the
-sub-leading lepton's lab-frame `pT` runs to zero regardless of the decay angle, so
-recovering `cosθ*` by boosting back into the `Z_d` rest frame is numerically
-ill-conditioned, not merely acceptance-limited -- confirmed independently there by the
-sub/lead `pT` ratio vs `cosθ*` relation, which should be a thin, well-defined band and
-instead degenerates into a diffuse blob at exactly this corner. At the opposite end
-(`m_XX = 100 GeV`) that same study attributes the shortfall, present for both flavors,
-to the lightest bound state's low production cross section and correspondingly low
-statistics in the large-`|cosθ*|` bins the fit needs. Read the suppression at
-`m_Zd = 0.25 GeV` as real and large, not as a precise number.
+The second restriction is specific to `m_Zd = 0.25 GeV`, is a completely different
+shape, and only shows up at the higher masses. The raw `|cosθ*|` counts there never
+collapse -- they rise monotonically all the way to `1`, at every `m_XX` from 100 to
+1000 -- but at `m_XX ≥ 500 GeV` the rise accelerates far faster near `|cosθ*| = 1`
+than `1 + α cos²θ*` can describe: for `m_XX = 1000 GeV` muons the count nearly
+triples between `|cosθ*| = 0.8` and `0.98`, well beyond what any physical `α ≤ 1`
+predicts. Because this is excess pile-up rather than a hard edge, there is no safe
+wide window that avoids it -- widening only makes it worse, monotonically, and the
+fitted `α` climbs past the unphysical value of `1` if allowed to (muons at
+`m_XX = 1000 GeV`: `α = 0.59` at `[0, 0.6]`, `0.91` at `[0, 0.8]`, `1.33` at
+`[0, 0.9]`). `[0, 0.6]` is not a good fit there either (`χ²/dof` up to `6.0`), just
+the least-bad option. The earlier `lepton_kinematics_summary_grid.ipynb` study
+identified the same mechanism directly: at the highest boost the sub-leading
+lepton's lab-frame `pT` runs to zero regardless of the decay angle, so recovering
+`cosθ*` by boosting back into the `Z_d` rest frame is numerically ill-conditioned --
+confirmed independently there by the sub/lead `pT` ratio vs `cosθ*` relation, which
+should be a thin, well-defined band and instead degenerates into a diffuse blob at
+exactly this corner.
 
-**Why the fit range depends on `m_XX`.** `m_Zd ≥ 1.2 GeV` samples with `m_XX ≥ 500`
-stay well-behaved out past `0.8`, and fitting only to `0.6` there throws away real,
-clean data for no benefit beyond a slightly larger error on `α` -- widening costs
-nothing in fit quality (median `χ²/dof` across the widened points is `1.9`, the same
-as at `[0, 0.6]`) and buys a tighter constraint. `m_XX ≤ 200 GeV` cannot be widened
-the same way even at `m_Zd ≥ 1.2 GeV`: its filter edge sits close enough to `0.8`
-that including it still measures the collapse (`χ²/dof` at `m_XX = 100 GeV`,
-`m_Zd = 1.2 GeV` muons is `11.1` at `[0, 0.8]` against `0.9` at `[0, 0.6]`).
+`m_XX = 200 GeV`, `m_Zd = 0.25 GeV` sits in neither trap: the acceptance cliff has
+moved out of the way (unlike `m_XX = 100 GeV`) and the high-boost pile-up has not
+yet set in (unlike `m_XX ≥ 500 GeV`), so it is the one `m_Zd = 0.25 GeV` point where
+widening genuinely helps -- `χ²/dof` stays at `2.0` for muons whether fit to
+`[0, 0.6]` or `[0, 0.8]`, and the wider range roughly halves the error on `α`
+(`0.16 ± 0.06` against `0.25 ± 0.03`).
 
-This rule is not tuned separately for `m_Zd = 0.25 GeV`, and it costs that corner
-something at the higher masses: the gen-filter mechanism that motivates widening
-elsewhere does not apply there at all (`β* = 0.53` keeps the softer lepton's `pT`
-above the filter's 5 GeV floor even at `|cosθ*| = 1`, so there is no edge to avoid),
-its poor `χ²/dof` is the unrelated mechanism described above, and widening it anyway
-makes the fit measurably worse (`χ²/dof` at `m_XX = 500 GeV` muons rises from `6.0`
-to `21.9` at `[0, 0.8]`). Since neither range gets that corner to a good `χ²/dof`,
-the simpler single rule is used throughout rather than carving out an exception that
-would only trade one imprecise number for another.
+With that accounted for, electrons recover transverse polarization (`α ≈ 1`) across
+essentially the whole grid; muons do too, except at `m_Zd = 0.25 GeV`, where
+`m_μ/m_Zd` is no longer negligible and the velocity suppression is real and large.
+Read the suppression there as real and large, not as a precise number -- the fitted
+value still depends on which side of the acceptance cliff and the pile-up onset a
+given `m_XX` happens to sit on, not on the polarization alone.
+
+**Why the fit range depends on both `m_XX` and `m_Zd`.** `m_Zd ≥ 1.2 GeV` samples
+with `m_XX ≥ 200 GeV` stay well-behaved out past `0.8`, and fitting only to `0.6`
+there throws away real, clean data for no benefit beyond a slightly larger error on
+`α` -- widening costs nothing in fit quality (median `χ²/dof` across the widened
+points is `1.9`, the same as at `[0, 0.6]`) and buys a tighter constraint.
+`m_XX = 100 GeV` cannot be widened the same way even at `m_Zd ≥ 1.2 GeV`: its filter
+edge sits close enough to `0.8` that including it still measures the collapse
+(`χ²/dof` at `m_XX = 100 GeV`, `m_Zd = 1.2 GeV` muons is `11.1` at `[0, 0.8]` against
+`0.9` at `[0, 0.6]`).
+
+`m_Zd = 0.25 GeV` does not follow that same `m_XX ≤ 100` / `m_XX ≥ 200` split, because
+it answers to the pile-up mechanism above rather than the acceptance cliff:
+`m_XX = 100 GeV` still needs `[0, 0.6]` (electrons crash there for the acceptance
+reason, same as every other `m_Zd`), `m_XX = 200 GeV` is the one point safe to widen,
+and `m_XX ≥ 500 GeV` needs to stay at `[0, 0.6]` because widening only ever makes
+the pile-up worse (`χ²/dof` at `m_XX = 500 GeV` muons: `6.0`, `21.9`, `49.5`, `61.0`
+at `[0, 0.6]`, `[0, 0.8]`, `[0, 0.9]`, `[0, 0.95]` respectively).
 """),
 code("""def fit_and_plot_polarization(h, ax, color, label_prefix, fit_range):
     edges = h.axes[-1].edges
