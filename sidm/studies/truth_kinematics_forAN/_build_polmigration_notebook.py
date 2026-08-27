@@ -88,13 +88,24 @@ def sample_label(mxx, mzd):
 md("""## Polarization fits, α summary
 
 For each sample the lepton `|cosθ*|` distribution in the dark-photon rest frame is fit
-with `1 + α·cos²θ*` over `[0, 0.6]` (the region free of the production gen filter's
-acceptance edge, described below). A spin-1 dark photon decaying to relativistic leptons
+with `1 + α·cos²θ*` over a range chosen per sample, not one shared value: `[0, 0.6]`
+at `m_Zd = 0.25 GeV` and at `m_XX = 100 GeV`, `[0, 0.8]` everywhere else, for the
+reasons in the next section. A spin-1 dark photon decaying to relativistic leptons
 gives `α → 1` (transverse polarization); velocity suppression drives `α → 0` as
 `m_ℓ/m_Zd` grows, visible for muons at `m_Zd = 0.25 GeV`, where `m_μ` eats half the
 two-body momentum.
 """),
-code("""def fit_alpha(h, fit_range=(0.0, 0.6)):
+code("""# [0, 0.6] wherever a wider range measures something other than the
+# polarization: m_Zd = 0.25 GeV always (its poor behavior does not track the
+# gen filter's edge -- see the prose below -- so widening never helps there),
+# and m_XX = 100 GeV, where the filter's edge sits too close to 0.8 even at
+# the higher m_Zd points. [0, 0.8] everywhere else.
+def fit_range_for(mxx, mzd):
+    if mzd <= 0.25 or mxx <= 100:
+        return (0.0, 0.6)
+    return (0.0, 0.8)
+
+def fit_alpha(h, fit_range):
     raw = h.values().flatten().astype(float)
     edges = h.axes[-1].edges
     centers = 0.5 * (edges[:-1] + edges[1:])
@@ -117,7 +128,8 @@ for mxx in BS_MASSES:
         for status_label, ch in [("status 1", CH_FINAL), ("status 23", CH_BORN)]:
             for flavor, hname in [("mu", "genMu_AFrame_absCosTheta"),
                                   ("e",  "genE_AFrame_absCosTheta")]:
-                a, da = fit_alpha(output[sample]["hists"][hname][{"channel": ch}])
+                a, da = fit_alpha(output[sample]["hists"][hname][{"channel": ch}],
+                                 fit_range_for(mxx, mzd))
                 rows.append((mxx, mzd, status_label, flavor, a, da))
 
 fig, axes = plt.subplots(2, 2, figsize=(18, 12), layout="constrained")
@@ -172,14 +184,36 @@ excursion pulling the fit down, not a real acceptance effect. Muons track electr
 and the velocity suppression is real and large. There the fitted values still move
 around with `m_XX` in a way pure velocity suppression -- which depends only on `m_Zd`,
 not on the bound-state mass or its boost -- cannot explain on its own, and this corner
-keeps the largest residual `χ²/dof` in the grid (up to `6.0`) even at the tightened
-range. Two effects likely share the blame: some boundary contamination may still reach
-inside `0.6` at the tightest, most-boosted opening angles, and the `1 + α cos²θ*`
-template itself assumes relativistic daughters, an assumption `β* = 0.53` for muons at
-this `m_Zd` does not comfortably satisfy. Read the suppression at `m_Zd = 0.25 GeV` as
-real and large, not as a precise number.
+keeps the largest residual `χ²/dof` in the grid even at the tightened range. The
+earlier `lepton_kinematics_summary_grid.ipynb` study identified the mechanism at this
+`m_Zd` directly: at the highest boost (`m_XX = 1000 GeV`, `γ_{Z_d} \sim 10^3`) the
+sub-leading lepton's lab-frame `pT` runs to zero regardless of the decay angle, so
+recovering `cosθ*` by boosting back into the `Z_d` rest frame is numerically
+ill-conditioned, not merely acceptance-limited -- confirmed independently there by the
+sub/lead `pT` ratio vs `cosθ*` relation, which should be a thin, well-defined band and
+instead degenerates into a diffuse blob at exactly this corner. At the opposite end
+(`m_XX = 100 GeV`) that same study attributes the shortfall, present for both flavors,
+to the lightest bound state's low production cross section and correspondingly low
+statistics in the large-`|cosθ*|` bins the fit needs. Read the suppression at
+`m_Zd = 0.25 GeV` as real and large, not as a precise number.
+
+**Why the fit range is per-sample, not a single shared value.** `[0, 0.6]` is
+conservative everywhere it is used: `m_Zd ≥ 1.2 GeV` samples with `m_XX ≥ 200 GeV`
+stay this well-behaved out past `0.8`, and fitting only to `0.6` throws away real,
+clean data for no benefit beyond a slightly larger error on `α`. Widening those to
+`[0, 0.8]` costs nothing in fit quality (median `χ²/dof` across the widened points is
+`1.9`, the same as at `[0, 0.6]`) and buys a tighter constraint. `m_XX = 100 GeV`
+cannot be widened the same way even at `m_Zd ≥ 1.2 GeV`: its filter edge sits close
+enough to `0.8` that including it still measures the collapse (`χ²/dof` at
+`m_XX = 100`, `m_Zd = 1.2 GeV` muons is `11.1` at `[0, 0.8]` against `0.9` at
+`[0, 0.6]`). `m_Zd = 0.25 GeV` cannot be widened at any mass, for the opposite
+reason: the gen-filter mechanism that motivates widening elsewhere does not apply
+here at all (`β* = 0.53` keeps the softer lepton's `pT` above the filter's 5 GeV
+floor even at `|cosθ*| = 1`, so there is no edge to avoid), and its poor `χ²/dof` is
+some other effect entirely -- forcing `[0, 0.8]` there anyway makes the fit
+measurably worse (`χ²/dof` at `m_XX = 500 GeV` muons rises from `6.0` to `21.9`).
 """),
-code("""def fit_and_plot_polarization(h, ax, color, label_prefix, fit_range=(0.0, 0.6)):
+code("""def fit_and_plot_polarization(h, ax, color, label_prefix, fit_range):
     edges = h.axes[-1].edges
     centers = 0.5 * (edges[:-1] + edges[1:])
     raw = h.values().flatten().astype(float)
@@ -208,12 +242,13 @@ for i, mxx in enumerate(BS_MASSES):
     for j, mzd in enumerate(ZD_MASSES):
         ax = axes[i, j]
         sample = SAMPLE_GRID[mxx][mzd]
+        rng = fit_range_for(mxx, mzd)
         fit_and_plot_polarization(
             output[sample]["hists"]["genMu_AFrame_absCosTheta"][{"channel": CH_BORN}],
-            ax, "tab:blue", r"$\\mu$")
+            ax, "tab:blue", r"$\\mu$", rng)
         fit_and_plot_polarization(
             output[sample]["hists"]["genE_AFrame_absCosTheta"][{"channel": CH_BORN}],
-            ax, "tab:orange", r"$e$")
+            ax, "tab:orange", r"$e$", rng)
         ax.set_xlabel(r"$|\\cos\\theta^*|$ ($Z_d$ frame)", fontsize=13)
         ax.set_xlim(0, 1.0)
         ax.text(0.5, 0.06, sample_label(mxx, mzd), transform=ax.transAxes,
