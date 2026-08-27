@@ -65,16 +65,22 @@ SAMPLE_GRID = {
     100:  {0.25: "2Mu2E_100GeV_0p25GeV_2p0mm",
            1.2:  "2Mu2E_100GeV_1p2GeV_9p6mm",
            5.0:  "2Mu2E_100GeV_5p0GeV_40p0mm"},
+    200:  {0.25: "2Mu2E_200GeV_0p25GeV_1p0mm",
+           1.2:  "2Mu2E_200GeV_1p2GeV_4p8mm",
+           5.0:  "2Mu2E_200GeV_5p0GeV_20p0mm"},
     500:  {0.25: "2Mu2E_500GeV_0p25GeV_0p4mm",
            1.2:  "2Mu2E_500GeV_1p2GeV_1p9mm",
            5.0:  "2Mu2E_500GeV_5p0GeV_8p0mm"},
+    800:  {0.25: "2Mu2E_800GeV_0p25GeV_0p25mm",
+           1.2:  "2Mu2E_800GeV_1p2GeV_1p2mm",
+           5.0:  "2Mu2E_800GeV_5p0GeV_5p0mm"},
     1000: {0.25: "2Mu2E_1000GeV_0p25GeV_0p2mm",
            1.2:  "2Mu2E_1000GeV_1p2GeV_0p96mm",
            5.0:  "2Mu2E_1000GeV_5p0GeV_4p0mm"},
 }
-BS_MASSES = [100, 500, 1000]
+BS_MASSES = [100, 200, 500, 800, 1000]
 ZD_MASSES = [0.25, 1.2, 5.0]
-BS_COLORS = {100: "tab:blue", 500: "tab:green", 1000: "tab:red"}
+BS_COLORS = {m: c for m, c in zip(BS_MASSES, plt.cm.viridis(np.linspace(0.0, 0.9, len(BS_MASSES))))}
 
 def sample_label(mxx, mzd):
     return rf"$m_{{XX}}={mxx}$, $m_{{Z_d}}={mzd}$ GeV"
@@ -82,12 +88,13 @@ def sample_label(mxx, mzd):
 md("""## Polarization fits, α summary
 
 For each sample the lepton `|cosθ*|` distribution in the dark-photon rest frame is fit
-with `1 + α·cos²θ*` over `[0, 0.8]` (the region free of the extreme-collimation boundary
-effect). A spin-1 dark photon decaying to relativistic leptons gives `α → 1` (transverse
-polarization); velocity suppression drives `α → 0` as `m_ℓ/m_Zd` grows, visible for
-muons at `m_Zd = 0.25 GeV`, where `m_μ` eats half the two-body momentum.
+with `1 + α·cos²θ*` over `[0, 0.6]` (the region free of the production gen filter's
+acceptance edge, described below). A spin-1 dark photon decaying to relativistic leptons
+gives `α → 1` (transverse polarization); velocity suppression drives `α → 0` as
+`m_ℓ/m_Zd` grows, visible for muons at `m_Zd = 0.25 GeV`, where `m_μ` eats half the
+two-body momentum.
 """),
-code("""def fit_alpha(h, fit_range=(0.0, 0.8)):
+code("""def fit_alpha(h, fit_range=(0.0, 0.6)):
     raw = h.values().flatten().astype(float)
     edges = h.axes[-1].edges
     centers = 0.5 * (edges[:-1] + edges[1:])
@@ -139,21 +146,40 @@ an_style.save(fig, "polarization_alpha_summary")
 for row in rows:
     print("  m_XX=%4d  m_Zd=%.2f  %-9s %-2s  alpha = %6.3f +- %.3f" % row)
 """),
-md("""**Reading the summary.** In the heavier corner of the grid (`m_XX ≥ 500 GeV`,
-`m_Zd ≥ 1.2 GeV`) all four panels recover transverse polarization, with fitted values
-`α ≈ 0.96–1.08`, consistent with 1 given the restricted fit range.
-Muons at `m_Zd = 0.25 GeV` show the velocity suppression, down to `α ≈ 0` at
-`m_XX = 100 GeV`. The suppression pattern is not purely a lepton-mass effect, however:
-the entire `m_XX = 100 GeV` row sits below 1 for electrons as well (`α ≈ 0.5–0.7`),
-where velocity suppression cannot act. The likely cause is the production gen filter:
-its per-lepton `pT > 5 GeV` requirement bites hardest at the lightest bound-state mass
-and preferentially removes asymmetric (large `|cosθ*|`) decays, and this row should be
-read with that acceptance sculpting in mind. In the hyper-boosted corner
-(`m_XX = 1000`, `m_Zd = 0.25`) the restricted fit range keeps the known
-extreme-collimation boundary effect out of the fit; the fitted values there are
-`α ≈ 0.8–1.0` with larger errors.
+md("""**Reading the summary.** The fit range is `[0, 0.6]`, tighter than an earlier version
+of this fit that used `[0, 0.8]`: several samples carry a sharp statistical collapse in
+`|cosθ*|` starting around 0.7-0.85, most severe at the lightest bound-state mass and
+lightest `m_Zd`. This is generator-level truth (channel `genOnly`, no reconstruction),
+so it cannot be a detector collimation effect; it is the production gen filter's
+per-lepton `pT > 5` GeV cut. As `|cosθ*| → 1` the two-body decay becomes maximally
+asymmetric (the sub-leading lepton's `pT` falls as `(1-β^*\cos\theta^*)/(1+\beta^*\cos\theta^*)`
+relative to the leading one, section 6 of the anatomy notebook), and once it drops below
+5 GeV the *whole event* fails the filter and was never generated: at `m_XX = 100 GeV`,
+`m_Zd = 1.2 GeV` muons, the fraction of surviving events with `pT`(sub)/`pT`(lead) `< 0.15`
+jumps from 5% to 100% between `|cosθ*| = 0.75` and `0.81`, exactly where the raw event
+count collapses from its peak. A fit range that reaches into that collapse is measuring
+the filter's edge, not the polarization. The worst case at `[0, 0.8]`,
+`m_XX = 500 GeV`, `m_Zd = 0.25 GeV` muons, has `χ²/dof = 21.9`; at `[0, 0.6]` the same
+fit is `χ²/dof = 6.0`, and the fitted `α` moves from `0.21 ± 0.08` to a value consistent
+with zero. Across the full grid the median `χ²/dof` at `[0, 0.6]` is `1.9`.
+
+Electrons recover transverse polarization (`α ≈ 1`) at every point on the grid, within
+errors, once the range is tightened -- including at `m_XX = 100 GeV`, where the earlier
+`[0, 0.8]` fit had read `α ≈ 0.5–0.7` and the gap was attributed to gen-filter sculpting.
+That attribution does not survive the corrected fit: the low values were the boundary
+excursion pulling the fit down, not a real acceptance effect. Muons track electrons
+(`α ≈ 1`) everywhere except `m_Zd = 0.25` GeV, where `m_μ/m_Zd` is no longer negligible
+and the velocity suppression is real and large. There the fitted values still move
+around with `m_XX` in a way pure velocity suppression -- which depends only on `m_Zd`,
+not on the bound-state mass or its boost -- cannot explain on its own, and this corner
+keeps the largest residual `χ²/dof` in the grid (up to `6.0`) even at the tightened
+range. Two effects likely share the blame: some boundary contamination may still reach
+inside `0.6` at the tightest, most-boosted opening angles, and the `1 + α cos²θ*`
+template itself assumes relativistic daughters, an assumption `β* = 0.53` for muons at
+this `m_Zd` does not comfortably satisfy. Read the suppression at `m_Zd = 0.25 GeV` as
+real and large, not as a precise number.
 """),
-code("""def fit_and_plot_polarization(h, ax, color, label_prefix, fit_range=(0.0, 0.8)):
+code("""def fit_and_plot_polarization(h, ax, color, label_prefix, fit_range=(0.0, 0.6)):
     edges = h.axes[-1].edges
     centers = 0.5 * (edges[:-1] + edges[1:])
     raw = h.values().flatten().astype(float)
@@ -177,7 +203,7 @@ code("""def fit_and_plot_polarization(h, ax, color, label_prefix, fit_range=(0.0
     except Exception:
         pass
 
-fig, axes = plt.subplots(3, 3, figsize=(22, 18))
+fig, axes = plt.subplots(len(BS_MASSES), 3, figsize=(22, 6 * len(BS_MASSES)))
 for i, mxx in enumerate(BS_MASSES):
     for j, mzd in enumerate(ZD_MASSES):
         ax = axes[i, j]
@@ -247,13 +273,18 @@ plot_all_vs_lxy("2Mu2E_1000GeV_0p25GeV_2p0mm", "baseNoLjNoLjsource_noTrigger",
 md("""## Summary
 
 The canonical output reproduces the polarization structure of the original study at full
-statistics: transverse polarization (`α` consistent with 1 at ~2σ) for
-`m_XX ≥ 500 GeV, m_Zd ≥ 1.2 GeV`, muon velocity suppression at `m_Zd = 0.25 GeV`, and a
-uniform depression of the `m_XX = 100 GeV` row for both flavors that carries the imprint
-of the production gen filter's per-lepton `pT` requirement. The migration maps show the
-reconstruction handoff (electron→photon, PF muon→DSA muon) as a function of displacement
-with the analysis object definitions and no trigger, the truth-to-reconstruction bridge
-the note's lepton-jet motivation rests on.
+statistics, now across all five `m_XX` points from 100 to 1000 GeV rather than three:
+transverse polarization (`α` consistent with 1) holds for both flavors across essentially
+the entire grid, and the one real departure is muon velocity suppression at
+`m_Zd = 0.25 GeV`, where `m_μ` is no longer negligible next to `m_Zd`. Getting a clean
+read on that required tightening the polarization fit range from `[0, 0.8]` to
+`[0, 0.6]` -- the wider range let the gen filter's acceptance edge into the fit and had
+previously been misread as a broad, uniform depression of the `m_XX = 100 GeV` row for
+both flavors; the filter's real effect is a sharp, localized statistical collapse past
+`|cosθ*| ≈ 0.75`, not a uniform shift, and does not survive into a `[0, 0.6]` fit. The migration maps show
+the reconstruction handoff (electron→photon, PF muon→DSA muon) as a function of
+displacement with the analysis object definitions and no trigger, the truth-to-
+reconstruction bridge the note's lepton-jet motivation rests on.
 """),
 ]
 
