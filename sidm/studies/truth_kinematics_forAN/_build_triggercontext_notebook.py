@@ -68,6 +68,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 import mplhep as hep
+from hist import rebin as rebin_by
 
 here = os.getcwd()
 repo = here.split("/sidm")[0]
@@ -101,16 +102,45 @@ def threshold_handles(extra=None):
                               label=rf"{extra} GeV muon $p_T$ cut"))
     return handles
 
-def turnon(ax, sample, hist_name, label, color, xmax=None):
-    num = lib.get_h(out, sample, hist_name, "genOnly_trigger")
-    den = lib.get_h(out, sample, hist_name, "genOnly")
+MIN_DEN = 20   # a point is drawn only where its denominator can measure it
+
+def draw_eff(ax, num, den, label, color, xmax=None, min_den=MIN_DEN, **kw):
+    '''Efficiency of two same-binned histograms, drawn only where measured.
+
+    Clopper-Pearson on a one- or two-event denominator spans nearly the whole
+    range, so those bins carry no information and are dropped rather than
+    drawn as full-height bars.'''
     eff, lo, hi, centers = lib.efficiency(num, den)
-    ok = np.isfinite(eff)
+    ok = np.isfinite(eff) & (den.values() >= min_den)
     if xmax is not None:
         ok &= centers <= xmax
     ax.errorbar(centers[ok], eff[ok],
                 yerr=[eff[ok] - lo[ok], hi[ok] - eff[ok]],
-                fmt="o", ms=3, lw=1, color=color, label=label)
+                fmt="o", ms=3, lw=1, color=color, label=label, **kw)
+
+def turnon(ax, sample, hist_name, label, color, xmax=None, rebin=1):
+    num = lib.get_h(out, sample, hist_name, "genOnly_trigger")
+    den = lib.get_h(out, sample, hist_name, "genOnly")
+    if rebin > 1:
+        num, den = num[::rebin_by(rebin)], den[::rebin_by(rebin)]
+    draw_eff(ax, num, den, label, color, xmax=xmax)
+
+def turnon_samples(ax, samples, hist_name, label, color, xmax=None, rebin=1):
+    '''Same, summing several samples: the five lifetimes of a mass point share
+    one efficiency curve in these variables, so summing them costs nothing and
+    buys a factor ~4.5 in statistics.'''
+    num = lib.sum_h(out, samples, hist_name, "genOnly_trigger")
+    den = lib.sum_h(out, samples, hist_name, "genOnly")
+    if rebin > 1:
+        num, den = num[::rebin_by(rebin)], den[::rebin_by(rebin)]
+    draw_eff(ax, num, den, label, color, xmax=xmax)
+
+def band(h2, axis, lo, hi):
+    '''Sum a 2D histogram over [lo, hi) of one axis, leaving the other.'''
+    edges = h2.axes[axis].edges
+    i0 = int(np.searchsorted(edges, lo, side="left"))
+    i1 = int(np.searchsorted(edges, hi, side="left"))
+    return h2[{axis: slice(i0, i1, sum)}]
 
 def frac_above(h, threshold):
     # fraction of entries above a bin edge (threshold must sit on an edge);
@@ -183,7 +213,7 @@ fig, axes = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained")
 for ax, mode in zip(axes, ["4Mu", "2Mu2E"]):
     for m in MBS:
         turnon(ax, lib.mid_ctau(out, mode, m, 1.2), "genMu1_pt",
-               rf"$m_{{B_s}}$ = {m:g} GeV", MBS_COLORS[m], xmax=120)
+               rf"$m_{{B_s}}$ = {m:g} GeV", MBS_COLORS[m], xmax=120, rebin=3)
     draw_thresholds(ax, extra=26)
     ax.set_xlabel(r"Sub-leading gen muon $p_T$ [GeV]")
     ax.set_xlim(0, 120)
@@ -205,44 +235,132 @@ an_style.save(fig, "trigger_turnons_pt")
 DISP_MD = r"""
 ## 3. Efficiency vs displacement and collimation
 
-Left: trigger efficiency as a function of the $\mu\mu$ dark photon's
-$l_{xy}$, the displaced-trigger question. The `NoVtx` paths hold up well
-into the tens of centimeters before L2 reconstruction losses set in.
-Right: the same efficiency against the pair opening angle
-$\Delta R(\mu,\mu)$, the collimation question: efficiency peaks near
-$\Delta R \sim 0.02$ and falls on both sides, toward merged pairs (the
-`2Cha` two-chamber requirement and L2 muon separation) and toward wide,
-soft pairs.
+Both variables, for the same three samples in each panel. Left: trigger
+efficiency against the $\mu\mu$ dark photon's $l_{xy}$, the displaced-trigger
+question. The `NoVtx` paths hold up into the metre range, and the three masses
+differ in both level and reach: at small $l_{xy}$ the lightest dark photon is
+twice as efficient as the heaviest (0.57 against 0.27), which is the
+muon-velocity floor of the two-body decay -- at $m_{Z_d} = 0.25$ GeV,
+$\beta^* = 0.53$ forces a nearly even $p_T$ sharing, while at 5 GeV
+$\beta^* \to 1$ opens the full sharing range and one leg is often too soft for
+the threshold. The heaviest dark photon then survives displacement furthest:
+its efficiency halves at 332 cm against 212 cm for the two lighter masses, and
+it is still measurable at 492 cm, where the others have died by about 270 cm.
 
-*These curves use the 2Mu2E samples deliberately: there the event has
-exactly one $\mu\mu$ dark photon and the $ee$ pair cannot fire the dimuon
-paths, so the event-level trigger decision is genuinely the response to
-that one pair. In the 4Mu channel the partner pair can also fire the
-trigger, which would dilute the dependence toward its event-level average.
-Samples: $m_{B_s}$ = 200 GeV, $m_{Z_d}$ = 1.2 GeV. Left: the *longest*
-lifetime to populate large $l_{xy}$; right: middle lifetime.*
+Right: efficiency against the pair opening angle $\Delta R(\mu,\mu)$, the
+collimation question. The three masses occupy separate ranges of opening angle,
+since $\Delta R \approx 2\beta^* m_{Z_d}/p_T$ ties the angle to the mass, and
+each rises to a peak and falls: 0.57 at $\Delta R = 0.003$ for 0.25 GeV, 0.58 at
+0.024 for 1.2 GeV, 0.48 at 0.094 for 5 GeV. The fall toward small angle is
+visible within the 0.25 GeV sample itself, from 0.57 at the peak to 0.36 below
+$\Delta R = 5 \times 10^{-4}$, where the `2Cha` two-chamber requirement and L2
+muon separation start to cost.
+
+*These curves use the 2Mu2E samples deliberately: there the event has exactly
+one $\mu\mu$ dark photon and the $ee$ pair cannot fire the dimuon paths, so
+the event-level trigger decision is genuinely the response to that one pair.
+In the 4Mu channel the partner pair can also fire the trigger, which would
+dilute the dependence toward its event-level average. Each curve sums the five
+lifetimes of its mass point: lifetime moves events along the $l_{xy}$ axis
+without changing the efficiency at a given $l_{xy}$, so summing costs nothing
+and buys a factor $\sim 4.5$ in statistics. Points are drawn only where the
+denominator holds at least 20 dark photons.*
 """
 
 DISP_CODE = r"""
-long_ct = sorted(lib.select_samples(out, mode="2Mu2E", mbs=200.0, mzd=1.2),
-                 key=lambda n: lib.parse_sample(n)["ctau_mm"])[-1]
-mid_ct = lib.mid_ctau(out, "2Mu2E", 200.0, 1.2)
+MZD_COLORS = {0.25: "#0072B2", 1.2: "#009E73", 5.0: "#D55E00"}
+
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained")
-turnon(ax1, long_ct, "genAs_toMu_lxy", lib.format_sample_2line(long_ct), "#0072B2")
+for mzd, color in MZD_COLORS.items():
+    samples = lib.select_samples(out, mode="2Mu2E", mbs=200.0, mzd=mzd)
+    label = rf"$m_{{Z_d}}$ = {mzd:g} GeV"
+    turnon_samples(ax1, samples, "genAs_toMu_lxy", label, color, rebin=2)
+    turnon_samples(ax2, samples, "genA_toMu_daughters_dR_logx", label, color)
 ax1.set_xlabel(r"$Z_d$ $l_{xy}$ [cm]")
-turnon(ax2, mid_ct, "genA_toMu_daughters_dR_logx",
-       lib.format_sample_2line(mid_ct), "#0072B2")
 ax2.set_xscale("log")
 ax2.set_xlabel(r"$\Delta R(\mu, \mu)$ from same $Z_d$")
 for ax in (ax1, ax2):
     ax.set_ylim(0, 1.05)
+    ax.legend(fontsize=15, loc="upper right",
+              title="2Mu2E, $m_{B_s}$ = 200 GeV\n(five lifetimes summed)",
+              title_fontsize=15)
 ax1.set_ylabel("Trigger efficiency")
-# the upper half of both panels is empty; the left panel's legend must also
-# stay clear of the right panel's tick labels
-ax1.legend(fontsize=15, loc="upper left")
-ax2.legend(fontsize=15, loc="upper right")
 an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "trigger_eff_lxy_dR")
+"""
+
+COND_MD = r"""
+## 3b. Each variable in bins of the other
+
+The two dependences above are entangled: a sample's opening angle is set by
+$\Delta R \approx 2\beta^* m_{Z_d}/p_T$, so scanning the grid moves collimation
+and momentum together, and any single curve mixes them. Binning in one variable
+while plotting against the other separates them, and it also makes combining
+samples legitimate: once the bin fixes the quantity that drives the difference,
+samples that differ only in how they populate that quantity can be added
+together. Both panels therefore use **every 2Mu2E sample** (all masses, all
+lifetimes).
+
+Left: efficiency against opening angle, in bands of dark-photon $p_T$. The loss
+toward small angle survives at fixed momentum, so it is an angular effect and
+not the soft-muon turn-on in disguise, and it weakens as the pair hardens: the
+efficiency below $\Delta R = 10^{-3}$ is 16% of that band's peak at
+$p_T$ = 25-50 GeV, 41% at 50-100 GeV, and 84% at 100-300 GeV. Read these bands
+remembering that at fixed $p_T$ the opening angle is largely a relabelling of
+$m_{Z_d}$, so the small-angle end of each band is its lightest dark photon.
+
+Right: efficiency against dark-photon $p_T$, in bands of opening angle. Every
+band shows the same turn-on, reaching 25% between 57 and 105 GeV of dark-photon
+$p_T$ and flattening at 0.30-0.38 above 100 GeV. The ordering is not simply
+"tighter is worse": the widest band, $\Delta R$ = 0.03-0.1, is the one that
+turns on latest and saturates lowest (0.37 at its best bin against 0.53-0.57 for
+the others), because a wide pair at fixed momentum is a heavy dark photon, whose
+unsuppressed $\beta^*$ hands one muon too little $p_T$ to reach the threshold.
+
+*The one variable this pair cannot separate is displacement: the stored
+histograms hold the joint distribution of opening angle with $p_T$, but not
+with $l_{xy}$, so an $l_{xy}$-binned version needs a new two-dimensional
+histogram and a rerun.*
+"""
+
+COND_CODE = r"""
+all_2mu2e = lib.select_samples(out, mode="2Mu2E")
+num2 = lib.sum_h(out, all_2mu2e, "genA_toMu_daughters_dR_vs_pt", "genOnly_trigger")
+den2 = lib.sum_h(out, all_2mu2e, "genA_toMu_daughters_dR_vs_pt", "genOnly")
+print(f"combined {len(all_2mu2e)} 2Mu2E samples: "
+      f"{den2.values().sum():.0f} dark photons, {num2.values().sum():.0f} triggered")
+
+PT_BANDS = [(10, 25), (25, 50), (50, 100), (100, 300)]
+DR_BANDS = [(3e-4, 1e-3), (1e-3, 3e-3), (3e-3, 1e-2), (1e-2, 3e-2), (3e-2, 1e-1)]
+cmap = plt.cm.viridis
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained")
+for i, (lo, hi) in enumerate(PT_BANDS):
+    color = cmap(i / max(len(PT_BANDS) - 1, 1) * 0.85)
+    draw_eff(ax1, band(num2, "genA_toMu_pt", lo, hi),
+             band(den2, "genA_toMu_pt", lo, hi),
+             rf"{lo:g}-{hi:g} GeV", color)
+ax1.set_xscale("log")
+ax1.set_xlabel(r"$\Delta R(\mu, \mu)$ from same $Z_d$")
+ax1.set_ylabel("Trigger efficiency")
+ax1.legend(fontsize=15, title=r"$Z_d$ $p_T$ band", title_fontsize=15,
+           loc="upper left")
+
+for i, (lo, hi) in enumerate(DR_BANDS):
+    color = cmap(i / max(len(DR_BANDS) - 1, 1) * 0.85)
+    draw_eff(ax2, band(num2, "genA_toMu_daughters_dR", lo, hi),
+             band(den2, "genA_toMu_daughters_dR", lo, hi),
+             rf"{lo:g}-{hi:g}", color)
+ax2.set_xscale("log")
+ax2.set_xlim(5, 400)
+ax2.set_xlabel(r"$Z_d$ $p_T$ [GeV]")
+ax2.legend(fontsize=15, title=r"$\Delta R(\mu,\mu)$ band", title_fontsize=15,
+           loc="lower right")
+
+for ax in (ax1, ax2):
+    ax.set_ylim(0, 1.05)
+an_style.cms_sim_labels((ax1, ax2))
+an_style.save(fig, "trigger_eff_conditioned")
 """
 
 GRID_MD = r"""
@@ -465,6 +583,7 @@ cells = [md(INTRO), code(SETUP),
          md(SPECTRA_MD), code(SPECTRA_CODE),
          md(TURNON_MD), code(TURNON_CODE),
          md(DISP_MD), code(DISP_CODE),
+         md(COND_MD), code(COND_CODE),
          md(GRID_MD), code(GRID_CODE),
          md(PLATEAU_MD), code(PLATEAU_CODE),
          md(YAML_MD), code(YAML_CODE),
