@@ -3221,6 +3221,20 @@ hist_defs = {
                    lambda objs, mask: daughters_dR(objs, mask, "genAs_toMu")),
         ],
     ),
+    # displacement against collimation, per decayed dark photon: both axes are
+    # filled from the same decayed_daughter_pairs selection, so an entry is one
+    # dark photon and the pair of axes is a genuine joint distribution
+    "genA_toMu_lxy_vs_daughters_dR": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(50, 0, 500, name="genA_toMu_lxy",
+                                     label=r"$Z_d \rightarrow \mu\mu$ $l_{xy}$ [cm]"),
+                   lambda objs, mask: lxy(decayed_daughter_pairs(objs, mask, "genAs_toMu"))),
+            h.Axis(hist.axis.Regular(48, 1e-4, 1.0, name="genA_toMu_daughters_dR",
+                                     label=r"$\Delta R(\mu, \mu)$ from same $Z_d$",
+                                     transform=hist.axis.transform.log),
+                   lambda objs, mask: daughters_dR(objs, mask, "genAs_toMu")),
+        ],
+    ),
     "genA_toE_daughters_dR": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 1.0, name="genA_toE_daughters_dR",
