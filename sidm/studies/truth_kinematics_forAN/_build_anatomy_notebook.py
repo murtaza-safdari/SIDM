@@ -59,6 +59,10 @@ status-1 generator leptons as the only object definitions and no event cuts
 at all** -- no trigger, no PV filter, no kinematic selection. Reconstruction-
 level figures use the `base` channel (dimuon trigger + PV filter + at least
 two lepton jets with $p_T > 30$ GeV, $|\eta| < 2.4$) and say so explicitly.
+This production predates the offline requirement of two muons above 26 GeV
+that `base` has since acquired, so its `base` channel is the selection
+without that cut -- `base_noMuPtCut` in the current configuration, which is
+the channel to use when regenerating these figures.
 All overlays are area-normalized (shapes, not yields).
 
 One production-level caveat applies to every "no cuts" figure: the samples

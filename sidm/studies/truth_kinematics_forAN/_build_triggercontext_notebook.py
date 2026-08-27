@@ -304,11 +304,15 @@ offline requirement of two muons above 26 GeV confines the analysis to the
 region where the trigger efficiency is flat in muon $p_T$ (a premise that
 holds cleanly in 4Mu; in 2Mu2E the efficiency keeps evolving along the
 spectrum, section 2). A cut of this form -- at least two muons (PF or DSA)
-with $p_T > 26$ GeV, applied in the event selection -- is being studied by
-Allie Hall (fork branch `trigger_pt`, not yet merged; her
-trigger-efficiency study places the sub-leading-muon plateau onset at
-about 25 GeV). It is not part of the committed selection or of this note's
-numbers yet.
+with $p_T > 26$ GeV, applied in the event selection -- comes from Allie
+Hall's trigger-efficiency study, which places the sub-leading-muon plateau
+onset at about 25 GeV, and is now part of the `base` selection; the
+selection without it is available as `base_noMuPtCut`. The v3 production
+behind this notebook predates that change, so the `base` channel of every
+figure here is the selection *without* the muon $p_T$ cut, i.e. today's
+`base_noMuPtCut`. That is what makes the figures below readable: they show
+the muon spectra the cut acts on, rather than the spectra it has already
+shaped.
 
 The maps below show what such a cut costs at generator level: the fraction
 of *triggered* events (numerator channel `genOnly_trigger`) whose
@@ -323,7 +327,7 @@ where the two trigger muons share a single dark photon's
 $\sim m_{B_s}/2$.
 
 The reconstructed-muon view of the same boundary -- sub-leading PF and DSA
-muon $p_T$ in the `base` selection for two benchmark points -- is shown
+muon $p_T$ for two benchmark points, in the pre-cut selection -- is shown
 after the maps; the full reconstruction-level accounting of the cut
 belongs to the trigger-efficiency study itself.
 """
@@ -364,8 +368,9 @@ for ax, s in zip(axes, picks):
     ax.axvline(26, color="#CC79A7", ls="--", lw=1.2)
     ax.set_xlabel(r"Reco muon $p_T$ [GeV]")
     ax.set_ylabel("Events, area-normalized")
-    ax.legend(title=lib.format_sample(s) + "\n(base selection; 26 GeV: proposed cut)",
-              fontsize=11, title_fontsize=10)
+    ax.legend(title=lib.format_sample_2line(s) + "\n(selection without the muon"
+                    " pT cut;\n26 GeV: the cut now in base)",
+              fontsize=11, title_fontsize=10, loc="upper right")
     an_style.cms_sim_label(ax)
 an_style.save(fig, "trigger_reco_muon_pt_boundary")
 print("note: reco muon pT axes end at 100 GeV; the spectra above that are truncated")
