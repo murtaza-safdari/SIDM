@@ -45,6 +45,12 @@ def format_sample(name):
     return (rf"{p['mode']}, $m_{{B_s}}$ = {p['mbs']:g} GeV, "
             rf"$m_{{Z_d}}$ = {p['mzd']:g} GeV, $c\tau$ = {p['ctau_mm']:g} mm")
 
+def format_sample_2line(name):
+    """Two-line sample label, for panels too narrow for the one-line form."""
+    p = parse_sample(name)
+    return (rf"{p['mode']}, $m_{{B_s}}$ = {p['mbs']:g} GeV" "\n"
+            rf"$m_{{Z_d}}$ = {p['mzd']:g} GeV, $c\tau$ = {p['ctau_mm']:g} mm")
+
 def get_h(out, sample, hist_name, channel="genOnly"):
     """One sample's histogram, channel axis already selected."""
     h = out[sample]["hists"][hist_name]

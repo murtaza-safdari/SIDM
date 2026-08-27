@@ -59,6 +59,10 @@ absolute signal trigger efficiency vs that variable (per-object
 histograms fold in the partner pair in 4Mu, so the trigger notebook
 uses the 2Mu2E samples for per-dark-photon efficiencies)), `baseNoLj_noTrigger`, `baseNoLj`, and
 `base` (the reconstruction-level figures state their selections explicitly).
+This production predates the `>=2 muons (pf or dsa) pT > 26 GeV` cut that
+`base` has since acquired, so its `base` channel corresponds to the current
+`base_noMuPtCut`; regenerate the reconstruction-level figures against that
+channel to reproduce them.
 
 Hist collections: `gen_truth`, `genA_lifetime`, `genBS_genA_kinematics`,
 `genA_base`, `genA_ratio`, `lj_base`, `lj_lj_base`, `muon_base`, and
@@ -109,16 +113,19 @@ the failing (sample, chunk) lines), merged with the same
   (`genOnly_trigger`/`genOnly` ratios), efficiency vs displacement and pair
   opening angle, median-efficiency grid maps per channel, efficiency vs
   lifetime, and the truth-level retention maps for the 26 GeV plateau cut
-  under study (Allie Hall, fork branch `trigger_pt`, unmerged).
+  (Allie Hall's trigger-efficiency study; now part of the `base` selection).
 - `event_displays_forAN.ipynb` — generator-level eta-phi and R-z displays of
   one deterministically chosen typical event from each of four grid corners,
   a decade of displacement apart (0.4 cm to 2 m), reading the ntuples
   directly (no v2/v3 dependence).
 
 
-Builder scripts (`_build_*_notebook.py`) regenerate each notebook
-deterministically; execute with
-`jupyter nbconvert --to notebook --execute --inplace <name>.ipynb`.
+Each notebook is generated deterministically by a builder script, kept on the
+development branch `truth-kinematics-forAN-dev` so that this directory holds
+only what a reader needs. The committed notebooks are self-contained: given
+EOS access they re-execute with
+`jupyter nbconvert --to notebook --execute --inplace <name>.ipynb`, and the
+figures regenerate from the stored histograms.
 
 ## The production gen filter
 
