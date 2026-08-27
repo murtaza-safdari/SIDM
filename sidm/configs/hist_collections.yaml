@@ -845,6 +845,22 @@ trig_base: &trig_base
 
 # Gen-truth subset of genE_base + genMu_base: only hists that read generator
 # objects, so gen-only channels do not fill meaningless reco histograms
+# joint displacement-collimation response of the mu-mu dark photon: the
+# efficiency of one variable in bins of the other needs their joint
+# distribution, which no other collection carries
+# gen-matched companion to the reco self-consistency pair-mass figure: each
+# dark photon paired with its own nearest LJ, to separate resolution from the
+# small combinatoric chance of picking a spurious extra LJ
+selfconsistency_matched: &selfconsistency_matched
+  - "genA_matched_lj_lj_invmass"
+  - "genA_matched_mulj_egmlj_invmass"
+
+trigger_conditioned: &trigger_conditioned
+  - "genA_toMu_lxy_vs_daughters_dR"
+  - "genA_toMu_daughters_dR_vs_pt"
+  - "genAs_toMu_lxy"
+  - "genA_toMu_daughters_dR_logx"
+
 anatomy_extra: &anatomy_extra
   - "genA_toMu_daughters_dR"
   - "genA_toMu_daughters_dR_logx"

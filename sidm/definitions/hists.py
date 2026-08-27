@@ -1898,6 +1898,35 @@ hist_defs = {
         ],
         evt_mask=lambda objs: ak.num(objs["ljs"]) > 1,
     ),
+    # gen-matched pair mass: each dark photon paired with ITS OWN nearest LJ
+    # (nearest() maps each genA to its own closest LJ, unlike lj_lj_invmass's
+    # blind top-2-by-pT pick), isolating momentum resolution from the small,
+    # mass-growing chance of a spurious extra LJ outranking the correct one
+    "genA_matched_lj_lj_invmass": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 1200, name="genA_matched_ljlj_mass",
+                                     label=r"Invariant Mass (gen-matched $LJ_{Z_d,0}$, $LJ_{Z_d,1}$)"),
+                   lambda objs, mask: (objs["genAs_toMu"][mask]
+                       .nearest(objs["mu_ljs"][mask], threshold=0.4).sum().mass)),
+        ],
+        evt_mask=lambda objs: (
+            (ak.num(objs["genAs_toMu"]) == 2)
+            & (ak.num(matched(objs["genAs_toMu"], objs["mu_ljs"], 0.4)) == 2)),
+    ),
+    "genA_matched_mulj_egmlj_invmass": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(100, 0, 1200, name="genA_matched_mulj_egmlj_mass",
+                                     label=r"Invariant Mass (gen-matched $\mu$-LJ, $e$-LJ)"),
+                   lambda objs, mask: (
+                       objs["genAs_toMu"][mask].nearest(objs["mu_ljs"][mask], threshold=0.4).sum()
+                       + objs["genAs_toE"][mask].nearest(objs["egm_ljs"][mask], threshold=0.4).sum()
+                   ).mass),
+        ],
+        evt_mask=lambda objs: (
+            (ak.num(objs["genAs_toMu"]) == 1) & (ak.num(objs["genAs_toE"]) == 1)
+            & (ak.num(matched(objs["genAs_toMu"], objs["mu_ljs"], 0.4)) == 1)
+            & (ak.num(matched(objs["genAs_toE"], objs["egm_ljs"], 0.4)) == 1)),
+    ),
     "lj_lj_invmass": h.Histogram(
         [
             h.Axis(hist.axis.Regular(100, 0, 1200, name="ljlj_mass",
@@ -3216,6 +3245,20 @@ hist_defs = {
                                      transform=hist.axis.transform.log),
                    lambda objs, mask: decayed_daughter_pairs(objs, mask, "genAs_toMu").pt),
             h.Axis(hist.axis.Regular(60, 1e-4, 1.0, name="genA_toMu_daughters_dR",
+                                     label=r"$\Delta R(\mu, \mu)$ from same $Z_d$",
+                                     transform=hist.axis.transform.log),
+                   lambda objs, mask: daughters_dR(objs, mask, "genAs_toMu")),
+        ],
+    ),
+    # displacement against collimation, per decayed dark photon: both axes are
+    # filled from the same decayed_daughter_pairs selection, so an entry is one
+    # dark photon and the pair of axes is a genuine joint distribution
+    "genA_toMu_lxy_vs_daughters_dR": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(50, 0, 500, name="genA_toMu_lxy",
+                                     label=r"$Z_d \rightarrow \mu\mu$ $l_{xy}$ [cm]"),
+                   lambda objs, mask: lxy(decayed_daughter_pairs(objs, mask, "genAs_toMu"))),
+            h.Axis(hist.axis.Regular(48, 1e-4, 1.0, name="genA_toMu_daughters_dR",
                                      label=r"$\Delta R(\mu, \mu)$ from same $Z_d$",
                                      transform=hist.axis.transform.log),
                    lambda objs, mask: daughters_dR(objs, mask, "genAs_toMu")),
