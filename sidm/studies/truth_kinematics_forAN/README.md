@@ -5,7 +5,7 @@ Generator-level characterization of the 2018 v10 signal samples for the
 impact parameter, boost, dark-photon polarization, reconstruction migration,
 and the production gen-filter story. Three executed notebooks with their
 figures in `figures/` (vector PDF, CMS Simulation style; the repo-wide
-`*.pdf` ignore keeps them untracked — they regenerate on notebook execution,
+`*.pdf` ignore keeps them untracked; they regenerate on notebook execution,
 render inline in the committed notebooks, and are copied into the analysis
 note repository).
 
@@ -19,15 +19,15 @@ file of every sample; unweighted histograms). Load it with
 
 Channels, defined in `sidm/configs/selections.yaml`:
 
-- `genOnly` — status-1 generator leptons as the only object definitions;
+- `genOnly`: status-1 generator leptons as the only object definitions;
   **no event cuts at all** (no trigger, no PV filter, no vertex requirements).
-- `genOnly_born` — the status-23 variant, for rest-frame comparisons.
-- `genFilterEmulation` / `genFilterEmulation_isHardProcess` — re-apply the
+- `genOnly_born`: the status-23 variant, for rest-frame comparisons.
+- `genFilterEmulation` / `genFilterEmulation_isHardProcess`: re-apply the
   central production gen-filter cut string (two statusFlags variants). Their
   cutflows are re-pass rates on already-filtered events (0.84-1.00 across the
-  grid, median ~0.97) that validate the filter form — never a filter
+  grid, median ~0.97) that validate the filter form, never a filter
   efficiency (see below).
-- `baseNoLj_noTrigger` / `baseNoLjNoLjsource_noTrigger` — analysis LJ-source
+- `baseNoLj_noTrigger` / `baseNoLjNoLjsource_noTrigger`: analysis LJ-source
   object definitions with/without quality cuts, PV filter, **no HLT**; used
   for the reconstruction-migration maps.
 
@@ -53,7 +53,7 @@ every file, unweighted). Load with
 `_anatomy_lib.load_v3()` (local cache, `ANATOMY_CACHE` env to relocate).
 
 Channels: `genOnly`, **`genOnly_trigger`** (new: identical generator-level
-object definitions plus one event cut, the analysis dimuon-trigger OR — the
+object definitions plus one event cut, the analysis dimuon-trigger OR, so the
 ratio of a per-event histogram to its `genOnly` counterpart is the
 absolute signal trigger efficiency vs that variable (per-object
 histograms fold in the partner pair in 4Mu, so the trigger notebook
@@ -87,34 +87,34 @@ the failing (sample, chunk) lines), merged with the same
 
 ## Notebooks
 
-- `lifetime_forAN.ipynb` — proper-lifetime faithfulness and the
+- `lifetime_forAN.ipynb`: proper-lifetime faithfulness and the
   acceptance-corrected recovery, at ~50x the statistics of the original
   `lifetime_study` pass. Faithful-regime closure: median measured/nominal
   = 0.9999 (N=130). Acceptance-corrected: median 1.002, 119/180 within 5%.
   Fitted lab cap R_max = 814 cm over the heavily-truncated samples; the
   truncation-onset test covers all 36 mass points.
-- `truth_kinematics_forAN.ipynb` — gen lepton |d0| across the lifetime grid
+- `truth_kinematics_forAN.ipynb`: gen lepton |d0| across the lifetime grid
   (the variable the NoVtx triggers and displaced reconstruction respond to),
   the boost map across the mass grid, and the gen-filter efficiency figure.
-- `polarization_migration_forAN.ipynb` — the polarization-fit summary
+- `polarization_migration_forAN.ipynb`: the polarization-fit summary
   (transverse alpha ~ 1 in the analysis sweet spot; muon velocity suppression
   at M_Zd = 0.25 GeV) and the reconstruction-migration maps
   (electron-to-photon and PF-to-DSA handoff vs Lxy).
-- `final_state_anatomy_forAN.ipynb` — the first-principles anatomy, from v3:
+- `final_state_anatomy_forAN.ipynb`: the first-principles anatomy, from v3:
   production system, back-to-back topology and the Zd momentum scale,
   gen and reco self-consistency masses (m(4l) and m(LJ,LJ) at m_Bs, pair
   masses at m_Zd, LJ/Zd pT response at unity), the collimation scan with the
   2 m/pT law and the grid median-dR map, lepton pT vs the mass scan, the
   pT-asymmetry vs cos(theta*) relation with the muon-velocity floor, and the
   displacement ladder of the display corners.
-- `trigger_context_forAN.ipynb` — the signal muons against the four L2 NoVtx
+- `trigger_context_forAN.ipynb`: the signal muons against the four L2 NoVtx
   dimuon paths, from v3: sub-leading-muon spectra vs the 23/25 GeV
   thresholds, efficiency turn-ons from the stored HLT bits
   (`genOnly_trigger`/`genOnly` ratios), efficiency vs displacement and pair
   opening angle, median-efficiency grid maps per channel, efficiency vs
   lifetime, and the truth-level retention maps for the 26 GeV plateau cut
   (Allie Hall's trigger-efficiency study; now part of the `base` selection).
-- `event_displays_forAN.ipynb` — generator-level eta-phi and R-z displays of
+- `event_displays_forAN.ipynb`: generator-level eta-phi and R-z displays of
   one deterministically chosen typical event from each of four grid corners,
   a decade of displacement apart (0.4 cm to 2 m), reading the ntuples
   directly (no v2/v3 dependence).
@@ -137,7 +137,7 @@ bookkeeping (e.g. tried 4500 / passed 2325, eff = 0.517, in the retained
 stored events sitting exactly on the filter thresholds. Re-applying the cut
 string at the ntuple level passes 0.84-1.00 of stored events depending on the
 mass point (lowest at the lightest masses, where leptons sit near the pT
-threshold) — a form validation on filtered events, not an efficiency. The `CutDecayFalse`
+threshold), a form validation on filtered events, not an efficiency. The `CutDecayFalse`
 sample-name prefix refers to the MadGraph run-card flag (which removes
 LHE-level cuts on the decay leptons and is indeed False); it does not mean
 the samples are unfiltered. Note `edmProvDump` does not reveal this filter;
@@ -149,7 +149,7 @@ Two consequences:
    this filter's vertex cylinder, approximated by a single radius.
 2. **Normalization**: the stored sum of generator weights is post-filter. Any
    absolute signal normalization must use sigma x eff_filter with the
-   per-point efficiency — otherwise yields are overstated by 1.1-5.2x.
+   per-point efficiency; otherwise yields are overstated by 1.1-5.2x.
 
 Per-point central-production efficiencies (with uncertainties) are committed
 here as `central_genFilterEfficiencies.yml`
@@ -165,18 +165,18 @@ and agree: 0.8607 +- 0.0035 vs 0.8593 recorded, and 0.6060 +- 0.0049 vs
   gen-filter event cuts.
 - `sidm/configs/selections.yaml`: the four new channels above.
 - `sidm/configs/hist_collections.yaml`: the `gen_truth` collection.
-- `sidm/definitions/hists.py`: fix — eight leading/subleading gen dxy
+- `sidm/definitions/hists.py`: fix. Eight leading/subleading gen dxy
   histograms masked the leptons but not the PV reference, so their fills
   silently skipped whenever any event failed the event mask; also new
   `fromA` pT/dxy histogram definitions.
-- `sidm/tools/selection.py`: fix — the cut-application excepts now re-raise
+- `sidm/tools/selection.py`: fix. The cut-application excepts now re-raise
   I/O errors instead of swallowing them, so a transient xrootd failure during
   lazy-array materialization fails the chunk loudly rather than silently
   corrupting the selection state. Downstream handling is the pipeline's:
   with `skipbadfiles=True` coffea skips chunks whose error text matches its
-  bad-file patterns and otherwise kills the job for manual resubmission —
+  bad-file patterns and otherwise kills the job for manual resubmission;
   it does not retry. The event-cut warning now prints the exception.
-- `sidm/definitions/hists.py`: fix — the four 2D `*_nearGenA_n_genA_lxy`
+- `sidm/definitions/hists.py`: fix. The four 2D `*_nearGenA_n_genA_lxy`
   histograms mixed a per-dark-photon axis with a per-event axis, silently
   dropping every processing chunk containing an event with other than one
   matching dark photon (all 4Mu content and ~10% of 2Mu2E events). Both axes
