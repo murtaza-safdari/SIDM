@@ -5,6 +5,7 @@ sizing, labels, and output format stay consistent. Truth-level figures carry
 the CMS Simulation label; save as vector PDF into figures/.
 """
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 import mplhep as hep
 
@@ -20,19 +21,28 @@ def set_style():
     plt.rcParams["savefig.bbox"] = "tight"
 
 
-def cms_sim_label(ax, com=13):
-    """CMS Simulation label + sqrt(s); data=False everywhere at truth level.
+def cms_sim_labels(axes, com=13):
+    """CMS Simulation label + sqrt(s) on every panel of a finished figure.
 
-    The canvas is drawn first so constrained-layout geometry is final before
-    mplhep computes the label offsets -- otherwise multi-panel figures with
-    colorbars render the label pieces overlapping."""
-    fig = ax.figure
+    Call this once, after every panel, colorbar and artist exists. The canvas
+    is drawn so constrained layout settles with all of them in place, the
+    geometry is then frozen, and only then are the labels placed: placing a
+    label on a later panel must not reflow the layout and shift labels already
+    placed on earlier ones. Labelling panel by panel as a figure is built
+    freezes the layout too early, and a colorbar added afterwards gets no
+    space allocated, so its label lands on the neighbouring axis."""
+    axes = list(np.ravel(np.asarray(axes, dtype=object)))
+    fig = axes[0].figure
     fig.canvas.draw()
     if fig.get_layout_engine() is not None:
-        # freeze the settled geometry: placing a label on a later panel must
-        # not reflow the layout and shift labels already placed on earlier ones
         fig.set_layout_engine("none")
-    hep.cms.label(ax=ax, data=False, com=com)
+    for ax in axes:
+        hep.cms.label(ax=ax, data=False, com=com)
+
+
+def cms_sim_label(ax, com=13):
+    """Single-panel form of cms_sim_labels."""
+    cms_sim_labels([ax], com=com)
 
 
 def save(fig, name):

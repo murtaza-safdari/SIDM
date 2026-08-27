@@ -45,13 +45,13 @@ the signal ntuples, as the ratio of the `genOnly_trigger` channel (status-1
 generator leptons, one event cut: the trigger OR above) to the `genOnly`
 channel (identical, no event cuts), binned in generator-level quantities.
 This measures the absolute trigger efficiency on signal simulation as a
-function of truth variables -- it involves no reconstruction-level
+function of truth variables; it involves no reconstruction-level
 selection and no data-driven correction (those belong to the corrections
 section of the analysis note). Uncertainties: Clopper-Pearson intervals for
 the binned turn-on curves; normal-approximation binomial errors for the
 per-sample scalar efficiencies (numerically indistinguishable at these
 statistics). All shapes are post-production-gen-filter (four leptons with
-$p_T > 5$ GeV, $|\eta| < 2.4$) -- visible as the sharp 5 GeV wall in the
+$p_T > 5$ GeV, $|\eta| < 2.4$), visible as the sharp 5 GeV wall in the
 soft spectra.
 
 **Provenance.** Canonical v3 production
@@ -98,7 +98,7 @@ def threshold_handles(extra=None):
                       label="HLT thresholds (23/25 GeV)")]
     if extra is not None:
         handles.append(Line2D([], [], color="#CC79A7", ls="--", lw=1.2,
-                              label=f"{extra} GeV proposed cut (under study)"))
+                              label=rf"{extra} GeV muon $p_T$ cut"))
     return handles
 
 def turnon(ax, sample, hist_name, label, color, xmax=None):
@@ -127,8 +127,8 @@ SPECTRA_MD = r"""
 
 Sub-leading gen-muon $p_T$ (the quantity the dimuon thresholds actually cut
 on), for the bound-state mass scan in each channel. Dotted lines: the 23 and
-25 GeV HLT thresholds; dashed line: the proposed 26 GeV offline cut under
-study (section 5). In the 4Mu channel at $m_{B_s} \geq 500$ GeV essentially
+25 GeV HLT thresholds; dashed line: the 26 GeV offline muon cut now in the
+base selection (section 5). In the 4Mu channel at $m_{B_s} \geq 500$ GeV nearly
 the whole spectrum sits above threshold; in the 2Mu2E channel, where the two
 trigger muons share a single dark photon's momentum, 15-28% of events stay
 below $\sim$26 GeV even at the highest masses. At 100-150 GeV the
@@ -149,13 +149,14 @@ for ax, mode in zip(axes, ["4Mu", "2Mu2E"]):
                      color=MBS_COLORS[m])
     draw_thresholds(ax, extra=26)
     ax.set_xlabel(r"Sub-leading gen muon $p_T$ [GeV]")
-    ax.set_ylabel("Events, area-normalized")
     ax.set_xlim(0, 120)
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles + threshold_handles(extra=26), labels
               + [h.get_label() for h in threshold_handles(extra=26)],
-              fontsize=11, title=f"{mode} channel", loc="best")
-    an_style.cms_sim_label(ax)
+              fontsize=15, title_fontsize=16, title=f"{mode} channel",
+              loc="upper right")
+axes[0].set_ylabel("Events, area-normalized")   # shared quantity, labelled once
+an_style.cms_sim_labels(axes)
 an_style.save(fig, "trigger_subleading_spectra")
 """
 
@@ -165,7 +166,7 @@ TURNON_MD = r"""
 The trigger OR's efficiency as a function of the sub-leading gen-muon
 $p_T$. In the 4Mu channel the turn-on rises through the 23-25 GeV
 thresholds and flattens by the high twenties at 0.8-0.95, with the heaviest
-mass points lowest -- their tighter pairs pay an L2 merging cost. The 2Mu2E
+mass points lowest; their tighter pairs pay an L2 merging cost. The 2Mu2E
 channel never develops a true plateau: efficiency peaks at 0.6-0.67 near
 35 GeV and then *declines* along the spectrum, to 0.28-0.43 at 120 GeV for
 the heavy points. The reason is kinematic: at fixed $m_{B_s}$ a harder
@@ -185,14 +186,19 @@ for ax, mode in zip(axes, ["4Mu", "2Mu2E"]):
                rf"$m_{{B_s}}$ = {m:g} GeV", MBS_COLORS[m], xmax=120)
     draw_thresholds(ax, extra=26)
     ax.set_xlabel(r"Sub-leading gen muon $p_T$ [GeV]")
-    ax.set_ylabel("Trigger efficiency")
     ax.set_xlim(0, 120)
     ax.set_ylim(0, 1.05)
     handles, labels = ax.get_legend_handles_labels()
+    # two columns keep the legend inside the lower-right block; the low-count
+    # bins there carry error bars a metre long, so it needs an opaque backing
     ax.legend(handles + threshold_handles(extra=26), labels
               + [h.get_label() for h in threshold_handles(extra=26)],
-              fontsize=11, loc="lower right", title=f"{mode} channel")
-    an_style.cms_sim_label(ax)
+              fontsize=14, title_fontsize=16, loc="lower right", ncol=2,
+              columnspacing=1.0, handlelength=1.4, frameon=True,
+              facecolor="white", edgecolor="none", framealpha=0.92,
+              title=f"{mode} channel")
+axes[0].set_ylabel("Trigger efficiency")
+an_style.cms_sim_labels(axes)
 an_style.save(fig, "trigger_turnons_pt")
 """
 
@@ -200,10 +206,10 @@ DISP_MD = r"""
 ## 3. Efficiency vs displacement and collimation
 
 Left: trigger efficiency as a function of the $\mu\mu$ dark photon's
-$l_{xy}$ -- the displaced-trigger question. The `NoVtx` paths hold up well
+$l_{xy}$, the displaced-trigger question. The `NoVtx` paths hold up well
 into the tens of centimeters before L2 reconstruction losses set in.
 Right: the same efficiency against the pair opening angle
-$\Delta R(\mu,\mu)$ -- the collimation question: efficiency peaks near
+$\Delta R(\mu,\mu)$, the collimation question: efficiency peaks near
 $\Delta R \sim 0.02$ and falls on both sides, toward merged pairs (the
 `2Cha` two-chamber requirement and L2 muon separation) and toward wide,
 soft pairs.
@@ -213,7 +219,7 @@ exactly one $\mu\mu$ dark photon and the $ee$ pair cannot fire the dimuon
 paths, so the event-level trigger decision is genuinely the response to
 that one pair. In the 4Mu channel the partner pair can also fire the
 trigger, which would dilute the dependence toward its event-level average.
-Samples: $m_{B_s}$ = 200 GeV, $m_{Z_d}$ = 1.2 GeV -- left: the *longest*
+Samples: $m_{B_s}$ = 200 GeV, $m_{Z_d}$ = 1.2 GeV. Left: the *longest*
 lifetime to populate large $l_{xy}$; right: middle lifetime.*
 """
 
@@ -222,16 +228,20 @@ long_ct = sorted(lib.select_samples(out, mode="2Mu2E", mbs=200.0, mzd=1.2),
                  key=lambda n: lib.parse_sample(n)["ctau_mm"])[-1]
 mid_ct = lib.mid_ctau(out, "2Mu2E", 200.0, 1.2)
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained")
-turnon(ax1, long_ct, "genAs_toMu_lxy", lib.format_sample(long_ct), "#0072B2")
+turnon(ax1, long_ct, "genAs_toMu_lxy", lib.format_sample_2line(long_ct), "#0072B2")
 ax1.set_xlabel(r"$Z_d$ $l_{xy}$ [cm]")
-turnon(ax2, mid_ct, "genA_toMu_daughters_dR_logx", lib.format_sample(mid_ct), "#0072B2")
+turnon(ax2, mid_ct, "genA_toMu_daughters_dR_logx",
+       lib.format_sample_2line(mid_ct), "#0072B2")
 ax2.set_xscale("log")
 ax2.set_xlabel(r"$\Delta R(\mu, \mu)$ from same $Z_d$")
 for ax in (ax1, ax2):
-    ax.set_ylabel("Trigger efficiency")
     ax.set_ylim(0, 1.05)
-    ax.legend(fontsize=11)
-    an_style.cms_sim_label(ax)
+ax1.set_ylabel("Trigger efficiency")
+# the upper half of both panels is empty; the left panel's legend must also
+# stay clear of the right panel's tick labels
+ax1.legend(fontsize=15, loc="upper left")
+ax2.legend(fontsize=15, loc="upper right")
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "trigger_eff_lxy_dR")
 """
 
@@ -246,7 +256,7 @@ rises with $m_{B_s}$ up to $\sim$500 GeV (harder muons) and then declines
 toward 1000 GeV in *both* channels as collimation losses take over. At
 fixed $m_{B_s}$, efficiency mostly *rises* toward small $m_{Z_d}$: the
 $\beta^* = 0.53$ velocity floor at 0.25 GeV forbids very asymmetric pairs
-and so hardens the sub-leading muon -- until the heaviest masses, where
+and so hardens the sub-leading muon, until the heaviest masses, where
 merging reverses the trend. The 4Mu channel spans 0.58-0.95; the 2Mu2E
 channel, whose single $\mu\mu$ pair must do all the triggering, spans
 0.08-0.54, with single-digit-percent efficiency in its
@@ -272,12 +282,12 @@ for ax, mode in zip(axes, ["4Mu", "2Mu2E"]):
         for j in range(len(MBS)):
             tc = "black" if pcm.norm(grid[i, j]) > 0.6 else "white"
             ax.text(j + 0.5, i + 0.5, f"{grid[i, j]:.2f}", ha="center",
-                    va="center", color=tc, fontsize=12)
+                    va="center", color=tc, fontsize=16)
     ax.set_xticks(np.arange(len(MBS)) + 0.5, [f"{m:g}" for m in MBS])
     ax.set_yticks(np.arange(len(MZD)) + 0.5, [f"{m:g}" for m in MZD])
     ax.set_xlabel(r"$m_{B_s}$ [GeV]")
     ax.set_ylabel(r"$m_{Z_d}$ [GeV]")
-    an_style.cms_sim_label(ax)
+an_style.cms_sim_labels(axes)
 an_style.save(fig, "trigger_eff_grid")
 
 fig, ax = plt.subplots(figsize=an_style.SINGLE, layout="constrained")
@@ -303,8 +313,8 @@ Because the 4Mu turn-on flattens just above the 25 GeV threshold, an
 offline requirement of two muons above 26 GeV confines the analysis to the
 region where the trigger efficiency is flat in muon $p_T$ (a premise that
 holds cleanly in 4Mu; in 2Mu2E the efficiency keeps evolving along the
-spectrum, section 2). A cut of this form -- at least two muons (PF or DSA)
-with $p_T > 26$ GeV, applied in the event selection -- comes from Allie
+spectrum, section 2). A cut of this form, at least two muons (PF or DSA) with
+$p_T > 26$ GeV applied in the event selection, comes from Allie
 Hall's trigger-efficiency study, which places the sub-leading-muon plateau
 onset at about 25 GeV, and is now part of the `base` selection; the
 selection without it is available as `base_noMuPtCut`. The v3 production
@@ -316,9 +326,9 @@ shaped.
 
 The maps below show what such a cut costs at generator level: the fraction
 of *triggered* events (numerator channel `genOnly_trigger`) whose
-sub-leading gen muon exceeds 26 GeV. This is a truth-level proxy -- the
+sub-leading gen muon exceeds 26 GeV. This is a truth-level proxy: the
 real cut acts on reconstructed PF/DSA muon $p_T$, whose resolution
-(especially for DSA muons) smears the boundary -- so read these as the
+(especially for DSA muons) smears the boundary, so read these as the
 kinematic ceiling of the cut's acceptance. The cost is negligible in the
 4Mu channel and in the 2Mu2E $m_{Z_d} = 0.25$ GeV row, but reaches 8-13%
 of triggered 2Mu2E events at $m_{B_s} \geq 500$ GeV for
@@ -326,8 +336,8 @@ $m_{Z_d} = 1.2$ and 5 GeV, and is largest in the lightest 2Mu2E points,
 where the two trigger muons share a single dark photon's
 $\sim m_{B_s}/2$.
 
-The reconstructed-muon view of the same boundary -- sub-leading PF and DSA
-muon $p_T$ for two benchmark points, in the pre-cut selection -- is shown
+The reconstructed-muon view of the same boundary (sub-leading PF and DSA
+muon $p_T$ for two benchmark points, in the pre-cut selection) is shown
 after the maps; the full reconstruction-level accounting of the cut
 belongs to the trigger-efficiency study itself.
 """
@@ -349,12 +359,12 @@ for ax, mode in zip(axes, ["4Mu", "2Mu2E"]):
         for j in range(len(MBS)):
             tc = "black" if pcm.norm(grid[i, j]) > 0.6 else "white"
             ax.text(j + 0.5, i + 0.5, f"{grid[i, j]:.2f}", ha="center",
-                    va="center", color=tc, fontsize=12)
+                    va="center", color=tc, fontsize=16)
     ax.set_xticks(np.arange(len(MBS)) + 0.5, [f"{m:g}" for m in MBS])
     ax.set_yticks(np.arange(len(MZD)) + 0.5, [f"{m:g}" for m in MZD])
     ax.set_xlabel(r"$m_{B_s}$ [GeV]")
     ax.set_ylabel(r"$m_{Z_d}$ [GeV]")
-    an_style.cms_sim_label(ax)
+an_style.cms_sim_labels(axes)
 an_style.save(fig, "trigger_plateau_cut_retention")
 
 # reconstructed-muon view of the 26 GeV boundary, base selection
@@ -367,11 +377,13 @@ for ax, s in zip(axes, picks):
                  label="sub-leading DSA muon", color="#D55E00")
     ax.axvline(26, color="#CC79A7", ls="--", lw=1.2)
     ax.set_xlabel(r"Reco muon $p_T$ [GeV]")
-    ax.set_ylabel("Events, area-normalized")
-    ax.legend(title=lib.format_sample_2line(s) + "\n(selection without the muon"
-                    " pT cut;\n26 GeV: the cut now in base)",
-              fontsize=11, title_fontsize=10, loc="upper right")
-    an_style.cms_sim_label(ax)
+    ax.legend(fontsize=15, loc="upper right")
+    ax.text(0.97, 0.72, lib.format_sample_2line(s)
+            + "\nselection without the muon $p_T$ cut"
+            + "\n26 GeV: the cut now in base",
+            transform=ax.transAxes, ha="right", va="top", fontsize=13)
+axes[0].set_ylabel("Events, area-normalized")
+an_style.cms_sim_labels(axes)
 an_style.save(fig, "trigger_reco_muon_pt_boundary")
 print("note: reco muon pT axes end at 100 GeV; the spectra above that are truncated")
 """
@@ -437,16 +449,16 @@ spectrum at $m_{B_s} \leq 200$ GeV in both channels; above 500 GeV the 4Mu
 spectrum clears them almost entirely while 2Mu2E keeps 15-28% of events
 below the boundary. Displacement: efficiency persists to
 tens-of-centimeter $l_{xy}$ before L2 losses grow. Collimation: efficiency
-peaks near $\Delta R(\mu,\mu) \sim 0.02$ and degrades on both sides --
+peaks near $\Delta R(\mu,\mu) \sim 0.02$ and degrades on both sides;
 merged pairs below $\Delta R \sim 0.01$ lose L2 reconstruction efficiency,
 and wide pairs are soft. Folded over the grid, median event-level
 efficiencies span 0.58-0.95 in 4Mu, peaking at $m_{B_s} = 500$ GeV and
 declining toward 1000 GeV, and 0.08-0.54 in 2Mu2E, whose single muon pair
-carries the whole trigger burden. The 26 GeV plateau cut under study is
-nearly free in 4Mu, but costs 8-13% of triggered 2Mu2E events at high mass
-and more at low mass -- and lands where the flat-efficiency premise is
-weakest; its final accounting belongs with the reconstruction-level
-selection and the data-driven trigger corrections in the analysis note.
+carries the whole trigger burden. The 26 GeV plateau cut is nearly free in
+4Mu, but costs 8-13% of triggered 2Mu2E events at high mass and more at low
+mass, and it lands where the flat-efficiency premise is weakest; its final
+accounting belongs with the reconstruction-level selection and the
+data-driven trigger corrections in the analysis note.
 """
 
 cells = [md(INTRO), code(SETUP),

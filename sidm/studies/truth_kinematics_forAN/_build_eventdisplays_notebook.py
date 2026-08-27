@@ -1,6 +1,6 @@
 """Build event_displays_forAN.ipynb deterministically.
 
-Generator-level event displays (eta-phi and R-z) for four corners of the 2018
+Generator-level event displays (eta-phi and R-z) for chosen points of the 2018
 v10 signal grid, illustrating the lepton-jet signature: pair collimation set by
 m(Zd)/pT(Zd), the back-to-back dark-photon axis, and the displaced decay
 vertices. Run from the study folder, then execute with
@@ -23,9 +23,9 @@ def code(text):
 INTRO = r"""
 # Generator-level event displays
 
-Single simulated events from four corners of the 2018 signal grid, drawn
+Single simulated events from chosen points of the 2018 signal grid, drawn
 directly from the generator record (`GenPart`) of one ntuple file per sample.
-**No selections of any kind are applied** -- no trigger, no reconstruction, no
+**No selections of any kind are applied**: no trigger, no reconstruction, no
 kinematic cuts; the event shown is chosen by the deterministic rule described
 below, not by hand.
 
@@ -34,8 +34,8 @@ Each figure has two panels:
 - **Left ($\eta$-$\phi$):** the two dark photons (stars) with the
   $\Delta R = 0.4$ lepton-jet clustering cone drawn around each (dashed
   circle), and their daughter leptons (circles: muons; squares: electrons;
-  marker area grows with $p_T$). This panel shows the collimation -- both
-  daughters of a dark photon sit inside one clustering cone -- and the
+  marker area grows with $p_T$). This panel shows the collimation (both
+  daughters of a dark photon sit inside one clustering cone) and the
   back-to-back topology, $\Delta\phi(Z_d, Z_d) \approx \pi$.
 - **Right (signed $R$-$z$):** the same event in the longitudinal view,
   with the two halves of the detector unfolded: objects at $\phi > 0$ are
@@ -44,7 +44,7 @@ Each figure has two panels:
   back-to-back topology shows in this view as well, and the
   $|\Delta\phi|$/$|\Delta\eta|$ between the two dark photons is quoted on
   the panel. Each dark photon flies from its production vertex (the
-  bound-state decay point, black dot -- drawn at its true $z$, which the
+  bound-state decay point, black dot, drawn at its true $z$, which the
   beamspot spreads by centimeters) to its decay vertex (star, annotated
   with the decay flavor, $p_T$, and $l_{xy}$ computed
   decay-minus-production); the daughter leptons emerge as straight rays
@@ -58,7 +58,7 @@ Each figure has two panels:
 
 **Event choice rule:** among the first file's events in which every signal
 lepton has $|\eta| < 2.4$, take the event whose larger dark-photon $l_{xy}$
-is closest to the sample median of that quantity -- a typical event, not a
+is closest to the sample median of that quantity, a typical event, not a
 tail event. The two muon-system displays instead target a stated $l_{xy}$
 (350 and 550 cm): the region they illustrate lies in the lifetime tail,
 above any sample's median, and the rule stays deterministic. Those two
@@ -67,7 +67,7 @@ hemispheres, so the unfolded longitudinal view separates them.
 
 **Reading the longitudinal view:** back-to-back is a transverse-plane
 statement. $|\Delta\phi(Z_d, Z_d)| \approx \pi$ in every event (quoted on
-each panel), but $\Delta\eta$ is not protected -- the colliding partons
+each panel), but $\Delta\eta$ is not protected: the colliding partons
 carry unequal momentum fractions, so the pair recoils with a longitudinal
 boost and both dark photons often fly toward the same end of the detector
 (the wide long-lived corner below has $|\Delta\eta| = 0.03$). The signed
@@ -87,11 +87,11 @@ the feature set:
 | `2Mu2E_100GeV_5p0GeV_200mm` | ~1 m | wide pairs near the cone size, decays reaching beyond the tracker in the tail |
 | `4Mu_100GeV_0p25GeV_0p2mm` | ~4 cm | the trigger-marginal corner: ~25 GeV muons straddling the dimuon thresholds |
 | `4Mu_200GeV_1p2GeV_48p0mm` | ~4 m | beyond-tracker decays: the displaced-standalone-muon regime |
-| `4Mu_200GeV_1p2GeV_48p0mm` (target 350 cm) | -- | just upstream of the muon system: no tracker or calorimeter handle, full DSA lever arm |
-| `4Mu_500GeV_0p25GeV_4p0mm` (target 550 cm) | -- | inside the muon system: an extreme-collimation pair appearing between stations |
+| `4Mu_200GeV_1p2GeV_48p0mm` (target 350 cm) | n/a | just upstream of the muon system: no tracker or calorimeter handle, full DSA lever arm |
+| `4Mu_500GeV_0p25GeV_4p0mm` (target 550 cm) | n/a | inside the muon system: an extreme-collimation pair appearing between stations |
 | `2Mu2E_200GeV_1p2GeV_0p48mm` | ~4 cm | the sweet spot in the electron channel: a displaced electron jet inside the pixels |
 | `2Mu2E_100GeV_0p25GeV_0p2mm` | ~4 cm | the hardest trigger corner of the electron channel: one soft tight muon pair carries the trigger |
-| `2Mu2E_200GeV_1p2GeV_48p0mm` (target 250 cm) | -- | a late decay past the calorimeters: an electron pair born there is lost entirely |
+| `2Mu2E_200GeV_1p2GeV_48p0mm` (target 250 cm) | n/a | a late decay past the calorimeters: an electron pair born there is lost entirely |
 """
 
 SETUP = r"""
@@ -172,7 +172,7 @@ def load_dark_photons(sample, location_cfg):
 
 def pick_event(As, target_lxy=None):
     '''Deterministic representative event: all daughters |eta| < 2.4, larger
-    dark-photon lxy closest to the sample median of that quantity -- or to
+    dark-photon lxy closest to the sample median of that quantity, or to
     an explicit target_lxy for displays that illustrate the lifetime tail.
     Target mode additionally requires the two dark photons in opposite phi
     hemispheres, so the unfolded R-z view separates them.'''
@@ -465,18 +465,18 @@ SAMPLES = [
     ("2Mu2E_500GeV_1p2GeV_0p019mm", "signal_2mu2e_v10.yaml", "display_2mu2e_500_1p2",
      "**Boosted and nearly prompt.** The shortest-lifetime point of a heavy "
      "bound state: a tight muon jet back-to-back with a tight electron jet, "
-     "essentially at the beamline. This is the topology that motivates "
+     "close to the beamline. This is the topology that motivates "
      "treating the lepton jet, not the individual lepton, as the analysis "
      "object."),
     ("4Mu_200GeV_1p2GeV_0p48mm", "signal_4mu_v10.yaml", "display_4mu_200_1p2",
      "**The analysis sweet spot.** Collimated muon pairs "
      "($\\Delta R \\sim 0.02$) with decay vertices at the centimeter scale: "
-     "beyond the beampipe, inside the pixel detector -- displaced enough to "
+     "beyond the beampipe, inside the pixel detector, displaced enough to "
      "kill prompt backgrounds, close enough that tracking still works."),
     ("4Mu_1000GeV_0p25GeV_0p2mm", "signal_4mu_v10.yaml", "display_4mu_1000_0p25",
      "**Extreme collimation.** At $m_{B_s} = 1000$ GeV each dark photon "
      "carries $p_T \\sim 500$ GeV, and with $m_{Z_d} = 0.25$ GeV the pair "
-     "opening angle is $\\Delta R \\sim 2m/p_T \\sim 10^{-3}$ -- more than "
+     "opening angle is $\\Delta R \\sim 2m/p_T \\sim 10^{-3}$, more than "
      "two orders of magnitude inside the clustering cone; only the "
      "annotation separates the two muons in the left panel. The boost also "
      "stretches the decay length to tens of centimeters despite "
@@ -485,21 +485,21 @@ SAMPLES = [
      "**The wide, long-lived corner.** $m_{Z_d} = 5$ GeV against "
      "$p_T(Z_d) \\sim 50$ GeV gives $\\Delta R \\sim 0.2$, an appreciable "
      "fraction of the cone size, and $c\\tau = 200$ mm with "
-     "$\\beta\\gamma \\sim 10$ puts decay vertices at the meter scale -- "
+     "$\\beta\\gamma \\sim 10$ puts decay vertices at the meter scale, "
      "beyond the tracker, where only the muon pair remains reconstructable "
      "(as DSA muons)."),
     ("4Mu_100GeV_0p25GeV_0p2mm", "signal_4mu_v10.yaml", "display_4mu_100_0p25",
      "**The trigger-marginal corner.** The lightest bound state with the "
      "lightest mediator: each muon carries roughly $m_{B_s}/4 \\sim 25$ GeV, "
      "straddling the 23-25 GeV dimuon thresholds (marker areas scale with "
-     "$p_T$ -- compare the corners above), while the pairs remain tightly "
+     "$p_T$, as in the corners above), while the pairs remain tightly "
      "collimated. This is the column where the trigger-efficiency maps of "
      "`trigger_context_forAN.ipynb` bottom out."),
     ("4Mu_200GeV_1p2GeV_48p0mm", "signal_4mu_v10.yaml", "display_4mu_200_1p2_long",
      "**Beyond-tracker decays.** The longest lifetime of the sweet-spot mass "
      "point: decay vertices near or beyond the tracker envelope, where "
      "standard tracking is impossible and the event survives only through "
-     "displaced-standalone (DSA) muons reconstructed in the muon system -- "
+     "displaced-standalone (DSA) muons reconstructed in the muon system, "
      "the regime that motivates including DSA muons as lepton-jet "
      "constituents."),
     ("4Mu_200GeV_1p2GeV_48p0mm", "signal_4mu_v10.yaml",
@@ -507,8 +507,8 @@ SAMPLES = [
      "**Just upstream of the muon system** (same mass point, event chosen at "
      "$l_{xy} \\approx 350$ cm). The decay happens past the calorimeters and "
      "the solenoid, just inside the first muon station at $r \\approx 400$ "
-     "cm: nothing upstream records these muons -- no tracker hits, no "
-     "calorimeter deposits -- but the full muon-system lever arm remains. "
+     "cm: nothing upstream records these muons (no tracker hits, no "
+     "calorimeter deposits), but the full muon-system lever arm remains. "
      "This is the cleanest displaced-standalone reconstruction case.", 350.0),
     ("4Mu_500GeV_0p25GeV_4p0mm", "signal_4mu_v10.yaml",
      "display_4mu_500_0p25_muonsys",
@@ -517,14 +517,14 @@ SAMPLES = [
      "A $\\Delta R \\sim 10^{-3}$ muon pair materializes between the muon "
      "stations, leaving hits only in the outer chambers: the shortened lever "
      "arm degrades the standalone momentum measurement and the two muons "
-     "share chambers -- the far edge of reconstructability in displacement "
+     "share chambers, the far edge of reconstructability in displacement "
      "and collimation at once.", 550.0),
     ("2Mu2E_200GeV_1p2GeV_0p48mm", "signal_2mu2e_v10.yaml",
      "display_2mu2e_200_1p2",
      "**The sweet spot in the electron channel.** The same mass and lifetime "
      "point as the 4Mu sweet-spot display: here one cone is a displaced "
      "*electron* jet, produced centimeters from the beamline inside the "
-     "pixel detector -- the regime where displaced-electron reconstruction "
+     "pixel detector, the regime where displaced-electron reconstruction "
      "and the photon-like lepton-jet constituents matter."),
     ("2Mu2E_100GeV_0p25GeV_0p2mm", "signal_2mu2e_v10.yaml",
      "display_2mu2e_100_0p25",
@@ -538,13 +538,13 @@ SAMPLES = [
      "**A late decay past the calorimeters** (event chosen at "
      "$l_{xy} \\approx 250$ cm). Muons decaying this late still appear in "
      "the muon system as displaced-standalone tracks, but an electron pair "
-     "born beyond the ECAL leaves no usable signal at all -- the acceptance "
+     "born beyond the ECAL leaves no usable signal at all, the acceptance "
      "cost unique to this channel, and the reason its efficiency falls "
      "faster with lifetime than 4Mu's.", 250.0),
 ]
 
 OUTRO = (
-    "Across the four corners the same three features recur: each dark "
+    "Across every display the same three features recur: each dark "
     "photon's daughters stay inside a single $\\Delta R = 0.4$ cone "
     "(collimation), the two cones sit at $\\Delta\\phi \\approx \\pi$ "
     "(back-to-back production), and the decay vertices sweep from the "

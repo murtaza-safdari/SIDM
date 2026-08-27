@@ -1,4 +1,4 @@
-"""Builder for truth_kinematics_forAN.ipynb — writes the notebook JSON (unexecuted).
+"""Builder for truth_kinematics_forAN.ipynb: writes the notebook JSON (unexecuted).
 
 Covers the gen-level lepton impact parameter, the boost across the grid, and the
 production gen-filter story. Companion notebooks: lifetime_forAN.ipynb (lifetime),
@@ -19,7 +19,7 @@ def code(src):
             "source": src.splitlines(keepends=True)}
 
 cells = [
-md("""# Generator-truth kinematics — lepton impact parameter, boost, and the production gen filter
+md("""# Generator-truth kinematics: lepton impact parameter, boost, and the production gen filter
 
 **Inputs and selections.** All distributions are generator-level truth from the canonical
 `truth_kinematics_forAN` output (180 v10 signal samples, every file, unweighted), channel
@@ -33,7 +33,7 @@ reached through an FSR chain fall outside this definition (they carry the radiat
 lepton, not the dark photon, as direct parent): roughly 20–25% of signal muons and
 45–60% of signal electrons, electrons radiating about twice as often as muons (the
 per-benchmark numbers are computed below). Since FSR does not alter the production
-vertex, the exclusion does not bias the impact-parameter shape — validated in-place
+vertex, the exclusion does not bias the impact-parameter shape, validated in-place
 below for both flavors against the inclusive status-1 distributions.
 
 The dark-photon proper-lifetime validation lives in `lifetime_forAN.ipynb`; the
@@ -179,7 +179,7 @@ md("""## Boost across the grid
 
 The mean dark-photon boost `⟨βγ⟩` per mass point spans two orders of magnitude and sets
 the lab-frame displacement scale (`Lxy = βγ·cτ`) and the lepton collimation. This single
-number per mass point is the bridge between the proper-lifetime grid and the
+number per mass point connects the proper-lifetime grid to the
 reconstruction-level displacement discussed in the note.
 """),
 code("""mkr = {"100GeV": "o", "150GeV": "s", "200GeV": "^", "500GeV": "D", "800GeV": "v", "1000GeV": "P"}
@@ -223,12 +223,12 @@ bookkeeping (e.g. tried 4500 / passed 2325, ε = 0.517, for the retained
 sits exactly on these thresholds.
 
 The `genFilterEmulation` channels of this production re-apply the identical cut string.
-Because the samples are already filtered, their cutflow is a **re-pass rate** — a
-validation that the emulated cut string matches what ran in production — and never a
+Because the samples are already filtered, their cutflow is a **re-pass rate** (a
+validation that the emulated cut string matches what ran in production) and never a
 filter efficiency. The next cell computes it for all 180 samples: it spans 0.84–1.00
 with a median near 0.97, lowest at the lightest masses where the leptons sit near the
 `pT` threshold. The deficit is fully characterized: in every failing event all four
-signal leptons are present and exactly one cut is responsible — the `pT > 5 GeV`
+signal leptons are present and exactly one cut is responsible, the `pT > 5 GeV`
 requirement (100% of failing leptons; they cluster at 4.3–4.7 GeV, with η, vertex, and
 statusFlags playing no role; measured on the stored generator record by
 `_repass_deficit_check.py`, committed alongside this notebook). These borderline leptons were above threshold in the
@@ -244,7 +244,7 @@ production configuration and agree (0.8607 ± 0.0035 vs 0.8593; 0.6060 ± 0.0049
 
 **Normalization consequence**: the stored sum of generator weights is *post-filter*, so
 any absolute signal normalization must use `σ · ε_filter` (per point, from this table),
-not the total cross section alone — otherwise yields are overstated by 1.1–5.2×.
+not the total cross section alone; otherwise yields are overstated by 1.1–5.2×.
 """),
 code("""repass = {}
 for s in sorted(output):
@@ -315,7 +315,7 @@ reconstruction actually see); the dark-photon boost spans `⟨βγ⟩ ≈ 16–2
 mass grid and sets the lab displacement scale; and the samples carry the central
 production gen filter, whose per-point efficiency (0.19–0.90) must multiply any absolute
 cross-section normalization. Re-applying the filter's cut string to the stored events
-passes 0.84–1.00 (median ~0.97) — a form validation, not an efficiency. The
+passes 0.84–1.00 (median ~0.97), a form validation, not an efficiency. The
 proper-lifetime faithfulness of the same samples is established in
 `lifetime_forAN.ipynb`.
 """),

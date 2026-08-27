@@ -35,7 +35,7 @@ state follows from the mass hierarchy $m_{Z_d} \ll m_{B_s}$:
 2. the boost collimates the lepton pair to
    $\Delta R(\ell,\ell) \approx 2 \beta^* m_{Z_d}/p_T(Z_d)$ (with $\beta^*$
    the daughter velocity in the pair rest frame), inside the
-   $\Delta R = 0.4$ lepton-jet clustering cone across the grid -- by a
+   $\Delta R = 0.4$ lepton-jet clustering cone across the grid, by a
    factor $\sim 700$ at the most collimated point and $\sim 1.5$ at the
    widest;
 3. the two dark photons recoil against each other,
@@ -56,19 +56,19 @@ production on EOS
 180 samples, every file, unweighted; see the study README for regeneration
 commands). Unless a caption says otherwise the channel is **`genOnly`:
 status-1 generator leptons as the only object definitions and no event cuts
-at all** -- no trigger, no PV filter, no kinematic selection. Reconstruction-
+at all**: no trigger, no PV filter, no kinematic selection. Reconstruction-
 level figures use the `base` channel (dimuon trigger + PV filter + at least
 two lepton jets with $p_T > 30$ GeV, $|\eta| < 2.4$) and say so explicitly.
 This production predates the offline requirement of two muons above 26 GeV
 that `base` has since acquired, so its `base` channel is the selection
-without that cut -- `base_noMuPtCut` in the current configuration, which is
+without that cut, `base_noMuPtCut` in the current configuration, which is
 the channel to use when regenerating these figures.
 All overlays are area-normalized (shapes, not yields).
 
 One production-level caveat applies to every "no cuts" figure: the samples
 were generated with the central filter (four leptons with $p_T > 5$ GeV,
 $|\eta| < 2.4$, in-detector vertex), so the generator record itself is
-post-filter. Its sculpting is visible where expected -- a sharp wall at
+post-filter. Its sculpting is visible where expected: a sharp wall at
 exactly 5 GeV in the soft lepton spectra and a depletion of
 $|\cos\theta^*| \to 1$ decays (which produce a sub-5-GeV leg) in the
 asymmetry figures.
@@ -122,11 +122,11 @@ PROD_MD = r"""
 The bound state is produced in gluon fusion, nearly at rest in the transverse
 plane: its $p_T$ is set by initial-state radiation (tens of GeV, softening
 relative to the mass as $m_{B_s}$ grows). The double-humped $\eta$ shape with
-a dip at zero is the $m \gg p_T$ Jacobian -- for a heavy system at low $p_T$,
+a dip at zero is the $m \gg p_T$ Jacobian: for a heavy system at low $p_T$,
 pseudorapidity differs strongly from rapidity, which does peak at zero; the
 production is central in rapidity. The reconstructed $m(Z_d Z_d)$ peak bin
 centers, printed below, land on the grid values within the 10 GeV binning.
-Everything downstream -- dark-photon momenta, lepton momenta, displacement --
+Everything downstream (dark-photon momenta, lepton momenta, displacement)
 scales off $m_{B_s}$.
 
 *Samples: 4Mu, $m_{Z_d} = 1.2$ GeV, middle lifetime of each mass point;
@@ -161,22 +161,22 @@ COMP_MD = r"""
 The samples are generated with forced decays: in the 4Mu samples every dark
 photon decays to $\mu\mu$; in the 2Mu2E samples one decays to $\mu\mu$ and
 the other to $ee$ (verified below from the recorded children of every dark
-photon in the sample). Branching fractions are therefore **not** simulated
--- they factorize out of every distribution in this study, which is also
+photon in the sample). Branching fractions are therefore **not** simulated;
+they factorize out of every distribution in this study, which is also
 why all figures here are area-normalized shapes. Assembling an absolute
 signal yield takes three external factors, none of which touches these
 shapes:
 
 1. the production cross section $\sigma(m_{B_s};\ \mathrm{model})$ from the
    ported pseudoscalar-darkonium calculation
-   (`sidm/studies/pseudoscalar_xsec`) -- the framework currently carries a
+   (`sidm/studies/pseudoscalar_xsec`); the framework currently carries a
    1 fb placeholder for all signal (`sidm/configs/cross_sections.yaml`);
 2. the dark-photon branching fractions to $\mu\mu$/$ee$ at each $m_{Z_d}$
    (same calculation), combined with the forced-decay channel
    combinatorics;
 3. the central production-filter efficiency per sample
    (`central_genFilterEfficiencies.yml`; the stored sum of weights is
-   post-filter -- see the README's normalization warning).
+   post-filter; see the README's normalization warning).
 """
 
 COMP_CODE = r"""
@@ -196,8 +196,8 @@ B2B_MD = r"""
 With the bound state nearly at rest, the two dark photons recoil against each
 other: $|\Delta\phi(Z_d, Z_d)|$ piles up at $\pi$, broadening only slightly
 with the bound-state $p_T$. Each dark photon carries
-$p_T(Z_d) \approx m_{B_s}/2$ -- the left panel of the second figure shows the
-Jacobian-like endpoint moving with the grid -- and since $m_{Z_d}$ is
+$p_T(Z_d) \approx m_{B_s}/2$ (the left panel of the second figure shows the
+Jacobian-like endpoint moving with the grid), and since $m_{Z_d}$ is
 20-4000 times smaller, the resulting boost
 $\beta\gamma \approx m_{B_s}/(2 m_{Z_d})$ (right panel) ranges from ~10 in
 the (100 GeV, 5 GeV) corner to ~2000 at (1000 GeV, 0.25 GeV). This one number
@@ -245,12 +245,12 @@ reproduces $m_{B_s}$ (left: 4Mu; right: 2Mu2E). The peaks sit exactly on the
 grid values; the asymmetric tail to lower mass is final-state radiation,
 visibly larger in the 2Mu2E channel because electrons radiate much more than
 muons. (Leading-$p_T$ leptons are used, so shower-conversion leptons enter only
-at the few-per-mille level -- the small comb above the peaks.)
+at the few-per-mille level, the small comb above the peaks.)
 
 The per-pair mass check uses the dark photon's direct daughters: their
 4-vector sum reproduces the stored $Z_d$ exactly (momentum conservation at
 the decay vertex, before any radiation off the leptons), so
-$m(\ell\ell)$ is a delta function at $m_{Z_d}$ -- a construction check
+$m(\ell\ell)$ is a delta function at $m_{Z_d}$, a construction check
 rather than a physics distribution, printed below. The underlying
 histogram sums all direct daughters of a flavor in the event, so the check
 is read from the 2Mu2E samples, where each flavor tags exactly one dark
@@ -289,14 +289,14 @@ for mzd in MZD:
 RECO_MD = r"""
 **Reconstruction level.** The same two statements survive reconstruction: the
 invariant mass of the two leading lepton jets peaks at $m_{B_s}$ in the 4Mu
-channel and the muon-jet--electron-jet pair mass does the same in 2Mu2E
-(left panels -- the softer peaks and low-side tails reflect momentum
+channel and the muon-jet and electron-jet pair mass does the same in 2Mu2E
+(left panels: the softer peaks and low-side tails reflect momentum
 resolution, dominated by displaced-standalone muons and electron
 bremsstrahlung, plus out-of-cone losses), and each lepton jet's $p_T$ tracks
 its matched dark photon's, $p_T(\mathrm{LJ})/p_T(Z_d)$ peaking at unity
 (right). The response is not perfect and degrades with the boost: the
 fraction of matches with $p_T(\mathrm{LJ})/p_T(Z_d) < 0.8$, printed below,
-grows from 7% at $m_{B_s} = 100$ GeV to 37% at 1000 GeV -- the same regime
+grows from 7% at $m_{B_s} = 100$ GeV to 37% at 1000 GeV, the same regime
 where the pair-mass resolution visibly widens.
 
 *Channel `base`: dimuon trigger + PV filter + $\geq 2$ lepton jets with
@@ -342,7 +342,7 @@ The opening angle between the two daughters of a dark photon is set by the
 boost: $\Delta R(\ell,\ell) \approx 2 \beta^* m_{Z_d} / p_T(Z_d)$, where
 $\beta^* = \sqrt{1 - 4 m_\ell^2/m_{Z_d}^2}$ is the daughter velocity in the
 pair rest frame ($\approx 1$ everywhere except muons at
-$m_{Z_d} = 0.25$ GeV, where $\beta^* = 0.53$ -- the same velocity factor
+$m_{Z_d} = 0.25$ GeV, where $\beta^* = 0.53$, the same velocity factor
 that appears in the asymmetry section below). The left panel scans
 $m_{Z_d}$ at fixed $m_{B_s}$: collimation tightens with falling mass, and
 faster than linearly on the 1.2 $\to$ 0.25 GeV step because $\beta^*$
@@ -350,9 +350,9 @@ drops too. The right panel scans $m_{B_s}$ at fixed $m_{Z_d}$ (collimation
 tightens as the boost grows). The grid medians sit inside the
 $\Delta R = 0.4$ clustering cone (dashed line) by a factor $\sim 700$ at
 (1000, 0.25) GeV down to $\sim 1.5$ at (100, 5) GeV, where a non-negligible
-tail leaks outside the cone -- quantified with the grid map below.
+tail leaks outside the cone, quantified with the grid map below.
 
-*Per dark photon, from its recorded daughters -- immune to the wrong-pairing
+*Per dark photon, from its recorded daughters, immune to the wrong-pairing
 ambiguity of event-level lepton pairs in the 4Mu channel. Samples: middle
 lifetimes; channel `genOnly` (no cuts).*
 """
@@ -375,12 +375,12 @@ an_style.save(fig, "anatomy_collimation_scans")
 """
 
 COLL2D_MD = r"""
-The two-dimensional view makes the mechanism explicit: per dark photon,
+The two-dimensional view shows the mechanism directly: per dark photon,
 $\Delta R(\ell,\ell)$ against $p_T(Z_d)$ follows the
 $2 \beta^* m_{Z_d}/p_T$ curve (dashed) over the full momentum range, for a
 tight corner (left, muons at $\beta^* = 0.53$) and the widest corner
 (right, electrons at $\beta^* \approx 1$). The spread around the curve is
-the $\cos\theta^*$ dependence of the decay, not resolution -- there is no
+the $\cos\theta^*$ dependence of the decay, not resolution; there is no
 detector here.
 """
 
@@ -405,20 +405,22 @@ for ax, (mode, mbs, mzd, title, hname) in zip(axes, picks):
     ax.set_yscale("log")
     ax.set_xlabel(r"$Z_d$ $p_T$ [GeV]")
     ax.set_ylabel(r"$\Delta R(\ell, \ell)$ from same $Z_d$")
-    ax.legend(loc="lower left", title=title, title_fontsize=10)
-    an_style.cms_sim_label(ax)
+    # the guide line crosses this corner, so the legend needs an opaque backing
+    ax.legend(loc="lower left", title=title, fontsize=14, title_fontsize=15,
+              frameon=True, facecolor="white", edgecolor="none", framealpha=0.92)
+an_style.cms_sim_labels(axes)
 an_style.save(fig, "anatomy_collimation_2d")
 """
 
 HEAT_MD = r"""
 The grid summary: median $\Delta R(\mu,\mu)$ per mass point in the 4Mu
-samples (all five lifetimes combined -- the opening angle does not depend
+samples (all five lifetimes combined; the opening angle does not depend
 on lifetime). The medians span 0.0006 to 0.27, a factor $\sim 700$ down to
 $\sim 1.5$ inside the clustering cone. The fixed $\Delta R = 0.4$
 lepton-jet definition is therefore comfortable over most of the grid, with
 one marginal corner: at $m_{Z_d} = 5$ GeV and the lightest bound states an
 appreciable fraction of pairs (up to $\sim 8$% at (100, 5) GeV) opens
-beyond the cone -- printed below, since this is exactly where the cone
+beyond the cone, printed below, since this is exactly where the cone
 choice costs signal.
 """
 
@@ -464,7 +466,7 @@ The lepton momenta are pure kinematics: each dark photon carries
 $\approx m_{B_s}/2$, split between two daughters, so the leading (left) and
 sub-leading (right) muon $p_T$ scale with the bound-state mass at roughly
 $m_{B_s}/4$ per lepton, spread by the decay angle. A sub-GeV mediator still
-yields tens-of-GeV leptons -- this is why the light-$Z_d$ corners are
+yields tens-of-GeV leptons; this is why the light-$Z_d$ corners are
 triggerable at all. The vertical lines mark the HLT dimuon thresholds
 (23/25 GeV); the interplay with the triggers, including efficiency
 turn-ons, is treated in `trigger_context_forAN.ipynb`.
@@ -511,7 +513,7 @@ spread. Two consequences:
 - **The polarization matters in the lab.** The $Z_d$ is transversely
   polarized ($dN/d\cos\theta^* \propto 1 + \alpha\cos^2\theta^*$; fits in
   `polarization_migration_forAN.ipynb`), which populates large
-  $|\cos\theta^*|$ and therefore *asymmetric* pairs -- more events with a
+  $|\cos\theta^*|$ and therefore *asymmetric* pairs, more events with a
   soft sub-leading lepton than an isotropic decay would give, directly
   relevant for the sub-leading-muon trigger thresholds.
 - **The muon mass matters at $m_{Z_d} = 0.25$ GeV.** There
@@ -530,7 +532,7 @@ $|\cos\theta^*| \to 1$ is the production gen filter (such decays produce a
 lepton below its 5 GeV requirement), not a polarization effect.
 
 *Samples: 2Mu2E, $m_{B_s}$ = 200 GeV, middle lifetimes; channel `genOnly`
-(only generator-level object definitions -- but see the gen-filter caveat
+(only generator-level object definitions, but see the gen-filter caveat
 in the introduction).*
 """
 
@@ -551,8 +553,9 @@ for ax, mzd in zip(axes, [1.2, 0.25]):
     ax.set_xlabel(r"$|\cos\theta^*|$")
     ax.set_ylabel(r"$p_T^{\rm sub} / p_T^{\rm lead}$")
     ax.legend(loc="upper right", title=rf"$m_{{Z_d}}$ = {mzd:g} GeV",
-              title_fontsize=10)
-    an_style.cms_sim_label(ax)
+              fontsize=14, title_fontsize=15, frameon=True, facecolor="white",
+              edgecolor="none", framealpha=0.92)
+an_style.cms_sim_labels(axes)
 an_style.save(fig, "anatomy_ptratio_costheta")
 """
 
@@ -564,9 +567,9 @@ the pairs also stretches millimeter proper lifetimes into
 centimeter-to-meter transverse displacements. The four samples shown are
 the event-display corners of `event_displays_forAN.ipynb`, roughly a decade
 of $l_{xy}$ per step (the last step a half-decade; medians printed below).
-The per-lepton view of the same physics -- gen $|d_0|$
+The per-lepton view of the same physics (gen $|d_0|$
 across the lifetime grid, the quantity the displaced triggers and
-reconstruction respond to -- is in `truth_kinematics_forAN.ipynb`, and the
+reconstruction respond to) is in `truth_kinematics_forAN.ipynb`, and the
 lifetime closure checks are in `lifetime_forAN.ipynb`.
 
 *Channel `genOnly` (no cuts).*

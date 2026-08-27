@@ -1,4 +1,4 @@
-"""Builder for lifetime_forAN.ipynb — writes the notebook JSON (unexecuted).
+"""Builder for lifetime_forAN.ipynb: writes the notebook JSON (unexecuted).
 
 Adapted from sidm/studies/lifetime_study/lifetime_acceptance_correction.ipynb:
 same physics narrative and figures, but driven by the canonical full-statistics
@@ -19,7 +19,7 @@ def code(src):
             "source": src.splitlines(keepends=True)}
 
 cells = [
-md("""# Dark photon lifetime — acceptance-corrected cτ at full statistics
+md("""# Dark photon lifetime: acceptance-corrected cτ at full statistics
 
 **Inputs and selections.** Every distribution here is generator-level truth from the
 canonical `truth_kinematics_forAN` output (all 180 v10 signal samples, every file,
@@ -43,8 +43,8 @@ lab cap `R_max`, with their covariance.
 
 ### Assumptions
 
-1. **Sharp lab cap** — one fixed `R_max` for every sample (validated below).
-2. **Boost independent of lifetime** — `Fβγ` per mass point comes from its
+1. **Sharp lab cap**: one fixed `R_max` for every sample (validated below).
+2. **Boost independent of lifetime**: `Fβγ` per mass point comes from its
    shortest-cτ (faithful) anchor.
 3. **Pure exponential intrinsic decay**, as generated.
 """),
@@ -80,7 +80,7 @@ One panel per mass point with the cτ scan overlaid; the curve is the
 acceptance-corrected fit `exp(−x/cτ)·Fβγ(R_max/x)` with its ±1σ band. The fit follows
 the data through the turn-over where the lab cap bites.
 
-One figure per (channel, m(A)) column of the grid — six panels, the m(Φ) scan — so
+One figure per (channel, m(A)) column of the grid (six panels, the m(Φ) scan), so
 each figure fits a single analysis-note page, with the in-panel text sized to stay
 legible once the figure is scaled to the page width.
 """),
@@ -111,7 +111,7 @@ the cap leaves untouched (histogram mean within 5% of nominal) close to better t
 0.5%; the 36 mildly-truncated samples sit at a median of +5%; and the 36 points beyond
 +10% (up to +30%) are exactly the longest-cτ sample of each of the 36 mass points,
 where the cap removes a third of the decays. All of those are high, none low, with fit
-pulls of +6 to +20 — a one-sided model systematic (the single-radius approximation to
+pulls of +6 to +20, a one-sided model systematic (the single-radius approximation to
 the filter's `ρ/z` cylinder), not statistics and not a property of the samples. This
 is the analysis-note body figure.
 """),
@@ -205,7 +205,7 @@ md("""## Is the truncation really a single, sharp, lab-frame cap?
 
 **Left:** fitted `R_max` for the heavily-truncated samples (mean < 0.7× nominal), where
 the cap is actually constrained; the dashed line is the median. **Right:** the truncation
-onset cτ per mass point versus `⟨βγ⟩`, with the one-parameter guide `C/⟨βγ⟩` (not a fit) —
+onset cτ per mass point versus `⟨βγ⟩`, with the one-parameter guide `C/⟨βγ⟩` (not a fit);
 constant `onset·⟨βγ⟩` demonstrates the cap lives in the lab frame; a proper-frame cut
 would show no `βγ` dependence. The value `C ≈ 0.3 R_max` is expected once a lab cap is
 assumed. Appendix figure for the analysis note.
@@ -265,8 +265,8 @@ print(f"onset lab length C = onset*<bg> = {C:.0f} cm (16-84%: {p16:.0f}-{p84:.0f
 md("""## Result
 
 A single lab decay-length cap, consistent across all mass points and both channels,
-describes the truncation well. Wherever the cap leaves the distribution intact —
-histogram mean within 5% of nominal, 108 of 180 samples — the samples deliver the
+describes the truncation well. Wherever the cap leaves the distribution intact
+(histogram mean within 5% of nominal, 108 of 180 samples), the samples deliver the
 nominal proper lifetime at the per-mille level, for the histogram mean and the
 corrected fit alike. (Note the tier is defined by truncation depth, not by cτ: about
 a dozen sub-centimeter-cτ samples at the highest boosts are heavily truncated too.)
@@ -277,13 +277,13 @@ to the truncated regime with a full-grid median of 1.002 and 119/180 samples wit
 The residuals beyond that are one-sided and structured: +5% (median) where the cap is
 mild, +14–30% on the single most-truncated (longest-cτ) sample of each mass point,
 with fit pulls of +6 to +20. That is the signature of a model systematic, not of
-mis-generated samples — the generator applies one decay routine with cτ as a scale
+mis-generated samples: the generator applies one decay routine with cτ as a scale
 parameter, and the same mass points close at the per-mille level wherever the cap
 does not bite. The systematic is the single sharp radius standing in for the filter's
 `ρ < 740 cm` / `|z| < 960 cm` cylinder: the true path-length cap runs from 740 cm
 (central) to ~1210 cm (through the corner of the cylinder) depending on polar angle,
 so the real turnover is smeared, and a sharp-`R_max` fit accounts for the unmodeled
-far tail by lengthening cτ. Nothing downstream consumes the fitted cτ — this notebook
+far tail by lengthening cτ. Nothing downstream consumes the fitted cτ: this notebook
 is a closure test of the sample production, the analysis uses the samples as
 generated, and the decays the cap removes lie beyond the muon system in any case.
 

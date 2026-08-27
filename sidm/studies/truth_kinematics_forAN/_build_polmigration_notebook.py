@@ -1,4 +1,4 @@
-"""Builder for polarization_migration_forAN.ipynb — writes the notebook JSON.
+"""Builder for polarization_migration_forAN.ipynb: writes the notebook JSON.
 
 Part 1 ports the polarization-fit summary from
 signal_kinematics/lepton_kinematics_summary_grid.ipynb onto the canonical
@@ -24,11 +24,11 @@ md("""# Dark-photon polarization and lepton reconstruction migration
 
 **Inputs and selections.** Generator-level truth from the canonical
 `truth_kinematics_forAN` output (180 v10 signal samples, every file, unweighted).
-Polarization uses the strictly-generator channels — **`genOnly`** (status-1 leptons) and
-**`genOnly_born`** (status-23) — with **no reconstruction, trigger, or vertex
+Polarization uses the strictly-generator channels, **`genOnly`** (status-1 leptons) and
+**`genOnly_born`** (status-23), with **no reconstruction, trigger, or vertex
 requirements**; they reproduce the `gen_leptons_final`/`gen_leptons_born` channels of the
 original study minus the primary-vertex filter. The reconstruction-migration maps use
-**`baseNoLj_noTrigger`** (analysis LJ-source object definitions, PV filter, **no HLT** —
+**`baseNoLj_noTrigger`** (analysis LJ-source object definitions, PV filter, **no HLT**,
 so the migration story is trigger-independent) and its `NoLjsource` variant (same, before
 the object quality cuts).
 
@@ -84,7 +84,7 @@ md("""## Polarization fits, α summary
 For each sample the lepton `|cosθ*|` distribution in the dark-photon rest frame is fit
 with `1 + α·cos²θ*` over `[0, 0.8]` (the region free of the extreme-collimation boundary
 effect). A spin-1 dark photon decaying to relativistic leptons gives `α → 1` (transverse
-polarization); velocity suppression drives `α → 0` as `m_ℓ/m_Zd` grows — visible for
+polarization); velocity suppression drives `α → 0` as `m_ℓ/m_Zd` grows, visible for
 muons at `m_Zd = 0.25 GeV`, where `m_μ` eats half the two-body momentum.
 """),
 code("""def fit_alpha(h, fit_range=(0.0, 0.8)):
@@ -141,13 +141,13 @@ for row in rows:
 """),
 md("""**Reading the summary.** In the heavier corner of the grid (`m_XX ≥ 500 GeV`,
 `m_Zd ≥ 1.2 GeV`) all four panels recover transverse polarization, with fitted values
-`α ≈ 0.96–1.08` — consistent with 1 given the restricted fit range.
+`α ≈ 0.96–1.08`, consistent with 1 given the restricted fit range.
 Muons at `m_Zd = 0.25 GeV` show the velocity suppression, down to `α ≈ 0` at
 `m_XX = 100 GeV`. The suppression pattern is not purely a lepton-mass effect, however:
 the entire `m_XX = 100 GeV` row sits below 1 for electrons as well (`α ≈ 0.5–0.7`),
-where velocity suppression cannot act. The likely cause is the production gen filter —
+where velocity suppression cannot act. The likely cause is the production gen filter:
 its per-lepton `pT > 5 GeV` requirement bites hardest at the lightest bound-state mass
-and preferentially removes asymmetric (large `|cosθ*|`) decays — and this row should be
+and preferentially removes asymmetric (large `|cosθ*|`) decays, and this row should be
 read with that acceptance sculpting in mind. In the hyper-boosted corner
 (`m_XX = 1000`, `m_Zd = 0.25`) the restricted fit range keeps the known
 extreme-collimation boundary effect out of the fit; the fitted values there are
@@ -201,10 +201,10 @@ md("""## Lepton reconstruction migration vs displacement
 
 For each dark-photon decay, the number of nearby reconstructed electrons, photons, PF
 muons, and DSA muons is histogrammed against the decay's `Lxy`, and each `Lxy` column is
-normalized to the number of decays there — so every panel reads as "the fraction of dark
+normalized to the number of decays there, so every panel reads as "the fraction of dark
 photon decays yielding N reconstructed objects of this type, at this displacement". The
-migration the note describes in prose — GED electrons giving way to photons, PF muons to
-DSA muons, as `Lxy` grows — is directly visible. Objects here pass the analysis LJ-source
+migration the note describes in prose (GED electrons giving way to photons, PF muons to
+DSA muons, as `Lxy` grows) is directly visible. Objects here pass the analysis LJ-source
 definitions; the trigger is deliberately not applied.
 """),
 code("""def make_eff(h):
@@ -252,7 +252,7 @@ statistics: transverse polarization (`α` consistent with 1 at ~2σ) for
 uniform depression of the `m_XX = 100 GeV` row for both flavors that carries the imprint
 of the production gen filter's per-lepton `pT` requirement. The migration maps show the
 reconstruction handoff (electron→photon, PF muon→DSA muon) as a function of displacement
-with the analysis object definitions and no trigger — the truth-to-reconstruction bridge
+with the analysis object definitions and no trigger, the truth-to-reconstruction bridge
 the note's lepton-jet motivation rests on.
 """),
 ]
