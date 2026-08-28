@@ -499,7 +499,7 @@ for ax, s in zip(axes, picks):
     ax.text(0.97, 0.72, lib.format_sample_2line(s)
             + "\nselection without the muon $p_T$ cut"
             + "\n26 GeV: the cut now in base",
-            transform=ax.transAxes, ha="right", va="top", fontsize=13)
+            transform=ax.transAxes, ha="right", va="top", fontsize=15)
 axes[0].set_ylabel("Events, area-normalized")
 an_style.cms_sim_labels(axes)
 an_style.save(fig, "trigger_reco_muon_pt_boundary")

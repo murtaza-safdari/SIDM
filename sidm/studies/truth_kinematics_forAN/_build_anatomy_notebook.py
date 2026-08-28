@@ -139,14 +139,14 @@ overlay(ax1, mbs_scan("genBS_pt"))
 ax1.set_xlabel(r"$B_s$ $p_T$ [GeV]")
 ax1.set_ylabel("Area-normalized events")
 ax1.set_xlim(0, 250)
-ax1.legend()
+ax1.legend(fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+           framealpha=0.92)
 overlay(ax2, mbs_scan("genBS_eta"))
 ax2.set_xlabel(r"$B_s$ $\eta$")
-ax2.set_ylabel("Area-normalized events")
 ax2.set_xlim(-6, 6)
-ax2.legend()
-for ax in (ax1, ax2):
-    an_style.cms_sim_label(ax)
+ax2.legend(loc="lower center", ncol=2, fontsize=15, frameon=True,
+           facecolor="white", edgecolor="none", framealpha=0.92)
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "anatomy_production_system")
 
 for m in MBS:
@@ -212,13 +212,14 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained"
 overlay(ax1, mbs_scan("genAs_genAs_absdphi"))
 ax1.set_xlabel(r"$|\Delta\phi(Z_d, Z_d)|$")
 ax1.set_ylabel("Area-normalized events")
-ax1.legend(loc="upper left")
+ax1.legend(loc="upper left", fontsize=15, frameon=True, facecolor="white",
+           edgecolor="none", framealpha=0.92)
 overlay(ax2, mbs_scan("genAs_pt_highRange"))
 ax2.set_xlabel(r"$Z_d$ $p_T$ [GeV]")
 ax2.set_ylabel(r"Area-normalized $Z_d$")
-ax2.legend()
-for ax in (ax1, ax2):
-    an_style.cms_sim_label(ax)
+ax2.legend(loc="upper right", fontsize=15, frameon=True, facecolor="white",
+           edgecolor="none", framealpha=0.92)
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "anatomy_backtoback_ptscale")
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained")
@@ -226,14 +227,16 @@ overlay(ax1, mzd_scan("genAs_betagamma", mbs=200.0))
 ax1.set_xlabel(r"$Z_d$ $\beta\gamma$")
 ax1.set_ylabel(r"Area-normalized $Z_d$")
 ax1.set_xscale("log")
-ax1.legend(title=r"$m_{B_s}$ = 200 GeV")
+ax1.legend(title=r"$m_{B_s}$ = 200 GeV", loc="upper right", fontsize=15,
+           title_fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+           framealpha=0.92)
 overlay(ax2, mbs_scan("genAs_betagamma"))
 ax2.set_xlabel(r"$Z_d$ $\beta\gamma$")
-ax2.set_ylabel(r"Area-normalized $Z_d$")
 ax2.set_xscale("log")
-ax2.legend(title=r"$m_{Z_d}$ = 1.2 GeV")
-for ax in (ax1, ax2):
-    an_style.cms_sim_label(ax)
+ax2.legend(title=r"$m_{Z_d}$ = 1.2 GeV", loc="upper right", fontsize=15,
+           title_fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+           framealpha=0.92)
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "anatomy_boost")
 """
 
@@ -266,14 +269,16 @@ overlay(ax1, mbs_scan("gen4Mu_invmass", mode="4Mu"))
 ax1.set_xlabel(r"$m(4\mu)$ [GeV]")
 ax1.set_ylabel("Area-normalized events")
 ax1.set_yscale("log")
-ax1.legend(title="4Mu channel")
+ax1.legend(title="4Mu channel", loc="lower right", ncol=2, fontsize=15,
+           title_fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+           framealpha=0.92)
 overlay(ax2, mbs_scan("gen2Mu2E_invmass", mode="2Mu2E"))
 ax2.set_xlabel(r"$m(2\mu 2e)$ [GeV]")
-ax2.set_ylabel("Area-normalized events")
 ax2.set_yscale("log")
-ax2.legend(title="2Mu2E channel")
-for ax in (ax1, ax2):
-    an_style.cms_sim_label(ax)
+ax2.legend(title="2Mu2E channel", loc="lower right", ncol=2, fontsize=15,
+           title_fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+           framealpha=0.92)
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "anatomy_4l_invmass")
 
 for mzd in MZD:
@@ -310,13 +315,16 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained"
 overlay(ax1, mbs_scan("lj_lj_invmass", mode="4Mu", channel="base"))
 ax1.set_xlabel(r"$m(\mathrm{LJ}, \mathrm{LJ})$ [GeV]")
 ax1.set_ylabel("Events, area-normalized")
-ax1.legend(title="4Mu channel, base selection", fontsize=12)
+ax1.legend(title="4Mu channel, base selection", loc="upper right", fontsize=15,
+           title_fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+           framealpha=0.92)
 overlay(ax2, mbs_scan("genA_lj_ptRatio", mode="4Mu", channel="base"))
 ax2.set_xlabel(r"$p_T(\mathrm{LJ}) / p_T(Z_d)$")
 ax2.set_ylabel("Matches, area-normalized")
-ax2.legend(title="4Mu channel, base selection", fontsize=12)
-for ax in (ax1, ax2):
-    an_style.cms_sim_label(ax)
+ax2.legend(title="4Mu channel, base selection", loc="upper left", fontsize=15,
+           title_fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+           framealpha=0.92)
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "anatomy_reco_selfconsistency")
 
 fig, ax = plt.subplots(figsize=an_style.SINGLE, layout="constrained")
@@ -360,17 +368,19 @@ lifetimes; channel `genOnly` (no cuts).*
 COLL_CODE = r"""
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained")
 overlay(ax1, mzd_scan("genA_toMu_daughters_dR_logx", mbs=200.0))
-ax1.legend(title=r"4Mu, $m_{B_s}$ = 200 GeV", loc="upper left")
+leg_kw = dict(fontsize=15, title_fontsize=15, frameon=True, facecolor="white",
+              edgecolor="none", framealpha=0.92)
+ax1.legend(title=r"4Mu, $m_{B_s}$ = 200 GeV", loc="upper right", **leg_kw)
 overlay(ax2, mbs_scan("genA_toMu_daughters_dR_logx"))
-ax2.legend(title=r"4Mu, $m_{Z_d}$ = 1.2 GeV", loc="upper left")
+ax2.legend(title=r"4Mu, $m_{Z_d}$ = 1.2 GeV", loc="upper right", **leg_kw)
 for ax in (ax1, ax2):
     ax.set_xscale("log")
     ax.axvline(0.4, color="gray", ls="--")
-    ax.text(0.42, 0.55, "LJ cone", rotation=90, color="gray",
+    ax.text(0.42, 0.03, "LJ cone", rotation=90, color="gray",
             transform=ax.get_xaxis_transform())
     ax.set_xlabel(r"$\Delta R(\mu, \mu)$ from same $Z_d$")
-    ax.set_ylabel(r"Area-normalized $Z_d$")
-    an_style.cms_sim_label(ax)
+ax1.set_ylabel(r"Area-normalized $Z_d$")
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "anatomy_collimation_scans")
 """
 
@@ -404,10 +414,10 @@ for ax, (mode, mbs, mzd, title, hname) in zip(axes, picks):
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel(r"$Z_d$ $p_T$ [GeV]")
-    ax.set_ylabel(r"$\Delta R(\ell, \ell)$ from same $Z_d$")
     # the guide line crosses this corner, so the legend needs an opaque backing
-    ax.legend(loc="lower left", title=title, fontsize=14, title_fontsize=15,
+    ax.legend(loc="lower left", title=title, fontsize=15, title_fontsize=15,
               frameon=True, facecolor="white", edgecolor="none", framealpha=0.92)
+axes[0].set_ylabel(r"$\Delta R(\ell, \ell)$ from same $Z_d$")
 an_style.cms_sim_labels(axes)
 an_style.save(fig, "anatomy_collimation_2d")
 """
@@ -486,13 +496,14 @@ ax2.set_xlabel(r"Sub-leading gen muon $p_T$ [GeV]")
 for ax in (ax1, ax2):
     for thr in (23, 25):
         ax.axvline(thr, color="gray", ls=":", lw=1)
-    ax.set_ylabel("Events, area-normalized")
     ax.set_yscale("log")
     handles, labels = ax.get_legend_handles_labels()
     handles.append(Line2D([], [], color="gray", ls=":", lw=1))
     labels.append("HLT thresholds (23/25 GeV)")
-    ax.legend(handles, labels, fontsize=12)
-    an_style.cms_sim_label(ax)
+    ax.legend(handles, labels, loc="upper right", fontsize=15, frameon=True,
+              facecolor="white", edgecolor="none", framealpha=0.92)
+ax1.set_ylabel("Events, area-normalized")
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "anatomy_lepton_pt")
 """
 
@@ -551,10 +562,10 @@ for ax, mzd in zip(axes, [1.2, 0.25]):
     ax.plot(c, (1 - beta_star * c) / (1 + beta_star * c), "--", color="red",
             label=rf"$(1-\beta^* c)/(1+\beta^* c)$, $\beta^*$={beta_star:.2f}")
     ax.set_xlabel(r"$|\cos\theta^*|$")
-    ax.set_ylabel(r"$p_T^{\rm sub} / p_T^{\rm lead}$")
     ax.legend(loc="upper right", title=rf"$m_{{Z_d}}$ = {mzd:g} GeV",
-              fontsize=14, title_fontsize=15, frameon=True, facecolor="white",
+              fontsize=15, title_fontsize=15, frameon=True, facecolor="white",
               edgecolor="none", framealpha=0.92)
+axes[0].set_ylabel(r"$p_T^{\rm sub} / p_T^{\rm lead}$")
 an_style.cms_sim_labels(axes)
 an_style.save(fig, "anatomy_ptratio_costheta")
 """
@@ -591,9 +602,10 @@ ax1.set_xlabel(r"$Z_d$ $l_{xy}$ [cm]")
 ax2.set_xlabel(r"$Z_d$ $l_{xy}$ [cm]")
 ax2.set_yscale("log")
 for ax in (ax1, ax2):
-    ax.set_ylabel(r"$Z_d$ candidates, area-normalized")
-    ax.legend(fontsize=11)
-    an_style.cms_sim_label(ax)
+    ax.legend(loc="upper right", fontsize=15, frameon=True, facecolor="white",
+              edgecolor="none", framealpha=0.92)
+ax1.set_ylabel(r"$Z_d$ candidates, area-normalized")
+an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "anatomy_displacement_corners")
 for name, _ in corners:
     med = lib.hist_median_tiered(lib.get_h(out, name, "genAs_lxy_lowRange"),

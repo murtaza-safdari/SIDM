@@ -141,14 +141,15 @@ for r, flavor in enumerate(["mu", "e"]):
         ax.axhline(1.0, color="grey", linestyle=":", alpha=0.6)
         ax.axhline(0.0, color="grey", linestyle=":", alpha=0.6)
         flv = r"\\mu" if flavor == "mu" else "e"
-        ax.set_xlabel(r"$m_{Z_d}$ [GeV]", fontsize=14)
-        ax.set_ylabel(r"$\\alpha$", fontsize=14)
+        ax.set_xlabel(r"$m_{Z_d}$ [GeV]", fontsize=20)
+        ax.set_ylabel(r"$\\alpha$", fontsize=20)
         ax.set_xscale("log")
-        ax.text(0.5, 0.06, rf"${flv}$, {status} leptons", transform=ax.transAxes,
-                ha="center", va="bottom", fontsize=15)
         ax.grid(True, alpha=0.2)
-        ax.legend(loc="center left", fontsize=12)
-        hep.cms.label(ax=ax, data=False)
+        ax.set_title(" ")  # reserves the band the CMS label is drawn into
+        ax.legend(loc="lower right", fontsize=17, title_fontsize=18,
+                  title=rf"${flv}$, {status} leptons", frameon=True,
+                  facecolor="white", edgecolor="none", framealpha=0.92)
+an_style.cms_sim_labels(axes)
 an_style.save(fig, "polarization_alpha_summary")
 for row in rows:
     print("  m_XX=%4d  m_Zd=%.2f  %-9s %-2s  alpha = %6.3f +- %.3f" % row)
@@ -174,7 +175,7 @@ The second restriction is specific to `m_Zd = 0.25 GeV` at `m_XX ≥ 500 GeV`, i
 completely different shape, and there is no range choice that avoids it cleanly. The
 raw `|cosθ*|` counts there never collapse -- they rise monotonically all the way to
 `1` -- but the rise accelerates far faster near `|cosθ*| = 1` than
-`1 + α cos²θ*` can describe: for `m_XX = 1000 GeV` muons the count nearly triples
+`1 + α cos²θ*` can describe: for `m_XX = 1000 GeV` muons the count roughly doubles
 between `|cosθ*| = 0.8` and `0.98`. Scanning the fit range in fine steps shows why
 `[0, 0.8]` cannot be read as a clean answer either: the fitted `α` rises
 *monotonically* at every step from `[0, 0.5]` to at least `[0, 0.9]`, with no
@@ -183,13 +184,13 @@ here anyway, for consistency with the rest of the grid and because it is the les
 biased of the two choices against the one clean check available: electrons at
 `m_Zd = 0.25 GeV` have no velocity suppression (`m_e` is negligible next to `m_Zd`
 even there), so their true `α` should sit near `1` just as it does everywhere else
-on the grid, and `[0, 0.8]` reads `0.92`-`0.99` there against `0.61`-`0.73` at
+on the grid, and `[0, 0.8]` reads `0.91`-`0.99` there against `0.61`-`0.73` at
 `[0, 0.6]`. Read every `α` at `m_Zd = 0.25 GeV`, `m_XX ≥ 500 GeV` as directional,
 not precise: the true value is not recoverable from this fit by any choice of range.
 The earlier `lepton_kinematics_summary_grid.ipynb` study identified the same
-mechanism directly: at the highest boost the sub-leading lepton's lab-frame `pT`
-runs to zero regardless of the decay angle, so recovering `cosθ*` by boosting back
-into the `Z_d` rest frame is numerically ill-conditioned -- confirmed independently
+mechanism directly: at `γ_Zd` of order `10^3` the rest-frame momentum components
+are small differences of large lab-frame ones, so recovering `cosθ*` by boosting
+back into the `Z_d` rest frame is numerically ill-conditioned -- confirmed independently
 there by the sub/lead `pT` ratio vs `cosθ*` relation, which should be a thin,
 well-defined band and instead degenerates into a diffuse blob at exactly this
 corner.
@@ -200,6 +201,9 @@ essentially the whole grid; muons do too, except at `m_Zd = 0.25 GeV`, where
 Read the muon suppression at `m_Zd = 0.25 GeV` as real and large in direction, and
 as precise only at `m_XX ≤ 200 GeV`, where the acceptance cliff and the pile-up
 onset both stay out of the fit range.
+
+The per-sample fits behind that summary follow, one figure per `m_Zd`, each holding
+the five `m_XX` points.
 """),
 code("""def fit_and_plot_polarization(h, ax, color, label_prefix, fit_range):
     edges = h.axes[-1].edges
@@ -225,10 +229,11 @@ code("""def fit_and_plot_polarization(h, ax, color, label_prefix, fit_range):
     except Exception:
         pass
 
-fig, axes = plt.subplots(len(BS_MASSES), 3, figsize=(22, 6 * len(BS_MASSES)))
-for i, mxx in enumerate(BS_MASSES):
-    for j, mzd in enumerate(ZD_MASSES):
-        ax = axes[i, j]
+MZD_TAG = {0.25: "0p25", 1.2: "1p2", 5.0: "5p0"}
+for mzd in ZD_MASSES:
+    fig, axes = plt.subplots(3, 2, figsize=(15.2, 17.2), layout="constrained")
+    for i, mxx in enumerate(BS_MASSES):
+        ax = axes[i // 2, i % 2]
         sample = SAMPLE_GRID[mxx][mzd]
         rng = fit_range_for(mxx, mzd)
         fit_and_plot_polarization(
@@ -237,14 +242,16 @@ for i, mxx in enumerate(BS_MASSES):
         fit_and_plot_polarization(
             output[sample]["hists"]["genE_AFrame_absCosTheta"][{"channel": CH_BORN}],
             ax, "tab:orange", r"$e$", rng)
-        ax.set_xlabel(r"$|\\cos\\theta^*|$ ($Z_d$ frame)", fontsize=13)
+        ax.set_xlabel(r"$|\\cos\\theta^*|$ ($Z_d$ frame)", fontsize=17)
         ax.set_xlim(0, 1.0)
-        ax.text(0.5, 0.06, sample_label(mxx, mzd), transform=ax.transAxes,
-                ha="center", va="bottom", fontsize=13)
         ax.grid(True, alpha=0.15)
-        ax.legend(loc="upper left", fontsize=11)
-        hep.cms.label(ax=ax, data=False)
-an_style.save(fig, "polarization_grid_born")
+        ax.set_title(" ")  # reserves the band the CMS label is drawn into
+        ax.legend(loc="upper left", fontsize=15, title_fontsize=15,
+                  title=sample_label(mxx, mzd), frameon=True,
+                  facecolor="white", edgecolor="none", framealpha=0.92)
+    axes[2, 1].set_visible(False)
+    an_style.cms_sim_labels([axes[i // 2, i % 2] for i in range(len(BS_MASSES))])
+    an_style.save(fig, f"polarization_grid_born_{MZD_TAG[mzd]}")
 """),
 md("""## Lepton reconstruction migration vs displacement
 
@@ -280,8 +287,10 @@ def plot_all_vs_lxy(sample, channel, tag):
                     skip_label=(k != 0), remove_xlabel=(k != 3))
     fig.subplots_adjust(hspace=0, right=0.9)
     mxx, mzd = sample.split("_")[1:3]
+    suffix = ",  before object quality cuts" if "NoLjsource" in channel else ""
     fig.suptitle(rf"$m_{{XX}}$ = {mxx.replace('GeV', ' GeV')},  "
-                 rf"$m_{{Z_d}}$ = {mzd.replace('p', '.').replace('GeV', ' GeV')}")
+                 rf"$m_{{Z_d}}$ = {mzd.replace('p', '.').replace('GeV', ' GeV')}"
+                 + suffix)
     cax = fig.add_axes([0.91, 0.11, 0.013, 0.77])
     mappable = [c for a in fig.axes for c in a.collections][0]
     cb = fig.colorbar(mappable, cax=cax)
@@ -299,15 +308,17 @@ The canonical output reproduces the polarization structure of the original study
 statistics, now across all five `m_XX` points from 100 to 1000 GeV rather than three:
 transverse polarization (`α` consistent with 1) holds for both flavors across essentially
 the entire grid, and the one real departure is muon velocity suppression at
-`m_Zd = 0.25 GeV`, where `m_μ` is no longer negligible next to `m_Zd`. Getting a clean
-read on that required tightening the polarization fit range from `[0, 0.8]` to
-`[0, 0.6]` -- the wider range let the gen filter's acceptance edge into the fit and had
-previously been misread as a broad, uniform depression of the `m_XX = 100 GeV` row for
-both flavors; the filter's real effect is a sharp, localized statistical collapse past
-`|cosθ*| ≈ 0.75`, not a uniform shift, and does not survive into a `[0, 0.6]` fit. The migration maps show
-the reconstruction handoff (electron→photon, PF muon→DSA muon) as a function of
-displacement with the analysis object definitions and no trigger, the truth-to-
-reconstruction bridge the note's lepton-jet motivation rests on.
+`m_Zd = 0.25 GeV`, where `m_μ` is no longer negligible next to `m_Zd`. Two things limit
+how precisely that can be read. At `m_XX = 100 GeV` the production gen filter's
+`pT > 5` GeV cut removes the most asymmetric decays outright, a sharp collapse past
+`|cosθ*| ≈ 0.75` that an earlier `[0, 0.8]` fit had swept in and misread as a uniform
+depression of the whole row; the fit there now stops at `0.6`. At `m_Zd = 0.25 GeV`,
+`m_XX ≥ 500 GeV` the rest-frame angle itself is numerically ill-conditioned at
+`γ_Zd ~ 10^3`, and no fit range recovers a precise `α` there; those values are
+directional only. The migration maps show the reconstruction handoff (electron→photon,
+PF muon→DSA muon) as a function of displacement with the analysis object definitions
+and no trigger, the truth-to-reconstruction bridge the note's lepton-jet motivation
+rests on.
 """),
 ]
 

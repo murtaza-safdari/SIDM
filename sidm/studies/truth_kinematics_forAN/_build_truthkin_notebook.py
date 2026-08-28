@@ -99,7 +99,7 @@ ax.set_xlabel(r"Gen muon $|d_0|$  [cm]")
 ax.set_ylabel("Density  [cm$^{-1}$]")
 ax.text(0.5, 0.93, r"$m_{XX}$ = 500 GeV, $m_{Z_d}$ = 1.2 GeV  (4Mu)",
         transform=ax.transAxes, ha="center", va="top", fontsize=15)
-ax.legend(fontsize=13)
+ax.legend(fontsize=13, borderaxespad=1.0)
 ax.minorticks_on()
 hep.cms.label(ax=ax, data=False)
 an_style.save(fig, "gen_mu_d0_ctau_scan")
@@ -119,7 +119,7 @@ ax.set_xlabel(r"Gen electron $|d_0|$  [cm]")
 ax.set_ylabel("Density  [cm$^{-1}$]")
 ax.text(0.5, 0.93, r"$m_{XX}$ = 500 GeV, $m_{Z_d}$ = 1.2 GeV  (2Mu2E)",
         transform=ax.transAxes, ha="center", va="top", fontsize=15)
-ax.legend(fontsize=13)
+ax.legend(fontsize=13, borderaxespad=1.0)
 ax.minorticks_on()
 hep.cms.label(ax=ax, data=False)
 an_style.save(fig, "gen_e_d0_ctau_scan")
@@ -288,7 +288,7 @@ for ax, phys in zip(axes, ["4Mu", "2Mu2E"]):
                     markerfacecolor="none" if phys == "2Mu2E" else None)
     ax.set_xscale("log")
     ax.set_xlabel(r"Nominal mean $L_{xy}$  [cm]")
-    ax.text(0.5, 0.95, phys, transform=ax.transAxes, ha="center", va="top", fontsize=16)
+    ax.text(0.5, 0.95, phys, transform=ax.transAxes, ha="center", va="top", fontsize=22)
     ax.minorticks_on()
     hep.cms.label(ax=ax, data=False)
 axes[0].set_ylabel("Central production gen-filter efficiency")
@@ -298,10 +298,12 @@ for ma, c in col.items():
 for mxx, mk in mkr.items():
     axes[0].scatter([], [], color="gray", marker=mk,
                     label=rf"$m_{{XX}}$ = {mxx.replace('GeV', ' GeV')}")
-axes[0].legend(fontsize=11, ncol=2, loc="lower left")
+axes[0].legend(fontsize=20, ncol=2, loc="lower left", frameon=True,
+               facecolor="white", edgecolor="none", framealpha=0.92)
 axes[1].errorbar([0.3, 300], [0.8607, 0.6060], yerr=[0.0035, 0.0049], marker="*",
                  color="k", ms=22, ls="none", label="re-measured, exact production config")
-axes[1].legend(fontsize=13, loc="lower left")
+axes[1].legend(fontsize=20, loc="lower left", frameon=True,
+               facecolor="white", edgecolor="none", framealpha=0.92)
 an_style.save(fig, "central_filter_efficiency")
 vals = [v for v, _ in eff.values()]
 print(f"central filter efficiency across the grid: mean {np.mean(vals):.3f}, "

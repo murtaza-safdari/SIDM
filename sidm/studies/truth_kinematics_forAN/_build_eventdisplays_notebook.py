@@ -143,7 +143,7 @@ def stamp(ax, text, pts_ax, corners):
     ax.text(best[0], best[1], text, transform=ax.transAxes,
             ha="right" if best[0] > 0.5 else "left",
             va="top" if best[1] > 0.5 else "bottom",
-            fontsize=13, bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
+            fontsize=14, bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
     return best
 
 def first_file(sample, location_cfg):
@@ -248,7 +248,7 @@ def draw_etaphi(ax, rec, label):
                     rf"$\Delta R$ = {dr:.3g}",
                     (a["eta"], a["phi"]), textcoords="data",
                     xytext=(a["eta"] + dxd, a["phi"] + dyd), ha=ha, va=va,
-                    fontsize=13,
+                    fontsize=14,
                     bbox=dict(facecolor="white", alpha=0.6, edgecolor="none"))
     flavors = {a["flavor"] for a in rec}
     handles = [Line2D([], [], ls="none", marker="*", ms=12, color="gray",
@@ -261,7 +261,7 @@ def draw_etaphi(ax, rec, label):
     if "e" in flavors:
         handles.append(Line2D([], [], ls="none", marker="s",
                               color=FLAV_STYLE["e"]["color"], label=r"$e$"))
-    ax.legend(handles=handles, loc="upper left", fontsize=13)
+    ax.legend(handles=handles, loc="upper left", fontsize=14)
     ax.set_xlabel(r"$\eta$")
     ax.set_ylabel(r"$\phi$")
     ax.set_xlim(-3.4, 3.4)
@@ -305,6 +305,20 @@ def draw_rz(ax, rec, label):
             for s in (1, -1):
                 ax.axhspan(s * r1, s * min(r2, 1.5 * top), color="gray", alpha=0.08)
             deferred_labels.append((-r1 - 0.005 * top, band_label))
+    # the fixed dphi/deta box in the lower-left corner is text like any other,
+    # so it blocks annotation placement as well as the legend and stamp
+    dphi_box = (0.02, 0.02, 0.24, 0.15)
+
+    def touches(r1, r2, pad=0.02):
+        return not (r1[2] + pad < r2[0] or r2[2] + pad < r1[0]
+                    or r1[3] + pad < r2[1] or r2[3] + pad < r1[1])
+
+    def ann_rect(xf, yf, side, sv):
+        # axes-fraction footprint of one decay-vertex annotation
+        x0, x1 = (xf, xf + 0.34) if side > 0 else (xf - 0.34, xf)
+        y0, y1 = (yf, yf + 0.11) if sv > 0 else (yf - 0.11, yf)
+        return (x0, y0, x1, y1)
+
     avoid = []
     ann_info = []  # (z, signed R, text side, hemisphere) per annotation
     for a in rec:
@@ -334,13 +348,23 @@ def draw_rz(ax, rec, label):
         x_frac = (a["dec_z"] + zmax) / (2 * zmax)
         if (side > 0 and x_frac > 0.62) or (side < 0 and x_frac < 0.38):
             side = -side
+        # flip away from the dphi/deta box when that side is free and the flip
+        # does not push the block off the panel edge
+        y_frac = (s * a["dec_R"] + top) / (2 * top)
+        flipped = -side
+        off_edge = ((flipped > 0 and x_frac > 0.62)
+                    or (flipped < 0 and x_frac < 0.38))
+        if (not off_edge
+                and touches(ann_rect(x_frac, y_frac, side, s), dphi_box)
+                and not touches(ann_rect(x_frac, y_frac, flipped, s), dphi_box)):
+            side = flipped
         lep = r"\mu\mu" if a["flavor"] == "mu" else "ee"
         ax.annotate(rf"$Z_d \to {lep}$, $p_T$ = {a['pt']:.0f} GeV" "\n"
                     rf"$l_{{xy}}$ = {a['lxy']:.3g} cm",
                     (a["dec_z"], s * a["dec_R"]), textcoords="offset points",
                     xytext=(16 * side, 12 if s > 0 else -12),
                     ha="left" if side > 0 else "right",
-                    va="bottom" if s > 0 else "top", fontsize=13, zorder=6,
+                    va="bottom" if s > 0 else "top", fontsize=14, zorder=6,
                     bbox=dict(facecolor="white", alpha=0.85, edgecolor="none"))
         ann_info.append((a["dec_z"], s * a["dec_R"], side, 1.0 if s > 0 else -1.0))
     # the dark photons' common production vertex; its transverse offset
@@ -352,7 +376,7 @@ def draw_rz(ax, rec, label):
     ax.text(0.03, 0.03,
             rf"$|\Delta\phi(Z_d, Z_d)|$ = {dphi_zd:.2f}" "\n"
             rf"$|\Delta\eta(Z_d, Z_d)|$ = {deta_zd:.2f}",
-            transform=ax.transAxes, ha="left", va="bottom", fontsize=13,
+            transform=ax.transAxes, ha="left", va="bottom", fontsize=14,
             bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"))
     ax.set_xlabel(r"$z$ [cm]")
     ax.set_ylabel(r"signed $R$ [cm]   (sign of $\phi$)")
@@ -366,22 +390,16 @@ def draw_rz(ax, rec, label):
     # claims space against the TEXT blocks (hard: annotations, band labels,
     # the dphi/deta box) with track points as soft tie-breakers, and the
     # two-line stamp then adapts around everything including the legend
-    def touches(r1, r2, pad=0.02):
-        return not (r1[2] + pad < r2[0] or r2[2] + pad < r1[0]
-                    or r1[3] + pad < r2[1] or r2[3] + pad < r1[1])
-
     # TEXT blocks (hard) and track points (soft), all in axes fraction
     hard = []
     for zz, rr, side, sv in ann_info:
         bx, by = ax.transLimits.transform((zz, rr))
-        x0, x1 = (bx, bx + 0.34) if side > 0 else (bx - 0.34, bx)
-        y0, y1 = (by, by + 0.11) if sv > 0 else (by - 0.11, by)
-        hard.append((x0, y0, x1, y1))
+        hard.append(ann_rect(bx, by, side, sv))
     band_rects = []
     for y, _t in deferred_labels:
         ly = ax.transLimits.transform((0.0, y))[1]
         band_rects.append((0.72, ly - 0.045, 0.99, ly + 0.01))
-    hard.append((0.02, 0.02, 0.24, 0.15))  # dphi/deta box
+    hard.append(dphi_box)  # dphi/deta box
     soft = []
     for p_ in avoid:
         px, py = ax.transLimits.transform(p_)
@@ -410,7 +428,7 @@ def draw_rz(ax, rec, label):
                 ("upper left", 2, (0.03, 0.85, 0.60, 0.97)),
                 ("lower center", 2, (0.30, 0.03, 0.82, 0.16))]
     loc, ncol, lrect = rank(lg_cands, hard + band_rects, soft)
-    kw = dict(fontsize=13) if ncol == 1 else dict(fontsize=12, columnspacing=0.9,
+    kw = dict(fontsize=14) if ncol == 1 else dict(fontsize=13, columnspacing=0.9,
                                                   handlelength=1.5)
     ax.legend(handles=handles, loc=loc, ncol=ncol, framealpha=1.0, **kw)
 
@@ -421,22 +439,22 @@ def draw_rz(ax, rec, label):
     (scx, scy), srect = rank(st_cands, hard + band_rects + [lrect], soft)
     ax.text(scx, scy, label, transform=ax.transAxes,
             ha="right" if scx > 0.5 else "left",
-            va="top" if scy > 0.5 else "bottom", fontsize=13, zorder=6,
+            va="top" if scy > 0.5 else "bottom", fontsize=14, zorder=6,
             bbox=dict(facecolor="white", alpha=0.85, edgecolor="none"))
 
     # band labels last: right edge unless the legend or stamp claimed it;
     # a relocated label additionally steps right of the dphi/deta box when
     # its left-edge position would land on it
-    dphi_rect = (0.02, 0.02, 0.24, 0.15)
+    dphi_rect = dphi_box
     for (y, text), rect in zip(deferred_labels, band_rects):
         if touches(rect, lrect) or touches(rect, srect):
             yfrac = ax.transLimits.transform((0.0, y))[1]
             lx = 0.27 if touches((0.015, yfrac - 0.05, 0.25, yfrac + 0.01),
                                  dphi_rect) else 0.015
-            ax.text(lx, y - 0.005 * top, text, fontsize=11, color="gray",
+            ax.text(lx, y - 0.005 * top, text, fontsize=12, color="gray",
                     transform=ax.get_yaxis_transform(), ha="left", va="top")
         else:
-            ax.text(0.985, y, text, fontsize=11, color="gray",
+            ax.text(0.985, y, text, fontsize=12, color="gray",
                     transform=ax.get_yaxis_transform(), ha="right", va="top")
 
 def display(sample, location_cfg, fname_tag, target_lxy=None):
