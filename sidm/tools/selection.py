@@ -35,6 +35,15 @@ class Selection:
                 # An I/O failure means an unreadable chunk, not an unevaluable cut.
                 if isinstance(e, OSError) or "I/O operation" in str(e):
                     raise
+                # A collection absent from this sample (a gen-level cut on data)
+                # means the cut does not apply here, not that it is broken;
+                # report it the way JaggedSelection.apply_obj_cuts already does
+                # for object cuts on a missing collection.
+                if (isinstance(e, KeyError) and e.args and isinstance(e.args[0], str)
+                        and e.args[0] != cut and e.args[0] not in sel_objs):
+                    print(f"Warning: {e.args[0]} not found in sample. "
+                          f"The following cuts will not be applied: ['{cut}']")
+                    continue
                 print(f"Warning: Unable to evaluate {cut} Skipping.",e)
                 # Skip this cut entirely. Event cuts were once collected and
                 # applied together as a single AND after the loop, where falling
