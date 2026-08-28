@@ -89,16 +89,21 @@ the failing (sample, chunk) lines), merged with the same
 
 - `lifetime_forAN.ipynb`: proper-lifetime faithfulness and the
   acceptance-corrected recovery, at ~50x the statistics of the original
-  `lifetime_study` pass. Faithful-regime closure: median measured/nominal
-  = 0.9999 (N=130). Acceptance-corrected: median 1.002, 119/180 within 5%.
+  `lifetime_study` pass. Where the lab cap leaves the distribution intact
+  (108/180 samples) the corrected fit closes within 0.5% of nominal; over the
+  full grid the median is 1.002 with 119/180 within 5%, the 36 points beyond
+  +10% being the longest-ctau sample of each mass point (the single-radius
+  approximation to the filter's rho/z cylinder).
   Fitted lab cap R_max = 814 cm over the heavily-truncated samples; the
   truncation-onset test covers all 36 mass points.
 - `truth_kinematics_forAN.ipynb`: gen lepton |d0| across the lifetime grid
   (the variable the NoVtx triggers and displaced reconstruction respond to),
   the boost map across the mass grid, and the gen-filter efficiency figure.
 - `polarization_migration_forAN.ipynb`: the polarization-fit summary
-  (transverse alpha ~ 1 in the analysis sweet spot; muon velocity suppression
-  at M_Zd = 0.25 GeV) and the reconstruction-migration maps
+  over all five m_XX points (transverse alpha ~ 1 at M_Zd >= 1.2 GeV; muon
+  velocity suppression at M_Zd = 0.25 GeV, directional only above m_XX = 500
+  GeV, where the rest-frame angle is numerically ill-conditioned at the boost)
+  and the reconstruction-migration maps
   (electron-to-photon and PF-to-DSA handoff vs Lxy).
 - `final_state_anatomy_forAN.ipynb`: the first-principles anatomy, from v3:
   production system, back-to-back topology and the Zd momentum scale,

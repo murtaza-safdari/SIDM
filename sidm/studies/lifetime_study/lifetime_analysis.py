@@ -315,7 +315,8 @@ def plot_fit_grid(output, groups, phys_channel, kind, channel=CHANNEL, ncols=3,
         ax.set_xlabel("Proper decay length  $x = \\ell_{xyz}/\\beta\\gamma$  [cm]")
         ax.set_ylabel("dN/dx  [cm$^{-1}$]")
         ax.legend(title="cτ:  nom → fit ± err  [cm]", fontsize=legend_fontsize,
-                  title_fontsize=legend_title_fontsize, loc="lower left", framealpha=0.9)
+                  title_fontsize=legend_title_fontsize, loc="lower left",
+                  frameon=True, facecolor="white", edgecolor="none", framealpha=0.9)
         hep.cms.label(ax=ax, data=False, fontsize=cms_fontsize)
         tag = mass_label_2line(key) if two_line_tag else mass_label(key)
         ax.text(0.97, 0.95, tag, transform=ax.transAxes,
