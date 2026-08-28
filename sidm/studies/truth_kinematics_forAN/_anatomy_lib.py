@@ -2,6 +2,14 @@
 trigger-context notebooks. The merged v3 output (5 channels x 9 hist
 collections, all 180 samples, every file, unweighted) lives at V3_EOS_DIR;
 load_v3() mirrors _lifetime_refit.load_truthkin() with a separate local cache.
+
+Two follow-on productions add histograms the v3 run did not book. The
+displacement-conditioned run (V3_COND_EOS_DIR, all 90 2Mu2E samples, channels
+genOnly and genOnly_trigger) holds the joint l_xy-vs-opening-angle histogram;
+the reconstruction self-consistency run (V3_SELFCON_EOS_DIR, the 12
+mid-lifetime m_Zd = 1.2 GeV samples, channel base) holds the gen-matched
+lepton-jet pair masses. load_v3_cond() and load_v3_selfcon() load them the
+same way, each with its own local cache.
 """
 import os
 import re
@@ -20,6 +28,18 @@ V3_EOS_DIR = ("/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/"
 V3_CACHE = os.environ.get("ANATOMY_CACHE",
                           os.path.expanduser("~/nobackup/truthkin_v3_cache"))
 
+V3_COND_EOS_DIR = ("/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/"
+                   "truth_kinematics_forAN/anatomy_v3_cond")
+V3_COND_CACHE = os.environ.get(
+    "ANATOMY_CACHE_COND",
+    os.path.expanduser("~/nobackup/truthkin_v3_cond_cache"))
+
+V3_SELFCON_EOS_DIR = ("/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/"
+                      "truth_kinematics_forAN/anatomy_v3_selfcon")
+V3_SELFCON_CACHE = os.environ.get(
+    "ANATOMY_CACHE_SELFCON",
+    os.path.expanduser("~/nobackup/truthkin_v3_selfcon_cache"))
+
 CHANNELS = ["genOnly", "genOnly_trigger", "baseNoLj_noTrigger", "baseNoLj", "base"]
 
 _SAMPLE_RE = re.compile(
@@ -37,6 +57,17 @@ def parse_sample(name):
             "ctau_mm": _f(m["ctau"])}
 
 def load_v3(cache=V3_CACHE, eos_dir=V3_EOS_DIR):
+    return lr.load_truthkin(cache=cache, eos_dir=eos_dir)
+
+def load_v3_cond(cache=V3_COND_CACHE, eos_dir=V3_COND_EOS_DIR):
+    """The displacement-conditioned run: 90 2Mu2E samples, channels genOnly
+    and genOnly_trigger, holding genA_toMu_lxy_vs_daughters_dR."""
+    return lr.load_truthkin(cache=cache, eos_dir=eos_dir)
+
+def load_v3_selfcon(cache=V3_SELFCON_CACHE, eos_dir=V3_SELFCON_EOS_DIR):
+    """The reconstruction self-consistency run: 12 mid-lifetime
+    m_Zd = 1.2 GeV samples, channel base, holding the gen-matched
+    lepton-jet pair masses."""
     return lr.load_truthkin(cache=cache, eos_dir=eos_dir)
 
 def format_sample(name):

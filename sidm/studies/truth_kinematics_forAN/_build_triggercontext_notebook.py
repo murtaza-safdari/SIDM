@@ -298,8 +298,8 @@ and momentum together, and any single curve mixes them. Binning in one variable
 while plotting against the other separates them, and it also makes combining
 samples legitimate: once the bin fixes the quantity that drives the difference,
 samples that differ only in how they populate that quantity can be added
-together. Both panels therefore use **every 2Mu2E sample** (all masses, all
-lifetimes).
+together. Every panel in this section therefore uses **every 2Mu2E sample**
+(all masses, all lifetimes).
 
 Left: efficiency against opening angle, in bands of dark-photon $p_T$. The loss
 toward small angle survives at fixed momentum, so it is an angular effect and
@@ -317,10 +317,29 @@ turns on latest and saturates lowest (0.37 at its best bin against 0.53-0.57 for
 the others), because a wide pair at fixed momentum is a heavy dark photon, whose
 unsuppressed $\beta^*$ hands one muon too little $p_T$ to reach the threshold.
 
-*The one variable this pair cannot separate is displacement: the stored
-histograms hold the joint distribution of opening angle with $p_T$, but not
-with $l_{xy}$, so an $l_{xy}$-binned version needs a new two-dimensional
-histogram and a rerun.*
+The third variable needs its own production. The histograms above hold the
+joint distribution of opening angle with $p_T$, not with $l_{xy}$; a rerun over
+the same 90 samples books that pair instead, and the second figure conditions
+on it. It combines 11.4 million dark photons, 3.3 million of them triggered.
+
+Second figure, left: efficiency against $Z_d$ decay radius, in bands of
+opening angle. Every
+band falls monotonically, from 0.30-0.53 in the first 10 cm to below 0.01
+beyond 300 cm, and the tighter the pair the faster the fall. The efficiency
+reaches half its innermost value by $l_{xy}$ = 95 cm in the
+$\Delta R$ = 0.0003-0.001 band, by 135-165 cm in the three intermediate bands,
+and only by 205 cm in the widest band, $\Delta R$ = 0.03-0.1.
+
+Second figure, right: efficiency against opening angle, in bands of decay
+radius. The peak
+efficiency falls from 0.53 to 0.49 to 0.42 across the 0-20, 20-60 and
+60-150 cm bands, and to 0.24 in the 150-300 cm band. The angle at which that
+peak sits moves outward with displacement: inside 150 cm the best efficiency is
+in the collimated region, $\Delta R$ = 0.0013-0.0029, while in the 150-300 cm
+band it lies at $\Delta R$ = 0.13. The collimated pairs the trigger prefers
+near the beamline are therefore the ones it loses first as the decay moves out,
+so displacement and collimation compound rather than trade off against each
+other.
 """
 
 COND_CODE = r"""
@@ -361,6 +380,64 @@ for ax in (ax1, ax2):
     ax.set_ylim(0, 1.05)
 an_style.cms_sim_labels((ax1, ax2))
 an_style.save(fig, "trigger_eff_conditioned")
+
+out_c = lib.load_v3_cond()
+cond_2mu2e = lib.select_samples(out_c, mode="2Mu2E")
+numLD = lib.sum_h(out_c, cond_2mu2e, "genA_toMu_lxy_vs_daughters_dR",
+                  "genOnly_trigger")
+denLD = lib.sum_h(out_c, cond_2mu2e, "genA_toMu_lxy_vs_daughters_dR", "genOnly")
+print(f"displacement-conditioned rerun: {len(cond_2mu2e)} 2Mu2E samples, "
+      f"{denLD.values().sum():.0f} dark photons, "
+      f"{numLD.values().sum():.0f} triggered")
+
+LXY_BANDS = [(0, 20), (20, 60), (60, 150), (150, 300)]
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained")
+for i, (lo, hi) in enumerate(DR_BANDS):
+    color = cmap(i / max(len(DR_BANDS) - 1, 1) * 0.85)
+    draw_eff(ax1, band(numLD, "genA_toMu_daughters_dR", lo, hi),
+             band(denLD, "genA_toMu_daughters_dR", lo, hi),
+             rf"{lo:g}-{hi:g}", color)
+ax1.set_xlabel(r"$Z_d \rightarrow \mu\mu$ $l_{xy}$ [cm]")
+ax1.set_ylabel("Trigger efficiency")
+ax1.legend(fontsize=15, title=r"$\Delta R(\mu,\mu)$ band", title_fontsize=15,
+           loc="upper right")
+
+for i, (lo, hi) in enumerate(LXY_BANDS):
+    color = cmap(i / max(len(LXY_BANDS) - 1, 1) * 0.85)
+    draw_eff(ax2, band(numLD, "genA_toMu_lxy", lo, hi),
+             band(denLD, "genA_toMu_lxy", lo, hi),
+             rf"{lo:g}-{hi:g}", color)
+ax2.set_xscale("log")
+ax2.set_xlabel(r"$\Delta R(\mu, \mu)$ from same $Z_d$")
+ax2.legend(fontsize=15, title=r"$Z_d$ $l_{xy}$ band [cm]", title_fontsize=15,
+           loc="upper right")
+
+for ax in (ax1, ax2):
+    ax.set_ylim(0, 1.05)
+an_style.cms_sim_labels((ax1, ax2))
+an_style.save(fig, "trigger_eff_conditioned_lxy_dR")
+
+for lo, hi in DR_BANDS:
+    eff, _, _, centers = lib.efficiency(
+        band(numLD, "genA_toMu_daughters_dR", lo, hi),
+        band(denLD, "genA_toMu_daughters_dR", lo, hi))
+    den = band(denLD, "genA_toMu_daughters_dR", lo, hi).values()
+    ok = np.isfinite(eff) & (den >= MIN_DEN)
+    e, c = eff[ok], centers[ok]
+    drop = np.where(e < 0.5 * e[0])[0]
+    where = f"{c[drop[0]]:.0f} cm" if len(drop) else f"beyond {c[-1]:.0f} cm"
+    print(f"dR {lo:g}-{hi:g}: efficiency {e[0]:.3f} at lxy = {c[0]:.0f} cm, "
+          f"half of that ({0.5 * e[0]:.3f}) first reached at lxy = {where}")
+
+for lo, hi in LXY_BANDS:
+    eff, _, _, centers = lib.efficiency(band(numLD, "genA_toMu_lxy", lo, hi),
+                                        band(denLD, "genA_toMu_lxy", lo, hi))
+    den = band(denLD, "genA_toMu_lxy", lo, hi).values()
+    ok = np.isfinite(eff) & (den >= MIN_DEN)
+    e, c = eff[ok], centers[ok]
+    i = int(np.argmax(e))
+    print(f"lxy {lo}-{hi} cm: peak efficiency {e[i]:.3f} at dR = {c[i]:.3g}")
 """
 
 GRID_MD = r"""

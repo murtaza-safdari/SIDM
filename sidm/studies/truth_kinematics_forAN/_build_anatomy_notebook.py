@@ -81,6 +81,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
+from matplotlib.lines import Line2D
 import mplhep as hep
 
 here = os.getcwd()
@@ -341,6 +342,131 @@ for m in MBS:
     below = vals[edges[:-1] < 0.8].sum()
     tot = vals.sum()
     print(f"m(Bs) = {m:6g} GeV: frac(pT(LJ)/pT(Zd) < 0.8) = {below / tot:.2f}")
+"""
+
+PAIR_MD = r"""
+**Which pair, and which events.** The masses above take the leading lepton
+jets: the two highest-$p_T$ jets in 4Mu, the highest-$p_T$ muon jet with the
+highest-$p_T$ electron/photon jet in 2Mu2E. Neither pick consults the truth. The
+companion histograms below pair each dark photon with its own nearest lepton jet
+within $\Delta R = 0.4$ instead, and the figure overlays the two pairings,
+area-normalized, at three bound-state masses.
+
+Two things differ between the curves, and the printed table separates them. The
+first is combinatorics: the blind pick can only take the wrong pair when the
+event holds a third lepton jet, which happens in 0.25% of 4Mu `base` events at
+$m_{B_s}$ = 100 GeV rising to 1.9% at 1000 GeV (0.5% to 2.3% in 2Mu2E), so a
+wrong pick is bounded at the percent level everywhere on the grid. The second is
+the event population. `base` keeps a muon jet only if it holds two reconstructed
+muons, so the gen-matched histogram is filled only when both dark photons
+produced such a jet within $\Delta R = 0.4$ of them, the same condition the 4Mu
+analysis selection imposes on its two leading jets. That keeps 47% of `base`
+events at $m_{B_s}$ = 100 GeV, 71% at 200 GeV and 46% at 1000 GeV; in 2Mu2E,
+where the electron jet must match as well, 18% at 100 GeV rising to 90% at
+$m_{B_s} \geq 800$ GeV.
+
+Read with that in mind, the gen-matched width is the momentum resolution of
+fully reconstructed pairs, and it degrades gently with the boost, from 0.087 to
+0.134 of the median in 4Mu between 100 and 1000 GeV. The blind `base` curve
+widens far more, to 0.373 at 1000 GeV with its median pulled down to 821 GeV
+against 989 GeV for the match, and the difference is not the pairing but the
+events the match excludes: those in which at least one dark photon has no
+two-muon jet within $\Delta R = 0.4$ of it (a merged or lost muon, or one
+failing the muon-jet source requirements), which `base` still pairs with
+whatever jet leads and the 4Mu channel rejects. In 2Mu2E the two pairings agree
+above 200 GeV (half-widths 0.053 against 0.058 at 1000 GeV, medians within
+1.5 GeV): one muon jet and one electron jet already fix the pairing, and the
+electron-jet response holds up under collimation. At 100 GeV the matched 2Mu2E
+subset is 18% of the events and its width, 0.191, is not the better
+measurement.
+
+*Samples: middle lifetimes at $m_{Z_d}$ = 1.2 GeV; channel `base`.*
+"""
+
+PAIR_CODE = r"""
+out_s = lib.load_v3_selfcon()
+print(f"loaded {len(out_s)} self-consistency samples")
+
+def hquant(h, q):
+    '''Flow-aware interpolated quantile: the lib.hist_median construction at
+    an arbitrary quantile. The cumulative includes the underflow and the total
+    both flow bins, so an overflow-dominated distribution returns NaN rather
+    than a silently truncated value.'''
+    v = h.values(flow=True)
+    edges = h.axes[-1].edges
+    tot = v.sum()
+    if tot == 0:
+        return float("nan")
+    below = np.cumsum(v)[:len(edges)]
+    if below[-1] < q * tot:
+        return float("nan")
+    i = int(np.searchsorted(below, q * tot))
+    if i == 0:
+        return float(edges[0])
+    return float(edges[i - 1] + (q * tot - below[i - 1]) / v[i]
+                 * (edges[i] - edges[i - 1]))
+
+def median_and_width(h):
+    '''Median and 68%-containment half-width, the latter in units of the
+    median so masses two decades apart are comparable.'''
+    med = hquant(h, 0.5)
+    return med, 0.5 * (hquant(h, 0.84) - hquant(h, 0.16)) / med
+
+def multi_lj_frac(sample):
+    '''Fraction of base events holding more than two lepton jets: the ceiling
+    on how often the leading-pT pick can take the wrong pair.'''
+    h = lib.get_h(out, sample, "lj_n", "base")
+    v, edges = h.values(flow=True), h.axes[-1].edges
+    return v[int(np.searchsorted(edges, 3)) + 1:].sum() / v.sum()
+
+def total(h):
+    s = h.sum(flow=True)
+    return float(getattr(s, "value", s))
+
+PAIRINGS = [("4Mu", "genA_matched_lj_lj_invmass", "lj_lj_invmass",
+             r"$m(\mathrm{LJ}, \mathrm{LJ})$ [GeV]"),
+            ("2Mu2E", "genA_matched_mulj_egmlj_invmass", "mulj_egmlj_invmass",
+             r"$m(\mu\mathrm{-LJ}, e\mathrm{-LJ})$ [GeV]")]
+SHOWN = [200.0, 500.0, 1000.0]
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=an_style.WIDE, layout="constrained")
+for ax, (mode, matched_h, blind_h, xlabel) in zip((ax1, ax2), PAIRINGS):
+    for m in SHOWN:
+        s = lib.mid_ctau(out_s, mode, m, 1.2)
+        hep.histplot(lib.get_h(out_s, s, matched_h, "base"), ax=ax,
+                     density=True, color=MBS_COLORS[m], ls="-")
+        hep.histplot(lib.get_h(out, s, blind_h, "base"), ax=ax,
+                     density=True, color=MBS_COLORS[m], ls="--")
+    ax.set_xlabel(xlabel)
+
+handles = [Line2D([], [], color=MBS_COLORS[m], lw=2,
+                  label=rf"$m_{{B_s}}$ = {m:g} GeV") for m in SHOWN]
+handles += [Line2D([], [], color="black", ls="-", lw=2,
+                   label="gen-matched pairing"),
+            Line2D([], [], color="black", ls="--", lw=2,
+                   label=r"leading-$p_T$ pairing")]
+ax1.set_ylabel("Events, area-normalized")
+for ax, (mode, *_rest) in zip((ax1, ax2), PAIRINGS):
+    ax.legend(handles=handles, title=f"{mode} channel, base selection",
+              fontsize=15, title_fontsize=15, loc="upper right", frameon=True,
+              facecolor="white", edgecolor="none", framealpha=0.92)
+an_style.cms_sim_labels((ax1, ax2))
+an_style.save(fig, "anatomy_reco_pairmass_matched")
+
+for mode, matched_h, blind_h, _lab in PAIRINGS:
+    print(f"\n{mode}: pair-mass median and 68%-containment half-width "
+          f"(in units of the median)")
+    print(f"{'m(Bs)':>9}  {'gen-matched':>19}  {'leading-pT':>19}"
+          f"  {'>2 LJ':>7}  {'matched/base':>12}")
+    for m in MBS:
+        s = lib.mid_ctau(out_s, mode, m, 1.2)
+        hm = lib.get_h(out_s, s, matched_h, "base")
+        hb = lib.get_h(out, s, blind_h, "base")
+        med_m, w_m = median_and_width(hm)
+        med_b, w_b = median_and_width(hb)
+        print(f"{m:6g} GeV  {med_m:9.1f} GeV {w_m:6.3f}  "
+              f"{med_b:9.1f} GeV {w_b:6.3f}  {multi_lj_frac(s):7.4f}  "
+              f"{total(hm) / total(hb):12.3f}")
 """
 
 COLL_MD = r"""
@@ -639,6 +765,7 @@ cells = [md(INTRO), code(SETUP),
          md(B2B_MD), code(B2B_CODE),
          md(MASS_MD), code(MASS_CODE),
          md(RECO_MD), code(RECO_CODE),
+         md(PAIR_MD), code(PAIR_CODE),
          md(COLL_MD), code(COLL_CODE),
          md(COLL2D_MD), code(COLL2D_CODE),
          md(HEAT_MD), code(HEAT_CODE),
