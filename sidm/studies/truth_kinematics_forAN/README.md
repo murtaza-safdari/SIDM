@@ -85,6 +85,31 @@ errors and were resubmitted with a copy of the submit file pointed at
 the failing (sample, chunk) lines), merged with the same
 `sidm/scripts/merge_coffea_chunks_eos.py` invocation into `anatomy_v3/`.
 
+Two follow-on productions add histograms v3 did not book, written to
+`/store/group/lpcmetx/SIDM/coffea_outputs/murtazas/truth_kinematics_forAN/anatomy_v3_cond/`
+and `.../anatomy_v3_selfcon/`. The displacement-conditioned run covers all 90
+2Mu2E samples in channels `genOnly` and `genOnly_trigger` with the
+`trigger_conditioned` collection, whose one histogram
+`genA_toMu_lxy_vs_daughters_dR` holds the joint distribution of dark-photon
+decay radius and daughter opening angle (both axes filled from the same
+decayed-daughter selection, so an entry is one dark photon and the pair of
+axes is a genuine joint distribution) alongside the one-dimensional `dR` and
+`lxy` histograms it is checked against. Produced with
+`condor/submit_conditioned.sub` and `condor/job_args_conditioned.txt`
+(`--files-per-job 10`; 435 jobs), merged with the same
+`sidm/scripts/merge_coffea_chunks_eos.py` invocation into `anatomy_v3_cond/`.
+
+The reconstruction self-consistency run covers the 12 mid-lifetime
+`m_Zd = 1.2 GeV` samples, six bound-state masses in each channel, in channel
+`base` with the `selfconsistency_matched` collection:
+`genA_matched_lj_lj_invmass` and `genA_matched_mulj_egmlj_invmass` pair each
+dark photon with its own nearest lepton jet within `dR = 0.4`, against which
+the blind leading-pT pair masses `lj_lj_invmass` and `mulj_egmlj_invmass`
+already in v3 are compared. Produced with `condor/submit_selfcon.sub` and
+`condor/job_args_selfcon.txt` (the per-channel `job_args_selfcon_4mu.txt` and
+`job_args_selfcon_2mu2e.txt` concatenated; `--files-per-job 20`; 37 jobs),
+merged with the same script into `anatomy_v3_selfcon/`.
+
 ## Notebooks
 
 - `lifetime_forAN.ipynb`: proper-lifetime faithfulness and the
@@ -108,7 +133,11 @@ the failing (sample, chunk) lines), merged with the same
 - `final_state_anatomy_forAN.ipynb`: the first-principles anatomy, from v3:
   production system, back-to-back topology and the Zd momentum scale,
   gen and reco self-consistency masses (m(4l) and m(LJ,LJ) at m_Bs, pair
-  masses at m_Zd, LJ/Zd pT response at unity), the collimation scan with the
+  masses at m_Zd, LJ/Zd pT response at unity), the gen-matched pair-mass
+  companion that separates the pairing from the matching requirement (the
+  blind leading-pT width reaches 0.373 of the median at m_Bs = 1000 GeV in
+  4Mu against 0.134 gen-matched, with combinatorics capped at 1.9%), the
+  collimation scan with the
   2 m/pT law and the grid median-dR map, lepton pT vs the mass scan, the
   pT-asymmetry vs cos(theta*) relation with the muon-velocity floor, and the
   displacement ladder of the display corners.
@@ -116,7 +145,11 @@ the failing (sample, chunk) lines), merged with the same
   dimuon paths, from v3: sub-leading-muon spectra vs the 23/25 GeV
   thresholds, efficiency turn-ons from the stored HLT bits
   (`genOnly_trigger`/`genOnly` ratios), efficiency vs displacement and pair
-  opening angle, median-efficiency grid maps per channel, efficiency vs
+  opening angle, both conditioned on the other from the joint
+  lxy-vs-dR histogram (efficiency halves by lxy = 95 cm for the tightest
+  pairs against 205 cm for the widest, and the best opening angle moves out
+  to dR = 0.13 beyond lxy = 150 cm), median-efficiency grid maps per channel,
+  efficiency vs
   lifetime, and the truth-level retention maps for the 26 GeV plateau cut
   (Allie Hall's trigger-efficiency study; now part of the `base` selection).
 - `event_displays_forAN.ipynb`: generator-level eta-phi and R-z displays of
