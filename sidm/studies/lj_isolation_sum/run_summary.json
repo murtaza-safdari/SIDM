@@ -1,0 +1,80 @@
+{
+  "wall_time_s": 740.5863265991211,
+  "channels": [
+    "base_ljObjCut",
+    "4mu",
+    "2mu2e"
+  ],
+  "n_files_requested": 220,
+  "n_files_processed": 220,
+  "samples": {
+    "TTJets": {
+      "n_evts": 87038,
+      "n_files_requested": 8
+    },
+    "DYJetsToMuMu_M50": {
+      "n_evts": 143092,
+      "n_files_requested": 8
+    },
+    "QCD_Pt1000": {
+      "n_evts": 100938,
+      "n_files_requested": 20
+    },
+    "QCD_Pt300To470": {
+      "n_evts": 60946,
+      "n_files_requested": 60
+    },
+    "QCD_Pt80To120": {
+      "n_evts": 20922,
+      "n_files_requested": 100
+    },
+    "2Mu2E_500GeV_5p0GeV_80p0mm": {
+      "n_evts": 3988,
+      "n_files_requested": 2
+    },
+    "4Mu_500GeV_5p0GeV_80p0mm": {
+      "n_evts": 4851,
+      "n_files_requested": 2
+    },
+    "2Mu2E_500GeV_1p2GeV_19p0mm": {
+      "n_evts": 5991,
+      "n_files_requested": 2
+    },
+    "2Mu2E_500GeV_5p0GeV_0p08mm": {
+      "n_evts": 8633,
+      "n_files_requested": 2
+    },
+    "4Mu_500GeV_5p0GeV_0p08mm": {
+      "n_evts": 10682,
+      "n_files_requested": 2
+    },
+    "4Mu_500GeV_1p2GeV_19p0mm": {
+      "n_evts": 5156,
+      "n_files_requested": 2
+    },
+    "2Mu2E_500GeV_1p2GeV_0p019mm": {
+      "n_evts": 8998,
+      "n_files_requested": 2
+    },
+    "2Mu2E_500GeV_0p25GeV_4p0mm": {
+      "n_evts": 6202,
+      "n_files_requested": 2
+    },
+    "4Mu_500GeV_0p25GeV_4p0mm": {
+      "n_evts": 2280,
+      "n_files_requested": 2
+    },
+    "4Mu_500GeV_1p2GeV_0p019mm": {
+      "n_evts": 15514,
+      "n_files_requested": 2
+    },
+    "2Mu2E_500GeV_0p25GeV_0p004mm": {
+      "n_evts": 9346,
+      "n_files_requested": 2
+    },
+    "4Mu_500GeV_0p25GeV_0p004mm": {
+      "n_evts": 16697,
+      "n_files_requested": 2
+    }
+  }
+}

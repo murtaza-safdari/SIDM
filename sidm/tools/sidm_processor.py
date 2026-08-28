@@ -447,6 +447,56 @@ class SidmProcessor(processor.ProcessorABC):
         ljs["isolation"] = ak.fill_none((ljs["matched_jet"].energy / ljs.energy) * (1 - (ljs["lepton_fraction"])), 0)
         ljs["dR_matched_jet"] = ljs.delta_r(ljs["matched_jet"])
 
+        # Jet-sum isolation: a cone sum over ALL AK4 jets instead of a single
+        # nearest-jet match. Anti-kT assigns each PF candidate to exactly one jet,
+        # so the terms in the sum are non-overlapping. Each jet is reduced to its
+        # non-leptonic (hadronic) energy, exactly as in the matched-jet definition
+        # above. The cone uses dR <= 0.4 to match the (inclusive) threshold
+        # convention of coffea's nearest(), so n_cone_jets >= 1 is precisely the
+        # condition under which matched_jet is not None.
+        dr_jets, (_, cone_jets) = ljs.metric_table(objs["jets"], return_combinations=True)
+        had_e = cone_jets.energy * (1 - (cone_jets.chEmEF + cone_jets.neEmEF + cone_jets.muEF))
+        # The energy fractions are stored with respect to the RAW jet energy while
+        # .energy is the corrected energy, so the leptonic fraction can exceed 1.
+        # Clamp those jets to zero hadronic energy rather than letting them
+        # subtract from the sum (the matched-jet isolation goes negative instead).
+        had_e = ak.where(had_e > 0, had_e, 0.0)
+        in_cone = dr_jets <= 0.4
+        ljs["isolation_sum"] = ak.sum(ak.where(in_cone, had_e, 0.0), axis=-1) / ljs.energy
+        ljs["n_cone_jets"] = ak.sum(in_cone, axis=-1)
+
+        # CorrT1METJet holds the AK4 jets below the NanoAOD Jet pT threshold (they
+        # are stored for the type-1 MET correction and are disjoint from Jet by
+        # construction), and supplies the muon-subtracted soft activity. It carries
+        # no mass and no energy fractions, hence the massless zip and the muon
+        # subtraction via muonSubtrFactor. Since there are no energy fractions the
+        # full (muon-subtracted) energy enters, i.e. any electron/photon content of
+        # a soft jet is NOT removed the way it is for the Jet collection.
+        if "softjets" in objs:
+            soft = objs["softjets"]
+            soft_p4 = ak.zip(
+                {
+                    "pt": soft.rawPt * (1 - soft.muonSubtrFactor),
+                    "eta": soft.eta,
+                    "phi": soft.phi,
+                    "mass": ak.zeros_like(soft.rawPt),
+                },
+                with_name="PtEtaPhiMLorentzVector",
+                behavior=nanoaod.behavior,
+            )
+            dr_soft, (_, cone_soft) = ljs.metric_table(soft_p4, return_combinations=True)
+            in_soft = dr_soft <= 0.4
+            ljs["isolation_soft"] = (ak.sum(ak.where(in_soft, cone_soft.energy, 0.0), axis=-1)
+                                     / ljs.energy)
+            ljs["n_cone_softjets"] = ak.sum(in_soft, axis=-1)
+        else:
+            print("Warning: softjets (CorrT1METJet) not found in this sample. "
+                  "isolation_soft and n_cone_softjets set to zero.")
+            ljs["isolation_soft"] = ak.zeros_like(ljs.energy)
+            ljs["n_cone_softjets"] = ak.values_astype(ak.zeros_like(ljs.energy), np.int64)
+
+        ljs["isolation_sum_soft"] = ljs["isolation_sum"] + ljs["isolation_soft"]
+
         # todo: add LJ displacement
 
         # pt order the new LJs

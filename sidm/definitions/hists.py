@@ -2622,6 +2622,268 @@ hist_defs = {
                    lambda objs, mask:  objs["photon_ljs"].isolation),
         ],
     ),
+
+    # lj jet-sum isolation (see SidmProcessor.build_lepton_jets)
+    "lj_isolation_matched_jet": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="lj_isolation",
+                   label="LJ Isolation (matched jet)"),
+                   lambda objs, mask: objs["ljs"].isolation),
+        ],
+    ),
+    "lj_isolation_matched_jet_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="lj_isolation",
+                   label="LJ Isolation (matched jet)"),
+                   lambda objs, mask: objs["ljs"].isolation),
+        ],
+    ),
+    "lj_isolation_sum": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="lj_isolation_sum",
+                   label="LJ Isolation (jet-cone sum)"),
+                   lambda objs, mask: objs["ljs"].isolation_sum),
+        ],
+    ),
+    "lj_isolation_sum_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="lj_isolation_sum",
+                   label="LJ Isolation (jet-cone sum)"),
+                   lambda objs, mask: objs["ljs"].isolation_sum),
+        ],
+    ),
+    "lj_isolation_soft": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="lj_isolation_soft",
+                   label="LJ Isolation (soft-jet cone sum)"),
+                   lambda objs, mask: objs["ljs"].isolation_soft),
+        ],
+    ),
+    "lj_isolation_soft_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="lj_isolation_soft",
+                   label="LJ Isolation (soft-jet cone sum)"),
+                   lambda objs, mask: objs["ljs"].isolation_soft),
+        ],
+    ),
+    "lj_isolation_sum_soft": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="lj_isolation_sum_soft",
+                   label="LJ Isolation (jet + soft-jet cone sum)"),
+                   lambda objs, mask: objs["ljs"].isolation_sum_soft),
+        ],
+    ),
+    "lj_isolation_sum_soft_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="lj_isolation_sum_soft",
+                   label="LJ Isolation (jet + soft-jet cone sum)"),
+                   lambda objs, mask: objs["ljs"].isolation_sum_soft),
+        ],
+    ),
+    "lj_n_cone_jets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="lj_n_cone_jets",
+                   label="Number of jets within dR < 0.4 of the LJ"),
+                   lambda objs, mask: objs["ljs"].n_cone_jets),
+        ],
+    ),
+    "lj_n_cone_softjets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="lj_n_cone_softjets",
+                   label="Number of soft jets within dR < 0.4 of the LJ"),
+                   lambda objs, mask: objs["ljs"].n_cone_softjets),
+        ],
+    ),
+    "mu_lj_isolation_matched_jet": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="mu_lj_isolation",
+                   label="Mu-LJ Isolation (matched jet)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation),
+        ],
+    ),
+    "mu_lj_isolation_matched_jet_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="mu_lj_isolation",
+                   label="Mu-LJ Isolation (matched jet)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation),
+        ],
+    ),
+    "mu_lj_isolation_sum": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="mu_lj_isolation_sum",
+                   label="Mu-LJ Isolation (jet-cone sum)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation_sum),
+        ],
+    ),
+    "mu_lj_isolation_sum_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="mu_lj_isolation_sum",
+                   label="Mu-LJ Isolation (jet-cone sum)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation_sum),
+        ],
+    ),
+    "mu_lj_isolation_soft": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="mu_lj_isolation_soft",
+                   label="Mu-LJ Isolation (soft-jet cone sum)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation_soft),
+        ],
+    ),
+    "mu_lj_isolation_soft_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="mu_lj_isolation_soft",
+                   label="Mu-LJ Isolation (soft-jet cone sum)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation_soft),
+        ],
+    ),
+    "mu_lj_isolation_sum_soft": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="mu_lj_isolation_sum_soft",
+                   label="Mu-LJ Isolation (jet + soft-jet cone sum)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation_sum_soft),
+        ],
+    ),
+    "mu_lj_isolation_sum_soft_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="mu_lj_isolation_sum_soft",
+                   label="Mu-LJ Isolation (jet + soft-jet cone sum)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation_sum_soft),
+        ],
+    ),
+    "mu_lj_n_cone_jets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="mu_lj_n_cone_jets",
+                   label="Number of jets within dR < 0.4 of the Mu-LJ"),
+                   lambda objs, mask: objs["mu_ljs"].n_cone_jets),
+        ],
+    ),
+    "mu_lj_n_cone_softjets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="mu_lj_n_cone_softjets",
+                   label="Number of soft jets within dR < 0.4 of the Mu-LJ"),
+                   lambda objs, mask: objs["mu_ljs"].n_cone_softjets),
+        ],
+    ),
+    "egm_lj_isolation_matched_jet": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="egm_lj_isolation",
+                   label="EGM-LJ Isolation (matched jet)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation),
+        ],
+    ),
+    "egm_lj_isolation_matched_jet_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="egm_lj_isolation",
+                   label="EGM-LJ Isolation (matched jet)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation),
+        ],
+    ),
+    "egm_lj_isolation_sum": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="egm_lj_isolation_sum",
+                   label="EGM-LJ Isolation (jet-cone sum)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation_sum),
+        ],
+    ),
+    "egm_lj_isolation_sum_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="egm_lj_isolation_sum",
+                   label="EGM-LJ Isolation (jet-cone sum)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation_sum),
+        ],
+    ),
+    "egm_lj_isolation_soft": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="egm_lj_isolation_soft",
+                   label="EGM-LJ Isolation (soft-jet cone sum)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation_soft),
+        ],
+    ),
+    "egm_lj_isolation_soft_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="egm_lj_isolation_soft",
+                   label="EGM-LJ Isolation (soft-jet cone sum)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation_soft),
+        ],
+    ),
+    "egm_lj_isolation_sum_soft": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 3, name="egm_lj_isolation_sum_soft",
+                   label="EGM-LJ Isolation (jet + soft-jet cone sum)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation_sum_soft),
+        ],
+    ),
+    "egm_lj_isolation_sum_soft_zoom": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="egm_lj_isolation_sum_soft",
+                   label="EGM-LJ Isolation (jet + soft-jet cone sum)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation_sum_soft),
+        ],
+    ),
+    "egm_lj_n_cone_jets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="egm_lj_n_cone_jets",
+                   label="Number of jets within dR < 0.4 of the EGM-LJ"),
+                   lambda objs, mask: objs["egm_ljs"].n_cone_jets),
+        ],
+    ),
+    "egm_lj_n_cone_softjets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="egm_lj_n_cone_softjets",
+                   label="Number of soft jets within dR < 0.4 of the EGM-LJ"),
+                   lambda objs, mask: objs["egm_ljs"].n_cone_softjets),
+        ],
+    ),
+    "mu_lj_iso_old_vs_new": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="mu_lj_isolation",
+                   label="Mu-LJ Isolation (matched jet)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation),
+            h.Axis(hist.axis.Regular(60, 0, 3, name="mu_lj_isolation_sum_soft",
+                   label="Mu-LJ Isolation (jet + soft-jet cone sum)"),
+                   lambda objs, mask: objs["mu_ljs"].isolation_sum_soft),
+        ],
+    ),
+    "egm_lj_iso_old_vs_new": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(60, 0, 0.3, name="egm_lj_isolation",
+                   label="EGM-LJ Isolation (matched jet)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation),
+            h.Axis(hist.axis.Regular(60, 0, 3, name="egm_lj_isolation_sum_soft",
+                   label="EGM-LJ Isolation (jet + soft-jet cone sum)"),
+                   lambda objs, mask: objs["egm_ljs"].isolation_sum_soft),
+        ],
+    ),
+    "lj_n_cone_jets_vs_softjets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="lj_n_cone_jets",
+                   label="Number of jets within dR < 0.4 of the LJ"),
+                   lambda objs, mask: objs["ljs"].n_cone_jets),
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="lj_n_cone_softjets",
+                   label="Number of soft jets within dR < 0.4 of the LJ"),
+                   lambda objs, mask: objs["ljs"].n_cone_softjets),
+        ],
+    ),
+    "mu_lj_n_cone_jets_vs_softjets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="mu_lj_n_cone_jets",
+                   label="Number of jets within dR < 0.4 of the Mu-LJ"),
+                   lambda objs, mask: objs["mu_ljs"].n_cone_jets),
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="mu_lj_n_cone_softjets",
+                   label="Number of soft jets within dR < 0.4 of the Mu-LJ"),
+                   lambda objs, mask: objs["mu_ljs"].n_cone_softjets),
+        ],
+    ),
+    "egm_lj_n_cone_jets_vs_softjets": h.Histogram(
+        [
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="egm_lj_n_cone_jets",
+                   label="Number of jets within dR < 0.4 of the EGM-LJ"),
+                   lambda objs, mask: objs["egm_ljs"].n_cone_jets),
+            h.Axis(hist.axis.Regular(11, -0.5, 10.5, name="egm_lj_n_cone_softjets",
+                   label="Number of soft jets within dR < 0.4 of the EGM-LJ"),
+                   lambda objs, mask: objs["egm_ljs"].n_cone_softjets),
+        ],
+    ),
     # ABCD plane
     "lj_lj_absdphi_invmass": h.Histogram(
         [

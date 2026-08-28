@@ -67,6 +67,10 @@ preLj_objs["genAs_toMu"] = lambda evts: toPid(preLj_objs["genAs"](evts), 13)
 preLj_objs["genAs_toE"]  = lambda evts: toPid(preLj_objs["genAs"](evts), 11)
 preLj_objs["rho_PFIso"]  = lambda evts: evts.fixedGridRhoFastjetAll
 preLj_objs["jets"]       = lambda evts: evts.Jet
+# AK4 jets below the NanoAOD Jet pT threshold, stored for the type-1 MET correction.
+# Disjoint from evts.Jet by construction, so they can be summed together with it.
+# Only rawPt/eta/phi/area/muonSubtrFactor are stored -- no mass, no energy fractions.
+preLj_objs["softjets"]   = lambda evts: evts.CorrT1METJet
 preLj_objs["flags"]      = lambda evts: evts.Flag
 
 # define objects whose that will be added to objs by the sidm_processor after LJs are clustered
