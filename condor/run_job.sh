@@ -11,6 +11,12 @@ EOS_OUTDIR=$4
 # that don't pass them keep working.
 CHANNELS=${5:-base}
 HIST_COLLECTIONS=${6:-muon_base}
+# Optional positional args 7/8: the ntuple location YAML (and section within it) that
+# run_sidm_chunk.py reads the sample metadata from. The defaults match its own, which
+# resolve MC; data submissions must pass sidm/configs/ntuples/data_skimmed.yaml so the
+# skimmed (not the unskimmed) skim_factor is picked up.
+NTUPLE_YAML=${7:-sidm/configs/ntuples/backgrounds.yaml}
+NTUPLE_SECTION=${8:-skimmed_llpNanoAOD_v2}
 
 echo "Host:"
 hostname
@@ -98,6 +104,8 @@ python condor/run_sidm_chunk.py \
     --workers 1 \
     --channels "${CHANNELS}" \
     --hist-collections "${HIST_COLLECTIONS}" \
+    --backgrounds-yaml "${NTUPLE_YAML}" \
+    --backgrounds-section "${NTUPLE_SECTION}" \
     --unweighted-hist
 
 echo "Output:"
