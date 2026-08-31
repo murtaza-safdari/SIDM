@@ -350,6 +350,77 @@ I suggest the following workflow for performing a physics study:
 
 One runtime guard to know: `plot_MC_sig_vs_bkg_panels` warns *"background '<name>' has integer variances (looks unweighted) ... check that it is lumi*xsec-weighted"* when a background's per-bin variances are integers -- the hist looks like raw counts rather than lumi*xsec-weighted MC. If you meant to show normalized MC, confirm the weights were applied. It is a guard, not an error; the plot still renders.
 
+### Cosmic veto via dimuon vertex fit
+
+`mu_ljs.vtx_chi2` is the best (smallest) `normChi2` of any stored dimuon vertex built from two of the LJ's own muons, taken from the LLPNanoAOD `DSAMuonVertex`, `PatMuonVertex` and `PatDSAMuonVertex` tables. The matching lives in [lj_vertex_chi2.py](sidm/tools/lj_vertex_chi2.py) and `sidm_processor` fills the field for every LJ, so there is nothing to switch on.
+
+A value of -1 means no such vertex was stored, and it *fails* the keep-cuts by design: the producer only writes pairs whose fit converged, so an LJ whose muons never form a vertex is the signature of a fake or cosmic pairing. The variable is only defined for LJs with at least two muons, so pair any cut or plot with `Mu >= 2`.
+
+One asymmetry to keep in mind when comparing against the `*Spread_*` cuts: the Spread variables are a max over the LJ's muon pairs (the worst pair must be compact), while `vtx_chi2` is a min (one good dimuon suffices). The two only coincide for exactly-2-muon LJs; for >= 3-muon LJs the vertex cut is the looser criterion by construction -- it asks "does this LJ contain a real dimuon", not "is every pairing consistent". The `mu_lj_muonN` histogram quantifies how much of a given region is >= 3-muon.
+
+The cuts in `cuts.py` are `0 <= vtx_chi2 < 2`, `0 <= vtx_chi2 < 5`, `0 <= vtx_chi2 < 10`, and the complement of the middle one at the mu-LJ-cut level, `no vtx or vtx_chi2 >= 5`. Three selections use them, mirroring the vxySpread-based cosmic-veto control regions (the ones on the August 2026 slides; a dxySpread variant of the baseline also exists, `cr_1egmOr1mu_lj_spreadMu_spreadPfMu_CosMu_dxy`):
+
+- `cr_1egmOr1mu_lj_vtxChi2_CosMu`: `cr_1egmOr1mu_lj_spreadMu_spreadPfMu_CosMu` with the four Spread cuts replaced by `0 <= vtx_chi2 < 5`
+- `cr_1egmOr1mu_lj_vtxChi2`: the vertex cut without the cosAlpha event cut
+- `cosmic_muons_vtxChi2`: the **vertex-inverted** cosmic region -- `no vtx or vtx_chi2 >= 5` with `lj_iso < 0.2` and the cosAlpha cut inverted. It mirrors `cosmic_muons`, the **spread-inverted** cosmic region, which inverts the Spread cuts instead and so uses no vertex information anywhere in its definition. The two are different selections, they are named apart wherever either is used, and a template measured in one does not transfer to the other.
+
+The distributions are `mu_lj_vtx_chi2` (linear axis; the -1 entries sit in their own bin at the left edge, and note that `PatMuonVertex` normChi2 spans ~8 decades so a large fraction of PF-PF entries lands in the overflow) and `mu_lj_vtx_chi2_log` (log axis, for threshold scans), both in the `cosmic_muons` and `cosmic_veto` collections. The threshold is not yet optimized: choose it from the log-axis shape together with the signal efficiency of the same channels on the v10 signal samples.
+
+`vtx_chi2` is all-or-nothing: unless ALL THREE vertex tables are present in the input, it is NaN and every vtx_chi2 cut (keep and inverse alike) selects nothing -- a partial table set would otherwise dump whole LJ categories into the inverse-cut region as fake "no vertex" entries, and the processor prints `vtx_chi2 disabled: missing vertex table(s) ...` in that case. An exactly-empty vtxChi2 channel therefore means missing tables; check the worker logs. The samples in `sidm/configs/ntuples/` (`signal_2mu2e_v10.yaml`, `signal_4mu_v10.yaml`, `data_skimmed.yaml`, `backgrounds.yaml`) all carry them. The brute-force closure test lives at [tests/test_lj_vertex_chi2.py](tests/test_lj_vertex_chi2.py).
+
+#### Result of the 2018C comparison (August 2026)
+
+The study lives in [`sidm/studies/vertexChi2/`](sidm/studies/vertexChi2/); its
+[`README.md`](sidm/studies/vertexChi2/README.md) lists the six run notebooks and the order to
+reproduce them from the samples, and
+[`vertexChi2CosmicVetoStudy.ipynb`](sidm/studies/vertexChi2/vertexChi2CosmicVetoStudy.ipynb) is
+the write-up. Inputs are 2018C `DoubleMuon`, the 2018 background stack (MC scaled by
+6.97/59.83) and the full 180-sample v10 signal grid.
+
+The vertex veto is an equivalent cosmic tagger and a worse cut, so the Spread veto with the
+cosAlpha event cut stays as the selection. `0 <= vtx_chi2 < 5` flags 98% of the mu-type lepton
+jets in the spread-inverted cosmic region, which is defined without any vertex information, but
+it has no data-versus-MC separating power (the data/MC ratio of the lepton jets it keeps is
+flat at 0.75 across four decades of threshold, against 0.77 with no cut), it leaves the same
+residual data/MC above 200 GeV in DSA-muon pT (2.38 against 2.31 for the Spread veto, both on
+the full background stack), and over the signal grid it keeps only 0.69 of the signal lepton
+jets against 0.96 - about 30% more signal cost. The one corner where the ordering reverses is
+m_Zd = 5 GeV, mediator mass 100-150 GeV, ctau >= 130 mm, exactly 8 of the 180 samples per DSA
+muon, where the max-over-pairs Spread variables start failing on genuinely wide displaced pairs
+and the min-over-pairs vertex requirement does not.
+
+The second half of the study characterizes what survives either veto. The Spread veto removes
+87% of the >= 200 GeV DSA-muon tail in data (2414 -> 309). In MC it removes 55% of the full
+background stack's tail (293.6 -> 133.7) and 3% of the eight-sample tail set's
+(133.7 -> 129.5) -- two different MC sets, and neither number travels without its label. The
+removed component is unambiguously cosmic (pre-veto phi vertical/horizontal ratio
+12.2 +/- 1.3 against an MC expectation of 1.3 +/- 0.2, and 93% barrel against 71%; two
+independent routes put the pre-veto tail's cosmic content at 87% and 84%), and what survives is
+not (post-veto ratio 0.94 +/- 0.15, bounding a residual cosmic contribution below 6% of the
+tail at 95% CL, a bound that moves only to 7.8% if the template's vertical fraction is degraded
+from 0.99 to 0.90).
+
+The surviving tail exceeds MC by 2.4 +/- 0.4, but that ratio is not the load-bearing number:
+the control region is not normalized, MC carrying 38% more DSA muons per mu-type lepton jet
+than data, and no scale factor is applied. The statement that carries is a ratio of rates,
+which is immune to that mismatch: an independent DSA-to-PF matched control gives a data/MC
+feed-up ratio of 3.47 +/- 0.25, and the post-veto tail rate divided by that feed-up rate is
+0.95 +/- 0.06 in data and 0.99 +/- 0.18 in MC, both consistent with one, against 4.81 +/- 0.13
+for data before the veto. That is a consistency statement of about factor-1.5 precision and not
+a demonstration that the two agree, since the control rate is measured before the veto on a
+different population, is not flat in |eta| or nHits, and the closure moves between 0.70 and
+1.41 in data (0.57 and 1.35 in MC) as the pT_PF window moves. The recommendation is a
+data-driven correction sized on that control rather than a further object cut: `nHits >= 20`
+halves the residual but costs about 15% of the signal DSA muons at all pT (8% of those already
+in the tail, a number not to quote on its own) and is itself a variable data and MC disagree
+about at the 15-sigma level in the bulk; `sigma(pT)/pT < 0.3` moves the ratio the wrong way
+while costing 45% of the signal at 1 TeV. The vertex-veto code, its channels and its
+histograms stay in the repository as a documented negative result.
+
+Each run notebook writes a `.meta.yaml` provenance sidecar (`sidm.tools.metadata`) next to
+every `.coffea` it produces and copies both to EOS, so a study output can be traced back to
+the selections, hist collections, input files and commit that made it.
+
 ## Continuous integration
 
 Three checks run on pull requests and one runs on a schedule. They are split so
