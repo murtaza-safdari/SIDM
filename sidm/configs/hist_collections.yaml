@@ -1052,6 +1052,8 @@ cosmic_muons: &cosmic_muons
   - *mu_ljSpread_dsa
   - *mu_ljSpread_pf
   - *mu_ljSpread_mu
+  - "mu_lj_vtx_chi2"
+  - "mu_lj_vtx_chi2_log"
   - *number
   - *cosAlpha
   - *pf_dz_vz
@@ -1081,9 +1083,24 @@ cosmic_veto: &cosmic_veto ##final set of histograms for slides and AN
   - "mu_lj_vxySpread_pf"
   - "mu_lj_dxySpread_pf"
   - "mu_lj_dxySpread_mu"
+  - "mu_lj_vtx_chi2"
+  - "mu_lj_vtx_chi2_log"
+  - "mu_lj_dsaMuon_pt_phi"
+  - "mu_lj_dsaMuon_pt_absdxy"
+  - "mu_lj_dsaMuon_pt_relPtErr"
+  - "mu_lj_dsaMuon_pt_abseta"
+  - "mu_lj_dsaMuon_pt_nHits"
   - "muon_n"
   - "electron_n"
   - "dsaMuon_n"
   - "photon_n"
   - "photon_pt"
   - "photon_eta_phi"
+
+# DSA-vs-PF pT response for the DSA muons that have a PF-muon partner, i.e. exactly the
+# muons the LJ-source cross-cleaning removes
+dsa_pf_response: &dsa_pf_response
+  - "dsaPfMatch_ptPf_ptDsa"
+  - "dsaPfMatch_response_relPtErr"
+  - "dsaPfMatch_response_abseta"
+  - "dsaPfMatch_response_nHits"

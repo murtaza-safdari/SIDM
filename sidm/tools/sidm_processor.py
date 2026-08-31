@@ -15,6 +15,7 @@ import vector
 #local
 from sidm import BASE_DIR
 from sidm.tools import selection, cutflow, utilities
+from sidm.tools.lj_vertex_chi2 import lj_best_vertex_chi2
 from sidm.definitions.hists import hist_defs, counter_defs
 from sidm.definitions.objects import preLj_objs, postLj_objs, postLj_objs_MC
 
@@ -154,7 +155,7 @@ class SidmProcessor(processor.ProcessorABC):
                 objs[obj_name]["lxy"] = utilities.lxy(objs[obj_name])
 
             # add dxy wrt beamspot for all objs that don't already have it
-            if hasattr(obj, "vx") and not hasattr(obj, "dxy") and "bs" in objs:
+            if hasattr(obj, "vx") and hasattr(obj, "pt") and not hasattr(obj, "dxy") and "bs" in objs:
                 objs[obj_name]["dxy"] = utilities.dxy(objs[obj_name], ref=objs["bs"])
 
             # add dimension to one-per-event objects to allow independent obj and evt cuts
@@ -529,6 +530,28 @@ class SidmProcessor(processor.ProcessorABC):
         ljs["lepton_fraction"] =  ljs["matched_jet"].chEmEF + ljs["matched_jet"].neEmEF + ljs["matched_jet"].muEF
         ljs["isolation"] = ak.fill_none((ljs["matched_jet"].energy / ljs.energy) * (1 - (ljs["lepton_fraction"])), 0)
         ljs["dR_matched_jet"] = ljs.delta_r(ljs["matched_jet"])
+
+        # best within-LJ dimuon-vertex fit quality. -1 = no stored vertex whose
+        # both legs are constituents of this LJ; -1 FAILS the keep-cuts by
+        # design, the opposite convention to the *Spread_* variables, which
+        # fill 0 (= passes) when a muon category is absent. The vertex tables
+        # only exist in LLPNanoAOD inputs; unless ALL THREE resolved, vtx_chi2
+        # is NaN and every vtx_chi2 cut (keep and inverse alike) selects
+        # nothing -- with only a subset of tables, LJs of the missing category
+        # would get -1 ("no vertex") and silently migrate into the
+        # inverse-cut region. See sidm/tools/lj_vertex_chi2.py.
+        vtx_table_names = [("dsaMuonVertex", "dsa"), ("patMuonVertex", "pat"),
+                           ("patDsaMuonVertex", "mix")]
+        vtx_tables = [(objs[n], k) for n, k in vtx_table_names if n in objs]
+        if len(vtx_tables) == len(vtx_table_names):
+            ljs["vtx_chi2"] = lj_best_vertex_chi2(
+                ljs.pfMuons.idx, ljs.dsaMuons.idx, vtx_tables)
+        else:
+            missing = [n for n, _ in vtx_table_names if n not in objs]
+            if len(missing) < len(vtx_table_names):
+                print(f"Warning: vtx_chi2 disabled: missing vertex table(s) {missing}. "
+                      "Every vtx_chi2 cut will select nothing.")
+            ljs["vtx_chi2"] = ak.full_like(ljs.pt, np.nan)
 
         # todo: add LJ displacement
 
