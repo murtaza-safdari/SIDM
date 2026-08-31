@@ -1863,3 +1863,79 @@ data_control_region_2muLj_cosmic_veto: &data_control_region_2muLj_cosmic_veto
     - "= 2 LJs"
     - "= 2 muLJs"
     - "all cos_alpha(dsa, dsa) > -0.9"
+
+# Spread/cosAlpha cosmic-veto selections
+#
+# Applied mu-LJ object cuts:
+#   dzSpread_mu <= 50
+#   vxySpread_mu <= 50
+#   dzSpread_pf <= 10
+#   vxySpread_pf <= 10
+#
+# Applied event cut:
+#   all cosAlpha(mu, mu) > -0.99
+
+
+data_control_region_1muLj_spread_cosAlpha_mu_veto: &data_control_region_1muLj_spread_cosAlpha_mu_veto
+  obj_cuts:
+    <<: *obj_ljsource_cuts
+  postLj_obj_cuts:
+    ljs:
+      - "pT > 30 GeV"
+      - "|eta| < 2.4"
+    mu_ljs:
+      - "Mu >= 2"
+      - "dzSpread_mu <= 50"
+      - "vxySpread_mu <= 50"
+      - "dzSpread_pf <= 10"
+      - "vxySpread_pf <= 10"
+  evt_cuts:
+    - *evt_baseNoLj
+    - "pass flags"
+    - ">=2 muons (pf or dsa) pT > 26 GeV"
+    - "= 1 LJs"
+    - "= 1 muLJs"
+    - "all cosAlpha(mu, mu) > -0.99"
+
+test_VR_2mu2e_invDisplaced_spread_cosAlpha_mu_veto: &test_VR_2mu2e_invDisplaced_spread_cosAlpha_mu_veto
+  obj_cuts:
+    <<: *obj_baseNoLj
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+    mu_ljs:
+      - *mu_lj_base
+      - "inverse displaced"
+      - "dzSpread_mu <= 50"
+      - "vxySpread_mu <= 50"
+      - "dzSpread_pf <= 10"
+      - "vxySpread_pf <= 10"
+    egm_ljs:
+      - "inverse displaced"
+  evt_cuts:
+    - *evt_base
+    - ">=1 mu_ljs"
+    - ">=1 egm_ljs"
+    - "muLJ-egmLJ dPhi >= 2"
+    - "muLJ-egmLJ invariant mass >= 150 GeV"
+    - "all cosAlpha(mu, mu) > -0.99"
+
+test_VR_4mu_invDisplaced_spread_cosAlpha_mu_veto: &test_VR_4mu_invDisplaced_spread_cosAlpha_mu_veto
+  obj_cuts:
+    <<: *obj_baseNoLj
+  postLj_obj_cuts:
+    ljs:
+      - *lj_base
+    mu_ljs:
+      - *mu_lj_base
+      - "inverse displaced"
+      - "dzSpread_mu <= 50"
+      - "vxySpread_mu <= 50"
+      - "dzSpread_pf <= 10"
+      - "vxySpread_pf <= 10"
+  evt_cuts:
+    - *evt_base
+    - ">=2 mu_ljs"
+    - "muLJ-muLJ dPhi >= 2"
+    - "muLJ-muLJ invariant mass >= 150 GeV"
+    - "all cosAlpha(mu, mu) > -0.99"

@@ -1279,3 +1279,67 @@ def plot_data_mc(
 def get_pairs(obj):
     pairs = ak.combinations(obj, 2, axis=1)
     return (pairs)
+
+
+# Pairwise coordinate differences, used as `metric` arguments to metric_table when
+# computing the per-LJ constituent 'spread' quantities in build_lepton_jets.
+def vx_diff(obj1, obj2):
+    return abs(obj1.vx-obj2.vx)
+
+def vz_diff(obj1, obj2):
+    return abs(obj1.vz-obj2.vz)
+
+def vy_diff(obj1, obj2):
+    return abs(obj1.vy-obj2.vy)
+
+def dxy_diff(obj1, obj2):
+    return abs(obj1.dxy-obj2.dxy)
+
+def dz_diff(obj1, obj2):
+    return abs(obj1.dz-obj2.dz)
+
+def vxy_diff(obj1, obj2):
+    return ((obj1.vx-obj2.vx)**2 +
+            (obj1.vy-obj2.vy)**2)**0.5
+
+def vyz_diff(obj1, obj2):
+    return ((obj1.vy-obj2.vy)**2 +
+            (obj1.vz-obj2.vz)**2)**0.5
+
+def vzx_diff(obj1, obj2):
+    return ((obj1.vz-obj2.vz)**2 +
+            (obj1.vx-obj2.vx)**2)**0.5
+
+def v3d_diff(obj1, obj2):
+    return ((obj1.vx-obj2.vx)**2 +
+            (obj1.vy-obj2.vy)**2 +
+            (obj1.vz-obj2.vz)**2)**0.5
+
+def innerVx_diff(obj1, obj2):
+    return abs(obj1.innerVx - obj2.innerVx)
+
+def innerVy_diff(obj1, obj2):
+    return abs(obj1.innerVy - obj2.innerVy)
+
+def innerVz_diff(obj1, obj2):
+    return abs(obj1.innerVz - obj2.innerVz)
+
+def innerV3d_diff(obj1, obj2):
+    return ((obj1.innerVx-obj2.innerVx)**2 +
+            (obj1.innerVy-obj2.innerVy)**2 +
+            (obj1.innerVz-obj2.innerVz)**2)**0.5
+
+def innerVxy_diff(obj1, obj2):
+    return ((obj1.innerVx-obj2.innerVx)**2 +
+            (obj1.innerVy-obj2.innerVy)**2)**0.5
+
+def innerVzx_diff(obj1, obj2):
+    return ((obj1.innerVx-obj2.innerVx)**2 +
+            (obj1.innerVz-obj2.innerVz)**2)**0.5
+
+def innerVyz_diff(obj1, obj2):
+    return ((obj1.innerVy-obj2.innerVy)**2 +
+            (obj1.innerVz-obj2.innerVz)**2)**0.5
+
+def innerVz_diff_minus_dz_diff(obj1, obj2):
+    return abs(obj1.innerVz - obj2.innerVz) - abs(obj1.dz-obj2.dz)
