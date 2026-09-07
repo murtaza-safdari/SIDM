@@ -37,7 +37,7 @@ import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from matplotlib.ticker import LogLocator, NullFormatter
+from matplotlib.ticker import LogLocator, NullFormatter, NullLocator
 import mplhep as hep
 import coffea.util
 import hist
@@ -749,6 +749,22 @@ class Canvas:
             return
         ax.set_ylim(bottom, top * factor)
 
+    def room_above(self, ax, share=0.45):
+        """Leave the top of a panel free for a legend, keeping the curves' own scale.
+
+        `headroom` scales from zero, which suits a spectrum that starts there.  A
+        normalised angular distribution varies about a non-zero mean instead, and scaling
+        it from zero either buries it in a strip at the top or, once a legend is anchored
+        to the bottom, hides its minima underneath.  This keeps the drawn range and gives
+        the curves `share` of the panel height.
+        """
+        ax.autoscale_view()
+        low, high = float(ax.dataLim.y0), float(ax.dataLim.y1)
+        if not np.isfinite(low) or not np.isfinite(high) or high <= low:
+            return
+        span = high - low
+        ax.set_ylim(low - 0.10 * span, low + span / max(share, 0.05))
+
     def clear_legends(self, entries, pad=0.05, most=2.0):
         """Raise the top of each axis until its legend no longer covers the curves.
 
@@ -837,6 +853,20 @@ class Canvas:
             cbar.set_label(label, fontsize=self.font)
         self._colourbar_axes.extend(axes)
         return cbar
+
+    def keep_label_position(self, *axes):
+        """Exempt a panel from the y-title nudge `finish` applies after a colour bar.
+
+        That nudge re-anchors the title at the middle of the axis.  The plotting style
+        anchors axis titles at their top instead, so a title longer than half the panel is
+        then drawn from the middle downwards and runs off the foot of the figure.  A panel
+        whose tick labels are short numbers gains nothing from the nudge, so it opts out
+        and keeps the style's own anchor.
+        """
+        for ax in axes:
+            while ax in self._colourbar_axes:
+                self._colourbar_axes.remove(ax)
+        return self
 
     def hide(self, ax, message=None):
         """Blank a panel that has no input, optionally saying why."""
@@ -2029,3 +2059,2268 @@ def inventory(regions=None):
         table[name] = counts
         print(f"{name:<{width}}" + "".join(f"{c:>24.0f}" for c in counts))
     return table
+
+
+# ======================================================================================
+# the two muon lepton jets of a four-muon event
+# ======================================================================================
+#
+# The pair campaign fills two histograms the per-lepton-jet ones above cannot:
+#
+#   mulj_pair_absCosTheta0_vs_absCosTheta1
+#       one entry per event holding two qualifying muon lepton jets, carrying the decay
+#       angle of each, ordered by the transverse momentum of the parent lepton jet;
+#   mulj_pair_absCosTheta_vs_mjj
+#       one entry per qualifying muon lepton jet, carrying its decay angle and the
+#       muon-lepton-jet-pair invariant mass of its event, on a binning fine enough to cut
+#       the four-muon mass axis into windows.
+#
+# They live in their own merged directory, so the loader below is separate from the one
+# above and leaves its cache alone.
+
+#: merged outputs of the pair campaign.
+PAIR_INPUT = "/uscms_data/d3/murtazas/mulj_pair_merged"
+
+#: the only region in which collision data was written for the pair histograms.
+PAIR_VR = "test_VR_4mu_invDisplaced_spread_cosAlpha_mu_veto"
+
+PAIR_PLANE = "mulj_pair_absCosTheta0_vs_absCosTheta1"
+PAIR_MJJ = "mulj_pair_absCosTheta_vs_mjj"
+
+#: bound-state masses below this are no longer part of the search, so every number in
+#: this section is quoted for the points at or above it.
+PAIR_MIN_M_XX = 200.0
+
+#: the muon-lepton-jet-pair mass range each bound-state mass populates.  The four-muon
+#: selection cuts on that mass at 150 GeV only, so these are the bins of the histogram
+#: axis that hold the signal, not an existing analysis cut.
+PAIR_WINDOW = {500.0: (380.0, 600.0), 1000.0: (600.0, 1.0e6)}
+
+#: fake sample used where a signal's own window holds too few data pairs to measure a
+#: shape in.
+PAIR_POOLED_WINDOW = (300.0, 1.0e6)
+
+_PAIR_LOADED: dict = {}
+
+
+def configure_pair(input_dir=None):
+    """Point the pair loader at a directory of merged pair-campaign outputs."""
+    global PAIR_INPUT
+    if input_dir is not None:
+        PAIR_INPUT = input_dir.rstrip("/")
+        _PAIR_LOADED.clear()
+    return PAIR_INPUT
+
+
+def _pair_listing():
+    """Sample names available in `PAIR_INPUT`, sorted."""
+    if PAIR_INPUT.startswith("root://"):
+        files = _remote_listing(PAIR_INPUT)
+    else:
+        files = [os.path.basename(p) for p in glob.glob(os.path.join(PAIR_INPUT, "*.coffea"))]
+    return sorted(f[: -len(".coffea")] for f in files)
+
+
+def _pair_load(name):
+    """The histogram dictionary of one pair-campaign sample, or None with a note."""
+    if name in _PAIR_LOADED:
+        return _PAIR_LOADED[name]
+    try:
+        if PAIR_INPUT.startswith("root://"):
+            os.makedirs(CACHE_DIR, exist_ok=True)
+            path = os.path.join(CACHE_DIR, f"pair_{name}.coffea")
+            if not os.path.exists(path):
+                subprocess.run(["xrdcp", "-f", f"{PAIR_INPUT}/{name}.coffea", path], check=True)
+        else:
+            path = os.path.join(PAIR_INPUT, f"{name}.coffea")
+        blob = coffea.util.load(path)
+    except (FileNotFoundError, OSError, subprocess.CalledProcessError) as exc:
+        note(f"pair sample {name} could not be read ({type(exc).__name__}); skipping it")
+        _PAIR_LOADED[name] = None
+        return None
+    out = blob["out"] if "out" in blob else blob
+    if name in out:
+        payload = out[name]
+    elif len(out) == 1:
+        payload = next(iter(out.values()))
+    else:
+        note(f"pair file for {name} holds {len(out)} samples and none matches its name; skipping")
+        _PAIR_LOADED[name] = None
+        return None
+    _PAIR_LOADED[name] = payload["hists"]
+    return _PAIR_LOADED[name]
+
+
+def pair_data_samples():
+    """Collision-data samples of the pair campaign, all eras."""
+    return [n for n in _pair_listing() if parse_data(n) is not None]
+
+
+def pair_points(min_m_xx=PAIR_MIN_M_XX, final_state="4Mu"):
+    """Signal mass points of the pair campaign as `{(m_xx, m_zd): [samples]}`.
+
+    Every lifetime of a point is grouped together: none of the quantities in this section
+    changes with the proper lifetime once the selection has been applied, and summing
+    them is what makes the mass dependence measurable.
+    """
+    points: dict = {}
+    for name in _pair_listing():
+        info = parse_signal(name)
+        if info is None or info["final_state"] != final_state:
+            continue
+        if info["m_xx"] < min_m_xx:
+            continue
+        points.setdefault((info["m_xx"], info["m_zd"]), []).append(name)
+    return {key: sorted(value) for key, value in sorted(points.items())}
+
+
+def pair_counts(samples, hist_name, channel):
+    """Raw bin counts of one pair histogram, summed over samples, channel selected."""
+    if isinstance(samples, str):
+        samples = [samples]
+    total = None
+    for name in samples:
+        hists = _pair_load(name)
+        if hists is None or hist_name not in hists:
+            continue
+        histogram = hists[hist_name]
+        if channel not in list(histogram.axes["channel"]):
+            continue
+        values = np.asarray(histogram[{"channel": channel}].values(), dtype=float)
+        total = values if total is None else total + values
+    if total is None:
+        note(f"no pair input for {hist_name} in channel {channel}")
+    return total
+
+
+def pair_edges(hist_name, axis):
+    """Bin edges of one axis of a pair histogram, read from the first sample that has it."""
+    for name in _pair_listing():
+        hists = _pair_load(name)
+        if hists is not None and hist_name in hists:
+            return np.asarray(hists[hist_name].axes[axis].edges, dtype=float)
+    return None
+
+
+def rebin2d(counts, factor=2):
+    """Merge `factor` adjacent bins on both axes of a two-dimensional count array."""
+    rows = counts.shape[0] // factor
+    cols = counts.shape[1] // factor
+    return counts[: rows * factor, : cols * factor].reshape(
+        rows, factor, cols, factor).sum(axis=(1, 3))
+
+
+def rebin1d(counts, factor=2):
+    """Merge `factor` adjacent bins of a one-dimensional count array."""
+    rows = len(counts) // factor
+    return np.asarray(counts, dtype=float)[: rows * factor].reshape(rows, factor).sum(axis=1)
+
+
+def _uniform_centres(n_bins):
+    """Centres of `n_bins` equal bins spanning zero to one."""
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    return 0.5 * (edges[:-1] + edges[1:])
+
+
+# --------------------------------------------------------------------------------------
+# is the pair correlated
+# --------------------------------------------------------------------------------------
+
+def _pearson(counts):
+    """Pearson correlation of a two-dimensional count array evaluated at bin centres."""
+    total = float(counts.sum())
+    if total <= 1:
+        return float("nan")
+    x = _uniform_centres(counts.shape[0])[:, None]
+    y = _uniform_centres(counts.shape[1])[None, :]
+    mean_x = float((counts * x).sum() / total)
+    mean_y = float((counts * y).sum() / total)
+    sigma_x = float(np.sqrt((counts * (x - mean_x) ** 2).sum() / total))
+    sigma_y = float(np.sqrt((counts * (y - mean_y) ** 2).sum() / total))
+    if sigma_x <= 0 or sigma_y <= 0:
+        return float("nan")
+    return float((counts * (x - mean_x) * (y - mean_y)).sum() / total / sigma_x / sigma_y)
+
+
+def plane_correlation(counts, replicas=2000, seed=20260901):
+    """Correlation of the two decay angles of an event, with a bootstrap uncertainty.
+
+    The coefficient is the ordinary linear one evaluated at the bin centres, which is what
+    a binned distribution allows.  Its uncertainty comes from drawing `replicas` samples
+    of the observed size from the observed distribution, which assumes nothing about the
+    shape; the analytic (1 - r^2) / sqrt(N - 1) is returned beside it and agrees with the
+    bootstrap to a few percent on every set here.
+    """
+    counts = np.asarray(counts, dtype=float)
+    total = float(counts.sum())
+    r = _pearson(counts)
+    if not np.isfinite(r) or total <= 2:
+        return {"r": float("nan"), "sigma": float("nan"), "sigma_analytic": float("nan"),
+                "n": total}
+    rng = np.random.default_rng(seed)
+    probabilities = (counts / total).ravel()
+    draws = rng.multinomial(int(round(total)), probabilities, size=replicas)
+    spread = np.std([_pearson(d.reshape(counts.shape).astype(float)) for d in draws])
+    return {"r": r, "sigma": float(spread),
+            "sigma_analytic": float((1.0 - r * r) / np.sqrt(total - 1.0)), "n": total}
+
+
+def plane_independence(counts):
+    """Ratio of the observed plane to the product of its own marginals.
+
+    A ratio of one in every cell is what independence of the two angles looks like.  The
+    uncertainty quoted per cell is the Poisson one of its own content, which is the
+    dominant term; the chi-square is the standard test of independence of a contingency
+    table, on (rows - 1) x (columns - 1) degrees of freedom.
+    """
+    from scipy.stats import chi2 as _chi2_distribution  # the rest of the study needs no scipy
+
+    counts = np.asarray(counts, dtype=float)
+    total = float(counts.sum())
+    rows = counts.sum(axis=1)
+    columns = counts.sum(axis=0)
+    expected = np.outer(rows, columns) / total if total > 0 else np.zeros_like(counts)
+    filled = expected > 0
+    ratio = np.divide(counts, expected, out=np.full_like(counts, np.nan), where=filled)
+    error = np.divide(ratio, np.sqrt(np.maximum(counts, 1.0)),
+                      out=np.full_like(counts, np.nan), where=filled & (counts > 0))
+    chi2 = float((((counts - expected) ** 2 / np.where(filled, expected, 1.0))[filled]).sum())
+    ndof = (counts.shape[0] - 1) * (counts.shape[1] - 1)
+    return {"ratio": ratio, "error": error, "chi2": chi2, "ndof": ndof,
+            "p_value": float(_chi2_distribution.sf(chi2, ndof)), "n": total,
+            "counts": counts, "expected": expected}
+
+
+def joint_vs_product(counts, thresholds=(0.2, 0.4, 0.6, 0.8), replicas=1500,
+                     seed=20260905):
+    """How far a cut on both lepton jets misses the square of a one-jet rate.
+
+    "The one-jet rate" is two different numbers, and at a tight threshold they disagree,
+    so both are returned rather than one of them silently standing for the other:
+
+      * `ratio_ordered` divides the observed both-pass fraction by the product of the two
+        ORDERED marginals, the leading jet's pass rate times the subleading jet's.  That
+        is the comparison for a prediction that keeps the two jets apart, and at a
+        threshold of 0.8 those two marginals are far apart, because the harder jet of a
+        fake pair keeps its asymmetric muon pairs more often than the softer one.
+      * `ratio_inclusive` divides it by the square of ONE pooled per-jet efficiency,
+        measured on both jets of every event together.  That is the comparison for the
+        usual shorthand, a single per-jet number squared.
+
+    The two agree to three decimals up to a threshold of 0.6 and part company at 0.8,
+    where the joint bin holds a few tens of events.  Both carry a bootstrap uncertainty
+    drawn from the observed plane at the observed sample size, because at that threshold
+    the uncertainty is the size of the effect.
+    """
+    counts = np.asarray(counts, dtype=float)
+    total = float(counts.sum())
+    edges = np.linspace(0.0, 1.0, counts.shape[0] + 1)
+    rng = np.random.default_rng(seed)
+    draws = rng.multinomial(int(round(total)), (counts / total).ravel(),
+                            size=replicas).reshape(-1, *counts.shape).astype(float)
+    rows = []
+    for threshold in thresholds:
+        index = int(np.argmin(np.abs(edges - threshold)))
+
+        def measure(table, index=index):
+            weight = float(table.sum())
+            joint = float(table[index:, index:].sum()) / weight
+            lead = float(table[index:, :].sum()) / weight
+            sub = float(table[:, index:].sum()) / weight
+            pooled = 0.5 * (lead + sub)
+            return (joint, lead, sub, pooled,
+                    joint / (lead * sub) if lead * sub > 0 else float("nan"),
+                    joint / pooled ** 2 if pooled > 0 else float("nan"))
+
+        joint, lead, sub, pooled, ratio_ordered, ratio_inclusive = measure(counts)
+        spread_ordered = float(np.std([measure(d)[4] for d in draws]))
+        spread_inclusive = float(np.std([measure(d)[5] for d in draws]))
+        rows.append({"threshold": float(edges[index]), "joint": joint,
+                     "eff_lead": lead, "eff_sub": sub, "eff_inclusive": pooled,
+                     "product": lead * sub, "product_inclusive": pooled ** 2,
+                     "ratio": ratio_ordered, "ratio_ordered": ratio_ordered,
+                     "sigma_ordered": spread_ordered,
+                     "ratio_inclusive": ratio_inclusive,
+                     "sigma_inclusive": spread_inclusive,
+                     "n_joint": float(counts[index:, index:].sum())})
+    return rows
+
+
+def pair_correlation_table(channels=("4mu", "4mu_sr"), min_m_xx=PAIR_MIN_M_XX):
+    """Print the correlation of the two decay angles for data and each signal point."""
+    rows = []
+    short = {PAIR_VR: "4mu VR", "4mu": "4mu", "4mu_sr": "4mu SR",
+             "4mu_noMuPtCut": "4mu no mu pT"}
+    sets = [("2018 data", pair_data_samples(), PAIR_VR)]
+    for (m_xx, m_zd), samples in pair_points(min_m_xx).items():
+        for channel in channels:
+            sets.append((f"signal m_XX={m_xx:.0f} m_Zd={m_zd}", samples, channel))
+    print(f"{'set':30s} {'channel':>8s} {'N events':>10s} {'r':>9s} {'sigma(r)':>9s} "
+          f"{'chi2/ndof':>13s} {'p':>10s}")
+    print("-" * 92)
+    for label, samples, channel in sets:
+        fine = pair_counts(samples, PAIR_PLANE, channel)
+        if fine is None:
+            continue
+        correlation = plane_correlation(fine)
+        independence = plane_independence(rebin2d(fine, 2))
+        print(f"{label:30s} {short.get(channel, channel):>8s} "
+              f"{correlation['n']:10.0f} {correlation['r']:+9.4f} "
+              f"{correlation['sigma']:9.4f} "
+              f"{independence['chi2']:7.1f}/{independence['ndof']:<4d} "
+              f"{independence['p_value']:10.2e}")
+        rows.append({"label": label, "channel": channel, **correlation,
+                     "chi2": independence["chi2"], "ndof": independence["ndof"],
+                     "p_value": independence["p_value"]})
+    return rows
+
+
+def pair_factorisation_table(thresholds=(0.2, 0.4, 0.6, 0.8)):
+    """Print how much a both-lepton-jet cut misses the square of a one-jet rate.
+
+    Both definitions of "the one-jet rate" are printed side by side -- see
+    `joint_vs_product` -- because they answer different questions and differ by more than
+    either uncertainty only at the tightest threshold.
+    """
+    counts = pair_counts(pair_data_samples(), PAIR_PLANE, PAIR_VR)
+    if counts is None:
+        return []
+    rows = joint_vs_product(counts, thresholds)
+    print("2018 data, four-muon inverted-displacement validation region: cut on both mu-LJs")
+    print("ordered   = joint / (leading-jet efficiency x subleading-jet efficiency)")
+    print("inclusive = joint / (one pooled per-jet efficiency)^2")
+    print(f"{'threshold':>10s} {'both pass':>10s} {'eff lead':>9s} {'eff sub':>8s} "
+          f"{'ordered':>17s} {'eff pooled':>11s} {'inclusive':>17s} {'events kept':>12s}")
+    print("-" * 104)
+    for row in rows:
+        ordered = f"{row['ratio_ordered']:.3f} +- {row['sigma_ordered']:.3f}"
+        inclusive = f"{row['ratio_inclusive']:.3f} +- {row['sigma_inclusive']:.3f}"
+        print(f"  |cos| > {row['threshold']:.1f} {row['joint']:10.4f} {row['eff_lead']:9.4f} "
+              f"{row['eff_sub']:8.4f} {ordered:>17s} {row['eff_inclusive']:11.4f} "
+              f"{inclusive:>17s} {row['n_joint']:12.0f}")
+    return rows
+
+
+# --------------------------------------------------------------------------------------
+# does it separate inside a mass window
+# --------------------------------------------------------------------------------------
+
+def window_slice(edges, low, high):
+    """Indices of the bins of `edges` that lie inside [low, high)."""
+    return [i for i in range(len(edges) - 1) if edges[i] >= low and edges[i + 1] <= high]
+
+
+def window_counts(samples, channel, low, high):
+    """Decay-angle counts of the pairs whose event mass falls in a window."""
+    counts = pair_counts(samples, PAIR_MJJ, channel)
+    if counts is None:
+        return None
+    edges = pair_edges(PAIR_MJJ, "mjj")
+    columns = window_slice(edges, low, high)
+    if not columns:
+        return None
+    return counts[:, columns].sum(axis=1)
+
+
+def window_label(low, high):
+    """A short label for a mass window."""
+    if high >= 1.0e5:
+        return f"> {low:.0f} GeV"
+    return f"{low:.0f}-{high:.0f} GeV"
+
+
+def cut_efficiency(counts, index):
+    """Fraction of entries at or above a bin index, with its Clopper-Pearson interval."""
+    total = float(np.asarray(counts, dtype=float).sum())
+    passed = float(np.asarray(counts, dtype=float)[index:].sum())
+    efficiency, low, high = clopper_pearson(passed, max(total, 1.0))
+    return float(efficiency[0]), float(low[0]), float(high[0]), total
+
+
+def cut_gain(signal, background, index):
+    """Gain factor of a one-sided cut on the angle, signal efficiency over root background.
+
+    The band comes from the background interval alone: the simulated signal samples hold
+    three to four orders of magnitude more entries than the data window, so their own
+    interval is invisible beside it.
+    """
+    eff_s, _, _, n_s = cut_efficiency(signal, index)
+    eff_b, low_b, high_b, n_b = cut_efficiency(background, index)
+    if eff_b <= 0:
+        return {"gain": float("nan"), "low": float("nan"), "high": float("nan"),
+                "eff_s": eff_s, "eff_b": eff_b, "n_s": n_s, "n_b": n_b}
+    return {"gain": eff_s / np.sqrt(eff_b),
+            "low": eff_s / np.sqrt(min(eff_b + high_b, 1.0)),
+            "high": eff_s / np.sqrt(max(eff_b - low_b, 1.0e-9)),
+            "eff_s": eff_s, "eff_b": eff_b, "n_s": n_s, "n_b": n_b}
+
+
+def _shape_gain(signal, background):
+    """sqrt(sum_i f_s,i^2 / f_b,i) for two count arrays."""
+    signal = np.asarray(signal, dtype=float)
+    background = np.asarray(background, dtype=float)
+    if signal.sum() <= 0 or background.sum() <= 0:
+        return float("nan")
+    f_s = signal / signal.sum()
+    f_b = background / background.sum()
+    filled = f_b > 0
+    return float(np.sqrt((f_s[filled] ** 2 / f_b[filled]).sum()))
+
+
+def shape_gain(signal, background, replicas=1500, seed=20260902, max_signal=2_000_000):
+    """How much the whole shape could add over the inclusive count, with its bias.
+
+    The figure of merit is sqrt(sum_i f_s,i^2 / f_b,i): the ratio of the signal over root
+    background a binned likelihood over the shape reaches to the one the inclusive count
+    reaches, in the small-signal Gaussian limit.  It is bounded below by one, so a value
+    of 1.10 means the variable could add ten percent inside the window and 1.00 means it
+    adds nothing.
+
+    The estimator is biased upwards when the background sample is small -- noise in a
+    background bin is read as separation -- so both samples are resampled and the
+    bootstrap mean is returned beside the point estimate.  A bootstrap mean well above the
+    point estimate is a warning that the point estimate is itself inflated; the
+    bias-corrected value is twice the estimate minus that mean.
+    """
+    signal = np.asarray(signal, dtype=float)
+    background = np.asarray(background, dtype=float)
+    value = _shape_gain(signal, background)
+    if not np.isfinite(value):
+        return {"gain": value, "sigma": float("nan"), "bootstrap_mean": float("nan"),
+                "corrected": float("nan"), "n_b": float(background.sum())}
+    rng = np.random.default_rng(seed)
+    n_b = int(round(background.sum()))
+    n_s = int(min(round(signal.sum()), max_signal))
+    p_b = (background / background.sum()).ravel()
+    p_s = (signal / signal.sum()).ravel()
+    replica_b = rng.multinomial(n_b, p_b, size=replicas)
+    replica_s = rng.multinomial(n_s, p_s, size=replicas)
+    values = [_shape_gain(s.reshape(signal.shape).astype(float),
+                          b.reshape(background.shape).astype(float))
+              for s, b in zip(replica_s, replica_b)]
+    values = np.asarray([v for v in values if np.isfinite(v)], dtype=float)
+    mean = float(values.mean()) if values.size else float("nan")
+    return {"gain": value, "sigma": float(values.std()) if values.size else float("nan"),
+            "bootstrap_mean": mean, "corrected": 2.0 * value - mean,
+            "n_b": float(background.sum())}
+
+
+def pair_window_table(min_entries=MIN_DENOMINATOR):
+    """Print the data shape of the angle in each window of the event mass."""
+    counts = pair_counts(pair_data_samples(), PAIR_MJJ, PAIR_VR)
+    if counts is None:
+        return []
+    edges = pair_edges(PAIR_MJJ, "mjj")
+    centres = _uniform_centres(counts.shape[0])
+    pooled = counts[:, window_slice(edges, 150.0, 1.0e6)].sum(axis=1)
+    pooled_shape = pooled / pooled.sum()
+    rows = []
+    print("2018 data, four-muon inverted-displacement validation region, one entry per mu-LJ")
+    print(f"{'m(muLJ,muLJ)':>16s} {'pairs':>7s}   {'shape of |cos(theta*)| in 5 bins':<34s} "
+          f"{'mean':>13s} {'chi2/4 vs all':>14s}")
+    print("-" * 96)
+    for index in range(len(edges) - 1):
+        if edges[index] < 150.0:
+            continue
+        column = counts[:, index]
+        total = float(column.sum())
+        if total < min_entries:
+            print(f"{window_label(edges[index], edges[index + 1]):>16s} {total:7.0f}   "
+                  "too few pairs to measure a shape")
+            rows.append({"low": edges[index], "high": edges[index + 1], "n": total,
+                         "shape": None})
+            continue
+        shape = column / total
+        mean = float((shape * centres).sum())
+        error = float(np.sqrt(((centres - mean) ** 2 * shape).sum() / total))
+        expected = pooled_shape * total
+        chi2 = float((((column - expected) ** 2 / np.where(expected > 0, expected, 1))
+                      [expected > 0]).sum())
+        print(f"{window_label(edges[index], edges[index + 1]):>16s} {total:7.0f}   "
+              f"{' '.join(f'{v:.3f}' for v in shape):<34s} {mean:.3f} +- {error:.3f} "
+              f"{chi2:14.1f}")
+        rows.append({"low": edges[index], "high": edges[index + 1], "n": total,
+                     "shape": shape, "mean": mean, "error": error, "chi2": chi2})
+    print()
+    print(f"{'all m > 150 GeV':>16s} {pooled.sum():7.0f}   "
+          f"{' '.join(f'{v:.3f}' for v in pooled_shape):<34s} "
+          f"{float((pooled_shape * centres).sum()):.3f}")
+    return rows
+
+
+def pair_gain_table(channel="4mu_sr", thresholds=(0.2, 0.4, 0.6, 0.8),
+                    min_m_xx=PAIR_MIN_M_XX):
+    """Print, per signal point, what the angle could add inside its own mass window."""
+    data = pair_data_samples()
+    rows = []
+    print(f"signal channel {channel}; fakes from the four-muon inverted-displacement VR")
+    print(f"{'m_XX':>6s} {'m_Zd':>5s} {'window':>12s} {'fake pairs':>11s} "
+          f"{'best cut':>22s} {'shape gain':>22s} {'vs pooled fakes':>18s}")
+    print("-" * 106)
+    for (m_xx, m_zd), samples in pair_points(min_m_xx).items():
+        low, high = PAIR_WINDOW.get(m_xx, (150.0, 1.0e6))
+        signal = window_counts(samples, channel, low, high)
+        background = window_counts(data, PAIR_VR, low, high)
+        pooled = window_counts(data, PAIR_VR, *PAIR_POOLED_WINDOW)
+        if signal is None or background is None:
+            continue
+        scan = []
+        for index, threshold in enumerate(thresholds, start=1):
+            gain = cut_gain(signal, background, index)
+            gain["threshold"] = threshold
+            scan.append(gain)
+        best = max(scan, key=lambda g: g["gain"] if np.isfinite(g["gain"]) else -np.inf)
+        matched = shape_gain(signal, background)
+        pooled_gain = shape_gain(signal, pooled)
+        best_text = f"|cos| > {best['threshold']:.1f}: {best['gain']:.2f}"
+        matched_text = f"{matched['gain']:.3f} +- {matched['sigma']:.3f}"
+        pooled_text = f"{pooled_gain['gain']:.3f} +- {pooled_gain['sigma']:.3f}"
+        print(f"{m_xx:6.0f} {m_zd:5.2f} {window_label(low, high):>12s} "
+              f"{background.sum():11.0f} {best_text:>22s} {matched_text:>22s} "
+              f"{pooled_text:>18s}")
+        rows.append({"m_xx": m_xx, "m_zd": m_zd, "low": low, "high": high,
+                     "signal": signal, "background": background, "best_cut": best,
+                     "matched": matched, "pooled": pooled_gain})
+    print()
+    print("shape gain is sqrt(sum f_s^2 / f_b) over the five bins of the angle: the factor by")
+    print("which a shape fit beats the inclusive count in the same window.  One means nothing")
+    print("is added.  The bias of the estimator at these sample sizes is printed below.")
+    for row in rows:
+        matched = row["matched"]
+        print(f"  m_XX={row['m_xx']:.0f} m_Zd={row['m_zd']}: point {matched['gain']:.3f}, "
+              f"bootstrap mean {matched['bootstrap_mean']:.3f}, "
+              f"bias-corrected {matched['corrected']:.3f} "
+              f"(on {matched['n_b']:.0f} fake pairs)")
+    return rows
+
+
+def pair_plane_gain_table(channel="4mu_sr", min_m_xx=PAIR_MIN_M_XX):
+    """Print the shape gain of the whole two-jet plane against the one-jet gain squared."""
+    background = rebin2d(pair_counts(pair_data_samples(), PAIR_PLANE, PAIR_VR), 2)
+    print("event level, all event masses: the two-dimensional plane against two one-jet cuts")
+    print(f"{'m_XX':>6s} {'m_Zd':>5s} {'plane gain':>22s} {'one jet':>10s} "
+          f"{'one jet squared':>16s} {'plane / squared':>16s}")
+    print("-" * 82)
+    rows = []
+    for (m_xx, m_zd), samples in pair_points(min_m_xx).items():
+        signal = rebin2d(pair_counts(samples, PAIR_PLANE, channel), 2)
+        plane = shape_gain(signal, background)
+        one_jet = _shape_gain(signal.sum(axis=1) + signal.sum(axis=0),
+                              background.sum(axis=1) + background.sum(axis=0))
+        plane_text = f"{plane['gain']:.3f} +- {plane['sigma']:.3f}"
+        print(f"{m_xx:6.0f} {m_zd:5.2f} {plane_text:>22s} {one_jet:10.3f} "
+              f"{one_jet ** 2:16.3f} {plane['gain'] / one_jet ** 2:16.3f}")
+        rows.append({"m_xx": m_xx, "m_zd": m_zd, "plane": plane, "one_jet": one_jet})
+    return rows
+
+
+# --------------------------------------------------------------------------------------
+# figures
+# --------------------------------------------------------------------------------------
+
+def _draw_ratio_map(ax, result, canvas, span=0.45, headroom=1.42, edges=None):
+    """Draw a ratio-to-marginals map with the value written into every filled cell.
+
+    The vertical range is extended past the map so that the annotation naming the set sits
+    on empty canvas: a legend box over a map of numbers hides exactly the cells a reader
+    came for.  `edges` defaults to zero to one, which is the range of an absolute cosine;
+    a signed angle passes its own edges in.
+    """
+    ratio = result["ratio"]
+    counts = result["counts"]
+    if edges is None:
+        edges = np.linspace(0.0, 1.0, ratio.shape[0] + 1)
+    edges = np.asarray(edges, dtype=float)
+    mesh = ax.pcolormesh(edges, edges, ratio.T, cmap="RdBu_r", shading="flat",
+                         vmin=1.0 - span, vmax=1.0 + span)
+    centres = 0.5 * (edges[:-1] + edges[1:])
+    for i, x in enumerate(centres):
+        for j, y in enumerate(centres):
+            if not np.isfinite(ratio[i, j]) or counts[i, j] <= 0:
+                continue
+            ax.text(x, y, f"{ratio[i, j]:.2f}", ha="center", va="center",
+                    fontsize=canvas.font * 0.90, color="#111111")
+    ax.set_xlim(edges[0], edges[-1])
+    ax.set_ylim(edges[0], edges[0] + (edges[-1] - edges[0]) * headroom)
+    ax.set_yticks(np.round(edges, 2))
+    return mesh
+
+
+def fig_pair_plane(channel="4mu_sr", point=(500.0, 1.2), stem="i1_pair_plane"):
+    """The two decay angles of an event, as a ratio to the product of their marginals.
+
+    One mass point is drawn, not a sum over the grid: summing points whose one-jet shapes
+    differ builds a correlation into the sum that neither point has, and the table beside
+    the figure carries every point separately.
+    """
+    data = pair_data_samples()
+    signal_samples_list = pair_points(0.0).get(point, [])
+    if not signal_samples_list:
+        note(f"no pair samples for m_XX = {point[0]} GeV, m_Zd = {point[1]} GeV")
+    canvas = Canvas(1, 2, panel_w=5.7, panel_h=5.0, base_pt=9.0)
+    meshes = []
+    sets = [
+        (0, data, PAIR_VR, "2018 data, 4$\\mu$ VR, inv. displaced"),
+        (1, signal_samples_list, channel,
+         f"signal 4$\\mu$, $m_{{XX}}$ = {point[0]:.0f} GeV,\n"
+         f"$m_{{Z_d}}$ = {point[1]} GeV, signal-region channel"),
+    ]
+    for column, samples, region, label in sets:
+        ax = canvas.ax(0, column)
+        fine = pair_counts(samples, PAIR_PLANE, region)
+        if fine is None:
+            canvas.hide(ax, "no input")
+            continue
+        result = plane_independence(rebin2d(fine, 2))
+        correlation = plane_correlation(fine)
+        meshes.append(_draw_ratio_map(ax, result, canvas))
+        canvas.labels(ax, r"$|\cos\theta^*|$, leading $\mu$-LJ",
+                      r"$|\cos\theta^*|$, subleading $\mu$-LJ" if column == 0 else None)
+        ax.text(0.02, 0.985,
+                f"{label}\n"
+                f"$r$ = {correlation['r']:+.3f} $\pm$ {correlation['sigma']:.3f}, "
+                f"{result['n']:.0f} events\n"
+                f"independence $\chi^2$/dof = {result['chi2']:.0f}/{result['ndof']}",
+                transform=ax.transAxes, ha="left", va="top", fontsize=canvas.font,
+                linespacing=1.35)
+    if meshes:
+        colour_bar = canvas.fig.colorbar(meshes[-1], ax=list(canvas.axes[0]), pad=0.02,
+                                         fraction=0.05)
+        colour_bar.ax.tick_params(labelsize=canvas.tick_font)
+        colour_bar.set_label("observed / product of marginals", fontsize=canvas.font)
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+def _draw_counts_shape(ax, counts, label, colour, canvas, marker="o", linestyle="-",
+                       as_points=True, min_per_bin=MIN_ENTRIES_PER_BIN, offset=0.0):
+    """Draw a count array as a unit-area density with Poisson errors."""
+    counts = np.asarray(counts, dtype=float)
+    total = float(counts.sum())
+    n_bins = counts.shape[0]
+    if total < MIN_SHAPE_ENTRIES or total < min_per_bin * n_bins:
+        note(f"{_plain(label)}: {total:.0f} entries over {n_bins} bins, below what this "
+             "study draws a shape at; not drawn")
+        return None
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    widths = np.diff(edges)
+    centres = 0.5 * (edges[:-1] + edges[1:])
+    density = counts / widths / total
+    errors = poisson_errors(counts) / widths / total
+    if as_points:
+        # several series share one binning in these panels, so a small horizontal offset
+        # keeps their error bars from being drawn on top of each other
+        ax.errorbar(centres + offset, density, yerr=errors, fmt=marker, color=colour,
+                    label=label, markersize=canvas.font * 0.20, elinewidth=1.2, capsize=0)
+    else:
+        ax.stairs(density, edges, color=colour, linewidth=2.0, linestyle=linestyle,
+                  label=label, baseline=None)
+    return total
+
+
+def fig_pair_conditionals(channel="4mu_sr", point=(500.0, 1.2),
+                          stem="i2_pair_conditionals"):
+    """The subleading jet's angle in slices of the leading jet's, for data and signal."""
+    data = pair_data_samples()
+    signal_samples_list = pair_points(0.0).get(point, [])
+    slices = [(0, 3, "0.0 - 0.3"), (3, 7, "0.3 - 0.7"), (7, 10, "0.7 - 1.0")]
+    canvas = Canvas(1, 2, panel_w=5.7, panel_h=4.8, base_pt=9.0)
+    entries = []
+    for column, (samples, region, title) in enumerate([
+            (data, PAIR_VR, "2018 data, 4$\\mu$ VR, inv. displaced"),
+            (signal_samples_list, channel,
+             f"signal 4$\\mu$, $m_{{XX}}$ = {point[0]:.0f}, "
+             f"$m_{{Z_d}}$ = {point[1]} GeV, SR")]):
+        ax = canvas.ax(0, column)
+        fine = pair_counts(samples, PAIR_PLANE, region)
+        if fine is None:
+            canvas.hide(ax, "no input")
+            continue
+        for index, (low, high, label) in enumerate(slices):
+            band = rebin1d(fine[low:high, :].sum(axis=0), 2)
+            _draw_counts_shape(ax, band, label, _SLICE_COLOURS[index], canvas,
+                               offset=0.02 * (index - 1))
+        canvas.labels(ax, r"$|\cos\theta^*|$, subleading $\mu$-LJ",
+                      "events / unit angle (normalised)" if column == 0 else None)
+        legend = canvas.legend(
+            ax, "upper left", ncol=3, over_data=True,
+            title=title + "\n" + r"leading $\mu$-LJ $|\cos\theta^*|$ in")
+        entries.append((ax, legend))
+    canvas.clear_legends(entries)
+    canvas.share_ylimits(entries)
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+def fig_window_shapes(channel="4mu_sr", min_m_xx=PAIR_MIN_M_XX, stem="i3_window_shapes"):
+    """The angle's shape window by window in data, and against signal where signal lives."""
+    data = pair_data_samples()
+    counts = pair_counts(data, PAIR_MJJ, PAIR_VR)
+    edges = pair_edges(PAIR_MJJ, "mjj")
+    canvas = Canvas(1, 2, panel_w=5.7, panel_h=4.8, base_pt=9.0)
+    entries = []
+
+    ax = canvas.ax(0, 0)
+    drawn = 0
+    for index in range(len(edges) - 1):
+        if edges[index] < 150.0:
+            continue
+        column = counts[:, index]
+        if column.sum() < MIN_SHAPE_ENTRIES:
+            continue
+        _draw_counts_shape(ax, column, window_label(edges[index], edges[index + 1]),
+                           _SLICE_COLOURS[drawn % len(_SLICE_COLOURS)], canvas,
+                           offset=0.016 * (drawn - 2))
+        drawn += 1
+    canvas.labels(ax, r"$|\cos\theta^*|$ (per $\mu$-LJ)", "entries / unit angle (normalised)")
+    legend = canvas.legend(ax, "upper left", ncol=2, over_data=True,
+                           title="2018 data, 4$\\mu$ VR: $m(\\mu$LJ, $\\mu$LJ)")
+    entries.append((ax, legend))
+
+    # windows the table shows but this panel does not: name them and say why, so the
+    # figure and the table above it cannot be read as disagreeing
+    skipped = [(edges[i], edges[i + 1], float(counts[:, i].sum()))
+               for i in range(len(edges) - 1)
+               if edges[i] >= 150.0 and 0 < counts[:, i].sum() < MIN_SHAPE_ENTRIES]
+    if skipped:
+        canvas.stamp(canvas.ax(0, 0),
+                     f"windows above {skipped[0][0]:.0f} GeV hold\n"
+                     + ", ".join(f"{n:.0f}" for _, _, n in skipped)
+                     + f" pairs, under the {MIN_SHAPE_ENTRIES}-entry\n"
+                       "floor: see the table above",
+                     loc="lower left")
+
+    ax = canvas.ax(0, 1)
+    for index, (m_xx, low_high) in enumerate(sorted(PAIR_WINDOW.items())):
+        low, high = low_high
+        samples = [name for (mass, m_zd), names in pair_points(min_m_xx).items()
+                   if mass == m_xx and m_zd >= 1.0 for name in names]
+        colour = COLOURS["4Mu"] if index == 0 else COLOURS["gen"]
+        _draw_counts_shape(ax, window_counts(samples, channel, low, high),
+                           f"signal $m_{{XX}}$ = {m_xx:.0f} GeV", colour, canvas,
+                           as_points=False, linestyle="-" if index == 0 else "--")
+        fakes = window_counts(data, PAIR_VR, low, high)
+        _draw_counts_shape(ax, fakes, f"data, {window_label(low, high)}", colour, canvas,
+                           marker="s" if index == 0 else "^")
+        if fakes is not None and fakes.sum() < MIN_SHAPE_ENTRIES:
+            canvas.stamp(ax, f"data at {window_label(low, high)}: {fakes.sum():.0f} pairs,\n"
+                             "too few to draw a shape", loc="lower left")
+    canvas.labels(ax, r"$|\cos\theta^*|$ (per $\mu$-LJ)", None)
+    legend = canvas.legend(ax, "upper left", title="inside the window the signal fills",
+                           over_data=True)
+    entries.append((ax, legend))
+
+    canvas.clear_legends(entries)
+    canvas.share_ylimits(entries)
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+def fig_window_gain(rows, thresholds=(0.2, 0.4, 0.6, 0.8), stem="i4_window_gain"):
+    """What a cut, and what the whole shape, would add inside the signal's own window."""
+    canvas = Canvas(1, 2, panel_w=5.7, panel_h=4.8, base_pt=9.0)
+    entries = []
+
+    ax = canvas.ax(0, 0)
+    for index, row in enumerate(rows):
+        colour = _SLICE_COLOURS[index % len(_SLICE_COLOURS)]
+        values, lows, highs = [], [], []
+        for position in range(1, len(thresholds) + 1):
+            gain = cut_gain(row["signal"], row["background"], position)
+            values.append(gain["gain"])
+            lows.append(gain["gain"] - gain["low"])
+            highs.append(gain["high"] - gain["gain"])
+        ax.errorbar(np.asarray(thresholds) + 0.004 * (index - 2.5), values,
+                    yerr=[lows, highs], fmt="o-", color=colour,
+                    markersize=canvas.font * 0.18, elinewidth=1.2, capsize=0,
+                    label=f"{row['m_xx']:.0f} / {row['m_zd']}")
+    ax.axhline(1.0, color="#666666", linestyle=":", linewidth=1.5)
+    canvas.labels(ax, r"cut at $|\cos\theta^*| >$",
+                  r"$\epsilon_{s} / \sqrt{\epsilon_{b}}$ per $\mu$-LJ")
+    legend = canvas.legend(ax, "upper left", ncol=2, over_data=True,
+                           title="one cut, inside the signal's own window\n"
+                                 "$m_{XX}$ / $m_{Z_d}$ [GeV]")
+    entries.append((ax, legend))
+
+    ax = canvas.ax(0, 1)
+    positions = np.arange(len(rows), dtype=float)
+    for offset, key, label, colour, marker in [
+            (-0.16, "matched", "fakes from the same window", COLOURS["data"], "o"),
+            (0.16, "pooled", "fakes from $m(\\mu$LJ, $\\mu$LJ$) > 300$ GeV",
+             COLOURS["background"], "s")]:
+        values = [row[key]["gain"] for row in rows]
+        errors = [row[key]["sigma"] for row in rows]
+        ax.errorbar(positions + offset, values, yerr=errors, fmt=marker, color=colour,
+                    markersize=canvas.font * 0.20, elinewidth=1.2, capsize=0, label=label)
+    # the point estimate is biased upwards on a small fake sample, and on the 1000 GeV
+    # points that bias is larger than the distance of the point from one, so the corrected
+    # value is drawn beside it: without it the figure reads as six points above one while
+    # the verdict says the heavy points are consistent with adding nothing
+    ax.errorbar(positions, [row["matched"]["corrected"] for row in rows],
+                yerr=[row["matched"]["sigma"] for row in rows], marker="D",
+                markerfacecolor="white", markeredgecolor=COLOURS["data"],
+                markeredgewidth=1.6, color=COLOURS["data"], linestyle="none",
+                markersize=canvas.font * 0.18, elinewidth=1.2, capsize=0,
+                label="same-window fakes, bias corrected")
+    ax.axhline(1.0, color="#666666", linestyle=":", linewidth=1.5)
+    ax.set_xticks(positions)
+    ax.set_xticklabels([f"{row['m_xx']:.0f}\n{row['m_zd']}" for row in rows])
+    ax.set_xlim(-0.5, len(rows) - 0.5)
+    canvas.labels(ax, r"$m_{XX}$ [GeV] and $m_{Z_d}$ [GeV]",
+                  r"shape gain $\sqrt{\sum_i f_{s,i}^2 / f_{b,i}}$")
+    legend = canvas.legend(ax, "upper left", title="the whole shape, inside the window",
+                           over_data=True)
+    entries.append((ax, legend))
+
+    sizes = {}
+    for row in rows:
+        sizes.setdefault(row["m_xx"], row["matched"]["n_b"])
+    canvas.stamp(canvas.ax(0, 1),
+                 "fake pairs behind each column:\n"
+                 + ", ".join(f"$m_{{XX}}$ = {mass:.0f} GeV: {n:.0f}"
+                             for mass, n in sorted(sizes.items())),
+                 loc="lower left")
+
+    canvas.clear_legends(entries)
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+# ======================================================================================
+# section j -- the lepton-jet decay planes
+#
+# Inputs are a third campaign, LjAnglePlanes_Run2018_v1, merged one file per sample.  It
+# adds the signed decay angle, the electron pair of an egamma-type lepton jet, and the
+# event-level observables of the two leading qualifying lepton jets: the two helicity
+# angles, the azimuthal angle between the two decay planes, the transverse balance and
+# the missing momentum.  Its channel list and its sample set are both wider than the
+# earlier campaigns', and collision data was written in control and validation regions
+# only, which `planes_counts` enforces rather than assumes.
+# ======================================================================================
+
+PLANES_INPUT = "/uscms_data/d3/murtazas/lj_angle_planes_merged"
+
+#: campaign tag, for the provenance line of the notebook.
+PLANES_CAMPAIGN = "LjAnglePlanes_Run2018_v1"
+
+PLANES_CR_1MU = "data_control_region_1muLj_spread_cosAlpha_mu_veto"
+PLANES_CR_1EGM = "data_control_region_1egmLj_cosmic_veto"
+PLANES_CR_2LJ = "cr_2lj_invDisplaced_spread_cosAlpha_mu_veto"
+PLANES_VR_4MU = "test_VR_4mu_invDisplaced_spread_cosAlpha_mu_veto"
+PLANES_VR_2MU2E = "test_VR_2mu2e_invDisplaced_spread_cosAlpha_mu_veto"
+
+#: the ONLY channels collision data may be read in.  Everything else this campaign wrote
+#: is the signal region or a variant of it and stays blind; `planes_counts` refuses to
+#: open a data file outside this set rather than trusting the caller.
+PLANES_DATA_CHANNELS = frozenset({PLANES_CR_1MU, PLANES_CR_1EGM, PLANES_CR_2LJ,
+                                  PLANES_VR_4MU, PLANES_VR_2MU2E})
+
+PLANES_REGION_LABEL = {
+    PLANES_CR_1MU: "one $\\mu$-LJ CR",
+    PLANES_CR_1EGM: "one $e\\gamma$-LJ CR",
+    PLANES_CR_2LJ: "two-LJ inv. displaced CR",
+    PLANES_VR_4MU: "4$\\mu$ inv. displaced VR",
+    PLANES_VR_2MU2E: "2$\\mu$2e inv. displaced VR",
+    "4mu": "4$\\mu$ channel",
+    "4mu_sr": "4$\\mu$ signal region",
+    "2mu2e": "2$\\mu$2e channel",
+    "2mu2e_sr": "2$\\mu$2e signal region",
+}
+
+#: bound-state masses below this are no longer part of the search.  The grid this campaign
+#: ran holds 100, 500 and 1000 GeV only, so "at or above 200" means 500 and 1000 here and
+#: the 200 to 250 GeV range the search cares most about is not in it.
+PLANES_MIN_M_XX = 200.0
+
+#: the coefficient of cos(2 Phi) an unsculpted CP-even parent gives, from the transverse
+#: polarisation of the two dark photons: dN/dPhi is proportional to 1 + A cos(2 Phi) with
+#: A = +1/4.  A CP-odd parent of the same mass would give A = -1/4.  Neither value is what
+#: a reconstructed distribution has to match: the reference is the generator-level curve
+#: from the same files, which carries the production filter and the selection with it.
+PLANES_A_CP_EVEN = 0.25
+
+#: threshold the missing-momentum numbers are quoted at, in GeV.  Chosen because it is a
+#: bin edge of both the forty-bin one-dimensional axes and the twenty-bin plane, so the
+#: one-dimensional and two-dimensional fractions are quoted at the same place.
+PLANES_MET_THRESHOLD = 40.0
+
+#: short names for the printed tables.  The channel names are long enough that a column
+#: sized for them pushes the numbers off the page.
+PLANES_SHORT = {
+    PLANES_CR_1MU: "1 muLJ CR",
+    PLANES_CR_1EGM: "1 egmLJ CR",
+    PLANES_CR_2LJ: "2 LJ invDisp CR",
+    PLANES_VR_4MU: "4mu invDisp VR",
+    PLANES_VR_2MU2E: "2mu2e invDisp VR",
+}
+
+_PLANES_LOADED: dict = {}
+
+
+def planes_short(channel):
+    """A short name for a channel, for the printed tables."""
+    return PLANES_SHORT.get(channel, channel)
+
+
+def configure_planes(input_dir=None):
+    """Point the decay-plane loader at a directory of merged plane-campaign outputs."""
+    global PLANES_INPUT
+    if input_dir is not None:
+        PLANES_INPUT = input_dir.rstrip("/")
+        _PLANES_LOADED.clear()
+    return PLANES_INPUT
+
+
+def _planes_listing():
+    """Sample names available in `PLANES_INPUT`, sorted."""
+    if PLANES_INPUT.startswith("root://"):
+        files = _remote_listing(PLANES_INPUT)
+    else:
+        files = [os.path.basename(p) for p in glob.glob(os.path.join(PLANES_INPUT, "*.coffea"))]
+    return sorted(f[: -len(".coffea")] for f in files)
+
+
+def _planes_load(name):
+    """One plane-campaign sample as `{hists, metadata, is_data, sum_weights, year}`."""
+    if name in _PLANES_LOADED:
+        return _PLANES_LOADED[name]
+    try:
+        if PLANES_INPUT.startswith("root://"):
+            os.makedirs(CACHE_DIR, exist_ok=True)
+            path = os.path.join(CACHE_DIR, f"planes_{name}.coffea")
+            if not os.path.exists(path):
+                subprocess.run(["xrdcp", "-f", f"{PLANES_INPUT}/{name}.coffea", path], check=True)
+        else:
+            path = os.path.join(PLANES_INPUT, f"{name}.coffea")
+        blob = coffea.util.load(path)
+    except (FileNotFoundError, OSError, subprocess.CalledProcessError) as exc:
+        note(f"plane sample {name} could not be read ({type(exc).__name__}); skipping it")
+        _PLANES_LOADED[name] = None
+        return None
+    out = blob["out"] if "out" in blob else blob
+    if name in out:
+        payload = out[name]
+    elif len(out) == 1:
+        payload = next(iter(out.values()))
+    else:
+        note(f"plane file for {name} holds {len(out)} samples and none matches its name; skipping")
+        _PLANES_LOADED[name] = None
+        return None
+    meta = payload.get("metadata", {})
+    _PLANES_LOADED[name] = {
+        "hists": payload["hists"],
+        "metadata": meta,
+        "is_data": bool(_scalar(meta.get("is_data"), parse_data(name) is not None)),
+        "year": str(_scalar(meta.get("year"), YEAR)),
+        "sum_weights": float(meta.get("scaled_sum_weights", meta.get("n_evts", 0.0)) or 0.0),
+    }
+    return _PLANES_LOADED[name]
+
+
+def planes_data_samples():
+    """Collision-data samples of the plane campaign, all eras."""
+    return [n for n in _planes_listing() if parse_data(n) is not None]
+
+
+def planes_background_samples():
+    """Simulated background samples of the plane campaign."""
+    return [n for n in _planes_listing()
+            if parse_data(n) is None and parse_signal(n) is None]
+
+
+def planes_points(final_state="4Mu", min_m_xx=PLANES_MIN_M_XX):
+    """Signal mass points of the plane campaign as `{(m_xx, m_zd): [samples]}`.
+
+    Every proper lifetime of a point is grouped together, as in section i: none of the
+    angular quantities changes with the lifetime once a channel has been applied, and
+    summing them is what makes the mass dependence measurable.
+    """
+    points: dict = {}
+    for name in _planes_listing():
+        info = parse_signal(name)
+        if info is None or info["final_state"] != final_state:
+            continue
+        if info["m_xx"] < min_m_xx:
+            continue
+        points.setdefault((info["m_xx"], info["m_zd"]), []).append(name)
+    return {key: sorted(value) for key, value in sorted(points.items())}
+
+
+def planes_weight(name):
+    """Per-sample lumi x sigma / N for a plane-campaign simulated sample.
+
+    The same caveat as `lumi_xs_weight`: the denominator counts events that survived the
+    skim, so this is a shape weight, not a yield.  Everything drawn in this section is
+    unit-area, where the factor cancels within a sample and only reweights one simulated
+    sample against another, which is what a background sum needs.
+    """
+    record = _planes_load(name)
+    if record is None:
+        return None
+    if record["is_data"]:
+        return 1.0
+    if sidm_utilities is not None:
+        try:
+            return sidm_utilities.get_lumixs_weight(name, record["year"], record["sum_weights"])
+        except (KeyError, FileNotFoundError):
+            pass
+    table = load_cross_sections()
+    if name in table:
+        cross_section = table[name]
+    elif name.startswith(("4Mu", "2Mu2E")):
+        cross_section = 0.001
+    else:
+        note(f"no cross section for {name}; plane weight set to 1")
+        return 1.0
+    lumi = load_run_periods()[record["year"]]["lumi"]
+    return lumi * cross_section / record["sum_weights"] if record["sum_weights"] else 1.0
+
+
+def planes_counts(samples, hist_name, channel, weighted=False):
+    """Bin counts of one plane-campaign histogram, summed over samples.
+
+    Raw counts by default, which is what every statistical statement here is built from;
+    `weighted=True` applies the per-sample cross-section factor first, which is what a
+    sum over simulated background samples needs before its shape means anything.
+
+    BLINDING: this study never reads collision data outside a control or validation
+    region.  Passing a data sample with any other channel raises rather than returning
+    something a figure could quietly draw.
+    """
+    if isinstance(samples, str):
+        samples = [samples]
+    if channel not in PLANES_DATA_CHANNELS:
+        opened = [n for n in samples if parse_data(n) is not None]
+        if opened:
+            raise ValueError(
+                f"channel {channel!r} is not one of this study's control or validation "
+                f"regions and {len(opened)} collision-data sample(s) were passed to it. "
+                "Data is read only in: " + ", ".join(sorted(PLANES_DATA_CHANNELS)))
+    total = None
+    for name in samples:
+        record = _planes_load(name)
+        if record is None or hist_name not in record["hists"]:
+            continue
+        histogram = record["hists"][hist_name]
+        if channel not in list(histogram.axes["channel"]):
+            continue
+        values = np.asarray(histogram[{"channel": channel}].values(), dtype=float)
+        if weighted:
+            factor = planes_weight(name)
+            if factor is None:
+                continue
+            values = values * factor
+        total = values if total is None else total + values
+    if total is None:
+        note(f"no plane input for {hist_name} in channel {channel}")
+    return total
+
+
+def planes_edges(hist_name, axis):
+    """Bin edges of one axis of a plane-campaign histogram."""
+    for name in _planes_listing():
+        record = _planes_load(name)
+        if record is not None and hist_name in record["hists"]:
+            return np.asarray(record["hists"][hist_name].axes[axis].edges, dtype=float)
+    return None
+
+
+# --------------------------------------------------------------------------------------
+# statistics on plain count arrays
+# --------------------------------------------------------------------------------------
+
+def binned_mean(counts, low=0.0, high=1.0):
+    """Mean of a uniformly binned distribution and the standard error of that mean."""
+    counts = np.asarray(counts, dtype=float)
+    total = float(counts.sum())
+    if total <= 1:
+        return float("nan"), float("nan"), total
+    edges = np.linspace(low, high, len(counts) + 1)
+    centres = 0.5 * (edges[:-1] + edges[1:])
+    mean = float((counts * centres).sum() / total)
+    variance = float((counts * (centres - mean) ** 2).sum() / total)
+    return mean, float(np.sqrt(variance / total)), total
+
+
+def harmonic_moment(counts, low, high, harmonic=2):
+    """<cos(n x)> of a uniformly binned angular distribution, with its statistical error.
+
+    For a distribution proportional to 1 + A cos(2 x) over a full period, <cos 2x> = A / 2,
+    so the fitted coefficient is twice this moment.  Taking the moment rather than fitting
+    uses every entry with no binning-dependent minimisation, and its error is the ordinary
+    error of a mean.
+    """
+    counts = np.asarray(counts, dtype=float)
+    total = float(counts.sum())
+    if total <= 1:
+        return {"moment": float("nan"), "sigma": float("nan"), "coefficient": float("nan"),
+                "sigma_coefficient": float("nan"), "n": total}
+    edges = np.linspace(low, high, len(counts) + 1)
+    centres = 0.5 * (edges[:-1] + edges[1:])
+    weights = np.cos(harmonic * centres)
+    mean = float((counts * weights).sum() / total)
+    variance = float((counts * weights * weights).sum() / total) - mean * mean
+    sigma = float(np.sqrt(max(variance, 0.0) / total))
+    return {"moment": mean, "sigma": sigma, "coefficient": 2.0 * mean,
+            "sigma_coefficient": 2.0 * sigma, "n": total}
+
+
+def kept_fraction(counts, threshold, low=0.0, high=1.0, direction="above"):
+    """Fraction of entries on one side of a threshold, with a Clopper-Pearson interval."""
+    counts = np.asarray(counts, dtype=float)
+    total = float(counts.sum())
+    if total <= 0:
+        return {"fraction": float("nan"), "low": float("nan"), "high": float("nan"), "n": 0.0}
+    edges = np.linspace(low, high, len(counts) + 1)
+    index = int(np.argmin(np.abs(edges - threshold)))
+    passed = float(counts[index:].sum() if direction == "above" else counts[:index].sum())
+    value, lower, upper = clopper_pearson(passed, total)
+    return {"fraction": float(value[0]), "low": float(lower[0]), "high": float(upper[0]),
+            "n": total, "passed": passed, "edge": float(edges[index])}
+
+
+def separation_curve(signal, background, low=0.0, high=1.0, direction="above"):
+    """Signal efficiency and background efficiency of every threshold on a shared axis.
+
+    Returns the two efficiency arrays and the bin edges they are evaluated at, which is
+    what a threshold-by-threshold comparison of two shapes needs and all a binned
+    distribution supports.
+    """
+    signal = np.asarray(signal, dtype=float)
+    background = np.asarray(background, dtype=float)
+    edges = np.linspace(low, high, len(signal) + 1)
+    if direction == "above":
+        eff_s = np.array([signal[i:].sum() for i in range(len(signal) + 1)]) / max(signal.sum(), 1)
+        eff_b = np.array([background[i:].sum()
+                          for i in range(len(background) + 1)]) / max(background.sum(), 1)
+    else:
+        eff_s = np.array([signal[:i].sum() for i in range(len(signal) + 1)]) / max(signal.sum(), 1)
+        eff_b = np.array([background[:i].sum()
+                          for i in range(len(background) + 1)]) / max(background.sum(), 1)
+    return edges, eff_s, eff_b
+
+
+def _first_key(mapping, *preferred):
+    """The first of `preferred` present in `mapping`, else its first key, else None."""
+    for key in preferred:
+        if key in mapping:
+            return key
+    return next(iter(mapping), None)
+
+
+# --------------------------------------------------------------------------------------
+# drawing primitives for plain count arrays
+# --------------------------------------------------------------------------------------
+
+def draw_counts(ax, counts, edges, label, colour, canvas, as_points=True, linestyle="-",
+                marker="o", offset=0.0, raw=None, min_per_bin=MIN_ENTRIES_PER_BIN,
+                context=""):
+    """Draw a count array over arbitrary edges as a unit-area density.
+
+    `raw` is the unweighted entry count behind `counts`, which is what the drawing gates
+    are judged on: a cross-section-weighted sum of simulated samples can look smooth while
+    resting on a handful of high-weight events.  Bins below the per-bin floor are dropped
+    rather than drawn, and a curve with too few entries anywhere is not drawn at all.
+    """
+    if counts is None:
+        return None
+    counts = np.asarray(counts, dtype=float)
+    entries = np.asarray(raw if raw is not None else counts, dtype=float)
+    total_raw = float(entries.sum())
+    n_bins = len(counts)
+    where = f" in {context}" if context else ""
+    if total_raw < MIN_SHAPE_ENTRIES:
+        note(f"{_plain(label)}{where}: {total_raw:.0f} entries over {n_bins} bins, below "
+             f"the {MIN_SHAPE_ENTRIES} needed to draw a shape at all; not drawn")
+        return None
+    if total_raw < min_per_bin * n_bins:
+        note(f"{_plain(label)}{where}: {total_raw:.0f} entries over {n_bins} bins, fewer "
+             f"than the {min_per_bin} per bin a shape is drawn at; not drawn")
+        return None
+    edges = np.asarray(edges, dtype=float)
+    widths = np.diff(edges)
+    centres = 0.5 * (edges[:-1] + edges[1:])
+    total = float(counts.sum())
+    if total <= 0:
+        return None
+    density = counts / widths / total
+    with np.errstate(divide="ignore", invalid="ignore"):
+        relative = np.where(entries > 0, 1.0 / np.sqrt(np.maximum(entries, 1.0)), 0.0)
+    errors = density * relative
+    keep = entries >= min_per_bin
+    if not keep.any():
+        note(f"{_plain(label)}{where}: no bin holds {min_per_bin} entries; not drawn")
+        return None
+    span = edges[-1] - edges[0]
+    if as_points:
+        ax.errorbar(centres[keep] + offset * span, density[keep], yerr=errors[keep],
+                    fmt=marker, color=colour, label=label,
+                    markersize=canvas.font * 0.20, elinewidth=1.2, capsize=0)
+    else:
+        ax.stairs(np.where(keep, density, np.nan), edges, color=colour, linewidth=2.0,
+                  linestyle=linestyle, label=label, baseline=None)
+        ax.stairs(np.where(keep, density + errors, np.nan), edges,
+                  baseline=np.where(keep, density - errors, np.nan), color=colour,
+                  alpha=0.18, fill=True)
+    return total_raw
+
+
+def draw_row_normalised_map(ax, counts, y_edges, canvas, min_row=MIN_DENOMINATOR,
+                            tick_every=2, cmap="viridis", gate=None, trim=False):
+    """A (companion, angle) map with every companion row normalised to unit sum.
+
+    The angle axis is the first axis of `counts` and spans zero to one; the companion is
+    the second and carries the variable binning, drawn on a bin index so that a first edge
+    at zero is not lost to a log scale.  Rows holding fewer than `min_row` entries are
+    left blank instead of drawn, since a row of two entries is noise at full contrast.
+    """
+    counts = np.asarray(counts, dtype=float)
+    rows = counts.T
+    # the population test is made on unweighted entries: a cross-section-weighted row can
+    # be large and still rest on two events
+    entries = np.asarray(gate if gate is not None else counts, dtype=float).T
+    totals = rows.sum(axis=1, keepdims=True)
+    populations = entries.sum(axis=1, keepdims=True)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        shape = np.divide(rows, totals, out=np.full_like(rows, np.nan), where=totals > 0)
+    shape[np.repeat(populations < min_row, rows.shape[1], axis=1)] = np.nan
+    x_edges = np.linspace(0.0, 1.0, counts.shape[0] + 1)
+    y_index = np.arange(len(y_edges), dtype=float)
+    mesh = ax.pcolormesh(x_edges, y_index, np.ma.masked_invalid(shape), cmap=cmap,
+                         shading="flat")
+    ticks = np.arange(0, len(y_edges), tick_every, dtype=float)
+    ax.set_yticks(ticks)
+    ax.set_yticklabels([f"{y_edges[int(t)]:g}" for t in ticks], fontsize=canvas.font)
+    ax.set_ylim(0, len(y_edges) - 1)
+    if trim:
+        # a quantity that only exists over part of its axis -- a resolved electron pair
+        # never has a mass below about a GeV -- otherwise spends most of the panel blank
+        filled = np.flatnonzero(populations.ravel() >= min_row)
+        if filled.size:
+            ax.set_ylim(max(int(filled[0]) - 1, 0),
+                        min(int(filled[-1]) + 2, len(y_edges) - 1))
+    ax.set_xlim(0, 1)
+    return mesh
+
+
+# --------------------------------------------------------------------------------------
+# j1 / j2 -- the decay angle of a muon lepton jet, mass by mass
+# --------------------------------------------------------------------------------------
+
+PLANES_MU_HIST = "mu_lj_mumu_absCosTheta_vs_mass"
+
+
+def _planes_mu_sets(m_xx=500.0):
+    """The (label, samples, channel) sets the muon-LJ figures compare."""
+    points = planes_points("4Mu")
+    sets = []
+    for m_zd in (0.25, 1.2, 5.0):
+        samples = points.get((m_xx, m_zd))
+        if samples:
+            sets.append((f"signal 4$\\mu$\n$m_{{XX}}$ = {m_xx:.0f}, $m_{{Z_d}}$ = {m_zd} GeV",
+                         samples, "4mu", False))
+    sets.append(("simulated background\ntwo-LJ inv. displaced CR",
+                 planes_background_samples(), PLANES_CR_2LJ, True))
+    sets.append(("2018 data\none $\\mu$-LJ CR", planes_data_samples(), PLANES_CR_1MU, False))
+    sets.append(("2018 data\ntwo-LJ inv. displaced CR", planes_data_samples(),
+                 PLANES_CR_2LJ, False))
+    return sets
+
+
+def fig_mulj_mass_angle(m_xx=500.0, stem="j1_mulj_mass_angle"):
+    """The (dimuon mass, decay angle) plane of a muon lepton jet, signal against fakes.
+
+    Every row of every panel is normalised on its own, so the question the figure asks is
+    "at this dimuon mass, how is the angle distributed", which is the comparison that does
+    not depend on the wildly different mass spectra of signal and fakes.
+    """
+    canvas = Canvas(2, 3, panel_w=5.6, panel_h=4.5, base_pt=9.0)
+    y_edges = planes_edges(PLANES_MU_HIST, "mumu_mass")
+    sets = _planes_mu_sets(m_xx)
+    meshes, map_axes = [], []
+    for index, (label, samples, channel, weighted) in enumerate(sets[:6]):
+        ax = canvas.ax(index // 3, index % 3)
+        counts = planes_counts(samples, PLANES_MU_HIST, channel, weighted=weighted)
+        raw = counts if not weighted else planes_counts(samples, PLANES_MU_HIST, channel)
+        if counts is None or raw is None or counts.sum() <= 0 or y_edges is None:
+            canvas.hide(ax, "no input")
+            continue
+        meshes.append(draw_row_normalised_map(ax, counts, y_edges, canvas, gate=raw))
+        map_axes.append(ax)
+        canvas.labels(ax, r"$|\cos\theta^{*}|$ of the leading $\mu\mu$ pair",
+                      r"$m_{\mu\mu}$ [GeV]" if index % 3 == 0 else None)
+        canvas.stamp(ax, f"{label}\n{raw.sum():,.0f} $\\mu$-LJ pairs", loc="upper left")
+    colour_bar = canvas.shared_colourbar(map_axes, meshes,
+                                        "fraction of the mass row (99th pct scale)")
+    # a single sparsely populated row, in the weighted simulation especially, otherwise
+    # sets the scale for all six panels and flattens the structure everywhere else
+    if meshes and colour_bar is not None:
+        pooled = np.concatenate([np.asarray(mesh.get_array(), dtype=float).ravel()
+                                 for mesh in meshes])
+        pooled = pooled[np.isfinite(pooled)]
+        if pooled.size:
+            top = max(float(np.percentile(pooled, 99.0)), 1.0e-6)
+            for mesh in meshes:
+                mesh.set_clim(0.0, top)
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+
+def fig_mulj_angle_overlays(m_xx=500.0, stem="j2_mulj_angle_overlays"):
+    """The muon-LJ decay angle as a shape, and what a threshold on it would separate.
+
+    Left: unit-area shapes of signal and of the three fake samples under their own
+    selections.  Right: the pair of efficiencies a one-sided cut reaches, signal against
+    each fake sample; what a single "separation" number hides is that the three fake
+    samples do not agree with each other.
+    """
+    canvas = Canvas(1, 2, panel_w=6.4, panel_h=5.0, base_pt=9.0)
+    points = planes_points("4Mu")
+    edges = np.linspace(0.0, 1.0, 25 + 1)
+
+    fakes = [("data, 1 $\\mu$-LJ CR", planes_data_samples(), PLANES_CR_1MU,
+              False, COLOURS["data"], "o"),
+             ("data, 2-LJ CR", planes_data_samples(), PLANES_CR_2LJ,
+              False, "#8e7dbe", "s"),
+             ("sim bkg, 2-LJ CR", planes_background_samples(),
+              PLANES_CR_2LJ, True, COLOURS["background"], "^")]
+
+    ax = canvas.ax(0, 0)
+    for index, m_zd in enumerate((0.25, 1.2, 5.0)):
+        samples = points.get((m_xx, m_zd))
+        if not samples:
+            continue
+        draw_counts(ax, planes_counts(samples, PLANES_MU_HIST, "4mu").sum(axis=1), edges,
+                    f"signal {m_zd}", _SLICE_COLOURS[index], canvas,
+                    as_points=False, linestyle=["-", "--", "-."][index],
+                    context="4mu channel")
+    for offset, (label, samples, channel, weighted, colour, marker) in enumerate(fakes):
+        counts = planes_counts(samples, PLANES_MU_HIST, channel, weighted=weighted)
+        raw = counts if not weighted else planes_counts(samples, PLANES_MU_HIST, channel)
+        if counts is None:
+            continue
+        draw_counts(ax, counts.sum(axis=1), edges, label, colour, canvas, marker=marker,
+                    raw=raw.sum(axis=1), offset=0.006 * (offset - 1), context=channel)
+    canvas.labels(ax, r"$|\cos\theta^{*}|$ of the leading $\mu\mu$ pair",
+                  "$\\mu$-LJ pairs / unit angle (normalised)")
+    canvas.room_above(ax, share=0.52)
+    canvas.legend(ax, "upper center", ncol=2, over_data=True,
+                  title=f"signal 4$\\mu$, $m_{{XX}}$ = {m_xx:.0f} GeV, four-muon channel;\n"
+                        "signal curves labelled by $m_{Z_d}$ [GeV]")
+
+    ax = canvas.ax(0, 1)
+    reference = points.get((m_xx, 1.2))
+    signal = (planes_counts(reference, PLANES_MU_HIST, "4mu").sum(axis=1)
+              if reference else None)
+    if signal is not None:
+        for label, samples, channel, weighted, colour, marker in fakes:
+            counts = planes_counts(samples, PLANES_MU_HIST, channel, weighted=weighted)
+            if counts is None:
+                continue
+            thresholds, eff_s, eff_b = separation_curve(signal, counts.sum(axis=1))
+            ax.plot(eff_b, eff_s, "-", color=colour, linewidth=2.0, label=label)
+            marks = [int(round(t * (len(thresholds) - 1))) for t in (0.2, 0.4, 0.6, 0.8)]
+            ax.plot(eff_b[marks], eff_s[marks], marker, color=colour,
+                    markersize=canvas.font * 0.20, linestyle="none")
+        ax.plot([0, 1], [0, 1], ":", color="#666666", linewidth=1.5,
+                label="no separation")
+    else:
+        canvas.hide(ax, "no signal input")
+    canvas.labels(ax, "fraction of fake $\\mu$-LJ pairs kept",
+                  "fraction of signal $\\mu$-LJ pairs kept")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    canvas.legend(ax, "lower right", over_data=True,
+                  title="cut $|\\cos\\theta^{*}| >$ threshold, markers at\n"
+                        "0.2, 0.4, 0.6, 0.8; signal $m_{Z_d}$ = 1.2 GeV")
+
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+def planes_mu_separation_table(thresholds=(0.2, 0.4, 0.6, 0.8),
+                               min_m_xx=PLANES_MIN_M_XX):
+    """Print what a threshold on the muon-LJ decay angle keeps and rejects.
+
+    Signal efficiencies come from each point's own signal channel and fake efficiencies
+    from the control regions, so a row is "what this threshold would do here", not "what
+    it would do to one sample".
+    """
+    rows = []
+    fakes = [("data, one mu-LJ CR", planes_data_samples(), PLANES_CR_1MU, False),
+             ("data, two-LJ invDisp CR", planes_data_samples(), PLANES_CR_2LJ, False),
+             ("data, 4mu invDisp VR", planes_data_samples(), PLANES_VR_4MU, False),
+             ("sim bkg, two-LJ invDisp CR", planes_background_samples(), PLANES_CR_2LJ, True)]
+    sets = []
+    for final_state, channel in (("4Mu", "4mu"), ("2Mu2E", "2mu2e")):
+        for (m_xx, m_zd), samples in planes_points(final_state, min_m_xx).items():
+            sets.append((f"{final_state} {m_xx:.0f}/{m_zd}", samples, channel, False))
+    sets.extend(fakes)
+    header = "  ".join(f"eff(>{t:.1f})" for t in thresholds)
+    print("muon-LJ |cos(theta*)|: one entry per mu-LJ with two or more muons")
+    print(f"{'set':28s} {'channel':>17s} {'pairs':>10s} {'<|cos|>':>18s}   {header}")
+    print("-" * 118)
+    for label, samples, channel, weighted in sets:
+        counts = planes_counts(samples, PLANES_MU_HIST, channel, weighted=weighted)
+        if counts is None:
+            continue
+        raw = (counts if not weighted
+               else planes_counts(samples, PLANES_MU_HIST, channel)).sum(axis=1)
+        projection = counts.sum(axis=1)
+        mean, error, _ = binned_mean(raw)
+        cells = "  ".join(f"{kept_fraction(projection, t)['fraction']:9.4f}"
+                          for t in thresholds)
+        print(f"{label:28s} {planes_short(channel):>17s} {raw.sum():10.0f} "
+              f"{mean:.4f} +- {error:.4f}   {cells}")
+        rows.append({"label": label, "channel": channel, "counts": projection, "raw": raw,
+                     "mean": mean, "error": error})
+    print()
+    print("signal efficiency over root fake efficiency, per mu-LJ, at |cos(theta*)| > 0.4")
+    fake_rows = {row["label"]: row for row in rows if row["label"].startswith(("data", "sim"))}
+    print(f"{'signal point':28s} " + "  ".join(f"{name:>26s}" for name in fake_rows))
+    print("-" * 120)
+    for row in rows:
+        if row["label"].startswith(("data", "sim")):
+            continue
+        eff_s = kept_fraction(row["counts"], 0.4)["fraction"]
+        cells = []
+        for name, fake in fake_rows.items():
+            eff_b = kept_fraction(fake["counts"], 0.4)["fraction"]
+            cells.append(f"{eff_s / np.sqrt(eff_b) if eff_b > 0 else float('nan'):26.3f}")
+        print(f"{row['label']:28s} " + "  ".join(cells))
+    return rows
+
+
+# --------------------------------------------------------------------------------------
+# j3 -- the electron pair of an egamma-type lepton jet
+# --------------------------------------------------------------------------------------
+
+def planes_egm_resolved_table(min_m_xx=0.0):
+    """Print how often an egamma-type lepton jet holds two reconstructed electrons.
+
+    The denominator is every egamma-type LJ in the channel, from the electron-multiplicity
+    histogram; the numerator is those with two or more, which are the only ones any
+    `egm_lj_ee_*` histogram is filled from.  At a low dark-photon mass the two electrons
+    of the decay merge into one supercluster plus photons, so this fraction is the first
+    thing to quote about any electron-pair figure.
+    """
+    rows = []
+    sets = []
+    for (m_xx, m_zd), samples in planes_points("2Mu2E", min_m_xx).items():
+        sets.append((f"2Mu2E {m_xx:.0f}/{m_zd}", samples, "2mu2e", False))
+    sets += [("data, one egm-LJ CR", planes_data_samples(), PLANES_CR_1EGM, False),
+             ("data, two-LJ invDisp CR", planes_data_samples(), PLANES_CR_2LJ, False),
+             ("data, 2mu2e invDisp VR", planes_data_samples(), PLANES_VR_2MU2E, False),
+             ("sim bkg, two-LJ invDisp CR", planes_background_samples(), PLANES_CR_2LJ, True)]
+    print("egamma-type LJs holding two or more reconstructed electrons")
+    print(f"{'set':28s} {'channel':>17s} {'egm LJs':>10s} {'with 2+ e':>10s} "
+          f"{'fraction':>10s} {'ee entries':>11s}")
+    print("-" * 90)
+    for label, samples, channel, _weighted in sets:
+        # counts, not yields: the resolved fraction is a per-object reconstruction
+        # efficiency, so it is measured on unweighted entries in every sample
+        multiplicity = planes_counts(samples, "egm_lj_electronN", channel)
+        pairs = planes_counts(samples, "egm_lj_ee_absCosTheta", channel)
+        if multiplicity is None:
+            continue
+        total = float(multiplicity.sum())
+        resolved = float(multiplicity[2:].sum())
+        fraction = resolved / total if total > 0 else float("nan")
+        print(f"{label:28s} {planes_short(channel):>17s} {total:10.0f} "
+              f"{resolved:10.0f} {fraction:10.5f} "
+              f"{0.0 if pairs is None else pairs.sum():11.0f}")
+        rows.append({"label": label, "channel": channel, "n_egm": total,
+                     "n_resolved": resolved, "fraction": fraction})
+    print()
+    print("A pair histogram of an egamma-type LJ is filled only by the resolved fraction")
+    print("above, so every electron-pair number below is a statement about that subset and")
+    print("not about the egamma lepton jets of the channel.")
+    return rows
+
+
+
+def fig_egm_ee(stem="j3_egm_ee"):
+    """The resolved electron pair of an egamma-type lepton jet: how often, and how it looks."""
+    canvas = Canvas(2, 3, panel_w=5.6, panel_h=4.5, base_pt=9.0)
+    points = planes_points("2Mu2E", 0.0)
+    masses = sorted({m_zd for _, m_zd in points})
+
+    # (0,0) how often the pair is resolved at all, against the dark-photon mass
+    ax = canvas.ax(0, 0)
+    for index, m_xx in enumerate(sorted({m_xx for m_xx, _ in points})):
+        values, drawn = [], []
+        for m_zd in masses:
+            samples = points.get((m_xx, m_zd))
+            if not samples:
+                continue
+            multiplicity = planes_counts(samples, "egm_lj_electronN", "2mu2e")
+            if multiplicity is None or multiplicity.sum() <= 0:
+                continue
+            values.append(float(multiplicity[2:].sum()) / float(multiplicity.sum()))
+            drawn.append(m_zd)
+        if drawn:
+            ax.plot(drawn, values, "o-", color=_SLICE_COLOURS[index],
+                    markersize=canvas.font * 0.22, linewidth=2.0,
+                    label=f"{m_xx:.0f}")
+    measured = []
+    for label, samples, channel, colour, style in [
+            ("1 $e\\gamma$-LJ CR", planes_data_samples(), PLANES_CR_1EGM,
+             COLOURS["data"], "--"),
+            ("2-LJ CR", planes_data_samples(), PLANES_CR_2LJ, "#8e7dbe", ":")]:
+        multiplicity = planes_counts(samples, "egm_lj_electronN", channel)
+        if multiplicity is None or multiplicity.sum() <= 0:
+            continue
+        fraction = float(multiplicity[2:].sum()) / float(multiplicity.sum())
+        # a key entry for each of these sat on the rising signal curves, and the number
+        # itself is more use than a line style: it goes in a note in the empty corner
+        ax.axhline(fraction, color=colour, linestyle=style, linewidth=2.0)
+        measured.append(f"{label}: {100 * fraction:.2f}%")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xticks(masses)
+    ax.set_xticklabels([f"{m:g}" for m in masses])
+    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.xaxis.set_minor_locator(NullLocator())
+    canvas.labels(ax, r"$m_{Z_d}$ [GeV]", "fraction with two electrons")
+    canvas.legend(ax, "lower right", over_data=True,
+                  title="2$\\mu$2e; $m_{XX}$ [GeV]")
+    if measured:
+        canvas.stamp(ax, "2018 data (horizontal lines)\n" + "\n".join(measured),
+                     loc="upper left")
+
+    # (0,1) and (0,2) the (mass, angle) plane where there are enough pairs to draw one
+    y_edges = planes_edges("egm_lj_ee_absCosTheta_vs_mass", "ee_mass")
+    plane_sets = [(_first_key(points, (500.0, 5.0), (1000.0, 5.0)), "2mu2e"),
+                  (None, PLANES_CR_2LJ)]
+    meshes, map_axes = [], []
+    for column, (key, channel) in enumerate(plane_sets, start=1):
+        ax = canvas.ax(0, column)
+        if key is None:
+            samples, label = planes_data_samples(), "2018 data, 2-LJ CR"
+        else:
+            samples = points.get(key, [])
+            label = f"signal {key[0]:.0f} / {key[1]} GeV"
+        counts = planes_counts(samples, "egm_lj_ee_absCosTheta_vs_mass", channel)
+        if counts is None or counts.sum() < MIN_SHAPE_ENTRIES or y_edges is None:
+            canvas.hide(ax, "too few resolved\nelectron pairs")
+            continue
+        meshes.append(draw_row_normalised_map(ax, counts, y_edges, canvas, trim=True))
+        map_axes.append(ax)
+        canvas.labels(ax, r"$|\cos\theta^{*}|$ of the $ee$ pair",
+                      r"$m_{ee}$ [GeV]" if column == 1 else None)
+        canvas.stamp(ax, f"{label}, {counts.sum():,.0f} pairs", loc="upper left")
+    if map_axes:
+        canvas.shared_colourbar(map_axes, meshes, "fraction of the mass row")
+        canvas.keep_label_position(*map_axes)
+
+    # (1,*) the three one-dimensional shapes, keyed once
+    shape_sets = []
+    for key in ((500.0, 5.0), (1000.0, 5.0), (500.0, 1.2)):
+        if key in points:
+            shape_sets.append((f"signal {key[0]:.0f} / {key[1]}", points[key], "2mu2e",
+                               False, _SLICE_COLOURS[len(shape_sets)], "-", None))
+    shape_sets.append(("data, 1 $e\\gamma$-LJ CR", planes_data_samples(),
+                       PLANES_CR_1EGM, False, COLOURS["data"], None, "o"))
+    shape_sets.append(("data, 2-LJ CR", planes_data_samples(),
+                      PLANES_CR_2LJ, False, "#8e7dbe", None, "s"))
+    shape_sets.append(("sim bkg, 2-LJ CR", planes_background_samples(),
+                       PLANES_CR_2LJ, True, COLOURS["background"], None, "^"))
+    panels = [("egm_lj_ee_absCosTheta", 5, 0.0, 1.0,
+               r"$|\cos\theta^{*}|$ of the $ee$ pair", "pairs / unit (normalised)"),
+              ("egm_lj_ee_ptRatio", 5, 0.0, 1.0,
+               r"$p_T^{sub}/p_T^{lead}$ of the $ee$ pair", None),
+              ("egm_lj_ee_dR", 5, 0.0, 0.5, r"$\Delta R(e^{lead}, e^{sub})$", None)]
+    for column, (name, factor, low, high, xlabel, ylabel) in enumerate(panels):
+        ax = canvas.ax(1, column)
+        for index, (label, samples, channel, weighted, colour, style, marker) in \
+                enumerate(shape_sets):
+            counts = planes_counts(samples, name, channel, weighted=weighted)
+            if counts is None:
+                continue
+            raw = counts if not weighted else planes_counts(samples, name, channel)
+            rebinned = rebin1d(counts, factor)
+            rebinned_raw = rebin1d(raw, factor)
+            edges = np.linspace(low, high, len(rebinned) + 1)
+            draw_counts(ax, rebinned, edges, label, colour, canvas,
+                        as_points=marker is not None, marker=marker or "o",
+                        linestyle=style or "-", raw=rebinned_raw,
+                        offset=0.004 * (index - 2), context=channel)
+        canvas.labels(ax, xlabel, ylabel)
+        if column == 0:
+            canvas.room_above(ax, share=0.44)
+            legend = canvas.legend(ax, "upper center", ncol=2, over_data=True,
+                                   title="signal $m_{XX}$ / $m_{Z_d}$",
+                                   fontsize=canvas.font * 0.90)
+            # the signal shapes rise towards one, so there is no empty corner here and the
+            # room has to be measured from the key rather than guessed at
+            canvas.clear_legends([(ax, legend)], most=6.0)
+        else:
+            # the low-mass signal puts nearly every pair in one bin while the fake
+            # samples are spread over all of them, a range no linear scale shows at once
+            canvas.log_axis(ax, "y")
+            top = float(ax.dataLim.y1)
+            if np.isfinite(top) and top > 0:
+                ax.set_ylim(max(top * 1.0e-3, 1.0e-4), top * 4.0)
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+def planes_egm_shape_table(min_m_xx=PLANES_MIN_M_XX):
+    """Print the mean angle, momentum ratio and opening angle of resolved electron pairs."""
+    sets = []
+    for (m_xx, m_zd), samples in planes_points("2Mu2E", min_m_xx).items():
+        sets.append((f"2Mu2E {m_xx:.0f}/{m_zd}", samples, "2mu2e", False))
+    sets += [("data, one egm-LJ CR", planes_data_samples(), PLANES_CR_1EGM, False),
+             ("data, two-LJ invDisp CR", planes_data_samples(), PLANES_CR_2LJ, False),
+             ("sim bkg, two-LJ invDisp CR", planes_background_samples(), PLANES_CR_2LJ, True)]
+    print("resolved electron pairs of egamma-type LJs")
+    print(f"{'set':28s} {'channel':>17s} {'pairs':>8s} {'<|cos|>':>18s} "
+          f"{'<ptRatio>':>18s} {'<dR>':>18s}")
+    print("-" * 112)
+    rows = []
+    for label, samples, channel, weighted in sets:
+        counts = planes_counts(samples, "egm_lj_ee_absCosTheta", channel, weighted=weighted)
+        raw = (counts if not weighted
+               else planes_counts(samples, "egm_lj_ee_absCosTheta", channel))
+        if counts is None or raw is None or raw.sum() < 1:
+            continue
+        ratio = planes_counts(samples, "egm_lj_ee_ptRatio", channel, weighted=weighted)
+        radius = planes_counts(samples, "egm_lj_ee_dR", channel, weighted=weighted)
+        # the value carries the cross-section weights, the uncertainty the entries behind it
+        angle_mean = binned_mean(counts)[0]
+        ratio_mean = binned_mean(ratio, 0.0, 1.0)[0]
+        radius_mean = binned_mean(radius, 0.0, 0.5)[0]
+        total = float(raw.sum())
+        angle_error = binned_mean(raw)[1]
+        ratio_error = binned_mean(planes_counts(samples, "egm_lj_ee_ptRatio", channel),
+                                  0.0, 1.0)[1]
+        radius_error = binned_mean(planes_counts(samples, "egm_lj_ee_dR", channel),
+                                   0.0, 0.5)[1]
+        flag = "" if total >= MIN_SHAPE_ENTRIES else "   (below the shape floor)"
+        print(f"{label:28s} {planes_short(channel):>17s} {total:8.0f} "
+              f"{angle_mean:.4f} +- {angle_error:.4f} "
+              f"{ratio_mean:.4f} +- {ratio_error:.4f} "
+              f"{radius_mean:.4f} +- {radius_error:.4f}{flag}")
+        rows.append({"label": label, "n": total, "mean": angle_mean, "error": angle_error,
+                     "ptRatio": ratio_mean, "dR": radius_mean})
+    return rows
+
+
+# --------------------------------------------------------------------------------------
+# j4 -- the two helicity angles of the lepton-jet pair
+# --------------------------------------------------------------------------------------
+
+PLANES_PAIR_PLANE = "lj_pair_cosThetaA0_vs_cosThetaA1"
+PLANES_GEN_PLANE = "gen_pair_cosThetaA0_vs_cosThetaA1"
+
+
+def fig_pair_helicity_plane(point=(500.0, 1.2), stem="j4_pair_helicity_plane"):
+    """The two signed helicity angles of an event, as a ratio to the product of marginals.
+
+    The same construction as section i, on the signed angle of the lepton-jet pair rather
+    than the absolute angle of the muon pair inside one lepton jet: a plane of ones is
+    independence, and a cell above one is a combination that occurs more often than two
+    independent draws would give.
+    """
+    canvas = Canvas(1, 2, panel_w=5.7, panel_h=5.0, base_pt=9.0)
+    samples = planes_points("4Mu", 0.0).get(point, [])
+    if not samples:
+        note(f"no plane samples for m_XX = {point[0]} GeV, m_Zd = {point[1]} GeV")
+    sets = [(0, planes_data_samples(), PLANES_CR_2LJ,
+             "2018 data, two-LJ inv. displaced CR"),
+            (1, samples, "4mu",
+             f"signal 4$\\mu$, $m_{{XX}}$ = {point[0]:.0f} GeV,\n"
+             f"$m_{{Z_d}}$ = {point[1]} GeV, four-muon channel")]
+    # five bins a side, the binning the printed table also tests independence on: on the
+    # 8,400 control-region events that is several hundred entries a cell, where ten bins a
+    # side would put eighty in a cell and fill the map with noise
+    edges = np.linspace(-1.0, 1.0, 6)
+    meshes = []
+    for column, group, channel, label in sets:
+        ax = canvas.ax(0, column)
+        fine = planes_counts(group, PLANES_PAIR_PLANE, channel)
+        if fine is None or fine.sum() < MIN_SHAPE_ENTRIES:
+            canvas.hide(ax, "no input")
+            continue
+        result = plane_independence(rebin2d(fine, 4))
+        correlation = plane_correlation(fine, replicas=400)
+        meshes.append(_draw_ratio_map(ax, result, canvas, edges=edges, headroom=1.42))
+        canvas.labels(ax, r"$\cos\theta_A$, leading LJ",
+                      r"$\cos\theta_A$, subleading LJ" if column == 0 else None)
+        ax.text(0.02, 0.985,
+                f"{label}\n"
+                f"$r$ = {correlation['r']:+.3f} $\\pm$ {correlation['sigma']:.3f}, "
+                f"{result['n']:,.0f} events\n"
+                f"independence $\\chi^2$/dof = {result['chi2']:.0f}/{result['ndof']}",
+                transform=ax.transAxes, ha="left", va="top", fontsize=canvas.font,
+                linespacing=1.35)
+    if meshes:
+        colour_bar = canvas.fig.colorbar(meshes[-1], ax=list(canvas.axes[0]), pad=0.02,
+                                         fraction=0.05)
+        colour_bar.ax.tick_params(labelsize=canvas.tick_font)
+        colour_bar.set_label("observed / product of marginals", fontsize=canvas.font)
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+def planes_pair_correlation_table(min_m_xx=PLANES_MIN_M_XX):
+    """Print the correlation of the two lepton jets' helicity angles, event by event."""
+    sets = [("2018 data", planes_data_samples(), PLANES_CR_2LJ),
+            ("2018 data", planes_data_samples(), PLANES_VR_4MU),
+            ("2018 data", planes_data_samples(), PLANES_VR_2MU2E),
+            ("simulated background", planes_background_samples(), PLANES_CR_2LJ)]
+    for final_state, channel in (("4Mu", "4mu"), ("2Mu2E", "2mu2e")):
+        for (m_xx, m_zd), samples in planes_points(final_state, min_m_xx).items():
+            sets.append((f"{final_state} {m_xx:.0f}/{m_zd}", samples, channel))
+    print("linear correlation of cos(theta_A) between the two leading lepton jets")
+    print(f"{'set':24s} {'channel':>17s} {'events':>9s} {'r':>9s} {'sigma(r)':>9s} "
+          f"{'chi2/ndof':>13s} {'p':>9s}")
+    print("-" * 95)
+    rows = []
+    for label, samples, channel in sets:
+        fine = planes_counts(samples, PLANES_PAIR_PLANE, channel)
+        if fine is None or fine.sum() < MIN_DENOMINATOR:
+            print(f"{label:24s} {planes_short(channel):>17s} "
+                  f"{0.0 if fine is None else fine.sum():9.0f}   too few events")
+            continue
+        correlation = plane_correlation(fine, replicas=400)
+        independence = plane_independence(rebin2d(fine, 4))
+        print(f"{label:24s} {planes_short(channel):>17s} {correlation['n']:9.0f} "
+              f"{correlation['r']:+9.4f} {correlation['sigma']:9.4f} "
+              f"{independence['chi2']:8.1f}/{independence['ndof']:<4d} "
+              f"{independence['p_value']:9.3f}")
+        rows.append({"label": label, "channel": channel, **correlation,
+                     "p_value": independence["p_value"]})
+    print()
+    print("the same at generator level, for the signal points that carry a gen record")
+    for final_state, channel in (("4Mu", "4mu"), ("2Mu2E", "2mu2e")):
+        for (m_xx, m_zd), samples in planes_points(final_state, min_m_xx).items():
+            fine = planes_counts(samples, PLANES_GEN_PLANE, channel)
+            if fine is None or fine.sum() < MIN_DENOMINATOR:
+                continue
+            correlation = plane_correlation(fine, replicas=400)
+            print(f"  gen {final_state} {m_xx:.0f}/{m_zd}: r = {correlation['r']:+.4f} "
+                  f"+- {correlation['sigma']:.4f} on {correlation['n']:,.0f} events")
+    return rows
+
+
+# --------------------------------------------------------------------------------------
+# j5 -- the angle between the two decay planes
+# --------------------------------------------------------------------------------------
+
+def _phi_reference(edges, coefficient=PLANES_A_CP_EVEN, harmonic=2):
+    """The unit-area density 1 + A cos(n x) evaluated at the centres of `edges`."""
+    centres = 0.5 * (np.asarray(edges)[:-1] + np.asarray(edges)[1:])
+    span = float(edges[-1] - edges[0])
+    return centres, (1.0 + coefficient * np.cos(harmonic * centres)) / span
+
+
+
+def fig_pair_planes_phi(points=((500.0, 1.2), (500.0, 5.0)), stem="j5_pair_phi"):
+    """The azimuthal angle between the two lepton-jet decay planes, reconstructed and generated.
+
+    The generator-level curve comes from the same files and the same channel as the
+    reconstructed one, so it carries the production filter and the selection with it; the
+    analytic curve is drawn only as the unsculpted reference it is.
+
+    Every distribution here varies about a non-zero mean by about a quarter of that mean,
+    so the panels take explicit room for their keys rather than scaling from zero: a key
+    anchored to the bottom of an autoscaled panel sits exactly on the minima of
+    1 + A cos(2 Phi), which are the half of the curve that carries the coefficient.
+    """
+    canvas = Canvas(2, 2, panel_w=6.0, panel_h=4.8, base_pt=9.0)
+    grid = planes_points("4Mu", 0.0)
+    phi_edges = np.linspace(-np.pi, np.pi, 13)
+    angle_edges = np.linspace(0.0, np.pi / 2, 10)
+
+    # (0,0) signal, reconstructed against generated
+    ax = canvas.ax(0, 0)
+    for index, key in enumerate(points):
+        samples = grid.get(key, [])
+        if not samples:
+            continue
+        colour = _SLICE_COLOURS[index]
+        draw_counts(ax, rebin1d(planes_counts(samples, "gen_pair_Phi", "4mu"), 2),
+                    phi_edges, f"gen, {key[1]}", colour, canvas,
+                    as_points=False, linestyle="-", context="4mu channel")
+        draw_counts(ax, rebin1d(planes_counts(samples, "lj_pair_Phi", "4mu"), 2),
+                    phi_edges, f"reco, {key[1]}", colour, canvas,
+                    marker=["o", "s"][index % 2], offset=0.004 * (index - 0.5),
+                    context="4mu channel")
+    centres, reference = _phi_reference(phi_edges)
+    ax.plot(centres, reference, ":", color="#666666", linewidth=2.0,
+            label=r"$1 + \frac{1}{4}\cos 2\Phi$")
+    canvas.labels(ax, r"$\Phi$ between the two LJ decay planes [rad]",
+                  "events / rad (normalised)")
+    canvas.room_above(ax, share=0.44)
+    canvas.legend(ax, "upper center", ncol=3, over_data=True,
+                  title=f"signal 4$\\mu$, $m_{{XX}}$ = {points[0][0]:.0f} GeV, four-muon "
+                        "channel;\ncurves labelled by $m_{Z_d}$ [GeV]")
+
+    # (0,1) fakes
+    ax = canvas.ax(0, 1)
+    for index, (label, samples, channel, weighted, colour, marker) in enumerate([
+            ("data, 2-LJ CR", planes_data_samples(), PLANES_CR_2LJ,
+             False, COLOURS["data"], "o"),
+            ("data, 4$\\mu$ VR", planes_data_samples(), PLANES_VR_4MU,
+             False, "#8e7dbe", "s"),
+            ("sim bkg, 2-LJ CR", planes_background_samples(),
+             PLANES_CR_2LJ, True, COLOURS["background"], "^")]):
+        counts = planes_counts(samples, "lj_pair_Phi", channel, weighted=weighted)
+        if counts is None:
+            continue
+        raw = counts if not weighted else planes_counts(samples, "lj_pair_Phi", channel)
+        draw_counts(ax, rebin1d(counts, 2), phi_edges, label, colour, canvas,
+                    marker=marker, raw=rebin1d(raw, 2), offset=0.005 * (index - 1),
+                    context=channel)
+    ax.plot(centres, reference, ":", color="#666666", linewidth=2.0,
+            label=r"$1 + \frac{1}{4}\cos 2\Phi$")
+    canvas.labels(ax, r"$\Phi$ between the two LJ decay planes [rad]", None)
+    canvas.room_above(ax, share=0.46)
+    canvas.legend(ax, "upper center", ncol=2, over_data=True, title="fake LJ pairs")
+
+    # (1,0) the unoriented angle between the planes
+    ax = canvas.ax(1, 0)
+    for index, key in enumerate(points):
+        samples = grid.get(key, [])
+        if not samples:
+            continue
+        colour = _SLICE_COLOURS[index]
+        draw_counts(ax, rebin1d(planes_counts(samples, "gen_pair_planeAngle", "4mu"), 2),
+                    angle_edges, f"gen, {key[1]}", colour, canvas,
+                    as_points=False, context="4mu channel")
+        draw_counts(ax, rebin1d(planes_counts(samples, "lj_pair_planeAngle", "4mu"), 2),
+                    angle_edges, f"reco, {key[1]}", colour, canvas,
+                    marker=["o", "s"][index % 2], offset=0.004 * (index - 0.5),
+                    context="4mu channel")
+    counts = planes_counts(planes_data_samples(), "lj_pair_planeAngle", PLANES_CR_2LJ)
+    draw_counts(ax, rebin1d(counts, 2), angle_edges, "data, 2-LJ CR",
+                COLOURS["data"], canvas, marker="v", context=PLANES_CR_2LJ)
+    centres_angle, reference_angle = _phi_reference(angle_edges)
+    ax.plot(centres_angle, reference_angle, ":", color="#666666", linewidth=2.0,
+            label=r"$1 + \frac{1}{4}\cos 2\alpha$")
+    canvas.labels(ax, r"$\alpha$ between the two LJ decay planes [rad]",
+                  "events / rad (normalised)")
+    canvas.room_above(ax, share=0.44)
+    canvas.legend(ax, "upper center", ncol=3, over_data=True,
+                  title="signal curves labelled by $m_{Z_d}$ [GeV]")
+
+    # (1,1) the fitted coefficient, point by point
+    ax = canvas.ax(1, 1)
+    masses = [0.25, 1.2, 5.0]
+    series = []
+    for final_state, channel in (("4Mu", "4mu"), ("2Mu2E", "2mu2e")):
+        for m_xx in sorted({key[0] for key in planes_points(final_state)}):
+            series.append((final_state, channel, m_xx))
+    for index, (final_state, channel, m_xx) in enumerate(series):
+        colour = _SLICE_COLOURS[index % len(_SLICE_COLOURS)]
+        grid_fs = planes_points(final_state, 0.0)
+        # gen and reco are told apart by the marker fill and the line style, so the key
+        # carries one entry per mass point instead of two
+        for name, hist_name, style in (("generated", "gen_pair_Phi", "--"),
+                                       ("reconstructed", "lj_pair_Phi", "-")):
+            x_values, y_values, y_errors = [], [], []
+            for m_zd in masses:
+                samples = grid_fs.get((m_xx, m_zd))
+                if not samples:
+                    continue
+                counts = planes_counts(samples, hist_name, channel)
+                if counts is None or counts.sum() < MIN_SHAPE_ENTRIES:
+                    continue
+                moment = harmonic_moment(counts, -np.pi, np.pi)
+                x_values.append(m_zd)
+                y_values.append(moment["coefficient"])
+                y_errors.append(moment["sigma_coefficient"])
+            if not x_values:
+                continue
+            ax.errorbar(x_values, y_values, yerr=y_errors, fmt="o", linestyle=style,
+                        color=colour, markersize=canvas.font * 0.20, elinewidth=1.2,
+                        capsize=0, linewidth=1.8,
+                        markerfacecolor="white" if name == "generated" else colour,
+                        markeredgecolor=colour, markeredgewidth=1.5,
+                        label=(f"{final_state} {m_xx:.0f}"
+                               if name == "reconstructed" else None))
+    fakes = planes_counts(planes_data_samples(), "lj_pair_Phi", PLANES_CR_2LJ)
+    if fakes is not None and fakes.sum() >= MIN_SHAPE_ENTRIES:
+        moment = harmonic_moment(fakes, -np.pi, np.pi)
+        ax.axhspan(moment["coefficient"] - moment["sigma_coefficient"],
+                   moment["coefficient"] + moment["sigma_coefficient"],
+                   color=COLOURS["data"], alpha=0.25)
+        canvas.stamp(ax, "2018 data, 2-LJ CR (band):\n"
+                         f"$A$ = {moment['coefficient']:+.3f} $\\pm$ "
+                         f"{moment['sigma_coefficient']:.3f}", loc="lower left")
+    ax.axhline(PLANES_A_CP_EVEN, color="#666666", linestyle=":", linewidth=2.0)
+    ax.axhline(-PLANES_A_CP_EVEN, color="#b03060", linestyle=":", linewidth=2.0)
+    style_handles = [
+        Line2D([], [], color="#444444", linestyle="-", marker="o",
+               markerfacecolor="#444444", label="reco (filled)"),
+        Line2D([], [], color="#444444", linestyle="--", marker="o",
+               markerfacecolor="white", label="gen (open)"),
+        Line2D([], [], color="#666666", linestyle=":", label="$0^{+}$: $A$ = +1/4"),
+        Line2D([], [], color="#b03060", linestyle=":", label="$0^{-}$: $A$ = -1/4")]
+    ax.set_xscale("log")
+    ax.set_xticks(masses)
+    ax.set_xticklabels([f"{m:g}" for m in masses])
+    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.xaxis.set_minor_locator(NullLocator())
+    canvas.labels(ax, r"$m_{Z_d}$ [GeV]", r"$A$ in $1 + A\cos 2\Phi$")
+    handles, labels = ax.get_legend_handles_labels()
+    canvas.room_above(ax, share=0.55)
+    canvas.legend(ax, "upper left", handles=handles + style_handles,
+                  labels=labels + [h.get_label() for h in style_handles],
+                  ncol=2, over_data=True,
+                  title="$m_{XX}$ [GeV] by final state", fontsize=canvas.font * 0.90)
+
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+def planes_phi_table(min_m_xx=0.0):
+    """Print the fitted cos(2 Phi) coefficient, generated and reconstructed, per point."""
+    print("A in 1 + A cos(2 Phi), as twice the mean of cos(2 Phi) over the distribution")
+    print("gen and reco are the same files and the same channel; for the four-muon points")
+    print("they are also the same events, and for 2mu2e they are not, because a")
+    print("reconstructed pair needs a resolved electron pair the generated one does not.")
+    print(f"{'set':22s} {'channel':>10s} {'N reco':>9s} {'A reco':>18s} {'N gen':>9s} "
+          f"{'A gen':>18s} {'reco/gen':>9s}")
+    print("-" * 100)
+    rows = []
+    for final_state, channel in (("4Mu", "4mu"), ("2Mu2E", "2mu2e")):
+        for (m_xx, m_zd), samples in planes_points(final_state, min_m_xx).items():
+            reco = planes_counts(samples, "lj_pair_Phi", channel)
+            gen = planes_counts(samples, "gen_pair_Phi", channel)
+            if reco is None or reco.sum() < 1:
+                continue
+            reco_moment = harmonic_moment(reco, -np.pi, np.pi)
+            gen_moment = (harmonic_moment(gen, -np.pi, np.pi) if gen is not None
+                          and gen.sum() > 0 else None)
+            share = (reco_moment["coefficient"] / gen_moment["coefficient"]
+                     if gen_moment and abs(gen_moment["coefficient"]) > 0.02 else float("nan"))
+            gen_text = ("        no gen record" if gen_moment is None else
+                        f"{gen_moment['coefficient']:+.3f} +- "
+                        f"{gen_moment['sigma_coefficient']:.3f}")
+            print(f"{final_state + ' ' + f'{m_xx:.0f}/{m_zd}':22s} {channel:>10s} "
+                  f"{reco_moment['n']:9.0f} "
+                  f"{reco_moment['coefficient']:+.3f} +- "
+                  f"{reco_moment['sigma_coefficient']:.3f} "
+                  f"{0 if gen_moment is None else gen_moment['n']:9.0f} {gen_text:>18s} "
+                  f"{share:9.2f}")
+            rows.append({"final_state": final_state, "m_xx": m_xx, "m_zd": m_zd,
+                         "reco": reco_moment, "gen": gen_moment})
+    print()
+    print(f"{'fake sample':22s} {'channel':>17s} {'N':>9s} {'A (unweighted)':>18s} "
+          f"{'A (xs weighted)':>16s}")
+    print("-" * 86)
+    for label, samples, channel, weighted in [
+            ("2018 data", planes_data_samples(), PLANES_CR_2LJ, False),
+            ("2018 data", planes_data_samples(), PLANES_VR_4MU, False),
+            ("2018 data", planes_data_samples(), PLANES_VR_2MU2E, False),
+            ("simulated background", planes_background_samples(), PLANES_CR_2LJ, True)]:
+        counts = planes_counts(samples, "lj_pair_Phi", channel, weighted=weighted)
+        if counts is None or counts.sum() < 1:
+            continue
+        raw = counts if not weighted else planes_counts(samples, "lj_pair_Phi", channel)
+        # the error belongs to the unweighted entry count; the weighted value is the shape
+        # a background sum actually predicts, so both are printed and neither stands alone
+        moment = harmonic_moment(raw, -np.pi, np.pi)
+        weighted_moment = harmonic_moment(counts, -np.pi, np.pi)
+        print(f"{label:22s} {planes_short(channel):>17s} {moment['n']:9.0f} "
+              f"{moment['coefficient']:+.3f} +- {moment['sigma_coefficient']:.3f} "
+              f"{weighted_moment['coefficient']:+16.3f}")
+        rows.append({"final_state": label, "channel": channel, "reco": moment, "gen": None})
+    return rows
+
+
+# --------------------------------------------------------------------------------------
+# j6 -- transverse balance and missing momentum
+# --------------------------------------------------------------------------------------
+
+PLANES_BALANCE = [("lj_pair_ptAsym", 2, 0.0, 1.0,
+                   r"$|p_T^{0} - p_T^{1}| / (p_T^{0} + p_T^{1})$"),
+                  ("lj_pair_ptVecSum", 4, 0.0, 400.0,
+                   r"$p_T$ of the two LJs' vector sum [GeV]")]
+
+
+
+def _planes_balance_sets():
+    """The (label, samples, channel, weighted, colour, marker) sets the balance figure draws.
+
+    Labels are short because a five-entry key at nine printed points has to fit inside a
+    5.6-inch panel; the section's prose and the printed table carry the full region names.
+    """
+    grid = planes_points("4Mu", 0.0)
+    sets = []
+    for index, key in enumerate(((500.0, 1.2), (1000.0, 1.2))):
+        if key in grid:
+            sets.append((f"signal {key[0]:.0f} / {key[1]}", grid[key], "4mu", False,
+                         _SLICE_COLOURS[index], None))
+    sets.append(("data, 2-LJ CR", planes_data_samples(), PLANES_CR_2LJ, False,
+                 COLOURS["data"], "o"))
+    sets.append(("data, 4$\\mu$ VR", planes_data_samples(), PLANES_VR_4MU, False,
+                 "#8e7dbe", "s"))
+    sets.append(("sim bkg, 2-LJ CR", planes_background_samples(), PLANES_CR_2LJ, True,
+                 COLOURS["background"], "^"))
+    return sets
+
+
+
+
+def fig_pair_balance(stem="j6_pair_balance"):
+    """Whether the two lepton jets balance, and what the missing momentum adds.
+
+    One key, in the first panel, for the five samples every panel draws in the same
+    colours; the missing-momentum panel adds a second key for its two line styles only.
+    Six panels each carrying the same five labels would leave no room for the curves, and
+    a key wider than a 2.5-inch printed panel is drawn straight over its neighbour.
+    """
+    canvas = Canvas(2, 3, panel_w=5.6, panel_h=4.5, base_pt=9.0)
+    sets = _planes_balance_sets()
+
+    for column, (name, factor, low, high, xlabel) in enumerate(PLANES_BALANCE):
+        ax = canvas.ax(0, column)
+        for index, (label, samples, channel, weighted, colour, marker) in enumerate(sets):
+            counts = planes_counts(samples, name, channel, weighted=weighted)
+            if counts is None:
+                continue
+            raw = counts if not weighted else planes_counts(samples, name, channel)
+            rebinned, rebinned_raw = rebin1d(counts, factor), rebin1d(raw, factor)
+            edges = np.linspace(low, high, len(rebinned) + 1)
+            draw_counts(ax, rebinned, edges, label, colour, canvas,
+                        as_points=marker is not None, marker=marker or "o",
+                        raw=rebinned_raw, offset=0.004 * (index - 2), context=channel)
+        canvas.labels(ax, xlabel,
+                      "LJ pairs / unit (normalised)" if column == 0 else None)
+        if column == 0:
+            canvas.room_above(ax, share=0.44)
+            canvas.legend(ax, "upper right", ncol=1, over_data=True,
+                          title="signal $m_{XX}$ / $m_{Z_d}$")
+        else:
+            canvas.headroom(ax, factor=1.2)
+
+    # (0,2) raw and DSA-corrected missing momentum, two samples, two line styles
+    ax = canvas.ax(0, 2)
+    for label, samples, channel, weighted, colour, _marker in (sets[0], sets[2]):
+        for name, dash in (("lj_pair_met", "-"), ("lj_pair_metCorr", "--")):
+            counts = planes_counts(samples, name, channel, weighted=weighted)
+            if counts is None:
+                continue
+            raw = counts if not weighted else planes_counts(samples, name, channel)
+            rebinned, rebinned_raw = rebin1d(counts, 4), rebin1d(raw, 4)
+            edges = np.linspace(0.0, 400.0, len(rebinned) + 1)
+            draw_counts(ax, rebinned, edges, "_nolegend_", colour, canvas, as_points=False,
+                        linestyle=dash, raw=rebinned_raw, context=channel)
+    canvas.labels(ax, r"$p_T^{miss}$ [GeV]", None)
+    canvas.headroom(ax, factor=1.6)
+    canvas.legend(ax, "upper right", over_data=True,
+                  handles=[Line2D([], [], color=sets[0][4], linestyle="-"),
+                           Line2D([], [], color=sets[2][4], linestyle="-"),
+                           Line2D([], [], color="#444444", linestyle="-"),
+                           Line2D([], [], color="#444444", linestyle="--")],
+                  labels=[sets[0][0], sets[2][0], "particle-flow", "DSA corrected"],
+                  title="colour = sample, style = MET")
+
+    # (1,0) and (1,1) the plane of the two
+    meshes, map_axes = [], []
+    joint = "lj_pair_metCorr_vs_ptVecSum"
+    lead = sets[0] if sets else ("signal", [], "4mu", False, COLOURS["signal"], None)
+    for column, (label, samples, channel, weighted) in enumerate([
+            (lead[0], lead[1], lead[2], lead[3]),
+            ("data, 2-LJ CR", planes_data_samples(), PLANES_CR_2LJ, False)]):
+        ax = canvas.ax(1, column)
+        counts = planes_counts(samples, joint, channel, weighted=weighted)
+        if counts is None or counts.sum() < MIN_SHAPE_ENTRIES:
+            canvas.hide(ax, "no input")
+            continue
+        edges = np.linspace(0.0, 400.0, counts.shape[0] + 1)
+        meshes.append(ax.pcolormesh(edges, edges, (counts / counts.sum()).T,
+                                    cmap="viridis", shading="flat"))
+        map_axes.append(ax)
+        canvas.labels(ax, r"DSA-corrected $p_T^{miss}$ [GeV]",
+                      r"vector sum $p_T$ [GeV]" if column == 0 else None)
+        canvas.stamp(ax, f"{label}\n{counts.sum():,.0f} pairs", loc="upper right")
+    if map_axes:
+        canvas.shared_colourbar(map_axes, meshes, "fraction of LJ pairs")
+        canvas.keep_label_position(*map_axes)
+
+    # (1,2) what a joint requirement on both would keep
+    ax = canvas.ax(1, 2)
+    for label, samples, channel, weighted, colour, marker in sets:
+        counts = planes_counts(samples, joint, channel, weighted=weighted)
+        if counts is None or counts.sum() <= 0:
+            continue
+        edges = np.linspace(0.0, 400.0, counts.shape[0] + 1)
+        cumulative = np.array([counts[:i, :i].sum() for i in range(counts.shape[0] + 1)])
+        ax.plot(edges, cumulative / counts.sum(), "-" if marker is None else "--",
+                color=colour, linewidth=2.0, marker=marker,
+                markersize=canvas.font * 0.16, markevery=2)
+    canvas.labels(ax, "threshold $X$ [GeV]", "fraction with both below $X$")
+    ax.set_xlim(0, 400)
+    ax.set_ylim(0, 1.42)
+    canvas.stamp(ax, "DSA-corrected $p_T^{miss}$ and\n"
+                     "the vector sum both below $X$;\n"
+                     "colours as in the first panel",
+                 loc="upper left")
+
+    canvas.finish(data=True, lumi_fb=LUMI_FB)
+    canvas.save(stem)
+    return canvas
+
+
+def planes_balance_table(min_m_xx=PLANES_MIN_M_XX):
+    """Print the balance and missing-momentum numbers, signal against fakes."""
+    sets = []
+    for final_state, channel in (("4Mu", "4mu"), ("2Mu2E", "2mu2e")):
+        for (m_xx, m_zd), samples in planes_points(final_state, min_m_xx).items():
+            sets.append((f"{final_state} {m_xx:.0f}/{m_zd}", samples, channel, False))
+    sets += [("data, two-LJ invDisp CR", planes_data_samples(), PLANES_CR_2LJ, False),
+             ("data, 4mu invDisp VR", planes_data_samples(), PLANES_VR_4MU, False),
+             ("sim bkg, two-LJ invDisp CR", planes_background_samples(), PLANES_CR_2LJ, True)]
+    print("transverse balance and missing momentum of the two leading lepton jets")
+    cut = f"{PLANES_MET_THRESHOLD:.0f}"
+    print(f"{'set':26s} {'pairs':>9s} {'ptAsym<0.2':>11s} {'<ptVecSum>':>11s} "
+          f"{'<PF MET>':>9s} {'<corr MET>':>11s} {'corr<' + cut:>9s} "
+          f"{'both<' + cut:>9s}")
+    print("-" * 104)
+    rows = []
+    for label, samples, channel, weighted in sets:
+        # values carry the cross-section weights of the simulated samples; the pair count
+        # stays the unweighted one, so a weighted row cannot look better supported than it is
+        asymmetry = planes_counts(samples, "lj_pair_ptAsym", channel, weighted=weighted)
+        vector_sum = planes_counts(samples, "lj_pair_ptVecSum", channel, weighted=weighted)
+        met = planes_counts(samples, "lj_pair_met", channel, weighted=weighted)
+        corrected = planes_counts(samples, "lj_pair_metCorr", channel, weighted=weighted)
+        joint = planes_counts(samples, "lj_pair_metCorr_vs_ptVecSum", channel,
+                              weighted=weighted)
+        entries = (asymmetry if not weighted
+                   else planes_counts(samples, "lj_pair_ptAsym", channel))
+        if asymmetry is None or entries is None or entries.sum() < 1:
+            continue
+        edge = int(round(PLANES_MET_THRESHOLD / 400.0 * joint.shape[0]))
+        both = float(joint[:edge, :edge].sum()) / float(joint.sum())
+        below = kept_fraction(corrected, PLANES_MET_THRESHOLD, 0, 400,
+                              direction="below")["fraction"]
+        print(f"{label:26s} {entries.sum():9.0f} "
+              f"{kept_fraction(asymmetry, 0.2, direction='below')['fraction']:11.4f} "
+              f"{binned_mean(vector_sum, 0, 400)[0]:11.1f} "
+              f"{binned_mean(met, 0, 400)[0]:9.1f} "
+              f"{binned_mean(corrected, 0, 400)[0]:11.1f} "
+              f"{below:9.4f} {both:9.4f}")
+        rows.append({
+            "label": label, "channel": channel, "n": float(entries.sum()),
+            "ptAsym": kept_fraction(asymmetry, 0.2, direction="below")["fraction"],
+            "met": binned_mean(met, 0, 400)[0],
+            "metCorr": binned_mean(corrected, 0, 400)[0],
+            "metCorr_below": below, "both_below": both})
+    print()
+    print("The DSA correction subtracts the displaced-standalone constituents of the two")
+    print("leading lepton jets back out of the missing-momentum vector, so on a signal pair")
+    print("it should shrink it.  In every set above it does the opposite: read the two mean")
+    print("columns side by side before using either.")
+    return rows
+
+
+# --------------------------------------------------------------------------------------
+# the closing summary
+# --------------------------------------------------------------------------------------
+
+def planes_summary_table(min_m_xx=PLANES_MIN_M_XX):
+    """One compact table of every separation number this section measures."""
+    print(f"summary, bound-state masses at or above {min_m_xx:.0f} GeV first")
+    print("(this campaign's grid holds 100, 500 and 1000 GeV only, so the 200 to 250 GeV")
+    print("range the search cares most about is not represented in any row below)")
+    print()
+    fake = planes_counts(planes_data_samples(), PLANES_MU_HIST, PLANES_CR_2LJ).sum(axis=1)
+    fake_eff = kept_fraction(fake, 0.4)["fraction"]
+    fake_1mu = planes_counts(planes_data_samples(), PLANES_MU_HIST,
+                             PLANES_CR_1MU).sum(axis=1)
+    fake_1mu_eff = kept_fraction(fake_1mu, 0.4)["fraction"]
+    print(f"{'point':16s} {'mu-LJ eff(|cos|>0.4)':>21s} {'vs 1muLJ CR':>12s} "
+          f"{'vs 2LJ CR':>10s} {'egm 2e frac':>12s} {'A gen':>9s} {'A reco':>9s} "
+          f"{'ptAsym<0.2':>11s}")
+    print("-" * 108)
+    order = []
+    for final_state in ("4Mu", "2Mu2E"):
+        for key in planes_points(final_state, min_m_xx):
+            order.append((final_state, key))
+        for key in planes_points(final_state, 0.0):
+            if key[0] < min_m_xx:
+                order.append((final_state, key))
+    for final_state, (m_xx, m_zd) in order:
+        channel = "4mu" if final_state == "4Mu" else "2mu2e"
+        samples = planes_points(final_state, 0.0)[(m_xx, m_zd)]
+        angle = planes_counts(samples, PLANES_MU_HIST, channel)
+        if angle is None:
+            continue
+        eff_s = kept_fraction(angle.sum(axis=1), 0.4)["fraction"]
+        # the resolved-electron fraction is a statement about the 2mu2e final state; a 4Mu
+        # sample has almost no egamma lepton jets and its value would be noise on a handful
+        multiplicity = (planes_counts(samples, "egm_lj_electronN", channel)
+                        if final_state == "2Mu2E" else None)
+        resolved = (float(multiplicity[2:].sum()) / float(multiplicity.sum())
+                    if multiplicity is not None and multiplicity.sum() > 0 else float("nan"))
+        reco = planes_counts(samples, "lj_pair_Phi", channel)
+        gen = planes_counts(samples, "gen_pair_Phi", channel)
+        a_reco = (harmonic_moment(reco, -np.pi, np.pi)["coefficient"]
+                  if reco is not None and reco.sum() >= MIN_SHAPE_ENTRIES else float("nan"))
+        a_gen = (harmonic_moment(gen, -np.pi, np.pi)["coefficient"]
+                 if gen is not None and gen.sum() >= MIN_SHAPE_ENTRIES else float("nan"))
+        asymmetry = planes_counts(samples, "lj_pair_ptAsym", channel)
+        balance = (kept_fraction(asymmetry, 0.2, direction="below")["fraction"]
+                   if asymmetry is not None and asymmetry.sum() >= MIN_SHAPE_ENTRIES
+                   else float("nan"))
+        def cell(value, width, digits=3, signed=True):
+            """A blank rather than a nan, so an unmeasured entry cannot be misread."""
+            if not np.isfinite(value):
+                return f"{'--':>{width}s}"
+            return f"{value:+{width}.{digits}f}" if signed else f"{value:{width}.{digits}f}"
+
+        print(f"{final_state + ' ' + str(int(m_xx)) + '/' + str(m_zd):16s} {eff_s:21.4f} "
+              f"{eff_s / np.sqrt(fake_1mu_eff):12.2f} {eff_s / np.sqrt(fake_eff):10.2f} "
+              f"{cell(resolved, 12, 5, False)} {cell(a_gen, 9)} {cell(a_reco, 9)} "
+              f"{cell(balance, 11, 4, False)}")
+    print()
+    print(f"fake reference, |cos(theta*)| > 0.4: one mu-LJ CR keeps {fake_1mu_eff:.4f}, "
+          f"two-LJ inverted-displacement CR keeps {fake_eff:.4f}")
+    for label, samples, channel, weighted in [
+            ("2018 data, two-LJ invDisp CR", planes_data_samples(), PLANES_CR_2LJ, False),
+            ("2018 data, 4mu invDisp VR", planes_data_samples(), PLANES_VR_4MU, False),
+            ("simulated bkg, two-LJ CR (weighted)", planes_background_samples(),
+             PLANES_CR_2LJ, True)]:
+        phi = planes_counts(samples, "lj_pair_Phi", channel, weighted=weighted)
+        raw_phi = (phi if not weighted
+                   else planes_counts(samples, "lj_pair_Phi", channel))
+        asymmetry = planes_counts(samples, "lj_pair_ptAsym", channel, weighted=weighted)
+        plane = planes_counts(samples, PLANES_PAIR_PLANE, channel)
+        if phi is None or plane is None:
+            continue
+        moment = harmonic_moment(phi, -np.pi, np.pi)
+        moment["sigma_coefficient"] = harmonic_moment(raw_phi, -np.pi,
+                                                      np.pi)["sigma_coefficient"]
+        correlation = plane_correlation(plane, replicas=400)
+        print(f"  {label}: A = {moment['coefficient']:+.3f} "
+              f"+- {moment['sigma_coefficient']:.3f}, "
+              f"r(cos theta_A) = {correlation['r']:+.4f} +- {correlation['sigma']:.4f}, "
+              f"ptAsym < 0.2 keeps "
+              f"{kept_fraction(asymmetry, 0.2, direction='below')['fraction']:.4f}")
+
+
+def planes_inventory():
+    """Print what the plane campaign holds, sample class by sample class."""
+    print(f"campaign      : {PLANES_CAMPAIGN}")
+    print(f"merged inputs : {PLANES_INPUT}")
+    print(f"signal points : 4Mu {list(planes_points('4Mu', 0.0))}")
+    print(f"                2Mu2E {list(planes_points('2Mu2E', 0.0))}")
+    print(f"data samples  : {len(planes_data_samples())}")
+    print(f"bkg samples   : {len(planes_background_samples())}")
+    print(f"data channels : {', '.join(sorted(PLANES_DATA_CHANNELS))}")
+    return None
