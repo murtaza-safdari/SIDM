@@ -101,6 +101,8 @@ def main():
     parser.add_argument("--unweighted-hist", action="store_true")
     parser.add_argument("--backgrounds-yaml", default="sidm/configs/ntuples/backgrounds.yaml")
     parser.add_argument("--backgrounds-section", default="skimmed_llpNanoAOD_v2")
+    # channel definitions, relative to sidm/ as SidmProcessor expects
+    parser.add_argument("--selections-cfg", default="configs/selections.yaml")
 
     args = parser.parse_args()
 
@@ -131,6 +133,7 @@ def main():
     print("Number of files:", len(files))
     print("Metadata source:", f"{sample_cfg_path}:{sample_cfg_section}")
     print("Metadata:", metadata)
+    print("Selections:", args.selections_cfg)
     print("Files:")
     for f in files:
         print("  ", f)
@@ -149,6 +152,7 @@ def main():
         channels,
         hist_collections,
         unweighted_hist=args.unweighted_hist,
+        selections_cfg=args.selections_cfg,
     )
 
     try:

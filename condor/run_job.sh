@@ -17,6 +17,10 @@ HIST_COLLECTIONS=${6:-muon_base}
 # skimmed (not the unskimmed) skim_factor is picked up.
 NTUPLE_YAML=${7:-sidm/configs/ntuples/backgrounds.yaml}
 NTUPLE_SECTION=${8:-skimmed_llpNanoAOD_v2}
+# Optional positional arg 9: the selections file the channels are read from, relative to
+# sidm/ (SidmProcessor's selections_cfg). Studies frozen to the definitions they ran with
+# pass their own file, e.g. configs/selections_mulj_decay_angle_as_run.yaml.
+SELECTIONS_CFG=${9:-configs/selections.yaml}
 
 echo "Host:"
 hostname
@@ -106,6 +110,7 @@ python condor/run_sidm_chunk.py \
     --hist-collections "${HIST_COLLECTIONS}" \
     --backgrounds-yaml "${NTUPLE_YAML}" \
     --backgrounds-section "${NTUPLE_SECTION}" \
+    --selections-cfg "${SELECTIONS_CFG}" \
     --unweighted-hist
 
 echo "Output:"
