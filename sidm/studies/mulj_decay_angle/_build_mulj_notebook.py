@@ -148,18 +148,45 @@ muons in the pair is recorded so that this population can be separated out.
 
 ### Regions
 
-| region | what it selects |
-| --- | --- |
-| single lepton jet, no cleaning | events with exactly one muon-type lepton jet, no cleaning cuts applied; the largest and least biased fake sample |
-| single lepton jet, cosmic veto | the same, with the cosmic-muon veto applied |
-| single lepton jet, spread and angle vetoes | the same, with the lepton-jet impact-parameter spread cuts and the muon-pair opening-angle veto applied |
-| 2mu2e inverted-displacement validation region | the two-lepton-jet selection with one muon and one electromagnetic lepton jet, with the displacement requirement inverted on every lepton jet |
-| 4mu inverted-displacement validation region | the two-muon-lepton-jet selection with the displacement requirement inverted on every lepton jet |
+Each region has one name in the text, given in the first column; the figures and printed tables
+abbreviate it ("1 mu-LJ CR", "VR").
+
+| region, as named in the text | channel | what it selects |
+| --- | --- | --- |
+| uncut single-lepton-jet control region | `data_control_region_1muLj` | events with exactly one lepton jet, a muon lepton jet, no cleaning cuts applied; the largest and least biased fake sample |
+| cosmic-veto single-lepton-jet control region | `data_control_region_1muLj_cosmic_veto` | the same, with the cosmic-muon veto applied |
+| cleaned single-lepton-jet control region | `data_control_region_1muLj_spread_cosAlpha_mu_veto` | the same, with the lepton-jet impact-parameter spread cuts and the muon-pair opening-angle veto applied |
+| two-muon-two-electron validation region | `test_VR_2mu2e_invDisplaced_spread_cosAlpha_mu_veto` | the two-lepton-jet selection with one muon and one electromagnetic lepton jet, with the displacement requirement inverted on every lepton jet |
+| four-muon validation region | `test_VR_4mu_invDisplaced_spread_cosAlpha_mu_veto` | the two-muon-lepton-jet selection with the displacement requirement inverted on every muon lepton jet |
+| two-lepton-jet control region | `cr_2lj_invDisplaced_spread_cosAlpha_mu_veto` | at least two lepton jets of either type, the displacement requirement inverted on every one, with the spread cleaning and the opening-angle veto; no requirement on the pair mass or the azimuthal separation (section j) |
+| electromagnetic-lepton-jet control region | `data_control_region_1egmLj_cosmic_veto` | events with exactly one lepton jet, an electromagnetic one, with the cosmic-muon veto (section j) |
 
 The two validation regions are orthogonal to the signal region by construction: the signal region
-requires every lepton jet to be displaced, and these require the exact negation.  In both of them the
-muon lepton jet under study is prompt by construction, which is why the dependence of the angle on
-displacement is measured in the uncut single-lepton-jet control region instead."""))
+requires every lepton jet to be displaced, and these require the exact negation.  For a muon lepton
+jet the negation is that at least one of its muons has more than two pixel hits.  A
+displaced-standalone muon is given zero pixel hits, so that muon is always a particle-flow muon,
+but the requirement does not exclude displaced-standalone muons from the lepton jet, nor from the
+two leading muons the angle is computed from.  The dependence of the angle on displacement is
+measured in the uncut single-lepton-jet control region, which has no requirement on displacement.
+
+The table below counts the data pairs of each control and validation region by the number of
+displaced-standalone muons among the two, and gives for each class the fraction above
+|cos(theta*)| = 0.4, the threshold quoted in sections f and h, with its binomial uncertainty.  It
+includes the two-lepton-jet control region of section j, read from that campaign's files.
+Classes with fewer than 20 pairs are marked."""))
+
+    cells.append(new_code_cell("""_ = lib.dsa_composition_table(threshold=0.4)"""))
+    cells.append(new_markdown_cell("""Mixed pairs, one particle-flow and one displaced-standalone
+muon, are 29 percent of the data pairs in the four-muon validation region, 10 percent in the
+two-muon-two-electron one and 41 percent in the two-lepton-jet control region; pairs of two
+displaced-standalone muons are below one percent everywhere.  In the four-muon validation region
+and the two-lepton-jet control region the two main classes have different shapes, 0.59 and 0.62
+of the particle-flow pairs above 0.4 against 0.27 and 0.16 of the mixed ones.  The region
+dependence found in sections e and h is not created by composition.  Within particle-flow pairs
+alone the fraction above 0.4 runs from 0.12 in the cleaned single-lepton-jet control region to
+0.59 and 0.62 in the four-muon validation region and the two-lepton-jet control region, while
+mixed pairs stay between 0.13 and 0.27 in every region.  Any single number quoted for an
+inverted-displacement region is therefore an average over two populations with unlike shapes."""))
 
     # ---------------------------------------------------------------- (b) reference
     cells.append(new_markdown_cell("""A muon lepton jet reconstructed from a dark-photon decay carries one internal degree of
@@ -329,9 +356,11 @@ observed distribution carries asymmetric Poisson error bars.
 Everything in a panel is drawn under the same selection as the data in that panel, which is the
 comparison this study is built to make.  Panels with no entries are left empty and labelled.
 
-Note on the two validation-region rows: their inverted-displacement requirement can only be met by a
-particle-flow muon, so pairs containing displaced-standalone muons are absent there by construction.
-The row labels say so, and caveat 2 below spells it out."""))
+Note on the two validation-region rows: their inverted-displacement requirement asks each muon lepton
+jet for at least one muon with more than two pixel hits, which a displaced-standalone muon never has.
+It does not exclude displaced-standalone muons from the pair: 29 percent of the four-muon and 10
+percent of the two-muon-two-electron data pairs contain one (table in section a).  The row labels
+state the requirement, and caveat 2 below spells it out."""))
 
     cells.append(new_code_cell(
         """c_shapes_cos = lib.fig_region_shapes("absCosTheta", m_zd_values=M_ZD_VALUES)"""))
@@ -378,7 +407,8 @@ information as one number per companion bin, the mean angle, with the standard e
 only where the bin holds at least 20 pairs.
 
 The measurement is made in the uncut single-lepton-jet control region, which is the only region that
-contains pairs across the whole range of displacement and both muon types.  The same set is repeated
+contains pairs across the whole range of displacement, and the one with the most pairs containing
+displaced-standalone muons in number.  The same set is repeated
 for signal, where the angle is a property of a real decay."""))
 
     cells.append(new_code_cell("""c_corr_data_d = lib.fig_correlation_overlays(
@@ -431,9 +461,9 @@ region are dominated by the cosmic-ray population the veto removes, together wit
 rises again (+63 percent, rank +0.68) on a much smaller residual sample. The size and even the
 sign of the displacement dependence change with the cleaning applied, that is, with the
 composition of the surviving fakes. The decay angle is therefore not measured to be independent
-of displacement, and nothing in this study demonstrates that a fake shape measured in prompt
-regions transfers across the displacement axis. Any use of the variable in a background
-estimate has to measure that dependence in the estimate's own regions."""))
+of displacement, and nothing in this study demonstrates that a fake shape measured in the
+inverted-displacement regions transfers across the displacement axis. Any use of the variable in
+a background estimate has to measure that dependence in the estimate's own regions."""))
 
     # ---------------------------------------------------------------- (f) cut scan
     cells.append(new_markdown_cell("""## f. What a straight cut on the angle would buy
@@ -493,13 +523,17 @@ These apply to every reading of the figures above.
    under an identical selection; it is not a measurement of the decay's angular distribution,
    which would require the efficiency to be corrected for.
 
-2. **The inverted-displacement validation regions contain no displaced-standalone muons.** The
-   vector builder sets the pixel-hit count of a displaced-standalone track to zero, so the inverted
-   displacement requirement can only be satisfied by a particle-flow muon with more than two pixel
-   hits.  The split by number of displaced-standalone muons in the pair is strongly biased towards
-   zero in those regions relative to the signal region.  Pairs containing displaced-standalone muons
-   are therefore studied in the uncut single-lepton-jet control region only, and any statement about
-   them must be made there.
+2. **The inverted-displacement requirement does not exclude displaced-standalone muons.** In the
+   two validation regions and the two-lepton-jet control region every muon lepton jet must contain
+   at least one muon with more than two pixel hits.  The vector builder sets the pixel-hit count of
+   a displaced-standalone track to zero, so that muon is a particle-flow muon, but the two leading
+   muons the angle is computed from can include displaced-standalone ones.  In data the pairs split
+   71, 29 and 0.2 percent into particle-flow, mixed and displaced-standalone pairs in the four-muon
+   validation region, 90, 10 and 0.2 percent in the two-muon-two-electron one, 59, 41 and below 0.1
+   percent in the two-lepton-jet control region, and 93, 6.5 and 0.8 percent in the uncut
+   single-lepton-jet control region (table in section a).  Section e separates pairs by the
+   number of displaced-standalone muons in the single-lepton-jet control regions; the table in
+   section a gives the fraction above 0.4 for each class in every region.
 
 3. **Impact parameters do not all share a reference.** The angle helper uses primary-vertex
    referenced transverse and longitudinal impact parameters for both muon types.  The lepton-jet
@@ -602,7 +636,8 @@ would sculpt pT-correlated spectra, including the dijet mass of the 4mu windowed
 Its dependence on displacement changes size and sign with the cleaning applied (flat with
 rising tail uncut, falling after the cosmic veto, rising after the spread cleaning), which
 means the fake composition, not the geometry, sets the shape; this study does not establish
-that a fake shape measured in prompt regions transfers to the displaced signal regions.
+that a fake shape measured in the inverted-displacement regions transfers to the displaced
+signal regions.
 
 Recommendation: treat |cos(theta*)| as a candidate purity handle and cross-check for the
 2mu2e channel at m_XX of a few hundred GeV and above, and as a shape variable worth
@@ -610,10 +645,12 @@ monitoring in the 4mu channel; not as a drop-in axis or cut for the background e
 Before any use in the estimate itself it needs the displacement dependence measured in the
 estimate's own regions, a closure test against the mass axis of the affected search, and
 the per-mass acceptance map of this study repeated on the population that matters there.
-Two structural caveats stand: the validation regions contain essentially no
-displaced-standalone-muon pairs by construction, so the fake shape for those is measured
-only in the single-LJ control regions, and the background simulation is statistically too
-weak to arbitrate any of this, so the data control regions carry the conclusions."""))
+Two structural caveats stand: the validation regions hold pairs containing
+displaced-standalone muons (29 percent of the four-muon and 10 percent of the
+two-muon-two-electron data pairs, caveat 2), whose shape differs from that of the
+particle-flow pairs (table in section a), so a number quoted for a validation region averages
+the two; and the background simulation is statistically too weak to arbitrate any of this, so
+the data control and validation regions carry the conclusions."""))
 
     # ---------------------------------------------------------------- (i) the LJ pair
     cells.append(new_markdown_cell("""## i. The two muon lepton jets of a four-muon event
@@ -652,7 +689,9 @@ combination occurs more often than two independent draws would give."""))
 
     cells.append(new_code_cell("""c_pair_plane = lib.fig_pair_plane()"""))
     cells.append(new_code_cell("""_ = lib.pair_correlation_table()"""))
-    cells.append(new_code_cell("""_ = lib.pair_factorisation_table()"""))
+    cells.append(new_code_cell("""factorisation_rows = lib.pair_factorisation_table()"""))
+    cells.append(new_code_cell(
+        """_ = lib.composition_excess_bound(observed=factorisation_rows)"""))
     cells.append(new_code_cell("""c_pair_cond = lib.fig_pair_conditionals()"""))
 
     cells.append(new_markdown_cell("""How to read these figures: in the validation-region data the cells along the diagonal are
@@ -706,7 +745,10 @@ ordered one 1.41, the two differ by half of either uncertainty, and neither is m
 1.3 standard deviations from unity.  An event-level background rate obtained by squaring a
 per-jet efficiency is optimistic by an amount that is measured at 0.4 and only indicated at 0.8,
 and the two angles are not two independent axes for a factorised background estimate in this
-region."""))
+region.  The composition table bounds what the mixture of pair types can contribute: if the two
+jets of an event always shared a pair type, the mixture alone would give an excess of
+8.7 +- 1.1 percent at 0.4 and 16 +- 4 percent at 0.8 over the square of the pooled per-jet
+fraction, against the 10.2 +- 2.0 and 29 +- 22 percent observed."""))
 
     cells.append(new_markdown_cell("""### Does the angle still separate inside a mass window
 
@@ -795,11 +837,23 @@ be measured where the signal is, and there it rests on 127 pairs at m_XX = 500 G
 steeper shape, which the window removes; that reading is an inference from the two sets of
 numbers, not a decomposition this study performs.
 
-Both readings inherit the study's caveats: the validation region holds essentially no
-displaced-standalone muons by construction, nothing here shows that a fake shape measured there
-transfers to the signal region, and the grid stops short of the 200 to 250 GeV bound-state masses
-the search now cares most about.  The recommendation keeps section h's direction and sharpens its
-size: do not add the decay angle to the four-muon selection or to its background estimate, and do
+Both readings inherit the study's caveats.  The validation region requires a muon with more
+than two pixel hits in each muon lepton jet, which leaves 29 percent of its muon pairs with a
+displaced-standalone muon (caveat 2).  That mixture matters for the factorisation test: the
+particle-flow and mixed pairs of this region have unlike shapes (0.59 against 0.27 above 0.4),
+and if the two jets of an event always shared a pair type the mixture alone would produce an
+excess of 8.7 +- 1.1 percent at 0.4 and 16 +- 4 percent at 0.8 over the square of the pooled
+per-jet fraction, against the 10.2 +- 2.0 and 29 +- 22 percent observed (against the product of
+the two ordered per-jet fractions the observed excess at 0.8 is 40.5 +- 24.0 percent).  The
+uncertainty on the bound resamples events, not jets, since the two jets of an event are
+correlated.  The pair type of the two jets
+is not recorded jointly in these histograms, so the study cannot say how much of the excess is
+angular correlation at fixed pair type and how much is shared composition.  For an estimate that
+squares an inclusive per-jet efficiency the consequence is the same.  Nothing here shows that a
+fake shape measured in the validation region transfers to the signal region, and the grid stops
+short of the 200 to 250 GeV bound-state masses at the low edge of the search.  The
+recommendation keeps section h's direction and sharpens its size: do not add the decay angle to
+the four-muon selection or to its background estimate, and do
 keep the pair correlation as a measured fact about fakes -- the two muon lepton jets of a fake
 four-muon event are not independent, which any factorised estimate in that channel must face."""))
 
@@ -866,6 +920,8 @@ differently?"""))
     cells.append(new_code_cell("""c_mulj_plane = lib.fig_mulj_mass_angle(m_xx=500.0)"""))
     cells.append(new_code_cell("""c_mulj_overlay = lib.fig_mulj_angle_overlays(m_xx=500.0)"""))
     cells.append(new_code_cell("""mu_rows = lib.planes_mu_separation_table()"""))
+    cells.append(new_code_cell(
+        """_ = lib.pair_type_separation(threshold=0.4, m_xx=500.0, m_zd=1.2)"""))
 
     cells.append(new_markdown_cell("""How to read these: every mass row is normalised on its own, so a cell's colour says how the
 angle is distributed **at that dimuon mass**, not how many pairs sit there; the colour scale is
@@ -1116,7 +1172,11 @@ no larger for signal than for the control region at any threshold."""))
    cleaned single-lepton-jet control region (ε_s/√ε_b = 1.9 at |cos θ*| > 0.4) and not against
    the two-lepton-jet control region (1.0), whose topology is the closer match to the signal
    region.
-   The fake shape is region-dependent, which is what section h found.
+   That region is 59 percent particle-flow pairs, 0.62 of them above the cut, and 41 percent
+   mixed pairs, 0.16 above it, so its 0.43 averages two unlike shapes: with the signal
+   efficiency unchanged the same cut gives 0.84 against the particle-flow pairs alone and 1.6
+   against the mixed ones.  The fake shape depends on the region, which is what section h found,
+   and on the pair type.
 
 3. Two resolved electrons in an electromagnetic lepton jet occur in 29 percent of signal jets at
    m_Zd = 5 GeV (m_XX = 500 GeV) against under 1 percent of fakes: a clean but low-efficiency tag
@@ -1137,17 +1197,25 @@ no larger for signal than for the control region at any threshold."""))
    two; neither MET version is usable until a per-event check is made.
 
 6. The two lepton jets of a fake event are correlated in their signed helicity angles
-   (r = -0.062 +- 0.011 with χ² = 309/16 in the two-lepton-jet region) while signal pairs are
-   not (|r| <= 0.005).  With section i, no factorised estimate over these angles may assume
-   independence in fake-dominated regions.
+   (r = -0.062 +- 0.011 with χ² = 309/16 in the two-lepton-jet control region) while four-muon
+   signal pairs are not (|r| <= 0.006).  With section i, no factorised estimate over these angles
+   may assume independence in fake-dominated regions.  A pair type shared by the two jets cannot
+   produce the negative coefficient: with the same angular shape for both jets it gives a
+   covariance of zero or above.  Pair types that anti-correlate between the two jets could, and
+   the stored histograms do not record both jets' types.  The chi-square part, the joint
+   distribution against the product of its marginals, can be compositional even without them:
+   the region mixes pair types with unlike shapes (conclusion 2), and two jets of one event that
+   share a pair type fail the product test without any angular correlation at fixed type.  The
+   study does not separate that part.
 
 7. The simulated background cannot arbitrate any of this: cross-section weights concentrate it in
    a few QCD events and flip its fake shapes (ptAsym < 0.2 keeps 0.33 unweighted, 0.61 weighted).
    The data control regions are the reference throughout.
 
-Net: nothing here changes the search selection.  The durable products are the fake-pair
-correlation, the CP-even sign of the reconstructed plane correlation with its β*² suppression
-at low m_Zd, and the instrumented histograms."""))
+Net: nothing here changes the search selection.  What the section establishes is the fake-pair
+dependence (angular or compositional, which the stored histograms cannot separate), the CP-even
+sign of the reconstructed plane correlation with its suppression at low m_Zd, where
+A = [β*²/(3 − β*²)]² falls to 0.011, and the instrumented histograms."""))
 
     # ---------------------------------------------------------------- run record
     cells.append(new_markdown_cell("""## Run record
