@@ -51,7 +51,8 @@ from sidm.tools import llpnanoaodschema, sidm_processor, utilities
 utilities.set_plot_style()
 %matplotlib inline
 
-print("repository root:", _repo)"""))
+print("repository root:", _repo)
+print("sidm imported from:", os.path.dirname(os.path.dirname(sidm_processor.__file__)))"""))
 
     # ------------------------------------------------------------------ configuration
     cells.append(new_markdown_cell("""## Configuration
@@ -60,6 +61,11 @@ The channels and histogram collections below are the ones the campaign ran, copi
 `condor/submit_mulj_*.sub`.  Data is processed in the five regions the study compares;
 simulation adds the two signal channels, their signal-region variants and their variants
 without the muon momentum cut, which are kept for cross-checks.
+
+The channels are defined in `configs/selections_mulj_decay_angle_as_run.yaml`, the definitions
+the campaign ran with, frozen when the analysis-wide `configs/selections.yaml` later changed
+channels of the same names.  Both processors below are given that file explicitly; leaving it
+out would select different events under the same channel names.
 
 Two histogram collections are filled.  `mulj_decay_angle` holds everything the study draws;
 `mulj_decay_angle_gen` holds the generator-level angle and is filled for simulation only,
@@ -85,6 +91,9 @@ CH_MC = CH_DATA + [
     "4mu_sr", "2mu2e_sr",
     "4mu_noMuPtCut", "2mu2e_noMuPtCut",
 ]
+
+# the channel definitions the campaign ran with, relative to sidm/
+SELECTIONS_CFG = "configs/selections_mulj_decay_angle_as_run.yaml"
 
 COLLECTIONS_MC = ["mulj_decay_angle", "mulj_decay_angle_gen"]
 COLLECTIONS_DATA = ["mulj_decay_angle"]
@@ -155,7 +164,7 @@ print("signal:", SIGNAL_SAMPLE, "  data:", DATA_SAMPLE, f"  {MAX_FILES} files ea
     location_cfg=LOCATION_CFG["signal_4mu"], replace_xcache=True)
 
 processor_mc = sidm_processor.SidmProcessor(
-    CH_MC, COLLECTIONS_MC, unweighted_hist=UNWEIGHTED_HIST)
+    CH_MC, COLLECTIONS_MC, unweighted_hist=UNWEIGHTED_HIST, selections_cfg=SELECTIONS_CFG)
 
 output_signal = runner.run(fileset_signal, treename="Events",
                            processor_instance=processor_mc)
@@ -166,7 +175,7 @@ print("signal done")'''))
     location_cfg=LOCATION_CFG["data"], replace_xcache=True)
 
 processor_data = sidm_processor.SidmProcessor(
-    CH_DATA, COLLECTIONS_DATA, unweighted_hist=UNWEIGHTED_HIST)
+    CH_DATA, COLLECTIONS_DATA, unweighted_hist=UNWEIGHTED_HIST, selections_cfg=SELECTIONS_CFG)
 
 output_data = runner.run(fileset_data, treename="Events",
                          processor_instance=processor_data)
@@ -261,8 +270,8 @@ python condor/make_job_args.py --samples-file condor/mulj_data_samples.txt \\
 
 That chunking gives 701, 2,109 and 4,278 jobs over 152 samples and 193,770 files.  Submit
 from inside `condor/`, with the proxy on shared NFS rather than in `/tmp`, which the schedd
-cannot read.  The channel lists and collections of the configuration cell above are baked
-into the three submit files, so they do not have to be passed again:
+cannot read.  The channel lists, the collections and the selections file of the configuration
+cell above are baked into the three submit files, so they do not have to be passed again:
 
 ```bash
 cd condor
@@ -285,7 +294,9 @@ python condor/condor_campaign.py reconcile \\
 
 Finally merge the chunks into one file per sample.  All three categories write into the same
 EOS directory and sample names are unique across them, so one pass covers everything.  The
-chunks were produced unweighted, so the merge has to be told:
+chunks were produced unweighted, so the merge has to be told; the channel names and the
+selections file only feed the metadata written next to each merged file, which then records
+the definitions the chunks were actually run with:
 
 ```bash
 python sidm/scripts/merge_coffea_chunks_eos.py \\
@@ -293,7 +304,11 @@ python sidm/scripts/merge_coffea_chunks_eos.py \\
   --output-eos-dir /store/group/lpcmetx/SIDM/coffea_outputs/<user>/mulj_decay_angle \\
   --unweighted-hist \\
   --filelists-dir condor/filelists_mulj_data \\
-  --hist-collections mulj_decay_angle,mulj_decay_angle_gen
+  --hist-collections mulj_decay_angle,mulj_decay_angle_gen \\
+  --selections-cfg configs/selections_mulj_decay_angle_as_run.yaml \\
+  --selections data_control_region_1muLj,data_control_region_1muLj_cosmic_veto,\\
+data_control_region_1muLj_spread_cosAlpha_mu_veto,test_VR_2mu2e_invDisplaced_spread_cosAlpha_mu_veto,\\
+test_VR_4mu_invDisplaced_spread_cosAlpha_mu_veto,4mu,2mu2e,4mu_sr,2mu2e_sr,4mu_noMuPtCut,2mu2e_noMuPtCut
 ```
 
 ### What the study expects
