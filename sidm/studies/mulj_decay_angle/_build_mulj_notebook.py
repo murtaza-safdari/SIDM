@@ -110,6 +110,66 @@ print("background:", len(lib.background_samples()), "samples")
 print()
 _ = lib.inventory()"""))
 
+    # ---------------------------------------------------------------- selections
+    cells.append(new_markdown_cell(r"""## Selections used in this study
+
+The histograms read here come from three Condor campaigns on 2018 data and simulation, run from
+the branch `mulj-decay-angle-dev`:
+
+| campaign | ran | merged outputs | read by |
+| --- | --- | --- | --- |
+| `MuljDecayAngle_Run2018_v1` | 2026-08-28 to 2026-08-31 | `mulj_merged` | sections a to h |
+| `MuljPairAngle_Run2018_v1` | 2026-08-31 to 2026-09-01 | `mulj_pair_merged` | section i |
+| `LjAnglePlanes_Run2018_v1` | 2026-09-02 to 2026-09-05 | `lj_angle_planes_merged` | section j |
+
+All three ran the channel definitions of `sidm/configs/selections.yaml` at commit `61224901` of
+that branch.  Those definitions are kept in `sidm/configs/selections_mulj_decay_angle_as_run.yaml`,
+with every YAML anchor resolved, every cut list in the order it is applied, and every channel under
+the name stored in the histograms.  `00_produce_inputs.ipynb` and this study's Condor submit files
+pass that file to the processor explicitly.
+
+Three pieces of evidence tie the file to the inputs.  The jobs ran from a working copy with
+uncommitted changes, and commit `61224901` was made on 2026-09-07, after all three campaigns had
+run.  The metadata file written next to each merged output (152, 101 and 154 such files) records a
+definition for every channel, and every recorded definition agrees with this file; those
+definitions are read from the checkout that did the merging, not from the jobs, and the commit
+recorded there is likewise the merging checkout's.  For the third campaign the code shipped to the
+jobs was kept and is identical, file by file, to commit `61224901`; the code shipped to the first
+two campaigns was not kept.  The strongest evidence is a rerun: stored Condor outputs of all three
+campaigns (signal chunks of each, data chunks of the first and third) rerun from this branch with
+this file reproduce the stored histograms and cutflows bin for bin.
+
+**How these differ from the analysis-wide definitions.**  `sidm/configs/selections.yaml` on main
+(commit `5bb94cd`) changed the base cuts every channel inherits (PR #56) after these campaigns
+ran, so a channel here that shares its name with a channel there selects different events:
+
+* main applies an eta-phi veto to electrons, photons, muons and displaced-standalone muons; none
+  of the channels here has it;
+* main has `>=2 muons (pf or dsa) pT > 26 GeV` and `all cosAlpha(mu, mu) > -0.99` among its base
+  event cuts.  Here the 26 GeV requirement is in `4mu`, `4mu_sr`, `2mu2e`, `2mu2e_sr` and the four
+  spread-veto regions, and absent from the two `_noMuPtCut` variants, the uncut and cosmic-veto
+  single-lepton-jet control regions and the electromagnetic-lepton-jet control region; the
+  opening-angle veto is in the four spread-veto regions only;
+* main cuts on `dzSpread` and `dxySpread` in the muon-lepton-jet cuts of its signal channels.
+  None of the signal-like channels here has a spread cut; the four spread-veto regions cut on
+  `dzSpread` and `vxySpread`, with main's thresholds (50 for all muons, 10 for particle-flow
+  muons).
+
+The four spread-veto regions, `data_control_region_1muLj_spread_cosAlpha_mu_veto`,
+`cr_2lj_invDisplaced_spread_cosAlpha_mu_veto` and the two `test_VR_*` regions, are not defined on
+main at all.
+
+The two tables below are rendered from the files when the notebook runs.  The first lists, for each
+channel, the cuts it adds to the baseline every channel shares.  The second compares each channel
+with the channel of the same name in this checkout's `configs/selections.yaml`, as "as run /
+there".  Generator-level particle selections are left out of both."""))
+    cells.append(new_code_cell("""from IPython.display import Markdown, display
+
+print("channel definitions:", os.path.relpath(lib.AS_RUN_SELECTIONS, _study_dir))
+display(Markdown(lib.selections_table()))"""))
+    cells.append(new_code_cell("""print("compared with:", os.path.relpath(lib.REFERENCE_SELECTIONS, _study_dir))
+display(Markdown(lib.selections_vs_reference()))"""))
+
     # ---------------------------------------------------------------- (a) definitions
     cells.append(new_markdown_cell("""## a. Definitions and method
 
@@ -543,8 +603,12 @@ These apply to every reading of the figures above.
    impact parameter rather than a separation between two vertices.  Do not describe it as a vertex
    separation, and slice by the number of displaced-standalone muons where the distinction matters.
 
-4. **Yields will not match other checkouts exactly.** Other working copies of these regions apply a
-   tighter displaced-standalone cross-cleaning and an eta-phi veto that is not applied here.
+4. **These are the as-run definitions, not main's.** Every channel here is defined by
+   `selections_mulj_decay_angle_as_run.yaml`.  Main's channels of the same names add an eta-phi
+   veto and the base-cut and spread-cut differences listed under "Selections used in this study",
+   and under them the shapes would change as well as the yields: the cleaned single-lepton-jet
+   control region, which differs from the uncut one by the spread and opening-angle vetoes alone,
+   shows how strongly such cuts move the angle (data hi/lo 0.008 against 0.035).
 
 5. **Histograms are raw counts; cutflows are not.** The campaign ran with unweighted histograms, so
    nothing in the histograms carries a cross-section or generator weight, while the cutflows in the
