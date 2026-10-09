@@ -11,6 +11,14 @@ search plane, with buffered regions (isolation pass < 0.25, fail ≥ 0.5; |Δφ|
 requirement does to the plane and whether per-mass-bin factors are measurable. Section 6 of
 the notebook carries the verdict.
 
+`plane_search.ipynb` takes the next step: which open plane is compatible with the search plane
+and can validate the estimate. It compares the open ratios, fail-slice shapes and egamma-LJ
+composition of every candidate plane (the four displacement planes and their splits by pixel
+hits of the muon LJ and by electron/photon class of the egamma LJ) with the search plane, tests
+the closure of the candidates against muon class, pair mass and boundary variants, tests the
+prompt-to-displaced step of the muon LJ in the open populations, and assembles the estimate per
+mass window and muon pixel-hit class. Section 7 carries the proposal.
+
 ## Inputs
 
 Dongyub Lee's inclusive 6D histograms (campaign `ABCD_6D_inclusive_eHEM_skimv1`, merged
@@ -30,6 +38,10 @@ displacement, Δφ or mass requirement applied. `fetch_6d.sh` copies them read-o
 | `test_transfer_lib.py` | the data path is blinded and cached per hidden box, strip exclusion, interval and χ² values, table coverage |
 | `transfer_plots.py` | the figures: isolation and \|Δφ\| shapes per plane, the ratios against the displacement variable, the ratios, κ and the region spectra against the pair mass |
 | `_build_notebook.py` | writes `transfer_factors.ipynb` |
+| `plane_search_lib.py` | split planes (`PD:mu3`, `DD:g`, …), ABCD configurations with buffers, regions, κ and pulls, the configuration scan, the estimate and summary tables |
+| `test_plane_search_lib.py` | region conventions and the hidden box on a synthetic cube, split planes refused outside their plane, exported 4D cubes against the full cube, table arithmetic |
+| `plane_search_plots.py` | κ against the \|Δφ\| boundaries, open ratios per plane, factors against mass and against the muon pixel-hit class |
+| `_build_plane_search.py` | writes `plane_search.ipynb` |
 | `fetch_6d.sh` | EOS → local copy |
 
 ## Running
@@ -40,7 +52,11 @@ On the LPC, in the notebook environment (`sidm_venv`), with a VOMS proxy for the
 bash fetch_6d.sh                      # once; skips files already present
 python _build_notebook.py
 jupyter nbconvert --to notebook --execute --inplace transfer_factors.ipynb
+python _build_plane_search.py
+jupyter nbconvert --to notebook --execute --inplace plane_search.ipynb
 ```
+
+The tests run anywhere with numpy, scipy, pandas and hist: `pytest -q`.
 
 The notebook caches the summed data cube, blinded, under `$ABCD6D_LOCAL/summed/` keyed on the
 manifest and on the hidden box. Figures are saved as PDF under `figures/` (untracked); the

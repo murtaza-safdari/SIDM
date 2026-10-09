@@ -22,8 +22,8 @@ def set_style():
     plt.rcParams.update({"figure.dpi": 100, "savefig.bbox": "tight", "legend.fontsize": 20})
 
 
-def label(ax):
-    hep.cms.label("Work in progress", data=True, lumi=tl.LUMI_FB, year=2018, ax=ax, fontsize=22)
+def label(ax, fontsize=22):
+    hep.cms.label("Work in progress", data=True, lumi=tl.LUMI_FB, year=2018, ax=ax, fontsize=fontsize)
 
 
 def save(fig, name):
