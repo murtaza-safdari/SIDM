@@ -11,6 +11,18 @@ cube.  Axis order in the file: ``channel`` (one category), then ``iso0``, ``iso1
 * 4mu: object 0 is the leading muon LJ, object 1 the subleading one, both with pixel hits
   as the displacement variable.
 
+The ``abcd8d_<topology>`` histograms of the follow-up campaign add the mass of the leading
+muon LJ (``lj0_mass``) and the number of DSA muons in each muon LJ (``ndsa0``; ``ndsa1`` in 4mu),
+with coarser edges on the other axes and flow bins only where a value can fall outside the
+edges.  The ``abcd8d_proxy_<topology>`` histograms of the same campaign fill the validation
+regions in which a single muon (a one-constituent LJ candidate) stands in for one muon LJ:
+in 2mu2e the lone muon takes role 0 next to the egamma LJ, in 4mu the muon LJ keeps role 0
+and the lone muon is object 1; they carry the ``abcd8d`` axes without the LJ mass, plus the
+number of tight b-tagged jets away from both objects (``nbjets``).  A :class:`Cube` therefore
+carries its own :class:`AxisSpec` and the histogram family (``prefix``); every projection,
+blinding and region function reads the axes from the cube, and the ``abcd6d`` edges below are
+the default spec of a cube built without one.
+
 A muon LJ is displaced when its maximum pixel hits are <= 2, an egamma LJ when its minimum
 lost hits are >= 1 (the ``displaced`` cuts of ``sidm/definitions/cuts.py``; photon-only
 egamma LJs carry the lost-hits sentinel 999 and are displaced by construction).  Prompt is
@@ -29,6 +41,15 @@ and |dphi| >= 2.4.  The hidden box is that region plus a margin on the two ABCD 
 two one-object-displaced planes hold up to half of the signal's search-region yield at the
 stored normalisation, comparable to the background the prompt-plane factors predict there, so
 ``BLIND_PLANES`` hides them too.
+
+The proxy regions are disjoint from both search regions, but the 4mu proxy region is not
+signal-free: a 4mu signal event whose second dark-photon pair loses one muon is a muon LJ plus
+a lone muon, and 22% of the 800/1.2 GeV signal lands there against 1% once a b-tagged jet is
+required (the thesis construction).  :func:`blind` therefore hides, in the 4mu proxy cube with
+no b-tagged jet, the isolated corner (both isolations < ``BLIND_ISO``, |dphi| >= ``BLIND_DPHI_MIN``,
+pair mass >= ``BLIND_MASS_MIN``) of every plane with a displaced object; the 2mu2e proxy region
+holds 0.7% of the 2mu2e signal's search-channel yield in a sample several times larger and
+stays open.
 """
 import dataclasses
 
@@ -43,6 +64,22 @@ EDGES = {
     "lost": np.arange(-0.5, 10, 1.0),
     "abs_dphi": np.array([0, 0.5, 1, 1.5, 2, 2.2, 2.4, 2.6, 2.7, 2.8, 2.9, 3, 3.05, 3.1, np.pi]),
     "ljlj_mass": np.array([0, 50, 100, 150, 200, 300, 400, 600, 800, 1000, 1500, 2500], float),
+}
+
+# The ``abcd8d`` campaign: (edges, underflow, overflow) per axis kind; ``lj0_mass`` per topology.
+VARIABLES8D = {"2mu2e": VARIABLES + ("lj0_mass", "ndsa0"), "4mu": VARIABLES + ("lj0_mass", "ndsa0", "ndsa1")}
+VARIABLES_PROXY = {"2mu2e": VARIABLES + ("ndsa0", "nbjets"), "4mu": VARIABLES + ("ndsa0", "ndsa1", "nbjets")}
+FAMILIES = {"abcd8d": VARIABLES8D, "abcd8d_proxy": VARIABLES_PROXY}
+EDGES8D = {
+    "iso": (np.array([0, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.75, 1, 2, 5], float), False, True),
+    "pixel": (np.array([-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 11.5]), False, False),      # 0, 1, 2, 3, 4, >= 5 hits
+    "lost": (np.array([-0.5, 0.5, 1.5, 9.5]), False, True),                        # 0, 1, 2-9, photon-only (999)
+    "abs_dphi": (np.array([0, 1, 1.5, 2, 2.2, 2.4, 2.6, 2.8, 3.0, np.pi]), False, True),
+    "ljlj_mass": (np.array([0, 100, 150, 200, 300, 400, 600, 800, 1000, 2500], float), False, True),
+    "lj0_mass": {"2mu2e": (np.array([0, 5, 30, 60, 75, 105, 150, 300], float), False, True),
+                 "4mu": (np.array([0, 5, 75, 105, 300], float), False, True)},
+    "ndsa": (np.array([-0.5, 0.5, 1.5, 12.5]), False, False),                      # 0, 1, >= 2 DSA muons
+    "nbjets": (np.array([-0.5, 0.5, 1.5, 12.5]), False, False),                    # 0, 1, >= 2 tight b-tagged jets
 }
 
 BLIND_ISO = 0.5
@@ -88,14 +125,92 @@ def plane(topology, obj0, obj1):
     return {"disp0": displacement(topology, 0, obj0), "disp1": displacement(topology, 1, obj1)}
 
 
+@dataclasses.dataclass(frozen=True, eq=False)
+class AxisSpec:
+    """The numeric axes of a cube: names, stored edges and which flow bins exist."""
+
+    variables: tuple
+    edges: tuple
+    underflow: tuple
+    overflow: tuple
+
+    def __eq__(self, other):
+        return (isinstance(other, AxisSpec) and self.variables == other.variables
+                and self.underflow == other.underflow and self.overflow == other.overflow
+                and all(np.array_equal(a, b) for a, b in zip(self.edges, other.edges)))
+
+    def index(self, variable):
+        if variable not in self.variables:
+            raise ValueError(f"{variable}: not an axis of this cube ({self.variables})")
+        return self.variables.index(variable)
+
+    def edges_of(self, variable):
+        return self.edges[self.index(variable)]
+
+    def nbins(self, variable):
+        i = self.index(variable)
+        return len(self.edges[i]) - 1 + int(self.underflow[i]) + int(self.overflow[i])
+
+    @property
+    def shape(self):
+        return tuple(self.nbins(v) for v in self.variables)
+
+
+def spec6d(topology):
+    """Axis spec of the ``abcd6d`` campaign: the six variables, flow bins on both sides."""
+    return AxisSpec(VARIABLES, tuple(axis_edges(topology, v) for v in VARIABLES),
+                    (True,) * len(VARIABLES), (True,) * len(VARIABLES))
+
+
+def spec8d(topology, prefix="abcd8d"):
+    """Axis spec of the ``abcd8d`` campaign (``prefix="abcd8d_proxy"``: its proxy histograms)."""
+    variables = FAMILIES[prefix][topology]
+    specs = []
+    for variable in variables:
+        if variable in ("iso0", "iso1"):
+            key = "iso"
+        elif variable == "disp0":
+            key = "pixel"
+        elif variable == "disp1":
+            key = "lost" if topology == "2mu2e" else "pixel"
+        elif variable.startswith("ndsa"):
+            key = "ndsa"
+        else:
+            key = variable
+        spec = EDGES8D[key]
+        specs.append(spec[topology] if isinstance(spec, dict) else spec)
+    return AxisSpec(variables, tuple(e for e, _, _ in specs),
+                    tuple(u for _, u, _ in specs), tuple(o for _, _, o in specs))
+
+
+def spec_proxy(topology):
+    """Axis spec of the ``abcd8d_proxy`` histograms."""
+    return spec8d(topology, "abcd8d_proxy")
+
+
+def spec_from_hist(h):
+    """Axis spec read from a stored ``hist.Hist`` (numeric axes after the channel axis)."""
+    axes = list(h.axes)[1:]
+    return AxisSpec(tuple(ax.name for ax in axes), tuple(np.array(ax.edges, float) for ax in axes),
+                    tuple(bool(ax.traits.underflow) for ax in axes), tuple(bool(ax.traits.overflow) for ax in axes))
+
+
 @dataclasses.dataclass(frozen=True)
 class Cube:
-    """Weighted sums of one 6D histogram, flow bins included, channel axis removed."""
+    """Weighted sums of one stored histogram, flow bins included, channel axis removed."""
 
     topology: str
     sumw: np.ndarray
     sumw2: np.ndarray
     blinded: bool = False
+    spec: AxisSpec = None
+    prefix: str = "abcd6d"      # histogram family: abcd6d, abcd8d (search channels) or abcd8d_proxy
+
+    def __post_init__(self):
+        if self.spec is None:
+            object.__setattr__(self, "spec", spec6d(self.topology))
+        if self.sumw.shape != self.spec.shape:
+            raise ValueError(f"cube shape {self.sumw.shape} does not match its axes {self.spec.shape}")
 
     @property
     def shape(self):
@@ -106,22 +221,32 @@ def cube_from_hist(h, topology):
     """Build a :class:`Cube` from the stored ``hist.Hist`` (or the SIDM wrapper around it)."""
     h = getattr(h, "hist", h)
     names = [ax.name for ax in h.axes]
-    if names[0] != "channel" or tuple(names[1:]) != VARIABLES:
+    if names[0] != "channel" or tuple(names[1:len(VARIABLES) + 1]) != VARIABLES:
         raise ValueError(f"unexpected axes {names}")
     if len(h.axes[0]) != 1:
         raise ValueError("expected a single channel category")
-    for variable, ax in zip(VARIABLES, h.axes[1:]):
-        if not np.allclose(ax.edges, axis_edges(topology, variable)):
-            raise ValueError(f"{variable}: stored edges differ from the campaign edges")
+    variables = tuple(names[1:])
+    if variables == VARIABLES:                # the 6D campaign: its edges are fixed
+        prefix, spec = "abcd6d", spec6d(topology)
+        for variable, ax in zip(VARIABLES, h.axes[1:]):
+            if not np.allclose(ax.edges, axis_edges(topology, variable)) or not (ax.traits.underflow and ax.traits.overflow):
+                raise ValueError(f"{variable}: stored axis differs from the campaign axis")
+    else:                                     # the 8D campaign and its proxy histograms: axes fixed too
+        matches = [p for p, family in FAMILIES.items() if family[topology] == variables]
+        if not matches:
+            raise ValueError(f"stored axes {variables} belong to no known histogram family")
+        prefix, spec = matches[0], spec_from_hist(h)
+        if spec != spec8d(topology, prefix):
+            raise ValueError(f"stored axes {spec.variables} differ from the {prefix} campaign axes")
     view = h.view(flow=True)[0]
-    expected = tuple(len(axis_edges(topology, v)) + 1 for v in VARIABLES)
-    if view.shape != expected:
-        raise ValueError(f"unexpected cube shape {view.shape}, expected {expected}")
-    return Cube(topology, np.array(view["value"], float), np.array(view["variance"], float))
+    if view.shape != spec.shape:
+        raise ValueError(f"unexpected cube shape {view.shape}, expected {spec.shape}")
+    return Cube(topology, np.array(view["value"], float), np.array(view["variance"], float), spec=spec, prefix=prefix)
 
 
-def load_cubes(path, topologies=("2mu2e", "4mu"), sample=None):
-    """Read one merged ``.coffea`` file and return ``{topology: Cube}`` of its 6D histograms."""
+def load_cubes(path, topologies=("2mu2e", "4mu"), sample=None, prefix="abcd6d"):
+    """Read one merged ``.coffea`` file and return ``{topology: Cube}`` of its ``<prefix>_<topology>``
+    histograms (``abcd6d``, ``abcd8d`` or ``abcd8d_proxy``)."""
     import coffea.util  # imported here so the projection code needs no coffea install
 
     payload = coffea.util.load(path)
@@ -131,20 +256,21 @@ def load_cubes(path, topologies=("2mu2e", "4mu"), sample=None):
             raise ValueError(f"{path}: {len(out)} samples, pass sample=")
         (sample,) = out
     hists = out[sample]["hists"]
-    return {t: cube_from_hist(hists[f"abcd6d_{t}"], t) for t in topologies}
+    return {t: cube_from_hist(hists[f"{prefix}_{t}"], t) for t in topologies}
 
 
-def load_cube(path, topology, sample=None):
-    return load_cubes(path, (topology,), sample)[topology]
+def load_cube(path, topology, sample=None, prefix="abcd6d"):
+    return load_cubes(path, (topology,), sample, prefix)[topology]
 
 
 def add_cubes(cubes):
     """Sum of cubes of one topology."""
     cubes = list(cubes)
-    if not cubes or len({c.topology for c in cubes}) != 1:
-        raise ValueError("add_cubes needs cubes of one topology")
-    return Cube(cubes[0].topology, sum(c.sumw for c in cubes), sum(c.sumw2 for c in cubes),
-                blinded=any(c.blinded for c in cubes))
+    if (not cubes or len({(c.topology, c.prefix) for c in cubes}) != 1
+            or any(c.spec != cubes[0].spec for c in cubes)):
+        raise ValueError("add_cubes needs cubes of one topology and family with the same axes")
+    return dataclasses.replace(cubes[0], sumw=sum(c.sumw for c in cubes), sumw2=sum(c.sumw2 for c in cubes),
+                               blinded=any(c.blinded for c in cubes))
 
 
 def _edge_index(edges, value):
@@ -154,32 +280,50 @@ def _edge_index(edges, value):
     return int(hits[0])
 
 
-def bin_slice(edges, lo, hi):
-    """Flow-aware index slice of a value range on an axis with ``len(edges) + 1`` bins.
+def bin_slice(edges, lo, hi, underflow=True, overflow=True):
+    """Flow-aware index slice of a value range on an axis with ``len(edges) - 1`` regular bins
+    plus the flow bins that exist.
 
-    Index 0 is the underflow bin, index ``len(edges)`` the overflow bin.  ``lo``/``hi`` must
-    be stored edges; ``None`` extends the range through the flow bin on that side.
+    Index 0 is the underflow bin when there is one.  ``lo``/``hi`` must be stored edges;
+    ``None`` extends the range through the flow bin on that side (or to the outer edge when
+    the axis has no flow bin there).
     """
-    start = 0 if lo is None else _edge_index(edges, lo) + 1
-    stop = len(edges) + 1 if hi is None else _edge_index(edges, hi) + 1
+    offset = int(underflow)
+    start = 0 if lo is None else _edge_index(edges, lo) + offset
+    stop = len(edges) - 1 + offset + int(overflow) if hi is None else _edge_index(edges, hi) + offset
     if stop <= start:
         raise ValueError(f"empty range ({lo}, {hi})")
     return slice(start, stop)
 
 
-def selection_index(topology, **ranges):
-    """Tuple of slices selecting ``ranges`` (``variable=(lo, hi)``) on the cube."""
+def selection_index(cube, **ranges):
+    """Tuple of slices selecting ``ranges`` (``variable=(lo, hi)``) on the cube's axes.  A
+    topology string stands for the ``abcd6d`` axes of that topology."""
+    spec = spec6d(cube) if isinstance(cube, str) else cube.spec
+    unknown = set(ranges) - set(spec.variables)
+    if unknown:
+        raise ValueError(f"{sorted(unknown)}: not axes of this cube ({spec.variables})")
     index = []
-    for variable in VARIABLES:
+    for i, variable in enumerate(spec.variables):
         lo, hi = ranges.get(variable, (None, None))
-        index.append(bin_slice(axis_edges(topology, variable), lo, hi))
+        index.append(bin_slice(spec.edges[i], lo, hi, spec.underflow[i], spec.overflow[i]))
     return tuple(index)
 
 
-def blind_signature(iso_max=BLIND_ISO, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_MIN, planes=None):
+# Planes of the 4mu proxy region whose isolated corner is hidden when the event has no b-tagged jet.
+BLIND_PLANES_PROXY = {
+    "2mu2e": (),
+    "4mu": (("displaced", "displaced"), ("displaced", "prompt"), ("prompt", "displaced")),
+}
+
+
+def blind_signature(iso_max=BLIND_ISO, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_MIN, planes=None,
+                    prefix="abcd6d"):
     """String identifying the hidden box, stored next to cached blinded cubes."""
-    planes = BLIND_PLANES if planes is None else planes      # resolved at call time, like blind()
-    return (f"iso<{iso_max:g} mass>={mass_min:g} dphi>={dphi_min:g} "
+    if planes is None:                                        # resolved at call time, like blind()
+        planes = BLIND_PLANES_PROXY if prefix == "abcd8d_proxy" else BLIND_PLANES
+    tag = " nbjets=0" if prefix == "abcd8d_proxy" else ""
+    return (f"iso<{iso_max:g} mass>={mass_min:g} dphi>={dphi_min:g}{tag} "
             f"planes={sorted((t, p) for t, ps in planes.items() for p in ps)}")
 
 
@@ -188,14 +332,18 @@ def blind(cube, iso_max=BLIND_ISO, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_
 
     The box is the isolated corner (both isolations below ``iso_max``) at LJ-pair mass
     >= ``mass_min`` and |dphi| >= ``dphi_min`` in each plane of ``planes`` (default:
-    ``BLIND_PLANES[cube.topology]``).
+    ``BLIND_PLANES[cube.topology]``; for a proxy cube ``BLIND_PLANES_PROXY[cube.topology]``,
+    restricted to events with no b-tagged jet).
     """
-    planes = BLIND_PLANES[cube.topology] if planes is None else planes
+    proxy = cube.prefix == "abcd8d_proxy"
+    if planes is None:
+        planes = (BLIND_PLANES_PROXY if proxy else BLIND_PLANES)[cube.topology]
+    extra = {"nbjets": (None, 0.5)} if proxy else {}
     sumw, sumw2 = cube.sumw.copy(), cube.sumw2.copy()
     for obj0, obj1 in planes:
-        index = selection_index(cube.topology, iso0=(None, iso_max), iso1=(None, iso_max),
+        index = selection_index(cube, iso0=(None, iso_max), iso1=(None, iso_max),
                                 ljlj_mass=(mass_min, None), abs_dphi=(dphi_min, None),
-                                **plane(cube.topology, obj0, obj1))
+                                **plane(cube.topology, obj0, obj1), **extra)
         sumw[index] = np.nan
         sumw2[index] = np.nan
     return dataclasses.replace(cube, sumw=sumw, sumw2=sumw2, blinded=True)
@@ -203,16 +351,16 @@ def blind(cube, iso_max=BLIND_ISO, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_
 
 def project(cube, **ranges):
     """Weighted sum and its variance over the selected ranges; NaN if a blind cell is touched."""
-    index = selection_index(cube.topology, **ranges)
+    index = selection_index(cube, **ranges)
     return float(np.sum(cube.sumw[index])), float(np.sum(cube.sumw2[index]))
 
 
 def profile(cube, variable, **ranges):
     """Per-bin weighted sums along ``variable`` (flow bins included) after selecting ``ranges``."""
-    axis = VARIABLES.index(variable)
-    index = list(selection_index(cube.topology, **ranges))
+    axis = cube.spec.index(variable)
+    index = list(selection_index(cube, **ranges))
     index[axis] = slice(None)
-    other = tuple(i for i in range(len(VARIABLES)) if i != axis)
+    other = tuple(i for i in range(len(cube.spec.variables)) if i != axis)
     sumw = np.sum(cube.sumw[tuple(index)], axis=other)
     sumw2 = np.sum(cube.sumw2[tuple(index)], axis=other)
     return sumw, sumw2

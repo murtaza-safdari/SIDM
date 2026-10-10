@@ -31,7 +31,7 @@ def fake_inputs(tmp_path, monkeypatch, cubes):
     (tmp_path / "data").mkdir()
     (tmp_path / "data" / "Run2018.coffea").write_bytes(b"")
     (tmp_path / "MANIFEST.txt").write_text("1 data/Run2018.coffea\n")
-    monkeypatch.setattr(io, "load_cubes", lambda path, topologies=tl.TOPOLOGIES, sample=None: dict(cubes))
+    monkeypatch.setattr(io, "load_cubes", lambda path, topologies=tl.TOPOLOGIES, sample=None, prefix="abcd6d": dict(cubes))
     return str(tmp_path)
 
 
@@ -61,7 +61,7 @@ def test_changed_box_is_not_served_from_an_older_cache(tmp_path, monkeypatch):
     cubes = {t: synthetic_cube(t) for t in tl.TOPOLOGIES}
     base = fake_inputs(tmp_path, monkeypatch, cubes)
     (tmp_path / "summed").mkdir()
-    np.savez(tmp_path / "summed" / "data.npz", manifest=tl._manifest_hash(base), blinded=False)   # a cache without a box
+    np.savez(tmp_path / "summed" / "data.npz", manifest=tl._inputs_tag(base, "data"), blinded=False)   # a cache without a box
     tl.summed_cubes(base, "data")
     assert "blind_box" in np.load(tmp_path / "summed" / "data.npz").files
     monkeypatch.setattr(io, "blind_signature", lambda *a, **k: "another box")
@@ -70,6 +70,20 @@ def test_changed_box_is_not_served_from_an_older_cache(tmp_path, monkeypatch):
     monkeypatch.setattr(io, "blind", lambda c, *a, **k: calls.append(1) or original(c, *a, **k))
     tl.summed_cubes(base, "data")
     assert calls, "the cache was reused although the hidden box changed"
+
+
+def test_remerged_inputs_are_not_served_from_an_older_cache(tmp_path, monkeypatch):
+    cubes = {t: synthetic_cube(t) for t in tl.TOPOLOGIES}
+    base = fake_inputs(tmp_path, monkeypatch, cubes)
+    tl.summed_cubes(base, "data")
+    calls = []
+    monkeypatch.setattr(io, "load_cubes", lambda path, topologies=tl.TOPOLOGIES, sample=None, prefix="abcd6d":
+                        calls.append(path) or dict(cubes))
+    tl.summed_cubes(base, "data")
+    assert not calls, "an unchanged input was re-read"
+    (tmp_path / "data" / "Run2018.coffea").write_bytes(b"re-merged")     # same manifest line, new file
+    tl.summed_cubes(base, "data")
+    assert calls, "a re-merged input was served from the cache"
 
 
 def test_buffered_regions_leave_the_strip_out():

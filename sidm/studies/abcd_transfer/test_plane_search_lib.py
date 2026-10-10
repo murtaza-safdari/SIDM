@@ -8,7 +8,7 @@ import pytest
 import abcd6d_io as io
 import plane_search_lib as ps
 import transfer_lib as tl
-from test_abcd6d_io import event, make_hist
+from test_abcd6d_io import event, event8d, make_hist, make_hist8d
 
 # (iso0, |dphi|) placing an event in each region of the nominal dphi x iso0 configuration
 CORNERS = {"A": (0.1, 3.0), "B": (0.6, 3.0), "C": (0.1, 1.0), "D": (0.6, 1.0)}
@@ -91,6 +91,34 @@ def test_split_planes_stay_inside_their_base_plane():
     assert ps.plane_selection("4mu", "PP:sub3") == {"disp0": (2.5, None), "disp1": (2.5, 3.5)}
     assert ps.plane_contains("2mu2e", "PD:mu3:g", "prompt", "displaced")
     assert not ps.plane_contains("2mu2e", "PD:mu3", "prompt", "prompt")
+
+
+def test_dsa_splits_and_extra_cuts_on_an_8d_cube():
+    """DSA-count splits of a muon LJ and event cuts on the two added axes, on a synthetic abcd8d
+    cube with the same region counts as cube_2mu2e's DD:mu0 corner at low mass."""
+    h = make_hist8d("2mu2e")
+    for region, n in dict(A=1, B=2, C=2, D=2).items():
+        iso0, dphi = CORNERS[region]
+        for ndsa0, lj0_mass in ((0, 1.0), (1, 2.0), (2, 91.0)):
+            for _ in range(n):
+                event8d(h, iso0, 0.1, 0, 1, dphi=dphi, mass=100.0, lj0_mass=lj0_mass, ndsa0=ndsa0)
+    cube = io.cube_from_hist(h, "2mu2e")
+    low = ps.Config(mass=(None, 150.0))
+    assert counts(ps.regions(cube, low, "DD:mu0")) == {"A": 3, "B": 6, "C": 6, "D": 6}
+    assert counts(ps.regions(cube, low, "DD:dsa0")) == {"A": 1, "B": 2, "C": 2, "D": 2}
+    assert counts(ps.regions(cube, low, "DD:mu0:dsa1+")) == {"A": 2, "B": 4, "C": 4, "D": 4}
+    assert counts(ps.regions(cube, low, "DD:dsa2+")) == {"A": 1, "B": 2, "C": 2, "D": 2}
+    assert ps.plane_selection("2mu2e", "DD:dsa1")["ndsa0"] == (0.5, 1.5)
+    assert ps.plane_selection("4mu", "DD:subdsa1+") == {"disp0": (None, 2.5), "disp1": (None, 2.5), "ndsa1": (0.5, None)}
+    with pytest.raises(ValueError):
+        ps.plane_selection("2mu2e", "DD:subdsa1")
+    with_cut = low.with_cut("lj0_mass", None, 75.0).with_cut("ndsa0", 0.5, None)
+    assert with_cut.label().endswith("M<150, lj0_mass<75, ndsa0>=0.5")
+    assert ps.region_ranges(with_cut)["A"]["lj0_mass"] == (None, 75.0)
+    assert counts(ps.regions(cube, with_cut, "DD")) == {"A": 1, "B": 2, "C": 2, "D": 2}   # one DSA muon, mass 2
+    assert counts(ps.regions(cube, low.with_cut("lj0_mass", 75.0, None), "DD")) == {"A": 1, "B": 2, "C": 2, "D": 2}
+    with pytest.raises(ValueError):
+        ps.regions(cube, low.with_cut("nbjets", 0.5, None), "DD")       # not an axis of this cube
 
 
 def test_cube4_reproduces_the_full_cube():
@@ -201,3 +229,13 @@ def test_signal_tables_accept_full_and_exported_cubes():
     assert sub.loc[0, "DY / data"] == "0.50/0.50/0.50/0.50"
     assert sub.loc[0, "DY N_eff A/B/C/D"] == "9.0/6.0/3.0/2.0"       # half the yield on the same events: N_eff unchanged
     assert sub.loc[0, "kappa, DY subtracted"].startswith("1.00") and sub.loc[0, "A/B, DY subtracted"].startswith("1.50")
+
+
+def test_with_cut_refuses_abcd_axes_and_repeated_variables():
+    cfg = ps.Config()
+    with pytest.raises(ValueError):
+        cfg.with_cut("iso1", None, 1.0)
+    cut = cfg.with_cut("lj0_mass", None, 75.0)
+    with pytest.raises(ValueError):
+        cut.with_cut("lj0_mass", 5.0, None)
+    assert cut.with_cut("ndsa0", 0.5, None).extra == (("lj0_mass", (None, 75.0)), ("ndsa0", (0.5, None)))

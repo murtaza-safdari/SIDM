@@ -23,6 +23,78 @@ def event(h, iso0, iso1, disp0, disp1, dphi=3.0, mass=400.0, weight=1.0):
          abs_dphi=dphi, ljlj_mass=mass)
 
 
+def make_hist8d(topology, prefix="abcd8d"):
+    spec = io.spec8d(topology, prefix)
+    axes = [hist.axis.StrCategory(["ch"], name="channel")]
+    for v, e, u, o in zip(spec.variables, spec.edges, spec.underflow, spec.overflow):
+        axes.append(hist.axis.Variable(e, name=v, underflow=u, overflow=o))
+    return hist.Hist(*axes, storage=hist.storage.Weight())
+
+
+def event8d(h, iso0, iso1, disp0, disp1, dphi=3.0, mass=400.0, lj0_mass=1.0, ndsa0=0, ndsa1=0, nbjets=0, weight=1.0):
+    values = dict(iso0=iso0, iso1=iso1, disp0=disp0, disp1=disp1, abs_dphi=dphi, ljlj_mass=mass,
+                  lj0_mass=lj0_mass, ndsa0=ndsa0, ndsa1=ndsa1, nbjets=nbjets)
+    h.fill(channel="ch", weight=weight, **{v: np.atleast_1d(values[v]) for v in h.axes.name[1:]})
+
+
+def test_8d_cube_axes_flow_and_blinding():
+    h = make_hist8d("2mu2e")
+    event8d(h, 0.1, 0.1, 0, 1, lj0_mass=1.0, ndsa0=2)                # search corner, pixel-0, two DSA muons: blind
+    event8d(h, 0.1, 0.1, 0, 1, mass=100.0, lj0_mass=91.0, ndsa0=0)   # low mass, Z-like muon LJ: open
+    event8d(h, 7.0, 0.1, 5, 0, lj0_mass=20.0, ndsa0=0, weight=2.0)   # iso0 overflow, prompt plane, region B
+    event8d(h, 0.1, 0.1, 5, 999, lj0_mass=500.0, ndsa0=1)            # photon-only (lost overflow), lj0 mass overflow
+    cube = io.cube_from_hist(h, "2mu2e")
+    assert cube.spec == io.spec8d("2mu2e") and cube.shape == (12, 12, 6, 4, 10, 10, 8, 3)
+    assert io.project(cube)[0] == 5.0                                 # every flow bin that exists is summed
+    assert io.project(cube, iso0=(5, None))[0] == 2.0                 # the overflow bin alone
+    assert io.project(cube, lj0_mass=(300, None))[0] == 1.0 and io.project(cube, lj0_mass=(75, 105))[0] == 1.0
+    assert io.project(cube, ndsa0=(1.5, None))[0] == 1.0 and io.project(cube, ndsa0=(None, 0.5))[0] == 3.0
+    assert io.project(cube, **io.plane("2mu2e", "prompt", "displaced"))[0] == 1.0     # lost hits 999 is displaced
+    with pytest.raises(ValueError):
+        io.project(cube, ndsa1=(None, 0.5))                           # not an axis of 2mu2e
+    with pytest.raises(ValueError):
+        io.project(cube, lj0_mass=(None, 80))                         # not a stored edge
+    blinded = io.blind(cube)
+    box = dict(iso0=(None, 0.5), iso1=(None, 0.5), ljlj_mass=(150, None), abs_dphi=(2, None))
+    assert np.isnan(io.project(blinded, **box, **io.plane("2mu2e", "displaced", "displaced"))[0])
+    assert np.isnan(io.project(blinded, ndsa0=(1.5, None))[0])        # the hidden cell is hidden in every slice
+    assert io.project(blinded, ljlj_mass=(None, 150), lj0_mass=(75, 105))[0] == 1.0
+    assert io.blind(io.cube_from_hist(make_hist8d("4mu"), "4mu")).shape == (12, 12, 6, 6, 10, 10, 5, 3, 3)
+    with pytest.raises(ValueError):
+        io.add_cubes([cube, io.cube_from_hist(make_hist("2mu2e"), "2mu2e")])   # different axes
+
+
+def test_proxy_cubes_hide_only_the_4mu_b_veto_corners():
+    """The proxy family is recognised from its axes; its 2mu2e cube is open everywhere and
+    its 4mu cube hides the isolated corner of the planes with a displaced object when the
+    event has no b-tagged jet."""
+    h = make_hist8d("2mu2e", "abcd8d_proxy")
+    event8d(h, 0.1, 0.1, 0, 1, ndsa0=1, nbjets=0)             # displaced lone muon and egamma LJ, isolated, high mass
+    cube = io.cube_from_hist(h, "2mu2e")
+    assert cube.prefix == "abcd8d_proxy" and cube.spec == io.spec_proxy("2mu2e")
+    assert cube.shape == (12, 12, 6, 4, 10, 10, 3, 3)
+    assert io.project(io.blind(cube), nbjets=(None, 0.5), ndsa0=(0.5, None))[0] == 1.0
+    assert "nbjets=0" in io.blind_signature(prefix="abcd8d_proxy")
+    with pytest.raises(ValueError):
+        io.add_cubes([cube, io.cube_from_hist(make_hist8d("2mu2e"), "2mu2e")])    # another family
+
+    h4 = make_hist8d("4mu", "abcd8d_proxy")
+    corner = dict(iso0=0.1, iso1=0.1, dphi=3.0, mass=400.0)
+    event8d(h4, disp0=0, disp1=0, nbjets=0, **corner)          # both displaced, no b-jet: hidden
+    event8d(h4, disp0=5, disp1=0, nbjets=0, **corner)          # prompt LJ, displaced lone muon: hidden
+    event8d(h4, disp0=0, disp1=0, nbjets=1, **corner)          # b-tagged: open
+    event8d(h4, disp0=5, disp1=5, nbjets=0, **corner)          # both prompt: open
+    event8d(h4, disp0=0, disp1=0, nbjets=0, iso0=0.1, iso1=0.1, dphi=1.0, mass=400.0)   # low |dphi|: open
+    blinded = io.blind(io.cube_from_hist(h4, "4mu"))
+    assert blinded.shape == (12, 12, 6, 6, 10, 10, 3, 3, 3)
+    assert np.isnan(io.project(blinded)[0])
+    assert io.project(blinded, nbjets=(0.5, None))[0] == 1.0
+    assert io.project(blinded, nbjets=(None, 0.5), **io.plane("4mu", "prompt", "prompt"))[0] == 1.0
+    assert io.project(blinded, nbjets=(None, 0.5), abs_dphi=(None, 2.0))[0] == 1.0
+    for obj0, obj1 in (("displaced", "displaced"), ("prompt", "displaced"), ("displaced", "prompt")):
+        assert np.isnan(io.project(blinded, nbjets=(None, 0.5), **io.plane("4mu", obj0, obj1))[0])
+
+
 def test_cube_shape_and_flow():
     h = make_hist("2mu2e")
     event(h, 0.1, 0.1, 0, 1)                 # displaced plane, A corner

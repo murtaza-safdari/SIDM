@@ -37,17 +37,27 @@ AXES4 = ("iso0", "iso1", "abs_dphi", "ljlj_mass")
 # Finer displacement planes: label -> (disp0 range, disp1 range) on the stored axes.
 # 2mu2e: disp0 = pixel hits of the muon LJ, disp1 = lost hits of the egamma LJ (999 = photon-only).
 _MU = {"0": (None, 0.5), "1": (0.5, 1.5), "2": (1.5, 2.5), "3": (2.5, 3.5), "4": (3.5, 4.5), "5+": (4.5, None),
-       "0-1": (None, 1.5), "1-2": (0.5, 2.5), "3-4": (2.5, 4.5)}
+       "0-1": (None, 1.5), "1-2": (0.5, 2.5), "3-4": (2.5, 4.5), "3+": (2.5, None)}
 _EGM = {"e1": (0.5, 1.5), "e2-9": (1.5, 9.5), "e": (0.5, 9.5), "g": (9.5, None)}
+# DSA-muon count classes of a muon LJ (the ``ndsa0``/``ndsa1`` axes of the abcd8d campaign)
+_DSA = {"0": (None, 0.5), "1": (0.5, 1.5), "2+": (1.5, None), "1+": (0.5, None)}
 
 
 def plane_selection(topology, label):
     """Displacement selection of a plane label: ``PP``/``DP``/``PD``/``DD`` or a split such as
     ``PD:mu3`` (muon LJ with 3 pixel hits, egamma LJ displaced), ``DD:g`` (photon-only egamma
-    LJ), ``PP:mu3-4``, ``DD:mu0`` or ``PD:mu5+:e`` (two splits)."""
+    LJ), ``PP:mu3-4``, ``DD:mu0`` or ``PD:mu5+:e`` (two splits).  On the abcd8d cubes a muon LJ
+    can also be split by its DSA-muon count: ``DD:dsa0`` (none), ``DD:dsa1+``, ``DD:mu0:dsa2+``,
+    and in 4mu ``DD:subdsa1+`` for the subleading muon LJ."""
     base, *splits = label.split(":")
     sel = dict(io.plane(topology, *tl.PLANES[base]))
     for s in splits:
+        if s.startswith("dsa"):
+            sel["ndsa0"] = _DSA[s[3:]]
+            continue
+        if topology == "4mu" and s.startswith("subdsa"):
+            sel["ndsa1"] = _DSA[s[6:]]
+            continue
         if s.startswith("mu"):
             key, rng = "disp0", _MU[s[2:]]
         elif topology == "2mu2e" and s in _EGM:
@@ -119,8 +129,10 @@ def profile(cube, variable, **ranges):
 
 def to_cube4(cube, plane):
     """The 4D cube of one displacement plane of a full cube (sum over the displacement axes)."""
-    index = io.selection_index(cube.topology, **plane_selection(cube.topology, plane))
-    disp_axes = tuple(io.VARIABLES.index(v) for v in ("disp0", "disp1"))
+    if cube.spec.variables != io.VARIABLES:
+        raise ValueError("to_cube4 takes a cube of the abcd6d campaign")
+    index = io.selection_index(cube, **plane_selection(cube.topology, plane))
+    disp_axes = tuple(cube.spec.index(v) for v in ("disp0", "disp1"))
     return Cube4(cube.topology, np.sum(cube.sumw[index], axis=disp_axes), np.sum(cube.sumw2[index], axis=disp_axes))
 
 
@@ -164,10 +176,13 @@ class Config:
     dphi_pass: float = 2.4
     dphi_fail: float = 2.0
     mass: tuple = (150.0, None)
+    extra: tuple = ()           # further event cuts as ((variable, (low, high)), ...), e.g. the 8D axes
 
     def label(self):
         m = f"M>={self.mass[0]:g}" if self.mass[1] is None else (
             f"M<{self.mass[1]:g}" if self.mass[0] is None else f"M {self.mass[0]:g}-{self.mass[1]:g}")
+        for variable, (lo, hi) in self.extra:
+            m += f", {variable}" + (f">={lo:g}" if hi is None else (f"<{hi:g}" if lo is None else f" {lo:g}-{hi:g}"))
         if self.kind == "dphi x iso0":
             return (f"dphi {self.dphi_pass:g}/{self.dphi_fail:g} x iso0 {self.wp0:g}/{self.fail0:g}, "
                     f"iso1<{self.wp1:g}, {m}")
@@ -176,6 +191,16 @@ class Config:
                     f"dphi>={self.dphi_pass:g}, {m}")
         return (f"dphi {self.dphi_pass:g}/{self.dphi_fail:g} x iso1 {self.wp1:g}/{self.fail1:g}, "
                 f"iso0<{self.wp0:g}, {m}")
+
+    def with_cut(self, variable, lo, hi):
+        """The same configuration with one more event cut on a stored axis that is not one of the
+        four ABCD axes and is not already cut (a second cut on the same axis would silently
+        replace the first in :func:`region_ranges`)."""
+        if variable in ("iso0", "iso1", "abs_dphi", "ljlj_mass"):
+            raise ValueError(f"{variable} is an ABCD axis: set it through the configuration, not with_cut")
+        if any(v == variable for v, _ in self.extra):
+            raise ValueError(f"{variable} is already cut in this configuration ({self.label()})")
+        return dataclasses.replace(self, extra=self.extra + ((variable, (lo, hi)),))
 
     def dd_open(self):
         """True if B, C and D of the DD plane lie outside the hidden box, so that the in-plane
@@ -196,7 +221,7 @@ class Config:
 
 def region_ranges(cfg):
     """``{region: ranges}`` on the ABCD axes (without the displacement selection)."""
-    mass = {"ljlj_mass": cfg.mass}
+    mass = {"ljlj_mass": cfg.mass, **dict(cfg.extra)}
     if cfg.kind == "dphi x iso0":
         ev = dict(iso1=(None, cfg.wp1), **mass)
         p0, f0 = (None, cfg.wp0), (cfg.fail0, None)
@@ -643,11 +668,12 @@ def signal_table(signals, topology, cfg, reference, plane="DD"):
     """Per signal point: A yield at the stored normalisation, acceptance of A relative to ``reference``,
     leakage fractions and the mass fractions of A above 200, 300 and 400 GeV (in ``plane``)."""
     rows = []
-    edges = io.EDGES["ljlj_mass"]
     for name, cubes in sorted(signals.items()):
         if topology not in cubes:
             continue
         cube = _plane_cube(cubes[topology], plane)
+        # an exported 4D cube has the 6D mass edges; a full cube carries its own
+        edges = io.EDGES["ljlj_mass"] if isinstance(cube, Cube4) else cube.spec.edges[cube.spec.index("ljlj_mass")]
         lk = leakage(cubes[topology], cfg, plane)
         rng = {k: v for k, v in region_ranges(cfg)["A"].items() if k != "ljlj_mass"}
         if not isinstance(cube, Cube4):

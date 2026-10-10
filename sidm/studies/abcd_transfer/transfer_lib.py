@@ -84,9 +84,16 @@ def local_dir():
     return os.environ.get("ABCD6D_LOCAL", "/uscms_data/d3/murtazas/abcd6d_local")
 
 
-def _manifest_hash(base):
+def _inputs_tag(base, kind):
+    """Hash of the manifest and of the name, size and modification time of every input file of
+    ``kind``: a re-merge that leaves the manifest's counts unchanged still invalidates the cache."""
+    h = hashlib.sha1()
     with open(os.path.join(base, "MANIFEST.txt"), "rb") as f:
-        return hashlib.sha1(f.read()).hexdigest()
+        h.update(f.read())
+    for path in sample_paths(base, kind):
+        st = os.stat(path)
+        h.update(f"{os.path.basename(path)} {st.st_size} {st.st_mtime_ns}\n".encode())
+    return h.hexdigest()
 
 
 def sample_paths(base, kind, names=None):
@@ -100,25 +107,27 @@ def sample_paths(base, kind, names=None):
     return paths
 
 
-def summed_cubes(base, kind):
-    """Sum of all files of one kind, per topology.
+def summed_cubes(base, kind, prefix="abcd6d"):
+    """Sum of all files of one kind, per topology, of the ``<prefix>_<topology>`` histograms.
 
     Data is always blinded (:func:`abcd6d_io.blind`) before it is cached or returned; the
-    cache is keyed on the file manifest and on the hidden box, so a changed box is never
-    served from an older cache.
+    cache is keyed on the input files (manifest, names, sizes, modification times), on the
+    histogram prefix and on the hidden box, so neither a re-merge nor a changed box is served
+    from an older cache.
     """
     blinded = kind == "data"
-    tag = _manifest_hash(base)
-    box = io.blind_signature() if blinded else "none"
-    cache = os.path.join(base, "summed", f"{kind}.npz")
+    tag = _inputs_tag(base, kind)
+    box = io.blind_signature(prefix=prefix) if blinded else "none"
+    cache = os.path.join(base, "summed", f"{kind}.npz" if prefix == "abcd6d" else f"{kind}_{prefix}.npz")
+    spec = {t: (io.spec6d(t) if prefix == "abcd6d" else io.spec8d(t, prefix)) for t in TOPOLOGIES}
     if os.path.exists(cache):
         z = np.load(cache)
         if "blind_box" in z.files and str(z["manifest"]) == tag and str(z["blind_box"]) == box:
-            cubes = {t: io.Cube(t, z[f"{t}_sumw"], z[f"{t}_sumw2"]) for t in TOPOLOGIES}
+            cubes = {t: io.Cube(t, z[f"{t}_sumw"], z[f"{t}_sumw2"], spec=spec[t], prefix=prefix) for t in TOPOLOGIES}
             return {t: io.blind(c) for t, c in cubes.items()} if blinded else cubes     # re-hidden on every load
     total = {}
-    for path in sample_paths(base, kind):          # running sum: one cube is ~110 MB
-        for t, c in io.load_cubes(path).items():
+    for path in sample_paths(base, kind):          # running sum: one cube is 0.1-0.4 GB
+        for t, c in io.load_cubes(path, prefix=prefix).items():
             total[t] = c if t not in total else io.add_cubes([total[t], c])
     if blinded:
         total = {t: io.blind(c) for t, c in total.items()}
@@ -135,10 +144,10 @@ def _refuse_data(kind):
         raise ValueError("data is only available summed and blinded: use summed_cubes(base, 'data')")
 
 
-def sample_cubes(base, kind, names=None, topologies=TOPOLOGIES):
+def sample_cubes(base, kind, names=None, topologies=TOPOLOGIES, prefix="abcd6d"):
     """``{sample: {topology: Cube}}`` for the files of one kind (MC only, never blinded)."""
     _refuse_data(kind)
-    return {os.path.basename(p)[: -len(".coffea")]: io.load_cubes(p, topologies)
+    return {os.path.basename(p)[: -len(".coffea")]: io.load_cubes(p, topologies, prefix=prefix)
             for p in sample_paths(base, kind, names)}
 
 
@@ -149,13 +158,13 @@ def bkg_group(sample):
     return "other"
 
 
-def group_cubes(base, kind="bkg"):
+def group_cubes(base, kind="bkg", prefix="abcd6d", topologies=TOPOLOGIES):
     """``{group: {topology: Cube}}``: the background samples summed per process group."""
     _refuse_data(kind)
     groups = {}
     for path in sample_paths(base, kind):
         g = bkg_group(os.path.basename(path)[: -len(".coffea")])
-        for t, c in io.load_cubes(path).items():
+        for t, c in io.load_cubes(path, topologies, prefix=prefix).items():
             groups.setdefault(g, {})
             groups[g][t] = c if t not in groups[g] else io.add_cubes([groups[g][t], c])
     return groups
