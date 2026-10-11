@@ -44,6 +44,28 @@ Section 7 carries the conclusions. The earlier version of the notebook (buffered
 without a b-tagged jet) is in the history of this directory; the proxy-region histograms are still
 produced by the campaign and merged under `$ABCD8D_LOCAL/proxy`, but not read.
 
+`binning.ipynb` evaluates the same 2μ2e estimate per bin of the LJ-pair mass — B of the search
+plane in the bin times A/B of PD, per DSA class, with the factor measured in the bin where PD
+measures it to 20 % or better and otherwise taken from a fit of A/B against the mass
+(exponential, fixed in advance; linear as the cross-check) with |measured − fitted| as a shape
+systematic — for four binnings fixed in advance, and chooses among them by a decision rule written
+down before any result (a toy asymptotic expected limit for the 500 and 800 GeV points, with a
+count requirement per bin; nothing selected on κ or on closure; A of DD never read). A/B of PD
+falls to 0.61 of its 150–200 GeV value by 400–600 GeV, in PP the same way (PP over PD flat at
+0.54 ± 0.03), but neither form describes the seven bins (deviance 19/5 for the dsa0 class): above
+600 GeV the measured A/B of PD and PP sit above the fall, and the fit there is the pooled average.
+Summed over the bins the estimate reproduces the one-bin 61 ± 8 to 3 % with the measured factors,
+so binning changes where the background sits, not how much there is. The rule chooses the
+histograms' own bins (150–200, 200–300, 300–400, 400–600, ≥ 600 GeV; 25, 17, 10, 5 and 3 events):
+a factor 6 in the expected limit of the 800 GeV points against one bin and 4.7 for the 500 GeV
+point, of which a factor 2.6 comes from the split at 300 GeV alone. The gain beyond that rests on
+a ≥ 600 GeV bin of four sideband events, which passes the rule's count requirement only with the
+fitted factor (2.9 events against 4.7 measured, 3.05 with the linear form, where the rule leaves
+the two windows) and whose A region in PD would hold 3–19 signal events at μ = 1 for the 800 GeV
+points; whether to admit it is left to the group. 4μ gains little: its three sideband events sit
+below 600 GeV, where the heavy points have 5–17 % of their yield, and its estimate stays
+count-limited. Section 7 carries the comparison with the one-bin estimate.
+
 ## Inputs
 
 Dongyub Lee's inclusive 6D histograms (campaign `ABCD_6D_inclusive_eHEM_skimv1`, merged
@@ -98,6 +120,10 @@ signal-contamination checks.
 | `test_estimate_lib.py` | the tables split by b-tag and class, the pulls and the final table, flow folding of the spectra, the four routes against the observed A (the per-class sum differs from the inclusive form by construction), reduced cubes against the full one, the closure scan's flags, `parse_fmt`, the count-limited tables on a blinded 4μ cube, the Poisson upper limits |
 | `estimate_plots.py` | spectra of a stored variable per region (data over the stacked groups), ABCD ratios against an object class; used by the earlier version of `estimate.ipynb`, not by the current one |
 | `_build_estimate.py` | writes `estimate.ipynb` |
+| `binning_lib.py` | the per-bin estimate: counts and A/B per mass bin, the fits of A/B against the mass, the B route per bin with the measured or the fitted factor, the signal yields per bin, the toy asymptotic expected limit, the decision rule |
+| `test_binning_lib.py` | the fit recovers a known slope, the binned sums equal the one-bin estimate for a flat factor and differ for a falling one, the rule takes the fitted factor where PD is imprecise, the hidden A stays hidden in every mass bin, the toy limit against reference values |
+| `binning_plots.py` | the four planes and the per-bin route as cartoons, signal and sideband spectra against the mass, A/B against the mass with its fits, background and signal per bin of each binning, the toy limits per signal point |
+| `_build_binning.py` | writes `binning.ipynb` |
 | `merge_abcd8d.py` | EOS per-chunk outputs → one file per sample and family, manifests, rescue lists; chunks with an exception or without the sample are left out and listed for rescue, a sample with such chunks is written only with `--allow-missing` |
 | `test_merge_abcd8d.py` | weighted combination of chunks, mismatched histogram sets refused, the merge plan (listed chunks only, bad chunks to the rescue list) |
 | `campaign/` | the histogram producers and patches the `abcd8d` campaign ran (reference copies, not imported here) |
@@ -116,6 +142,8 @@ jupyter nbconvert --to notebook --execute --inplace plane_search.ipynb
 python merge_abcd8d.py --kind data --workers 2   # and dy, signal, bkg_rest, dy_proxy, signal_proxy
 python _build_estimate.py
 jupyter nbconvert --to notebook --execute --inplace estimate.ipynb
+python _build_binning.py
+jupyter nbconvert --to notebook --execute --inplace binning.ipynb
 ```
 
 The tests run anywhere with numpy, scipy, pandas and hist: `pytest -q`.
