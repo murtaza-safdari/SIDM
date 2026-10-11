@@ -119,8 +119,10 @@ def mass_figure(cube, planes=("PP", "PD", "DD"), cfg=ps.Config(), bins=MASS_POIN
         else:
             lo, hi = ax.get_ylim()
             ax.set_ylim(lo / 2, hi * 15)
-        ax.legend(title=f"{t}, {cfg.kind} plane; dashed line: 150 GeV\nDD: kappa and A/B hidden above it",
-                  loc="upper left", ncol=len(planes),
+        title = f"{t}, {cfg.kind} plane; dashed line: 150 GeV"
+        if "DD" in planes:
+            title += "\nDD: kappa and A/B hidden above it"
+        ax.legend(title=title, loc="upper left", ncol=len(planes),
                   columnspacing=0.8, handletextpad=0.3, **tp.LEGEND)
         tp.label(ax, fontsize=18)  # four panels: the full-size label overlaps the luminosity text
     fig.tight_layout()

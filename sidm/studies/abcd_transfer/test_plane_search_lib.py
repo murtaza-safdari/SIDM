@@ -62,7 +62,11 @@ def test_search_plane_hides_exactly_the_box():
     assert {r: reg[r][0] for r in "BCD"} == {"B": 12, "C": 6, "D": 3}
     assert np.isnan(ps.kappa(reg)[0]) and ps.prediction(reg)[0] == pytest.approx(24.0)
     assert ps.Config().dd_open()
-    for cfg in (ps.Config(fail0=0.25), ps.Config(dphi_fail=2.2), ps.Config("iso0 x iso1", fail1=0.25)):
+    no_buffer = ps.Config(fail0=0.25, dphi_fail=2.4)                    # sidebands start at the box's edges
+    assert no_buffer.dd_open()
+    assert {r: ps.regions(cube, no_buffer, "DD")[r][0] for r in "BCD"} == {"B": 12, "C": 6, "D": 3}
+    for cfg in (ps.Config(wp0=0.2, fail0=0.2), ps.Config(dphi_pass=2.6, dphi_fail=2.6),
+                ps.Config("iso0 x iso1", fail1=0.25)):                 # a sideband reaches into the box
         assert not cfg.dd_open()
         assert any(np.isnan(v[0]) for r, v in ps.regions(cube, cfg, "DD").items() if r != "A")
     straddling = ps.regions(cube, ps.Config(mass=(100.0, 200.0)), "DD")      # A reaches into the box, B/C/D do not
@@ -164,7 +168,10 @@ def test_kappa_vs_mass_and_config_grid():
     grid = ps.config_grid()
     assert len(grid) == len(set(grid)) and ps.Config() in grid
     assert all(c.dphi_fail <= c.dphi_pass and c.fail0 >= c.wp0 for c in grid)
-    assert all(c.dd_open() == (c.fail0 >= 0.5 and c.dphi_fail <= 2.0) for c in grid)
+    blinded = io.blind(cube)
+    every_kind = grid + ps.config_grid("iso0 x iso1") + ps.config_grid("dphi x iso1")
+    assert all(c.dd_open() == all(np.isfinite(ps.regions(blinded, c, "DD")[r][0]) for r in "BCD") for c in every_kind)
+    assert 0 < sum(c.dd_open() for c in every_kind) < len(every_kind)
 
 
 def test_scan_and_summary_tables():

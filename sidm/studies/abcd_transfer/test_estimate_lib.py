@@ -105,29 +105,52 @@ def test_closure_scan_ranks_by_the_selection_regions_and_closure_table_judges():
     assert table["kappa - 1 [%]"].iloc[1].startswith("+50")
 
 
-def test_class_recipe_sums_the_per_class_products():
+def routes_cube():
+    """PD with A/B 3.0, A/C 3.0, A/D 3.0 without a DSA muon and 0.5, 1.0, 0.5 with one (A/B/C/D
+    6/2/2/2 and 1/2/1/2), and a search plane whose sidebands are mostly DSA-containing: B 2 and 3
+    (one of the two at iso0 = 0.3, the former buffer band), C 2 and 1, D 1 and 1.  C/D differs
+    between the classes and between the planes.  The search corner at 400 GeV is hidden."""
     h = make_hist8d("2mu2e")
-    iso_b, dphi_b = CORNERS["B"]
     iso_a, dphi_a = CORNERS["A"]
-    for ndsa, n_a, n_b in ((0, 4, 2), (1, 1, 2)):          # PD: A/B 2.0 without a DSA muon, 0.5 with one
-        for _ in range(n_a):
-            event8d(h, iso_a, 0.1, 3, 1, dphi=dphi_a, mass=400.0, ndsa0=ndsa)
-        for _ in range(n_b):
-            event8d(h, iso_b, 0.1, 3, 1, dphi=dphi_b, mass=400.0, ndsa0=ndsa)
-    for ndsa, n_b in ((0, 1), (1, 3)):                     # DD: B of 1 and 3 events in the two classes
-        for _ in range(n_b):
-            event8d(h, iso_b, 0.1, 1, 1, dphi=dphi_b, mass=400.0, ndsa0=ndsa)
-    cube = io.blind(io.cube_from_hist(h, "2mu2e"))
-    table = el.class_recipe_table(cube, [("M >= 150", ps.Config())])
-    assert list(table["DD B dsa0"]) == ["1"] and list(table["DD B dsa1+"]) == ["3"]
-    assert table["A/B PD dsa0"].item().startswith("2.00") and table["A/B PD dsa1+"].item().startswith("0.50")
-    assert table["sum over classes"].item().startswith("3.5")          # 1 x 2.0 + 3 x 0.5
-    assert table["inclusive B x A/B"].item().startswith("5.0")         # 4 x (5/4)
-    assert table["inclusive C x A/C"].item() == "n/a"                  # no event in C of either plane
-    assert table["DD A observed"].item() == "blind"
+    for ndsa, counts_pd in ((0, dict(A=6, B=2, C=2, D=2)), (1, dict(A=1, B=2, C=1, D=2))):
+        for region, n in counts_pd.items():
+            iso, dphi = CORNERS[region]
+            for _ in range(n):
+                event8d(h, iso, 0.1, 3, 1, dphi=dphi, mass=400.0, ndsa0=ndsa)
+    for ndsa, counts_dd in ((0, dict(B=1, C=2, D=1)), (1, dict(B=3, C=1, D=1))):
+        for region, n in counts_dd.items():
+            iso, dphi = CORNERS[region]
+            for _ in range(n):
+                event8d(h, iso, 0.1, 1, 1, dphi=dphi, mass=400.0, ndsa0=ndsa)
+    event8d(h, 0.3, 0.1, 1, 1, dphi=dphi_a, mass=400.0, ndsa0=0)               # B of the no-buffer plane only
+    event8d(h, iso_a, 0.1, 1, 1, dphi=dphi_a, mass=400.0, ndsa0=1)             # in the search corner: hidden
+    return io.blind(io.cube_from_hist(h, "2mu2e"))
 
 
-def test_class_recipe_shows_the_observed_a_where_the_window_is_open():
+def test_routes_table_sums_the_per_class_products_and_differs_from_the_inclusive_form():
+    cube = routes_cube()
+    no_buffer = ps.Config(fail0=0.25, dphi_fail=2.4)
+    table = el.routes_table(cube, [("M >= 150", no_buffer)])
+    row = table.iloc[0]
+    assert row["DD B/C/D"] == "5/3/2"
+    assert el.routes_table(cube, [("buffered", ps.Config())])["DD B/C/D"].item() == "4/3/2"   # iso0 = 0.3 falls in the buffer
+    assert row["direct B C/D"].startswith("7.5")                            # 5 x 3 / 2
+    assert row["B x A/B per class"].startswith("7.5")                       # 2 x 3.0 + 3 x 0.5
+    assert row["B x A/B inclusive"].startswith("8.")                        # 5 x (7/4): the wrong mix
+    assert row["C x A/C per class"].startswith("7.0")                       # 2 x 3.0 + 1 x 1.0
+    assert row["D x A/D per class"].startswith("3.5")                       # 1 x 3.0 + 1 x 0.5
+    assert row["D x A/D inclusive"].startswith("3.5")                       # 2 x (7/4)
+    assert row["DD A observed"] == "blind"
+    factors = el.class_factors_table(cube, [("M >= 150", no_buffer)]).set_index("class")
+    assert factors.loc["dsa0", "A/B PD"].startswith("3.00") and factors.loc["dsa1+", "A/B PD"].startswith("0.50")
+    assert factors.loc["dsa0", "A/D PD"].startswith("3.00") and factors.loc["dsa1+", "A/C PD"].startswith("1.00")
+    assert factors.loc["all", "PD A/B/C/D"] == "7/4/3/4" and factors.loc["all", "DD B/C/D"] == "5/3/2"
+    assert factors.loc["all", "C/D DD"].startswith("1.50") and factors.loc["all", "C/D PD"].startswith("0.75")
+    assert factors.loc["all", "C/D DD over PD"].startswith("2.00")          # 1.5 / 0.75, not its inverse
+    assert factors.loc["dsa0", "C/D DD over PD"].startswith("2.00") and factors.loc["dsa1+", "C/D DD over PD"].startswith("2.00")
+
+
+def test_routes_table_shows_the_observed_a_where_the_window_is_open():
     h = make_hist8d("2mu2e")
     iso_b, dphi_b = CORNERS["B"]
     iso_a, dphi_a = CORNERS["A"]
@@ -144,9 +167,11 @@ def test_class_recipe_shows_the_observed_a_where_the_window_is_open():
         event8d(h, iso_c, 0.1, 1, 1, dphi=dphi_c, mass=100.0)
     cube = io.blind(io.cube_from_hist(h, "2mu2e"))
     low = dataclasses.replace(ps.Config(), mass=(None, 150.0))
-    table = el.class_recipe_table(cube, [("M < 150", low)])
-    assert table["inclusive B x A/B"].item().startswith("2.0")         # 1 x 2.0, against 3 observed
-    assert table["inclusive C x A/C"].item().startswith("8.0")         # 2 x 4.0
+    table = el.routes_table(cube, [("M < 150", low)])
+    assert table["B x A/B inclusive"].item().startswith("2.0")          # 1 x 2.0, against 3 observed
+    assert table["C x A/C inclusive"].item().startswith("8.0")          # 2 x 4.0
+    assert table["D x A/D inclusive"].item() == "n/a"                   # no event in D of either plane
+    assert table["direct B C/D"].item() == "n/a"
     assert table["DD A observed"].item() == "3"
 
 

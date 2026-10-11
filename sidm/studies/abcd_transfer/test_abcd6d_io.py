@@ -55,7 +55,7 @@ def test_8d_cube_axes_flow_and_blinding():
     with pytest.raises(ValueError):
         io.project(cube, lj0_mass=(None, 80))                         # not a stored edge
     blinded = io.blind(cube)
-    box = dict(iso0=(None, 0.5), iso1=(None, 0.5), ljlj_mass=(150, None), abs_dphi=(2, None))
+    box = dict(iso0=(None, 0.25), iso1=(None, 0.5), ljlj_mass=(150, None), abs_dphi=(2.4, None))
     assert np.isnan(io.project(blinded, **box, **io.plane("2mu2e", "displaced", "displaced"))[0])
     assert np.isnan(io.project(blinded, ndsa0=(1.5, None))[0])        # the hidden cell is hidden in every slice
     assert io.project(blinded, ljlj_mass=(None, 150), lj0_mass=(75, 105))[0] == 1.0
@@ -140,22 +140,31 @@ def test_sentinels_land_in_the_displaced_category():
 def test_blind_hides_exactly_the_search_corner():
     h = make_hist("2mu2e")
     event(h, 0.1, 0.1, 0, 1, mass=400.0)   # search corner: blind
-    event(h, 0.4, 0.4, 0, 1, mass=400.0)   # inside the 0.5 margin: blind
+    event(h, 0.4, 0.4, 0, 1, mass=400.0)   # iso0 in 0.25-0.5, back-to-back: region B, open
+    event(h, 0.1, 0.1, 0, 1, dphi=2.2)     # isolated, |dphi| in 2.0-2.4: region C, open
     event(h, 0.1, 0.1, 0, 1, dphi=1.0)     # isolated but |dphi| < 2: open (C of the dphi plane)
     event(h, 0.1, 0.1, 0, 1, mass=100.0)   # below the mass threshold: open
     event(h, 0.1, 0.1, 5, 0, mass=400.0)   # prompt plane: open
     event(h, 0.1, 0.1, 0, 0, mass=400.0)   # one object displaced: open in 2mu2e
-    event(h, 0.6, 0.1, 0, 1, mass=400.0)   # region B with the buffer: open
-    event(h, 0.1, 0.6, 0, 1, mass=400.0)   # region C with the buffer: open
+    event(h, 0.6, 0.1, 0, 1, mass=400.0)   # region B, far from the edge: open
+    event(h, 0.1, 0.6, 0, 1, mass=400.0)   # second object not isolated: open
     cube = io.blind(io.cube_from_hist(h, "2mu2e"))
     assert cube.blinded
     assert np.isnan(cube.sumw).sum() == np.isnan(cube.sumw2).sum() > 0
     sr = io.plane("2mu2e", "displaced", "displaced")
-    box = dict(iso0=(None, 0.5), iso1=(None, 0.5), ljlj_mass=(150, None), abs_dphi=(2, None))
+    box = dict(iso0=(None, 0.25), iso1=(None, 0.5), ljlj_mass=(150, None), abs_dphi=(2.4, None))
     assert np.isnan(io.project(cube, **box, **sr)[0])
     assert np.isnan(io.project(cube)[0])
     assert io.project(cube, ljlj_mass=(None, 150), **sr)[0] == 1.0
     assert io.project(cube, abs_dphi=(None, 2), **sr)[0] == 1.0
+    assert io.project(cube, abs_dphi=(2.0, 2.4), **sr)[0] == 1.0                    # the former dphi margin is open
+    assert io.project(cube, iso0=(0.25, 0.5), abs_dphi=(2.4, None), **sr)[0] == 1.0  # the former iso0 margin is open
+    assert io.project(cube, iso0=(0.25, None), abs_dphi=(2.4, None), **sr)[0] == 2.0  # B of the no-buffer plane
+    assert io.project(cube, iso0=(None, 0.25), abs_dphi=(None, 2.4), **sr)[0] == 2.0  # C of the no-buffer plane
+    # the box reaches its own edges: the cells just inside each edge are hidden even where empty
+    inner = dict(iso0=(0.2, 0.25), iso1=(0.4, 0.5), abs_dphi=(2.4, 2.6), ljlj_mass=(150, 200))
+    for variable, rng in inner.items():
+        assert np.isnan(io.project(cube, **{**box, variable: rng}, **sr)[0]), variable
     assert io.project(cube, **io.plane("2mu2e", "prompt", "prompt"))[0] == 1.0
     assert io.project(cube, **io.plane("2mu2e", "displaced", "prompt"))[0] == 1.0
     assert io.project(cube, iso0=(0.5, None), **sr)[0] == 1.0
@@ -174,14 +183,16 @@ def test_blind_hides_the_one_displaced_corners_in_4mu():
     event(h, 0.1, 0.1, 5, 1, mass=400.0)   # subleading displaced only, isolated: blind in 4mu
     event(h, 0.1, 0.1, 5, 5, mass=400.0)   # prompt plane: open
     event(h, 0.6, 0.1, 1, 5, mass=400.0)   # leading displaced, region B: open
+    event(h, 0.4, 0.1, 1, 5, mass=400.0)   # leading displaced, iso0 in 0.25-0.5: region B, open
     event(h, 0.1, 0.1, 1, 5, mass=100.0)   # leading displaced, low mass: open
     cube = io.blind(io.cube_from_hist(h, "4mu"))
-    box = dict(iso0=(None, 0.5), iso1=(None, 0.5), ljlj_mass=(150, None), abs_dphi=(2, None))
+    box = dict(iso0=(None, 0.25), iso1=(None, 0.5), ljlj_mass=(150, None), abs_dphi=(2.4, None))
     for plane in (("displaced", "displaced"), ("displaced", "prompt"), ("prompt", "displaced")):
         assert np.isnan(io.project(cube, **box, **io.plane("4mu", *plane))[0])
     assert io.project(cube, **box, **io.plane("4mu", "prompt", "prompt"))[0] == 1.0
     dp = io.plane("4mu", "displaced", "prompt")
     assert io.project(cube, iso0=(0.5, None), **dp)[0] == 1.0
+    assert io.project(cube, iso0=(0.25, None), abs_dphi=(2.4, None), ljlj_mass=(150, None), **dp)[0] == 2.0
     assert io.project(cube, ljlj_mass=(None, 150), **dp)[0] == 1.0
     assert io.blind_signature() != io.blind_signature(planes={"2mu2e": (), "4mu": ()})
 

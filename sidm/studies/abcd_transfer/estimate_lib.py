@@ -266,33 +266,63 @@ def _add(a, b):
     return a[0] + b[0], np.hypot(a[1], b[1]), np.hypot(a[2], b[2])
 
 
-def class_recipe_table(cube, cfg_windows, classes=("dsa0", "dsa1+"), ab_plane="PD", search="DD"):
-    """B × (A/B) of ``ab_plane`` evaluated per class of the muon LJ (B of the search plane's
-    class times A/B of the same class of ``ab_plane``), summed over ``classes``, next to the
-    recipe evaluated on the inclusive planes, to the same transfer along the other axis
-    (C × (A/C) of ``ab_plane``, a consistency check that runs on the smaller sideband) and to
-    the observed A of the search plane ("blind" where it is hidden; a window with A open is the
-    closure test of the recipe).  The class-split and inclusive forms differ when the classes
-    have different A/B and the search plane's B has a different class mix than ``ab_plane``'s A."""
+ROUTES = (("B", "A/B"), ("C", "A/C"), ("D", "A/D"))
+
+
+def _route(cube, cfg, search, ref, sideband, cls=None):
+    """``sideband`` of the search plane times A/``sideband`` of the reference plane, for one
+    class of the muon LJ (or inclusive)."""
+    tag = "" if cls is None else f":{cls}"
+    count = ps.regions(cube, cfg, f"{search}{tag}")[sideband]
+    r = ps.regions(cube, cfg, f"{ref}{tag}")
+    return tl._pred(count, tl.ratio(r["A"], r[sideband]))
+
+
+def routes_table(cube, cfg_windows, classes=("dsa0", "dsa1+"), ref_plane="PD", search="DD"):
+    """Four estimates of A of the search plane per window, next to the observed A ("blind"
+    where hidden): the plane's own B C / D, which needs the two axes to be independent and
+    nothing else, and the three borrowed forms B × (A/B), C × (A/C) and D × (A/D), each with the
+    ratio taken from ``ref_plane`` per class of the muon LJ and summed over ``classes``; the
+    inclusive borrowed forms stand beside them.  The per-class and inclusive forms differ when
+    the classes have different ratios and the search plane's sidebands have a different class
+    mix than the reference plane."""
     rows = []
     for label, cfg in cfg_windows:
-        row, total = {"window": label}, (0.0, 0.0, 0.0)
-        for cls in classes:
-            b = ps.regions(cube, cfg, f"{search}:{cls}")["B"]
-            ref = ps.regions(cube, cfg, f"{ab_plane}:{cls}")
-            ab = tl.ratio(ref["A"], ref["B"])
-            est = tl._pred(b, ab)
-            row[f"{search} B {cls}"] = f"{b[0]:.0f}"
-            row[f"A/B {ab_plane} {cls}"] = tl.fmt(ab, 2)
-            row[f"B x A/B {cls}"] = tl.fmt(est, 1)
-            total = _add(total, est)
-        row["sum over classes"] = tl.fmt(total, 1)
         reg = ps.regions(cube, cfg, search)
-        ref = ps.regions(cube, cfg, ab_plane)
-        row["inclusive B x A/B"] = tl.fmt(tl._pred(reg["B"], tl.ratio(ref["A"], ref["B"])), 1)
-        row["inclusive C x A/C"] = tl.fmt(tl._pred(reg["C"], tl.ratio(ref["A"], ref["C"])), 1)
+        row = {"window": label, f"{search} B/C/D": "/".join(tl.fmt_count(reg[r]) for r in "BCD")}
+        pred = ps.prediction(reg)
+        row["direct B C/D"] = tl.fmt((pred[0], pred[1], pred[1]) if np.isfinite(pred[0]) else (np.nan,) * 3, 1)
+        for sideband, name in ROUTES:
+            total = (0.0, 0.0, 0.0)
+            for cls in classes:
+                total = _add(total, _route(cube, cfg, search, ref_plane, sideband, cls))
+            row[f"{sideband} x {name} per class"] = tl.fmt(total, 1)
+            row[f"{sideband} x {name} inclusive"] = tl.fmt(_route(cube, cfg, search, ref_plane, sideband), 1)
         row[f"{search} A observed"] = tl.fmt_count(reg["A"])
         rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def class_factors_table(cube, cfg_windows, classes=("dsa0", "dsa1+"), ref_plane="PD", search="DD"):
+    """Per window and class of the muon LJ: the search plane's B, C and D, the reference plane's
+    A/B, A/C and A/D (the borrowed factors), and C/D in both planes — the sideband-only test
+    that the isolation pass/fail ratio of the leading muon LJ is the same in the two planes,
+    which is what B × (A/B) assumes."""
+    rows = []
+    for label, cfg in cfg_windows:
+        for cls in (*classes, None):
+            tag = "" if cls is None else f":{cls}"
+            reg = ps.regions(cube, cfg, f"{search}{tag}")
+            ref = ps.regions(cube, cfg, f"{ref_plane}{tag}")
+            row = {"window": label, "class": "all" if cls is None else cls,
+                   f"{search} B/C/D": "/".join(tl.fmt_count(reg[r]) for r in "BCD"),
+                   f"{ref_plane} A/B/C/D": "/".join(tl.fmt_count(ref[r]) for r in "ABCD")}
+            for sideband, name in ROUTES:
+                row[f"{name} {ref_plane}"] = tl.fmt(tl.ratio(ref["A"], ref[sideband]), 2)
+            row[f"C/D {ref_plane}"] = tl.fmt(tl.ratio(ref["C"], ref["D"]), 2)
+            row[f"C/D {search}"] = tl.fmt(tl.ratio(reg["C"], reg["D"]), 2)
+            row[f"C/D {search} over {ref_plane}"] = tl.fmt(tl.ratio_of_ratios(tl.ratio(reg["C"], reg["D"]), tl.ratio(ref["C"], ref["D"])), 2)
+            rows.append(row)
     return pd.DataFrame(rows)
 
 

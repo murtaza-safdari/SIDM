@@ -33,23 +33,23 @@ used by any selection and not used here.
 
 Blinding: :func:`blind` sets the cells of the hidden box to NaN, so that any projection
 touching them is NaN instead of silently wrong; ``transfer_lib.summed_cubes`` applies it to
-data before anything is cached or returned.  The search region is the displaced plane at
-LJ-pair mass >= 150 with the leading muon LJ isolation < 0.25, the other LJ isolation < 0.5
-and |dphi| >= 2.4.  The hidden box is that region plus a margin on the two ABCD axes:
-``iso0`` < ``BLIND_ISO`` (0.5) and |dphi| >= ``BLIND_DPHI_MIN`` (2.0), with ``iso1`` below
-``BLIND_ISO``, which is the search region's own edge.  In 4mu the isolated corners of the
-two one-object-displaced planes hold up to half of the signal's search-region yield at the
-stored normalisation, comparable to the background the prompt-plane factors predict there, so
-``BLIND_PLANES`` hides them too.
+data before anything is cached or returned.  The hidden box is the search region itself: the
+displaced plane at LJ-pair mass >= ``BLIND_MASS_MIN`` (150) with the leading muon LJ isolation
+``iso0`` < ``BLIND_ISO0`` (0.25), the other LJ isolation ``iso1`` < ``BLIND_ISO1`` (0.5) and
+|dphi| >= ``BLIND_DPHI_MIN`` (2.4).  The ABCD sidebands start at those edges, so every
+sideband of the search plane is open.  In 4mu the same corner of the two one-object-displaced
+planes holds a quarter to a half of the signal's search-region yield at the stored
+normalisation, against a background of tens of events, so ``BLIND_PLANES`` hides those corners
+too; their sidebands hold about 1% of that yield and are open.
 
 The proxy regions are disjoint from both search regions, but the 4mu proxy region is not
 signal-free: a 4mu signal event whose second dark-photon pair loses one muon is a muon LJ plus
 a lone muon, and 22% of the 800/1.2 GeV signal lands there against 1% once a b-tagged jet is
 required (the thesis construction).  :func:`blind` therefore hides, in the 4mu proxy cube with
-no b-tagged jet, the isolated corner (both isolations < ``BLIND_ISO``, |dphi| >= ``BLIND_DPHI_MIN``,
-pair mass >= ``BLIND_MASS_MIN``) of every plane with a displaced object; the 2mu2e proxy region
-holds 0.7% of the 2mu2e signal's search-channel yield in a sample several times larger and
-stays open.
+no b-tagged jet, the same corner (``iso0`` < ``BLIND_ISO0``, ``iso1`` < ``BLIND_ISO1``,
+|dphi| >= ``BLIND_DPHI_MIN``, pair mass >= ``BLIND_MASS_MIN``) of every plane with a displaced
+object; the 2mu2e proxy region holds 0.7% of the 2mu2e signal's search-channel yield in a
+sample several times larger and stays open.
 """
 import dataclasses
 
@@ -82,10 +82,11 @@ EDGES8D = {
     "nbjets": (np.array([-0.5, 0.5, 1.5, 12.5]), False, False),                    # 0, 1, >= 2 tight b-tagged jets
 }
 
-BLIND_ISO = 0.5
+BLIND_ISO0 = 0.25
+BLIND_ISO1 = 0.5
 BLIND_MASS_MIN = 150.0
-BLIND_DPHI_MIN = 2.0
-# Planes whose isolated corner (both isolations < BLIND_ISO, |dphi| >= BLIND_DPHI_MIN,
+BLIND_DPHI_MIN = 2.4
+# Planes whose search corner (iso0 < BLIND_ISO0, iso1 < BLIND_ISO1, |dphi| >= BLIND_DPHI_MIN,
 # mass >= BLIND_MASS_MIN) is hidden.
 BLIND_PLANES = {
     "2mu2e": (("displaced", "displaced"),),
@@ -317,23 +318,24 @@ BLIND_PLANES_PROXY = {
 }
 
 
-def blind_signature(iso_max=BLIND_ISO, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_MIN, planes=None,
-                    prefix="abcd6d"):
+def blind_signature(iso0_max=BLIND_ISO0, iso1_max=BLIND_ISO1, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_MIN,
+                    planes=None, prefix="abcd6d"):
     """String identifying the hidden box, stored next to cached blinded cubes."""
     if planes is None:                                        # resolved at call time, like blind()
         planes = BLIND_PLANES_PROXY if prefix == "abcd8d_proxy" else BLIND_PLANES
     tag = " nbjets=0" if prefix == "abcd8d_proxy" else ""
-    return (f"iso<{iso_max:g} mass>={mass_min:g} dphi>={dphi_min:g}{tag} "
+    return (f"iso0<{iso0_max:g} iso1<{iso1_max:g} mass>={mass_min:g} dphi>={dphi_min:g}{tag} "
             f"planes={sorted((t, p) for t, ps in planes.items() for p in ps)}")
 
 
-def blind(cube, iso_max=BLIND_ISO, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_MIN, planes=None):
+def blind(cube, iso0_max=BLIND_ISO0, iso1_max=BLIND_ISO1, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_MIN,
+          planes=None):
     """Return a copy with the hidden cells set to NaN.
 
-    The box is the isolated corner (both isolations below ``iso_max``) at LJ-pair mass
-    >= ``mass_min`` and |dphi| >= ``dphi_min`` in each plane of ``planes`` (default:
-    ``BLIND_PLANES[cube.topology]``; for a proxy cube ``BLIND_PLANES_PROXY[cube.topology]``,
-    restricted to events with no b-tagged jet).
+    The box is the search corner (``iso0`` below ``iso0_max``, ``iso1`` below ``iso1_max``) at
+    LJ-pair mass >= ``mass_min`` and |dphi| >= ``dphi_min`` in each plane of ``planes``
+    (default: ``BLIND_PLANES[cube.topology]``; for a proxy cube
+    ``BLIND_PLANES_PROXY[cube.topology]``, restricted to events with no b-tagged jet).
     """
     proxy = cube.prefix == "abcd8d_proxy"
     if planes is None:
@@ -341,7 +343,7 @@ def blind(cube, iso_max=BLIND_ISO, mass_min=BLIND_MASS_MIN, dphi_min=BLIND_DPHI_
     extra = {"nbjets": (None, 0.5)} if proxy else {}
     sumw, sumw2 = cube.sumw.copy(), cube.sumw2.copy()
     for obj0, obj1 in planes:
-        index = selection_index(cube, iso0=(None, iso_max), iso1=(None, iso_max),
+        index = selection_index(cube, iso0=(None, iso0_max), iso1=(None, iso1_max),
                                 ljlj_mass=(mass_min, None), abs_dphi=(dphi_min, None),
                                 **plane(cube.topology, obj0, obj1), **extra)
         sumw[index] = np.nan

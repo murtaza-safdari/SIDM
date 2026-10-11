@@ -208,10 +208,10 @@ class Config:
         if self.mass[1] is not None and self.mass[1] <= io.BLIND_MASS_MIN:
             return True
         if self.kind == "dphi x iso0":
-            return self.fail0 >= io.BLIND_ISO and self.dphi_fail <= io.BLIND_DPHI_MIN
+            return self.fail0 >= io.BLIND_ISO0 and self.dphi_fail <= io.BLIND_DPHI_MIN
         if self.kind == "iso0 x iso1":
-            return self.fail0 >= io.BLIND_ISO and self.fail1 >= io.BLIND_ISO
-        return self.fail1 >= io.BLIND_ISO and self.dphi_fail <= io.BLIND_DPHI_MIN
+            return self.fail0 >= io.BLIND_ISO0 and self.fail1 >= io.BLIND_ISO1
+        return self.fail1 >= io.BLIND_ISO1 and self.dphi_fail <= io.BLIND_DPHI_MIN
 
     def nominal_a(self):
         """True if region A is the planned search region or a subset of it."""
