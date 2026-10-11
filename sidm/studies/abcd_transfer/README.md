@@ -31,10 +31,11 @@ configuration scan (axes, working points, buffers) selected on PP and confirmed 
 that the earlier |Δφ| buffer was most of PP's non-closure while PD stays 11–27 % above one for
 every unbuffered boundary. In 2μ2e PP closes (0.97 ± 0.10) and PD does not quite (1.20 ± 0.10),
 both falling between the 150–300 GeV and the ≥ 300 GeV windows; the four routes read 46–72 events
-and agree within their shared statistics, and the estimate is 61 ± 8 (stat.) ± 15 (syst.)
-background events in the one-bin search region (41 ± 7 ± 10 at 150–300 GeV, 19 ± 4 ± 5 above
-300 GeV), the 25 % systematic set by the two open tests of the borrowed A/B (the PP → DP analog
-and the search plane below 150 GeV, 1.32 ± 0.27 and 1.00 ± 0.25). The 15 % target is not met. In
+and agree within their shared statistics, and the estimate is 61 ± 8 (stat.) ± 20 (syst.)
+background events in the one-bin search region (41 ± 7 ± 14 at 150–300 GeV, 19 ± 4 ± 6 above
+300 GeV), the 33 % systematic being the non-closure plus the precision of the two open tests of
+the borrowed A/B (the PP → DP analog and the search plane below 150 GeV, 1.32 ± 0.27 and
+1.00 ± 0.25). The 15 % target is not met. In
 4μ the search plane's sidebands hold three events, no κ of it can be measured, and six
 count-limited readings from the open neighbouring regions put the search region at about 1.7
 events, uncertain by a factor two to three.

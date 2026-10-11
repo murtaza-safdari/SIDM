@@ -324,12 +324,12 @@ from PP into DP, the same step with a prompt egamma LJ: over the whole window th
 38.7 ± 4.8, the C and D routes 45.0 ± 13.8 and 45.8 ± 10.2 and the direct route 43.3 ± 14.9. Below
 150 GeV, where the search plane's A is open (41 events), the routes give 33 ± 9 (direct) and
 41 ± 8, 45 ± 7 and 36 ± 6 (per class), the inclusive forms 43, 58 and 42: the B route reads
-1.00 ± 0.25 there. The two tests average 1.15 ± 0.18, consistent with one; their non-closure and
-precision added in quadrature give 23%, and section 6 assigns 25%. Were the search plane to follow
-DP rather than its own low-mass window, the estimate would read 80, just outside that band. The
-same tests cannot tell the per-class form from the inclusive one, which reads 1.14 ± 0.22 and
-0.95 ± 0.23 in them; the per-class form is kept as the one that follows from the different class
-mixtures, and the inclusive form (75) lies inside the band.
+1.00 ± 0.25 there. The two tests average 1.15 ± 0.18, consistent with one; section 6 takes their
+non-closure plus their precision, 33%, as the systematic uncertainty, which reaches the case that
+the search plane follows DP rather than its own low-mass window (80). The same tests cannot tell
+the per-class form from the inclusive one, which reads 1.14 ± 0.22 and 0.95 ± 0.23 in them; the
+per-class form is kept as the one that follows from the different class mixtures, and the
+inclusive form (75) lies inside the band.
 
 The sideband test in the third table compares C/D of the search plane with C/D of PD per class:
 0.59 −0.17 +0.24 against 0.80 ± 0.06, a ratio of 0.73 −0.22 +0.31 (per class 0.89 −0.34 +0.51 and
@@ -608,17 +608,19 @@ same window reads 55 ± 18 over the whole window, 29 ± 11 at 150–300 GeV and 
 300 GeV — the estimate a reader gets by assuming the search plane shares PD's correlation, for
 which the low-mass window gives κ$_{DD}$ = 1.26 ± 0.44.
 
-**The 2μ2e estimate.** Over the one-bin search region M ≥ 150 GeV: **61 ± 8 (stat.) ± 15 (syst.)
-events**, the B × (A/B)$_{PD}$ route per DSA class. The systematic uncertainty, 25%, is set by the
+**The 2μ2e estimate.** Over the one-bin search region M ≥ 150 GeV: **61 ± 8 (stat.) ± 20 (syst.)
+events**, the B × (A/B)$_{PD}$ route per DSA class. The systematic uncertainty, 33%, is set by the
 two open tests of the route's own assumption in section 3.1 — the PP → DP analog (observed over
 predicted 1.32 ± 0.27) and the low-mass window of the search plane (1.00 ± 0.25), which average
-1.15 ± 0.18: their non-closure and precision in quadrature, 23%, rounded up; the band also holds
-the inclusive form of the route (75). It is not the spread of the four routes, which share the
-search plane's sidebands. Per window, with the same
-25%: 41 ± 7 ± 10 at 150–300 GeV and 19 ± 4 ± 5 above 300 GeV; above 300 GeV the PP → DP analog
-reads 1.5 ± 0.5 and the validation planes 0.67 ± 0.15 and 0.87 ± 0.17, so the per-window numbers
-are weaker than the integrated one. The 15% target is not met: PD misses it at 20 ± 10%, the
-transfer is tested to 18%, and the estimate carries 25%."""))
+1.15 ± 0.18: the non-closure of the mean (15%) plus its precision (18%). The band holds the
+inclusive form of the route (75), the upper edge of the combined test (1.33) and the case that the
+search plane follows DP (80). No correction is applied: the two tests disagree at one standard
+deviation on whether one is needed (a correction by the mean would give 70 ± 9 ± 13). It is not the
+spread of the four routes, which share the search plane's sidebands. Per window, with the same 33%:
+41 ± 7 ± 14 at 150–300 GeV and 19 ± 4 ± 6 above 300 GeV; above 300 GeV the PP → DP analog reads
+1.5 ± 0.5 and the validation planes 0.67 ± 0.15 and 0.87 ± 0.17, so the per-window numbers are
+weaker than the integrated one. The 15% target is not met: PD misses it at 20 ± 10%, the transfer
+is tested to 18%, and the estimate carries 33%."""))
 
 cells.append(code(r"""def kappa_of(cube, cfg, plane):
     return ps.kappa(ps.regions(cube, cfg, plane))
@@ -645,21 +647,21 @@ cells.append(md(r"""## 7. Conclusions
    The muon LJ's mass cut and the proxy region are gone without loss. The hidden box is the search
    region itself, and in 4μ the same corner of the two one-LJ-displaced planes.
 
-2. **2μ2e: 61 ± 8 (stat.) ± 15 (syst.) background events in the search region M ≥ 150 GeV**,
-   from B × (A/B)$_{PD}$ per DSA class of the muon LJ, the 25% from the two open tests of that
+2. **2μ2e: 61 ± 8 (stat.) ± 20 (syst.) background events in the search region M ≥ 150 GeV**,
+   from B × (A/B)$_{PD}$ per DSA class of the muon LJ, the 33% from the two open tests of that
    transfer (1.32 ± 0.27 in PP → DP, 1.00 ± 0.25 in the search plane below 150 GeV; non-closure
-   and precision of their mean in quadrature). The four routes read 46–72; they share the search
+   plus precision of their mean, no correction applied). The four routes read 46–72; they share the search
    plane's sidebands, so their agreement is a consistency check (an implied κ$_{DD}$ of 1.3 ± 0.5),
    not a second measurement. The per-class form follows from the sidebands' DSA share, three times
    PD's; the open tests cannot tell it from the inclusive form, which reads 10–25% higher and sits
-   inside the systematic. Per window, 41 ± 7 ± 10 at 150–300 GeV and 19 ± 4 ± 5 above 300 GeV.
+   inside the systematic. Per window, 41 ± 7 ± 14 at 150–300 GeV and 19 ± 4 ± 6 above 300 GeV.
 
 3. **What is validated, and to what level.** PP closes within 15% and PD within 20% over the whole
    window; both fall by about two standard deviations between the two windows, to 0.67 ± 0.15 and
    0.87 ± 0.17 above 300 GeV where the heavy points sit, though the five mass bins are consistent
    with a flat κ (χ² 3.9/4 in each plane). DP (1.02 −0.41 +0.48) and the search plane below 150 GeV
    (1.26 ± 0.44) are consistent with one at their precision. The 15% target is not met; the
-   transfer the estimate rests on is tested to 18%, and the estimate carries 25%.
+   transfer the estimate rests on is tested to 18%, and the estimate carries 33%.
 
 4. **4μ: about 1.7 background events in the search region, uncertain by a factor two to three.**
    The search plane's sidebands hold three events, so no in-plane estimate exists; six count-limited
@@ -670,8 +672,8 @@ cells.append(md(r"""## 7. Conclusions
    Over an expected background of 0.5–4 events the 95% CL upper limit for one observed event moves
    from 4.4 to 3.5.
 
-5. **What goes to the fit.** For 2μ2e a one-bin background of 61 ± 17 (statistical and systematic
-   in quadrature, 28%), or per window 41 ± 12 and 19 ± 6. For 4μ a background of 1.7 with a
+5. **What goes to the fit.** For 2μ2e a one-bin background of 61 ± 22 (statistical and systematic
+   in quadrature, 35%), or per window 41 ± 15 and 19 ± 7. For 4μ a background of 1.7 with a
    log-normal uncertainty of a factor two to three.
 
 ## Files
