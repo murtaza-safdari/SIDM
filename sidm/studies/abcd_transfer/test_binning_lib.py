@@ -53,10 +53,36 @@ FLAT_B = (3, 5, 2, 4, 1, 0, 2)
 FLAT_B1 = (2, 1, 3, 0, 2, 1, 1)
 
 
-def flat_cube():
+LOW_MASSES = [75.0, 125.0]                                        # one mass per bin of bl.LOW_BINS
+LOW_B, LOW_B1 = 4, 2                                              # B of DD per low-mass bin, without and with a DSA muon
+
+
+def low_answer(j):
+    """A of the search plane in low bin ``j``: B(dsa0) x 2(1 + j) + B(dsa1+) x 0.5(1 + j)."""
+    return (2 * LOW_B + LOW_B1 // 2) * (1 + j)
+
+
+def flat_cube(low=False):
     """PD with A/B 2.0 without a DSA muon and 0.5 with one in every bin (A/C 20 and undefined), PP
-    with half of PD's A/B; the search plane's B varies from bin to bin (``FLAT_B``, ``FLAT_B1``)."""
+    with half of PD's A/B; the search plane's B varies from bin to bin (``FLAT_B``, ``FLAT_B1``).
+    ``low``: PD below 150 GeV with A/B 2.0 and 0.5 in the first low bin and twice that in the
+    second, and the search plane there with A = the B route's exact answer with the factor of its
+    own bin (``low_answer``), which blinding leaves open; C and D as above 150 GeV."""
     h = make_hist8d("2mu2e")
+    if low:
+        for j, mass in enumerate(LOW_MASSES):
+            for plane, a0, a1 in ((PD, 200, 100), (PP, 100, 50)):
+                fill(h, a0 * (1 + j), "A", plane, mass, ndsa0=0)
+                fill(h, 100, "B", plane, mass, ndsa0=0)
+                fill(h, a1 * (1 + j), "A", plane, mass, ndsa0=1)
+                fill(h, 200, "B", plane, mass, ndsa0=1)
+            fill(h, 10, "C", PD, mass)
+            fill(h, 30, "D", PD, mass)
+            fill(h, LOW_B, "B", DD, mass, ndsa0=0)
+            fill(h, LOW_B1, "B", DD, mass, ndsa0=1)
+            fill(h, low_answer(j), "A", DD, mass)
+            fill(h, 2, "C", DD, mass)
+            fill(h, 2, "D", DD, mass)
     for i, mass in enumerate(CENTRES):
         for plane, a0, a1 in ((PD, 200, 100), (PP, 100, 50)):
             fill(h, a0, "A", plane, mass, ndsa0=0)
@@ -222,6 +248,46 @@ def test_expected_limit_reproduces_reference_values():
     assert np.isclose(bl.expected_limit([1.0], [0.0], [0.0], 0.0)[1], 1.96**2 / 2, rtol=1e-4)
     with pytest.raises(ValueError):
         bl.expected_limit([1.0], [np.nan], [0.1], 0.3)
+
+
+def test_validation_per_bin_reads_the_open_regions_only():
+    cube = flat_cube(low=True)
+    low = bl.open_test_table(cube, NOMINAL, bl.LOW_BINS, ref_plane="PD", search="DD", max_rel_err=np.inf)
+    assert list(low["bin"]) == [b for b, _ in bl.LOW_BINS] + [bl.TOTAL]
+    assert np.allclose(low["ratio"], 1.0) and (low["choice"].iloc[:-1] == "measured").all()
+    assert low["observed A DD"].iloc[-1] == str(low_answer(0) + low_answer(1))
+    # PD's factor is the one of the same bin: over the whole window below 150 GeV it would predict
+    # the mean of the two bins' answers in both
+    whole = bl.open_test_table(cube, NOMINAL, [("<150", (None, 150.0))], ref_plane="PD", search="DD", max_rel_err=np.inf)
+    assert np.isclose(whole["ratio"].iloc[0], 1.0) and low_answer(0) != low_answer(1)
+    # the inclusive route's closure is the product of the kappa ratio and the C/D ratio; it is
+    # not 1 here because the search plane's class mix (4:2) differs from PD's (100:200)
+    dec = bl.closure_decomposition(cube, NOMINAL, bl.LOW_BINS)
+    inclusive = (low_answer(0) / (LOW_B + LOW_B1)) / (300 / 300)
+    assert np.allclose(dec["product value"], inclusive) and np.allclose(dec["C/D ratio value"], (2 / 2) / (10 / 30))
+    assert np.allclose(dec["kappa ratio value"] * dec["C/D ratio value"], dec["product value"])
+    assert dec["A/B/C/D DD"].iloc[0] == f"{low_answer(0)}/{LOW_B + LOW_B1}/2/2"
+    assert bl.closure_decomposition(cube, NOMINAL, bl.BINNINGS["cube bins"])["product value"].isna().all()
+    assert bl.open_test_table(cube, NOMINAL, bl.BINNINGS["one bin"], ref_plane="PD", search="DD")["ratio"].isna().all()
+    side = bl.sideband_test_table(cube, NOMINAL, bl.BINNINGS["cube bins"])
+    assert list(side["class"].iloc[:3]) == ["all", "dsa0", "dsa1+"] and len(side) == 15
+    assert np.allclose(side.loc[side["class"] != "dsa1+", "ratio"], (2 / 2) / (10 / 30))    # C/D of DD over C/D of PD
+    assert side.loc[side["class"] == "dsa1+", "ratio"].isna().all()                        # no C or D event in the class
+    assert side["C/D DD"].iloc[0] == "2/2" and side["C/D PD"].iloc[0] == "10/30"
+    kap = bl.kappa_table(cube, NOMINAL, bl.BINNINGS["cube bins"], planes=("PD", "DD"))
+    pd_rows = kap[(kap["plane"] == "PD") & (kap["bin"] != "all bins")]
+    assert len(pd_rows) == 5 and np.allclose(pd_rows["value"], 3.0)      # (300/10) / (300/30) in every bin
+    assert kap[(kap["plane"] == "PD") & (kap["bin"] == "all bins")]["kappa"].iloc[0].startswith("3.00")
+    assert kap.loc[kap["plane"] == "DD", "value"].isna().all()           # A of DD is hidden above 150 GeV
+    # the all-bins row covers the union of the bins, not the configuration's window: below 150 GeV
+    # PD's kappa is 4.5 in the second low bin and 3 in the first, and DD's is open
+    low_kap = bl.kappa_table(cube, NOMINAL, bl.LOW_BINS, planes=("PD", "DD"))
+    assert np.allclose(low_kap.loc[low_kap["plane"] == "PD", "value"], [3.0, 6.0, 4.5])
+    assert np.isfinite(low_kap.loc[low_kap["plane"] == "DD", "value"]).all()
+    later = bl.LATER_BINNINGS["split at 400"]
+    assert [b for b, _ in later] == ["150-400", ">=400"] and later[0][1] == (150.0, 400.0) and later[1][1] == (400.0, None)
+    decision = bl.decision_table({"split at 400": bl.binned_routes(cube, NOMINAL, later)})
+    assert bool(decision["bins cover M >= 150"].iloc[0])
 
 
 def test_hidden_a_of_the_search_plane_stays_hidden_in_every_mass_bin():

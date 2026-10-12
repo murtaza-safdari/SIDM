@@ -1,0 +1,87 @@
+study: sidm/studies/abcd_transfer/binning.ipynb
+writer: binned_cards.py
+topology: 2mu2e
+inputs: /uscms_data/d3/murtazas/abcd8d_local
+fit form: exponential
+systematic: 0.33
+models:
+- lnN
+- gmN
+binnings:
+  one bin:
+  - - '>=150'
+    - - 150.0
+      - null
+  two windows:
+  - - 150-300
+    - - 150.0
+      - 300.0
+  - - '>=300'
+    - - 300.0
+      - null
+  cube bins:
+  - - 150-200
+    - - 150.0
+      - 200.0
+  - - 200-300
+    - - 200.0
+      - 300.0
+  - - 300-400
+    - - 300.0
+      - 400.0
+  - - 400-600
+    - - 400.0
+      - 600.0
+  - - '>=600'
+    - - 600.0
+      - null
+  three bins:
+  - - 150-300
+    - - 150.0
+      - 300.0
+  - - 300-600
+    - - 300.0
+      - 600.0
+  - - '>=600'
+    - - 600.0
+      - null
+  split at 400:
+  - - 150-400
+    - - 150.0
+      - 400.0
+  - - '>=400'
+    - - 400.0
+      - null
+estimate per bin (selected):
+  one bin:
+    '>=150': 61.28330688430439
+    sum over bins: 61.28330688430439
+  two windows:
+    150-300: 41.20431135181055
+    '>=300': 18.525493841142264
+    sum over bins: 59.72980519295282
+  cube bins:
+    150-200: 24.661831457672633
+    200-300: 16.676787230432105
+    300-400: 10.083726796790094
+    400-600: 5.059213882810317
+    '>=600': 2.894193586863408
+    sum over bins: 59.37575295456856
+  three bins:
+    150-300: 41.20431135181055
+    300-600: 15.148541694742251
+    '>=600': 2.894193586863408
+    sum over bins: 59.24704663341621
+  split at 400:
+    150-400: 51.56415794168741
+    '>=400': 8.374159821744655
+    sum over bins: 59.93831776343207
+signal points:
+- 2Mu2E_200GeV_0p25GeV_1p0mm
+- 2Mu2E_500GeV_0p25GeV_0p4mm
+- 2Mu2E_800GeV_0p25GeV_0p25mm
+- 2Mu2E_1000GeV_0p25GeV_0p2mm
+- 2Mu2E_800GeV_1p2GeV_1p2mm
+- 2Mu2E_1000GeV_1p2GeV_0p96mm
+- 2Mu2E_800GeV_0p25GeV_1p2mm
+commit: the commit that adds this directory (written from its working tree in the LPC scratch copy)

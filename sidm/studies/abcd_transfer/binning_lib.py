@@ -38,6 +38,14 @@ BINNINGS = {
                   ("400-600", (400.0, 600.0)), (">=600", (600.0, None))],
     "three bins": [("150-300", (150.0, 300.0)), ("300-600", (300.0, 600.0)), (">=600", (600.0, None))],
 }
+# Added after the result of the four binnings above was known (section 7): a split at 400 GeV,
+# whose upper bin keeps enough sideband events to measure its own factor.  It is evaluated beside
+# the four but is not a candidate of the pre-registered rule.
+LATER_BINNINGS = {
+    "split at 400": [("150-400", (150.0, 400.0)), (">=400", (400.0, None))],
+}
+# The open window of the search plane below 150 GeV, where A is observed, in the cube's two bins.
+LOW_BINS = [("<100", (None, 100.0)), ("100-150", (100.0, 150.0))]
 # The bins A/B is measured and fitted in against the mass: the abcd8d cube's own LJ-pair mass bins
 # above 150 GeV (the last one holds 1000-2500 GeV and the overflow).
 FIT_BINS = [("150-200", (150.0, 200.0)), ("200-300", (200.0, 300.0)), ("300-400", (300.0, 400.0)),
@@ -475,8 +483,8 @@ def open_test_table(cube, cfg, binning, fits=None, ref_plane="PP", search="DP", 
     rows = []
     for _, r in routes[routes["class"] == SUM].iterrows():
         pred = _triple(r, "selected")
-        hi = None if pd.isna(r["hi"]) else float(r["hi"])
-        obs = ps.regions(cube, bin_cfg(cfg, float(r["lo"]), hi), search)["A"][0]
+        lo, hi = (None if pd.isna(r[k]) else float(r[k]) for k in ("lo", "hi"))
+        obs = ps.regions(cube, bin_cfg(cfg, lo, hi), search)["A"][0]
         observed = (obs, *poisson_interval(obs)) if np.isfinite(obs) else (np.nan, np.nan, np.nan)
         ratio = tl.ratio_of_ratios(observed, pred)
         precision = el.precision(ratio)
@@ -496,7 +504,77 @@ def open_test_syst(tables):
     return {name: t["syst"].to_numpy(float)[:-1] for name, t in tables.items()}
 
 
+def sideband_test_table(cube, cfg, binning, ref_plane="PD", search="DD", classes=(None, *CLASSES)):
+    """C/D of the search plane against C/D of the reference plane per bin and DSA class: the
+    sideband test of estimate.ipynb section 3.1 per bin.  The B route, A = B x (A/B) of the
+    reference plane, is exact when kappa and C/D are the same in the two planes; C and D of the
+    search plane are open, so this half of the condition is tested where A is hidden.  Per bin and
+    class: C and D of both planes, their C/D and the search plane's over the reference's (NaN where
+    a D is zero; zero with an upper error where a C is), with the numeric ratio beside the text."""
+    rows = []
+    for label, (lo, hi) in binning:
+        c = bin_cfg(cfg, lo, hi)
+        for cls in classes:
+            s, r = (ps.regions(cube, c, _label(p, cls)) for p in (search, ref_plane))
+            cd_s, cd_r = tl.ratio(s["C"], s["D"]), tl.ratio(r["C"], r["D"])
+            ratio = tl.ratio_of_ratios(cd_s, cd_r)
+            rows.append({"bin": label, "class": "all" if cls is None else cls,
+                         f"C/D {search}": "/".join(tl.fmt_count(s[x]) for x in "CD"),
+                         f"C/D {ref_plane}": "/".join(tl.fmt_count(r[x]) for x in "CD"),
+                         f"C/D of {search}": tl.fmt(cd_s, 2), f"C/D of {ref_plane}": tl.fmt(cd_r, 2),
+                         f"{search} over {ref_plane}": tl.fmt(ratio, 2),
+                         "ratio": ratio[0], "ratio minus": ratio[1], "ratio plus": ratio[2]})
+    return pd.DataFrame(rows)
+
+
+def kappa_table(cube, cfg, bins, planes=("PP", "PD", "DP")):
+    """kappa = (A/C)/(B/D) per mass bin in the open planes (``plane_search_lib.kappa_vs_mass``):
+    whether the correlation of the two ABCD axes changes with the mass where it can be seen.  Per
+    plane and bin the counts and kappa, then the plane's kappa over all bins (the union of ``bins``,
+    which replaces the window of ``cfg``) with the chi2/ndof of the bins against it (in log space);
+    the numeric kappa is kept beside the text.  A plane whose A is hidden gives NaN."""
+    rows = []
+    union = bin_cfg(cfg, bins[0][1][0], bins[-1][1][1])
+    for plane in planes:
+        df, k_all, chi2, ndf = ps.kappa_vs_mass(cube, union, plane, bins)
+        for _, r in df.iterrows():
+            rows.append({"plane": plane, "bin": r["bin"], **{x: f"{r[x]:.0f}" for x in "ABCD"},
+                         "kappa": tl.fmt((r["kappa"], r["minus"], r["plus"]), 2),
+                         "value": r["kappa"], "minus": r["minus"], "plus": r["plus"]})
+        against = f"{chi2:.1f} / {ndf}" if np.isfinite(chi2) else "n/a"
+        rows.append({"plane": plane, "bin": "all bins", **{x: "" for x in "ABCD"},
+                     "kappa": f"{tl.fmt(k_all, 2)}; chi2/ndof of the bins against it {against}",
+                     "value": k_all[0], "minus": k_all[1], "plus": k_all[2]})
+    return pd.DataFrame(rows)
+
+
 # ----------------------------------------------------------------------------- signal
+
+
+def closure_decomposition(cube, cfg, bins, ref_plane="PD", search="DD"):
+    """Where A of the search plane is open, the inclusive B route's closure per bin as the product
+    of its two halves: A / (B x (A/B) of the reference plane) = [kappa of the search plane over
+    kappa of the reference plane] x [C/D of the search plane over C/D of the reference plane].  Per
+    bin: the two planes' A/B/C/D, their kappa and C/D, the two ratios and their product, each as
+    text with the numeric product beside it.  A bin whose A is hidden gives NaN throughout."""
+    rows = []
+    for label, (lo, hi) in bins:
+        c = bin_cfg(cfg, lo, hi)
+        s, r = (ps.regions(cube, c, p) for p in (search, ref_plane))
+        k_s, k_r = ps.kappa(s), ps.kappa(r)
+        cd_s, cd_r = tl.ratio(s["C"], s["D"]), tl.ratio(r["C"], r["D"])
+        k_ratio, cd_ratio = tl.ratio_of_ratios(k_s, k_r), tl.ratio_of_ratios(cd_s, cd_r)
+        product = tl.ratio_of_ratios(tl.ratio(s["A"], s["B"]), tl.ratio(r["A"], r["B"]))
+        rows.append({"bin": label,
+                     f"A/B/C/D {search}": "/".join(tl.fmt_count(s[x]) for x in "ABCD"),
+                     f"A/B/C/D {ref_plane}": "/".join(tl.fmt_count(r[x]) for x in "ABCD"),
+                     f"kappa {search}": tl.fmt(k_s, 2), f"kappa {ref_plane}": tl.fmt(k_r, 2),
+                     "kappa ratio": tl.fmt(k_ratio, 2),
+                     f"C/D {search}": tl.fmt(cd_s, 2), f"C/D {ref_plane}": tl.fmt(cd_r, 2),
+                     "C/D ratio": tl.fmt(cd_ratio, 2),
+                     "product = observed / inclusive B route": tl.fmt(product, 2),
+                     "kappa ratio value": k_ratio[0], "C/D ratio value": cd_ratio[0], "product value": product[0]})
+    return pd.DataFrame(rows)
 
 
 def _folded_slice(edges, lo, hi):

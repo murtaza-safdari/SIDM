@@ -1,0 +1,33 @@
+# SIDM 2mu2e data-driven background per bin of the LJ-pair mass: cube bins (lnN model) -- 2Mu2E_200GeV_0p25GeV_1p0mm
+# background = B of the displaced-displaced plane x A/B of the prompt-muon plane per DSA class, per bin (binning.ipynb, binning_lib.binned_routes, selected factor)
+# signal at the theory cross section (cross_sections.yaml): mu = 1 is the stored cross section
+# observation = the background of the bin (blinded; combine --run blind never reads it)
+imax 5  number of bins
+jmax 1  number of background processes
+kmax *  number of nuisance parameters
+--------------------------------------------------------------------------------
+bin                        m150to200       m200to300       m300to400       m400to600       m600up          
+observation                24.6618         16.6768         10.0837         5.05921         2.89419         
+--------------------------------------------------------------------------------
+bin                        m150to200       m150to200       m200to300       m200to300       m300to400       m300to400       m400to600       m400to600       m600up          m600up          
+process                    sig             bkg             sig             bkg             sig             bkg             sig             bkg             sig             bkg             
+process                    0               1               0               1               0               1               0               1               0               1               
+rate                       0.267694        24.6618         0.291084        16.6768         0.00417444      10.0837         0.000397565     5.05921         6.62609e-05     2.89419         
+--------------------------------------------------------------------------------
+mcstat_sig_m150to200  lnN  1.01573         -               -               -               -               -               -               -               -               -               
+mcstat_sig_m200to300  lnN  -               -               1.01509         -               -               -               -               -               -               -               
+mcstat_sig_m300to400  lnN  -               -               -               -               1.12599         -               -               -               -               -               
+mcstat_sig_m400to600  lnN  -               -               -               -               -               -               1.40825         -               -               -               
+mcstat_sig_m600up     lnN  -               -               -               -               -               -               -               -               2               -               
+shape_m150to200       lnN  -               1.0299          -               -               -               -               -               -               -               -               
+shape_m200to300       lnN  -               -               -               1.06023         -               -               -               -               -               -               
+shape_m300to400       lnN  -               -               -               -               -               1.01701         -               -               -               -               
+shape_m400to600       lnN  -               -               -               -               -               -               -               1.05482         -               -               
+shape_m600up          lnN  -               -               -               -               -               -               -               -               -               1.6886          
+stat_m150to200        lnN  -               0.7887/1.2120   -               -               -               -               -               -               -               -               
+stat_m200to300        lnN  -               -               -               0.7713/1.2292   -               -               -               -               -               -               
+stat_m300to400        lnN  -               -               -               -               -               0.6958/1.3080   -               -               -               -               
+stat_m400to600        lnN  -               -               -               -               -               -               -               0.6205/1.3875   -               -               
+stat_m600up           lnN  -               -               -               -               -               -               -               -               -               0.4408/1.5605   
+lumi_13TeV            lnN  1.025           -               1.025           -               1.025           -               1.025           -               1.025           -               
+transfer              lnN  -               1.33            -               1.33            -               1.33            -               1.33            -               1.33            

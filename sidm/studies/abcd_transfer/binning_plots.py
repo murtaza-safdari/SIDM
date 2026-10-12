@@ -266,7 +266,110 @@ def ab_mass_figure(points_by_key, fits_by_key, planes=("PD", "PP"), classes=("ds
     return fig
 
 
+# ----------------------------------------------------------------------------- the validation per bin
+
+
+def _bin_centre(lo, hi, low_edge=50.0):
+    """Geometric centre of a mass bin for drawing; an open lower edge counts from ``low_edge`` and
+    an open upper edge up to ``M_MAX``."""
+    lo = low_edge if lo is None or np.isnan(lo) else lo
+    hi = M_MAX if hi is None or np.isnan(hi) else hi
+    return np.sqrt(lo * hi)
+
+
+def _ratio_points(ax, x, df, shift, color, marker, label, top=None, row=0, columns=("ratio", "ratio minus", "ratio plus")):
+    """Points with asymmetric errors; a value above ``top`` is drawn as an upward triangle near the
+    top of the panel, one row per series (``row``) so that series sharing a bin do not overlap,
+    with its value and interval written to its left."""
+    v, m, p = (df[c].to_numpy(float) for c in columns)
+    x = np.asarray(x, float) * shift
+    ok = np.isfinite(v) & ((v <= top) if top is not None else True)
+    ax.errorbar(x[ok], v[ok], yerr=[m[ok], p[ok]], fmt=marker, color=color, ms=11, capsize=3, label=label)
+    if top is not None:
+        above = ~ok & np.isfinite(v)
+        y = top * (0.93 - 0.10 * row)
+        for xi, vi, mi, pi in zip(x[above], v[above], m[above], p[above]):
+            ax.plot(xi, y, marker="^", ms=14, color=color, ls="none", clip_on=False)
+            ax.annotate(f"{vi:.1f} ({max(vi - mi, 0):.1f} to {vi + pi:.0f})", (xi, y), xytext=(-8, 0),
+                        textcoords="offset points", ha="right", va="center", fontsize=15, color=color)
+
+
+def validation_figure(open_test, low_test, sideband, kappas, binning, syst_rel=0.33, topology="2mu2e",
+                      sideband_reference=None, name=None):
+    """The validation of the B route per mass bin, three panels on one mass axis.  Top: observed
+    over predicted A where A is open, the PP -> DP analog per bin of ``binning``
+    (:func:`binning_lib.open_test_table`) and the search plane itself below 150 GeV
+    (``low_test``, the same table on ``LOW_BINS``), with the ``syst_rel`` band of the estimate.
+    Middle: C/D of the search plane over C/D of PD per bin and class
+    (:func:`binning_lib.sideband_test_table`), with ``sideband_reference`` (value, label) as a
+    dashed line when given (the same ratio over the whole window).  Bottom: kappa per bin in the
+    open planes (:func:`binning_lib.kappa_table`), each plane's kappa over all bins dashed.  Points
+    with no value (a ratio over an empty region) are not drawn.  ``name`` goes into the file name."""
+    fig, (ax, bx, cx) = plt.subplots(3, 1, figsize=(18, 20), sharex=True, gridspec_kw={"hspace": 0.06})
+    edges = {label: (lo, hi) for label, (lo, hi) in binning}
+    low_edges = {label: (lo, hi) for label, (lo, hi) in bl.LOW_BINS}
+    # top: the open tests
+    for df, lookup, color, marker, label in [
+            (open_test[open_test["bin"].isin(edges)], edges, tp.COLORS["DP"], "o", "PP -> DP (egamma LJ prompt), A of DP observed"),
+            (low_test[low_test["bin"].isin(low_edges)], low_edges, tp.COLORS["DD"], "s",
+             "PD -> DD below 150 GeV, A of DD observed")]:
+        x = [_bin_centre(*lookup[b]) for b in df["bin"]]
+        _ratio_points(ax, x, df, 1.0, color, marker, label, top=3.5)
+    ax.axhspan(1 / (1 + syst_rel), 1 + syst_rel, color="gray", alpha=0.15, lw=0,
+               label=f"{100 * syst_rel:.0f}% systematic of the estimate")
+    ax.axhline(1, color="gray", lw=1.5)
+    ax.axvline(150, color="gray", ls=":", lw=2)
+    ax.set_ylim(0, 3.5)
+    ax.set_ylabel("A observed / predicted", fontsize=AXIS)
+    ax.legend(title=f"{topology}: the B route where its answer is visible, per mass bin", loc="upper left",
+              fontsize=16, **{**tp.LEGEND, "title_fontsize": 17})
+    tp.label(ax, fontsize=18)
+    # middle: the sideband test
+    for k, (cls, color) in enumerate(CLASS_COLORS.items()):
+        name = "all" if cls is None else cls
+        df = sideband[(sideband["class"] == name) & sideband["bin"].isin(edges)]
+        x = [_bin_centre(*edges[b]) for b in df["bin"]]
+        _ratio_points(bx, x, df, 1 + 0.03 * (k - 1), color, "o", name, top=3.5, row=k)
+    bx.axhline(1, color="gray", lw=1.5)
+    if sideband_reference is not None:
+        value, label = sideband_reference
+        bx.axhline(value, color="black", lw=1.5, ls="--", label=label)
+    bx.plot([], [], " ", label="no point where D = 0")
+    bx.set_ylim(0, 3.5)
+    bx.set_ylabel("C/D of DD over C/D of PD", fontsize=AXIS)
+    # upper left is the one corner without a point or an off-scale marker in either binning
+    bx.legend(title=f"{topology}: open sidebands of the search plane\nagainst PD's, per mass bin and DSA class",
+              loc="upper left", fontsize=16, **{**tp.LEGEND, "title_fontsize": 17})
+    # bottom: kappa in the open planes
+    for k, plane in enumerate(dict.fromkeys(kappas["plane"])):
+        df = kappas[(kappas["plane"] == plane) & kappas["bin"].isin(edges)]
+        x = [_bin_centre(*edges[b]) for b in df["bin"]]
+        all_bins = kappas[(kappas["plane"] == plane) & (kappas["bin"] == "all bins")].iloc[0]
+        _ratio_points(cx, x, df, 1 + 0.03 * (k - 1), tp.COLORS[plane], MARKERS[k], f"{plane}: all bins {all_bins['kappa']}",
+                      top=3.5, row=k, columns=("value", "minus", "plus"))
+        if np.isfinite(all_bins["value"]):
+            cx.axhline(all_bins["value"], color=tp.COLORS[plane], lw=1.5, ls="--")
+    cx.axhline(1, color="gray", lw=1.5)
+    cx.set_ylim(0, 3.5)
+    cx.set_ylabel("kappa = (A/C) / (B/D)", fontsize=AXIS)
+    cx.legend(title=f"{topology}: kappa per mass bin in the open planes (A of DD is hidden)", loc="upper left",
+              fontsize=16, **{**tp.LEGEND, "title_fontsize": 17})
+    _mass_axis(cx)
+    cx.set_xlim(50.0, M_MAX)
+    ticks = (50, 100) + MASS_TICKS
+    cx.xaxis.set_major_locator(ticker.FixedLocator(ticks))
+    cx.xaxis.set_major_formatter(ticker.FixedFormatter([f"{t:g}" for t in ticks]))
+    tp.save(fig, f"binning_validation_{topology}" + ("" if name is None else "_" + name.replace(" ", "_")))
+    return fig
+
+
 # ----------------------------------------------------------------------------- binnings and limits
+
+
+def binning_label(name):
+    """The binning's name as the figures write it: the binnings added after the result carry
+    the mark that they are not candidates of the rule."""
+    return f"{name} (not a candidate)" if name in bl.LATER_BINNINGS else name
 
 
 def binning_figure(routes_by_binning, yields_by_binning, points=DEFAULT_POINTS, syst_rel=0.33, topology="2mu2e"):
@@ -302,7 +405,8 @@ def binning_figure(routes_by_binning, yields_by_binning, points=DEFAULT_POINTS, 
         ax.set_yscale("log")
         ax.set_ylim(0.05, top * 150)
         ax.set_ylabel("events per bin", fontsize=AXIS)
-        ax.legend(title=f"{topology}, {name}", loc="upper right", fontsize=16, **{**tp.LEGEND, "title_fontsize": 17})
+        ax.legend(title=f"{topology}, {binning_label(name)}", loc="upper right", fontsize=16,
+                  **{**tp.LEGEND, "title_fontsize": 17})
         tp.label(ax, fontsize=18)
     for ax in axes.flat[len(names):]:
         ax.set_visible(False)
@@ -322,7 +426,7 @@ def limit_figure(limits, factor="selected"):
     offsets = np.linspace(-0.27, 0.27, len(binnings))
     for k, (name, off) in enumerate(zip(binnings, offsets)):
         vals = part[part["binning"] == name].set_index("point").loc[points, "relative to one bin"].to_numpy(float)
-        ax.plot(x + off, vals, marker=MARKERS[k], ls="none", ms=14, color=f"C{k}", label=name)
+        ax.plot(x + off, vals, marker=MARKERS[k], ls="none", ms=14, color=f"C{k}", label=binning_label(name))
     decision = part.drop_duplicates("point").set_index("point").loc[points, "decision point"].to_numpy(bool)
     for i in np.nonzero(decision)[0]:
         ax.axvspan(i - 0.5, i + 0.5, color="tab:orange", alpha=0.1, lw=0)
@@ -336,7 +440,7 @@ def limit_figure(limits, factor="selected"):
     ax.set_ylim(0, 1.45 * hi)
     ax.set_ylabel("expected limit / one bin", fontsize=AXIS)
     ax.legend(title=f"toy expected limit, {factor} A/B; shaded: the 500 and 800 GeV points", loc="upper right",
-              ncol=len(binnings), **tp.LEGEND)
+              ncol=min(len(binnings), 3), **tp.LEGEND)
     tp.label(ax)
     tp.save(fig, f"binning_limits_{factor}")
     return fig

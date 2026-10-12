@@ -84,6 +84,10 @@ How it is applied (`binning_lib.rule_table`):
 - The candidates are the four binnings of `binning_lib.BINNINGS`, fixed in advance: one bin
   (M ≥ 150 GeV); two windows (150–300, ≥ 300 GeV); three bins (150–300, 300–600, ≥ 600 GeV); and
   the histograms' own bins up to 600 GeV (150–200, 200–300, 300–400, 400–600, ≥ 600 GeV).
+  A fifth binning, a split at 400 GeV (150–400, ≥ 400 GeV; `binning_lib.LATER_BINNINGS`), was
+  added after the result of the four was known, because the ≥ 600 GeV bin of the rule's choice
+  rests on four sideband events (section 7): it is evaluated beside the four in every table and
+  figure, and it is not a candidate of the rule.
 - The decision points are the 500 GeV point and the three 800 GeV points of the signal list. Each
   mass counts once: the relative limits are averaged over the points of each mass, then over the
   two masses.
@@ -277,7 +281,7 @@ the tables below it give every signal point's yield per bin.
 DP, the muon LJ going from prompt to displaced with the egamma LJ prompt, the analog `estimate.ipynb`
 section 3.1 uses over the whole window (observed over predicted 1.32 ± 0.27; 1.27 ± 0.33 at
 150–300 GeV and 1.5 ± 0.5 above). The tables repeat it per bin of the cube bins and of the two
-windows: B of DP, the predicted A of DP with the factor the rule selects (A/B of PP per class,
+windows and of the split at 400 GeV: B of DP, the predicted A of DP with the factor the rule selects (A/B of PP per class,
 measured where PP measures it to 20%, fitted otherwise), the observed A of DP with its 68% Poisson
 interval, and their ratio. The last column is the systematic the recipe of `estimate.ipynb` would
 assign to the bin from this test alone, |ratio − 1| plus the precision of the ratio; section 5 uses
@@ -290,32 +294,90 @@ the signal's share of a region is large, the factor measured there — and the s
 from it — would move if the signal exists at that strength."""))
 
 cells.append(code(r"""FIT = {("PD", c): FITS[("PD", c, FORM)] for c in bl.CLASSES}
-ROUTES = {name: bl.binned_routes(d2, NOMINAL, bins, fits=FIT) for name, bins in bl.BINNINGS.items()}
+BINNINGS = {**bl.BINNINGS, **bl.LATER_BINNINGS}                 # the four candidates of the rule, then the split at 400 GeV
+ROUTES = {name: bl.binned_routes(d2, NOMINAL, bins, fits=FIT) for name, bins in BINNINGS.items()}
 for name, routes in ROUTES.items():
-    print(f"{name} ({FORM} fit)")
+    print(f"{name} ({FORM} fit)" + ("; added after the result of the four candidates" if name in bl.LATER_BINNINGS else ""))
     display(bl.routes_view(routes))
 print("the B route per window of estimate.ipynb")
 display(el.routes_table(d2, WINDOWS)[["window", "DD B/C/D", "B x A/B per class"]])
 print(f"the sums over the bins ({FORM} fit) against the one-bin estimate with the measured A/B")
 display(bl.sums_table(ROUTES))
 FIT_LINEAR = {("PD", c): FITS[("PD", c, "linear")] for c in bl.CLASSES}
-ROUTES_LINEAR = {name: bl.binned_routes(d2, NOMINAL, bins, fits=FIT_LINEAR) for name, bins in bl.BINNINGS.items()}
+ROUTES_LINEAR = {name: bl.binned_routes(d2, NOMINAL, bins, fits=FIT_LINEAR) for name, bins in BINNINGS.items()}
 print("the same with the linear fit")
 display(bl.sums_table(ROUTES_LINEAR))
 YIELDS2 = {name: bl.signal_yields(BASE, SIGNAL_POINTS["2mu2e"], "2mu2e", NOMINAL, bins, profiles=PROFILES2)
-           for name, bins in bl.BINNINGS.items()}
+           for name, bins in BINNINGS.items()}
 fig = bp.binning_figure(ROUTES, YIELDS2, syst_rel=SYST)
 plt.show()
 for name, yields in YIELDS2.items():
     print(f"signal in A of DD per bin at the stored cross section, {name}")
     display(bl.yields_view(yields))
 FIT_PP = {("PP", c): FITS[("PP", c, FORM)] for c in bl.CLASSES}
-OPEN = {name: bl.open_test_table(d2, NOMINAL, bins, fits=FIT_PP) for name, bins in bl.BINNINGS.items()}
-for name in ("cube bins", "two windows"):
+OPEN = {name: bl.open_test_table(d2, NOMINAL, bins, fits=FIT_PP) for name, bins in BINNINGS.items()}
+for name in ("cube bins", "two windows", "split at 400"):
     print(f"the open test per bin: the B route from PP into DP against the observed A of DP, {name}")
     display(OPEN[name].drop(columns=["ratio", "ratio minus", "ratio plus", "syst"]))
-print("signal at mu = 1 in the regions the estimate reads from, per bin of the cube bins, next to the data")
-display(bl.signal_regions_table(BASE, SIGNAL_POINTS["2mu2e"], "2mu2e", NOMINAL, bl.BINNINGS["cube bins"], data=d2))"""))
+for name in ("cube bins", "split at 400"):
+    print(f"signal at mu = 1 in the regions the estimate reads from, per bin, {name}, next to the data")
+    display(bl.signal_regions_table(BASE, SIGNAL_POINTS["2mu2e"], "2mu2e", NOMINAL, BINNINGS[name], data=d2))"""))
+
+cells.append(md(r"""### 4.1 The validation per bin
+
+The 33% systematic of the estimate is the non-closure plus the precision of two tests of the
+route's assumption over the whole window. Per bin the same assumption can be checked three ways in
+the open, none of which reaches A of DD above 150 GeV:
+
+1. **The B route where its answer is visible**, per bin: the PP → DP analog of section 4 (the
+   muon LJ from prompt to displaced with the egamma LJ prompt), and the search plane itself below
+   150 GeV, where A of DD is open, in the histograms' two bins there (< 100 and 100–150 GeV), each
+   with PD's factor measured in the same bin. Observed over predicted per bin, against the 33%
+   band. Below 150 GeV all four regions of DD are open, so the inclusive route's closure there can
+   be split into its two halves, [κ$_{DD}$ / κ$_{PD}$] × [C/D of DD over C/D of PD]
+   (`binning_lib.closure_decomposition`): whether the route closes because each half is one, or
+   because the two compensate.
+2. **The sidebands of the search plane against PD's**, per bin and DSA class: C/D of DD over C/D
+   of PD. The B route A = B × (A/B)$_{PD}$ is exact when κ and C/D are the same in the two planes;
+   C and D of DD are open above 150 GeV, so this half of the condition is tested where A is not.
+   Over the whole window it reads 0.73 −0.22 +0.31 (`estimate.ipynb` section 3.1). A bin without
+   a D event has no ratio and is not drawn.
+3. **κ per bin in the open planes** PP, PD and DP: whether the correlation of the two ABCD axes
+   changes with the mass where it can be seen, with the χ²/ndof of the bins against each plane's
+   κ over the union of the bins. DP is the only open plane with the muon LJ displaced, so it is
+   the only one that can say whether DD's κ follows PD's; above 300 GeV it has 3 finite bins at
+   80–175% precision and no C event above 400 GeV.
+
+The tables and the figure are made for the cube bins and for the split at 400 GeV. What these
+tests can and cannot do: a bin whose ratio sits far from one at several standard deviations would
+show a transfer that fails there; a bin whose interval covers both one and 1.5 says nothing either
+way. The counts per bin above 300 GeV are those of DP (28 B events above 300 GeV, 3 above 600) and
+of DD's own sidebands (6 C and 3 D events above 300 GeV, none above 600), so above 300 GeV the
+only test with a result is PP → DP, at 70–130%, nothing above 600 GeV, and no per-bin test can
+tighten the 33% per bin."""))
+
+cells.append(code(r"""LOW = bl.open_test_table(d2, NOMINAL, bl.LOW_BINS, ref_plane="PD", search="DD", max_rel_err=np.inf)
+print("the B route into the search plane below 150 GeV, where A of DD is open, with PD's factor measured per bin")
+display(LOW.drop(columns=["ratio", "ratio minus", "ratio plus", "syst"]))
+DECOMP = bl.closure_decomposition(d2, NOMINAL, bl.LOW_BINS)      # all four regions of DD are open below 150 GeV
+print("the inclusive B route's closure below 150 GeV as the product of its two halves, kappa ratio x C/D ratio")
+display(DECOMP.drop(columns=[c for c in DECOMP.columns if c.endswith(" value")]))
+SIDEBAND_ALL = bl.sideband_test_table(d2, NOMINAL, bl.BINNINGS["one bin"])
+REFERENCE = SIDEBAND_ALL.loc[SIDEBAND_ALL["class"] == "all"].iloc[0]
+print("the sideband test over the whole window, for reference")
+display(SIDEBAND_ALL.drop(columns=["ratio", "ratio minus", "ratio plus"]))
+SIDEBAND, KAPPA = {}, {}
+for name in ("cube bins", "split at 400"):
+    SIDEBAND[name] = bl.sideband_test_table(d2, NOMINAL, BINNINGS[name])
+    print(f"the sideband test per bin, {name}: C/D of DD over C/D of PD")
+    display(SIDEBAND[name].drop(columns=["ratio", "ratio minus", "ratio plus"]))
+    KAPPA[name] = bl.kappa_table(d2, NOMINAL, BINNINGS[name])
+    print(f"kappa per bin in the open planes, {name}")
+    display(KAPPA[name].drop(columns=["value", "minus", "plus"]))
+    fig = bp.validation_figure(OPEN[name], LOW, SIDEBAND[name], KAPPA[name], BINNINGS[name], syst_rel=SYST,
+                               sideband_reference=(REFERENCE["ratio"], f"whole window, all classes: {REFERENCE['DD over PD']}"),
+                               name=name)
+    plt.show()"""))
 
 cells.append(md(r"""## 5. The toy expected limit and the choice of binning
 
@@ -350,7 +412,8 @@ least 5 B events of DD or an estimate below 3 events — and lists where the fit
 and the largest shape systematic. The rule table applies the rule: the eligible binnings, the
 relative limit of the decision points per mass, their mean, and the binning chosen. It is repeated
 with the independent systematic, with the per-bin systematic from the open test, and with the
-linear fit."""))
+linear fit. The rule is applied to its four candidates; the split at 400 GeV is shown in the limit
+tables and figure beside them and listed under the rule tables for information, never chosen."""))
 
 cells.append(code(r"""LIMITS = bl.limit_table(ROUTES, YIELDS2, syst_rel=SYST)
 for factor in bl.FACTORS:
@@ -369,16 +432,54 @@ display(bl.limit_view(LIMITS_OPEN, "selected"))
 DECISION = bl.decision_table(ROUTES)
 print("the count requirement of the rule per binning")
 display(DECISION)
-RULE = bl.rule_table(LIMITS, DECISION)
+CANDIDATES = {name: ROUTES[name] for name in bl.BINNINGS}       # the rule's four candidates
+RULE = bl.rule_table(LIMITS, bl.decision_table(CANDIDATES))
 print("the rule: the decision points' limits relative to one bin (selected A/B, common systematic), each mass counted once")
 display(RULE.round(3))
 print("chosen:", ", ".join(RULE.loc[RULE["chosen"], "binning"]) or "none")
 print("the same with an independent systematic per bin")
-display(bl.rule_table(LIMITS_SEPARATE, DECISION).round(3))
+display(bl.rule_table(LIMITS_SEPARATE, bl.decision_table(CANDIDATES)).round(3))
 print("the same with the per-bin systematic from the open test")
-display(bl.rule_table(LIMITS_OPEN, DECISION).round(3))
+display(bl.rule_table(LIMITS_OPEN, bl.decision_table(CANDIDATES)).round(3))
 print("the same with the linear fit")
-display(bl.rule_table(bl.limit_table(ROUTES_LINEAR, YIELDS2, syst_rel=SYST), bl.decision_table(ROUTES_LINEAR)).round(3))"""))
+LINEAR = {name: ROUTES_LINEAR[name] for name in bl.BINNINGS}
+display(bl.rule_table(bl.limit_table(LINEAR, YIELDS2, syst_rel=SYST), bl.decision_table(LINEAR)).round(3))
+print("for information, the split at 400 GeV beside the candidates (added after the result; not a candidate of the rule)")
+display(bl.rule_table(LIMITS, DECISION).drop(columns=["chosen"]).round(3))
+print("the same with the linear fit")
+LIMITS_LINEAR = bl.limit_table(ROUTES_LINEAR, YIELDS2, syst_rel=SYST)
+display(bl.rule_table(LIMITS_LINEAR, bl.decision_table(ROUTES_LINEAR)).drop(columns=["chosen"]).round(3))"""))
+
+cells.append(md(r"""### 5.1 The same counting experiments in combine
+
+The toy of section 5 is checked against combine (`AsymptoticLimits`, blinded, the a-priori
+expected limit), the machinery of `sidm/studies/limit_plotting` and `sidm/scripts/run_combine_limits.py`.
+`binned_cards.py` writes one datacard per signal point and binning from the frames of section 4,
+in two models of the background's statistical uncertainty (`binning_cards/`, 70 cards): **lnN**, one
+background process per bin with the selected estimate and an asymmetric log-normal from its 68%
+interval, the model of the toy with the asymmetry kept; and **gmN**, one process per bin and DSA
+class, its rate the B count of DD times the selected factor, with the count a `gmN` nuisance
+(combine profiles it with a Gamma distribution, as the counting cards of `limit_plotting` do for
+their simulated counts) and the factor an asymmetric log-normal. Both carry the shape systematic
+where the factor is fitted, the 33% as one log-normal common to the bins, the signal per bin at
+the stored cross section with its simulation-statistics log-normal, and the 2.5% luminosity
+uncertainty on the signal. The `observation` line holds the background; the expected limit never
+reads it. The results (`binning_limits/limits.csv`, with the provenance sidecar) are r, the limit on
+μ with μ = 1 the stored cross section (the same normalisation as the toy: `cross_sections.yaml`,
+without Z$_d$ branching fractions), per binning and model, and the same relative to one bin of the
+same model, next to the toy's relative limit. The runner's automatic `rMax` reads the first bin's
+signal of a multi-bin card and overshoots by orders of magnitude for the heavy points (the fit
+returns NaN); every card here was run with a fixed `--rMax 300`."""))
+
+cells.append(code(r"""import binned_cards as bc
+COMBINE = bc.read_limits("binning_limits/limits.csv")
+print(f"{len(COMBINE)} expected limits from combine ({', '.join(dict.fromkeys(COMBINE['model']))} models)")
+COMPARISON = bc.comparison(COMBINE, LIMITS)
+print("r per binning and model (mu = 1 the stored cross section), each relative to one bin of the same model, and the toy")
+display(bc.comparison_view(COMPARISON))
+print("the toy's relative limit over combine's, lnN model, decision points")
+part = COMPARISON[COMPARISON["point"].isin(DECISION_POINTS["2mu2e"]) & (COMPARISON["binning"] != "one bin")]
+display((part["relative toy"] / part["relative lnN"]).describe().round(3).to_frame("toy / combine (lnN)").T)"""))
 
 cells.append(md(r"""## 6. 4μ
 
@@ -490,6 +591,38 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   800 GeV signal exists at its stored cross section, 3 to 19 signal events (section 4, last table),
   so that the measured factor there is not signal-blind, and the fit, which includes those bins, is
   only partly so.
+- **The split at 400 GeV** (added after the result of the four, not a candidate of the rule).
+  150–400 GeV: 51.6 ± 7.3 on 65 B events of DD, both classes measured in the bin (dsa0
+  1.07 ± 0.05, dsa1+ 0.47 −0.06 +0.07). ≥ 400 GeV: 8.4 ± 2.8 on 13 B events, the dsa0 part (9 B
+  events) measured in the bin, 0.82 −0.11 +0.13 (16%), giving 7.3 ± 2.7, and the dsa1+ part (4 B
+  events) fitted, 0.26 ± 0.10 against the measured 0.29 −0.13 +0.21, giving 1.0 ± 0.7 with a
+  shape systematic of 1% of the bin. The sum is 59.9 ± 7.9, 0.978 of one bin under either fit
+  form. 400 GeV is the highest edge of the histograms at which PD still measures the dsa0 factor
+  to the 20% the rule asks for (9% above 300 GeV, 16% above 400, not above 600, where it is
+  fitted), and the bin above it holds 98% of the 500 GeV point's yield and 99.6–99.8% of the
+  800 GeV points'. The toy limit is 0.254 at 500 GeV and 0.248 at 800 GeV, a factor four at both
+  decision masses, between the two windows (0.38) and the cube bins (0.21 and 0.17). What
+  separates it from the cube bins at 800 GeV, 0.25 against 0.17, is the ≥ 600 GeV bin; what
+  separates it from the two windows is a factor the control plane measures in the bin to 16%
+  from 13 B events, with no threshold of the rule inside the bin's error (13 events against the
+  5 required, 8.4 against the 3) and no fitted factor on 87% of its estimate. The PP → DP test
+  reads 1.35 −0.31 +0.34 in 150–400 GeV and 1.38 −0.62 +0.75 above (9 observed against 6.5 ± 2.0
+  predicted). Two caveats carry over from the ≥ 600 GeV bin, diluted. The control region the dsa0
+  factor is measured from, A of PD above 400 GeV, has 98 events, and at the stored cross section
+  an 800 GeV signal would add 3 to 19 of them (3.7 for the 500 GeV point; section 4, last table):
+  a 3–20% pull on the factor if that signal exists, against 12–76% on the 25 events above 600 GeV;
+  the dsa1+ control region there (6 events) would hold up to 4.7, which is one reason that part
+  is fitted. And the measured 0.82 is PD's average weighted by its own B events, 104 of the 120
+  at 400–600 GeV, while DD's 9 B events sit higher (3 above 600 GeV, mean 567 GeV), where the fit
+  reads 0.94: the measured and the fitted estimates of the dsa0 part differ by 15% (14% of the
+  bin), which the rule does not carry as a systematic because the factor is measured. The cost
+  is the 200 GeV point, whose signal sits under 52 events instead of 25: 0.82 of one bin against
+  0.64 with the cube bins; it is dead at its stored cross section either way (0.56 signal events).
+  It would have passed the count requirement and placed second among the candidates had it been
+  one (0.251 against 0.263 for the three bins) under the exponential form, and first under the
+  linear form, where the cube bins and the three bins fail the count requirement and the rule
+  leaves the two windows; since it was added once the result was known, it is reported beside
+  the rule's choice and not in its place.
 - **What goes to the fit.** For 2μ2e, per bin of the cube bins: 24.7 ± 5.2, 16.7 ± 3.8,
   10.1 ± 3.1, 5.1 ± 2.0 and 2.9 ± 1.6 events (statistical), the 33% systematic of
   `estimate.ipynb` on each bin — common to the bins or independent makes no difference to the
@@ -503,6 +636,61 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   Everything here is relative: the toy reproduces the structure of a datacard, not the analysis's
   limits, and the 800 GeV ratios rest on a bin with about three expected events, near the edge of
   the asymptotic approximation; the ordering of the binnings does not depend on it.
+- **The validation per bin** (section 4.1) finds no bin that fails and no bin it can clear
+  below the 33%. The search plane below 150 GeV, where A of DD is open: 5 observed against
+  3.6 −1.9 +2.8 predicted from 4 B events below 100 GeV (1.40 ± 1.24), and 36 against 37.0 ± 7.8
+  from 28 B events at 100–150 GeV (0.97 −0.26 +0.28), the one per-bin closure test that reaches
+  30%. Split into its two halves, the closure at 100–150 GeV is κ$_{DD}$ / κ$_{PD}$ = 0.68 ± 0.35
+  (1.21 ± 0.62 against 1.79 ± 0.17) times C/D of DD over C/D of PD = 1.32 −0.44 +0.65 (1.06
+  against 0.80), a product of 0.90 −0.23 +0.30: the route closes there because the two halves
+  compensate, not because each is one (below 100 GeV, 0.93 −0.93 +0.86 times 1.47 −0.36 +0.46,
+  with the κ half unresolved). Above 150 GeV only the second half is visible. The sidebands of
+  the search plane against PD's read 0.44 −0.20 +0.34 at 150–200 GeV (6/16 against 171/199),
+  0.74 −0.39 +0.72 at 200–300 GeV (5/10 against 105/155), 4.9 −3.9 +28.6 at 300–400 GeV (5/1
+  against 43/42), 0.9 −0.8 +4.3 at 400–600 GeV (1/2 against 19/33) and nothing above 600 GeV
+  (0/0 against 9/4); on the split's bins 0.74 −0.23 +0.33 and 0.66 −0.62 +3.26; over the whole
+  window 0.73 −0.22 +0.31. Were κ the same in DD and PD above 150 GeV, these ratios would be the
+  route's closure per bin: the 150–200 GeV bin over-predicted by up to a factor 2.3 and the whole
+  window by 1.4, the deficit `estimate.ipynb` section 3.1 reports as consistent with one and with
+  a 30% deficit; were the halves to compensate as they do below 150 GeV, it would close. With A
+  of DD hidden the data cannot tell these apart, and no decision point feels it: the 200 GeV
+  point has 0.27 of its 0.56 events at 150–200 GeV. κ per bin: PP 1.18 −0.18 +0.20,
+  0.99 −0.17 +0.18, 0.67 −0.19 +0.20, 0.63 −0.25 +0.29 and 0.74 −0.74 +1.02 against 0.97 ± 0.10
+  over all bins (χ²/ndof 3.9/4); PD 1.26 ± 0.16, 1.41 ± 0.21, 0.79 ± 0.21, 1.14 −0.40 +0.44 and
+  0.53 −0.53 +0.41 against 1.20 ± 0.10 (3.9/4); DP 0.66 −0.49 +0.55, 1.28 −1.03 +1.48 and
+  0.89 −0.89 +1.55, then no C event (1.02 −0.41 +0.48, 0.2/2); on the split's bins PP 1.00 ± 0.11
+  and 0.67 −0.24 +0.27, PD 1.22 ± 0.11 and 0.97 −0.30 +0.31, DP 0.88 −0.39 +0.44 and no C event.
+  In PP and PD alike the two bins below 300 GeV sit above the plane's κ and the three above it
+  below: between the two windows of `estimate.ipynb` κ falls from 1.08 ± 0.13 to 0.67 ± 0.15 in
+  PP and from 1.31 ± 0.12 to 0.87 ± 0.17 in PD, two standard deviations in each plane, while
+  against a flat κ the five bins give χ² 3.9/4. The fall is the same in the two planes, and what
+  the route carries from PD to DD per bin is A/B, which includes it; that it carries across the
+  muon displacement as well is assumed, since DP, the only open plane with the muon LJ
+  displaced, has three bins at 80–175% precision and none above 400 GeV. Of the
+  observed-over-predicted ratios of the first two tests, the sideband ratio at 150–200 GeV is
+  1.6 standard deviations below one, the deficit `estimate.ipynb` reports at 150–300 GeV
+  (0.54 −0.19 +0.28) seen per bin; the others lie within 1.2 standard deviations of one, five of
+  them between 0.9 and 1.2 (PP → DP at 200–300 GeV, above 600 GeV and at 150–400 GeV for the
+  split, the sidebands at 300–400 GeV and the dsa1+ sideband at 150–200 GeV), and every PP → DP
+  ratio is at or above one, as the whole window's 1.32 is. Taken together: the per-bin tests
+  reach 30% at 100–150 GeV, 55–130% from 150 to 600 GeV (above 300 GeV from PP → DP alone, at
+  70–130%) and nothing above 600 GeV; the 33% per bin stays assumed, contradicted by nothing at
+  the level the counts allow.
+- **Combine** (section 5.1) reproduces the toy. Relative to one bin, the lnN model (the toy's,
+  with the asymmetric intervals) gives 0.22 (cube bins), 0.37 (three bins), 0.39 (two windows)
+  and 0.27 (split at 400) at 500 GeV, and 0.18, 0.18, 0.39 and 0.26 for the 800 GeV points,
+  against the toy's 0.21, 0.36, 0.38, 0.25 and 0.17, 0.17, 0.38, 0.25: the toy is 3–5% more
+  optimistic and orders the binnings the same way. The gmN model, which profiles the B counts of
+  DD with Gamma distributions, is less favourable to the binnings with a bin on few events: by
+  10–19% for the cube bins and the three bins (0.25 at 500 GeV and 0.21 at 800 GeV for the cube
+  bins; their ≥ 600 GeV bin rests on 4 events), 7% for the split at 400 (0.29 and 0.28) and 2–4%
+  for the two windows (0.40): a log-normal on an estimate resting on 4 to 13 events understates
+  its uncertainty, and the finer the binning the more of the estimate rests on such counts. In
+  absolute terms, with μ = 1 the stored cross section and no branching fractions, one bin gives
+  r = 0.57 and 0.54 for the two 800 GeV points with 59–63 signal events, 1.6 for the 21-event one
+  and 2.3 for the 500 GeV point; the cube bins 0.10, 0.10, 0.28 and 0.51 (gmN 0.12, 0.12, 0.34,
+  0.58), the split at 400 0.15, 0.14, 0.41 and 0.61 (gmN 0.17, 0.16, 0.46, 0.68); the 1000 GeV
+  points stay above r = 2.9 in every binning (17–23 for one bin), the 200 GeV point above 39.
 - **4μ.** Count-limited: 3 B events of DD above 150 GeV, at 200–300 GeV (two) and 400–600 GeV
   (one), against 98–99.7% of the 500–800 GeV signal yield above 300 GeV and 83–95% of the 800 and
   1000 GeV points' above 600 GeV, where the search plane has no B event. The one-bin estimate of
@@ -518,13 +706,22 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   600 GeV, which rests on 4 sideband events and a factor the data do not pin down; in 4μ it is
   little. The price of the five bins is five estimates resting on 28, 24, 13, 9 and 4 sideband
   events in place of one on 78, a factor taken from a fit in the bin that matters most, and a
-  systematic measured over the whole window and assumed per bin.
+  systematic measured over the whole window and assumed per bin. The split at 400 GeV, which was
+  not among the candidates, buys a factor four at both decision masses from 13 B events and a
+  factor measured in the bin to 16%, with no fitted dsa0 factor and no rule threshold inside the
+  bin's error, at the price of the 200 GeV point; it is the binning to propose if the group
+  prefers not to lean on four events, and the cube bins remain the rule's choice. Combine agrees
+  with the toy on all of this to 5%, and says that a Gamma treatment of the B counts costs the
+  binnings with a 4-event bin another 10–19%, the split at 400 7%.
 
 ## Files
 
 `binning_lib.py` (the tables, the fits, the toy limit and the decision rule of this notebook),
-`test_binning_lib.py`, `binning_plots.py` (its figures and cartoons), `_build_binning.py` (writes
-this notebook). The estimate it bins is that of `estimate.ipynb` (`estimate_lib.py`,
+`test_binning_lib.py`, `binning_plots.py` (its figures and cartoons), `binned_cards.py` (the
+combine datacards of section 5.1 and the reading of their limits; `test_binned_cards.py`),
+`binning_cards/` (the 70 cards with their provenance sidecar), `binning_limits/` (combine's
+expected limits, `limits.csv`, with the sidecar of `run_combine_limits.py`), `_build_binning.py`
+(writes this notebook). The estimate it bins is that of `estimate.ipynb` (`estimate_lib.py`,
 `_build_estimate.py`)."""))
 
 nb = nbf.v4.new_notebook(cells=cells, metadata=KERNEL)

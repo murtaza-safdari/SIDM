@@ -1,0 +1,4 @@
+# The provenance sidecars of binning_cards/ and binning_limits/ are small text files that
+# belong with the cards and the limits; the repo-wide rule ignores the .meta.yaml of coffea outputs.
+!binning_cards/datacards.meta.yaml
+!binning_limits/limits.meta.yaml

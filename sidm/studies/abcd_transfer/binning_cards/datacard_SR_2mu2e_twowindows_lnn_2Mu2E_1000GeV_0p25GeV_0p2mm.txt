@@ -1,0 +1,23 @@
+# SIDM 2mu2e data-driven background per bin of the LJ-pair mass: two windows (lnN model) -- 2Mu2E_1000GeV_0p25GeV_0p2mm
+# background = B of the displaced-displaced plane x A/B of the prompt-muon plane per DSA class, per bin (binning.ipynb, binning_lib.binned_routes, selected factor)
+# signal at the theory cross section (cross_sections.yaml): mu = 1 is the stored cross section
+# observation = the background of the bin (blinded; combine --run blind never reads it)
+imax 2  number of bins
+jmax 1  number of background processes
+kmax *  number of nuisance parameters
+--------------------------------------------------------------------------------
+bin                        m150to300       m300up          
+observation                41.2043         18.5255         
+--------------------------------------------------------------------------------
+bin                        m150to300       m150to300       m300up          m300up          
+process                    sig             bkg             sig             bkg             
+process                    0               1               0               1               
+rate                       0.000210026     41.2043         1.48005         18.5255         
+--------------------------------------------------------------------------------
+mcstat_sig_m150to300  lnN  1.70711         -               -               -               
+mcstat_sig_m300up     lnN  -               -               1.00842         -               
+shape_m300up          lnN  -               -               -               1.00171         
+stat_m150to300        lnN  -               0.8416/1.1611   -               -               
+stat_m300up           lnN  -               -               -               0.7766/1.2258   
+lumi_13TeV            lnN  1.025           -               1.025           -               
+transfer              lnN  -               1.33            -               1.33            
