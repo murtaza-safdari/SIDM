@@ -16,10 +16,12 @@ POINT = "2Mu2E_800GeV_0p25GeV_0p25mm"
 
 # per bin and class: B of the search plane, A and B of the reference plane, the measured A/B with its
 # interval, the rule's choice, the fitted A/B with its error, the shape systematic carried
-SPEC = {"150-400": {"dsa0": (35, 1155, 1083, 1.07, 0.05, 0.05, "measured", 1.05, 0.04, 0.0),
-                    "dsa1+": (30, 84, 177, 0.47, 0.06, 0.07, "measured", 0.48, 0.06, 0.0)},
-        ">=400": {"dsa0": (9, 98, 120, 0.82, 0.11, 0.13, "measured", 0.94, 0.10, 0.0),
-                  "dsa1+": (4, 6, 21, 0.29, 0.13, 0.21, "fitted", 0.26, 0.10, 0.12)}}
+# per bin and class: B of DD, A of PD, B of PD, the measured A/B (= A of PD / B of PD) with its interval, the rule's
+# choice, the fitted A/B with its error, the shape systematic carried
+SPEC = {"150-400": {"dsa0": (35, 1155, 1083, 1155 / 1083, 0.05, 0.05, "measured", 1.05, 0.04, 0.0),
+                    "dsa1+": (30, 84, 177, 84 / 177, 0.06, 0.07, "measured", 0.48, 0.06, 0.0)},
+        ">=400": {"dsa0": (9, 98, 120, 98 / 120, 0.11, 0.13, "measured", 0.94, 0.10, 0.0),
+                  "dsa1+": (4, 6, 21, 6 / 21, 0.13, 0.21, "fitted", 0.26, 0.10, 0.12)}}
 
 
 def routes_frame():
@@ -93,8 +95,8 @@ def test_lnn_card_mirrors_the_selected_estimate():
     assert fields["process"][0] == ["sig", "bkg", "sig", "bkg"] and fields["process"][1] == ["0", "1", "0", "1"]
     rates = [float(v) for v in fields["rate"][0]]
     assert rates[0] == pytest.approx(0.10) and rates[2] == pytest.approx(58.74)
-    assert rates[1] == pytest.approx(35 * 1.07 + 30 * 0.47, rel=1e-5)
-    assert rates[3] == pytest.approx(9 * 0.82 + 4 * 0.26, rel=1e-5)
+    assert rates[1] == pytest.approx(35 * 1155 / 1083 + 30 * 84 / 177, rel=1e-4)
+    assert rates[3] == pytest.approx(9 * 98 / 120 + 4 * 0.26, rel=1e-4)
     obs = [float(v) for v in fields["observation"][0]]
     assert obs == pytest.approx([rates[1], rates[3]])
     # the systematic is one nuisance on every background column and none on the signal
@@ -122,10 +124,11 @@ def test_gmn_card_counts_the_sideband_events():
     assert nuis["nB_m400up_dsa1p"][0] == "gmN" and nuis["nB_m400up_dsa1p"][1] == "4"
     alpha = float(nuis["nB_m400up_dsa1p"][7])
     assert rates[5] == pytest.approx(4 * alpha, rel=1e-6) and alpha == pytest.approx(0.26)
-    assert nuis["nB_m150to400_dsa0"][1] == "35" and float(nuis["nB_m150to400_dsa0"][3]) == pytest.approx(1.07)
+    assert nuis["nB_m150to400_dsa0"][1] == "35" and float(nuis["nB_m150to400_dsa0"][3]) == pytest.approx(1155 / 1083, rel=1e-4)
     # the fitted factor's error is symmetric, the measured one's is the interval
     assert nuis["factor_m400up_dsa1p"][6] == f"{(0.26 - 0.10) / 0.26:.4f}/{(0.26 + 0.10) / 0.26:.4f}"
-    assert nuis["factor_m400up_dsa0"][5] == f"{(0.82 - 0.11) / 0.82:.4f}/{(0.82 + 0.13) / 0.82:.4f}"
+    f = 98 / 120
+    assert nuis["factor_m400up_dsa0"][5] == f"{(f - 0.11) / f:.4f}/{(f + 0.13) / f:.4f}"
     assert float(nuis["shape_m400up_dsa1p"][6]) == pytest.approx(1 + 0.12 / (4 * 0.26), rel=1e-4)
     assert nuis["transfer"] == ["lnN", "-", "1.33", "1.33", "-", "1.33", "1.33"]
 
@@ -164,12 +167,15 @@ def test_cr_card_puts_the_control_region_in_the_fit():
     assert fields["process"][1] == ["0", "1", "2"] * 2 + ["0", "1", "0", "2"] * 2
     rates = [float(v) for v in fields["rate"][0]]
     # the factor is measured in every bin of the cr model: the search bin's rate is B x the measured A/B ...
-    assert rates[4] == pytest.approx(9 * 0.82) and rates[5] == pytest.approx(4 * 0.29)
+    assert rates[4] == pytest.approx(9 * 98 / 120, rel=1e-4) and rates[5] == pytest.approx(4 * 6 / 21, rel=1e-4)
     # ... the control channel's background is B of the reference plane x the same factor, its signal the leak
-    assert rates[10] == pytest.approx(17.79) and rates[11] == pytest.approx(120 * 0.82)
-    assert rates[12] == pytest.approx(4.68) and rates[13] == pytest.approx(21 * 0.29)
+    assert rates[10] == pytest.approx(17.79) and rates[11] == pytest.approx(120 * 98 / 120, rel=1e-4)
+    assert rates[12] == pytest.approx(4.68) and rates[13] == pytest.approx(21 * 6 / 21, rel=1e-4)
+    # ... so that the control channel's background equals its observation: the blind Asimov data set reproduces A of PD
+    assert rates[7] == pytest.approx(obs[2], rel=1e-4) and rates[9] == pytest.approx(obs[3], rel=1e-4)
+    assert rates[11] == pytest.approx(obs[4], rel=1e-4) and rates[13] == pytest.approx(obs[5], rel=1e-4)
     assert nuis["nB_m400up_dsa0"][:2] == ["gmN", "9"] and nuis["nBref_m400up_dsa0"][:2] == ["gmN", "120"]
-    assert float(nuis["nBref_m400up_dsa0"][2 + 11]) == pytest.approx(0.82)
+    assert float(nuis["nBref_m400up_dsa0"][2 + 11]) == pytest.approx(98 / 120, rel=1e-4)
     # the factor is one free parameter per bin and class, on the search bin and its control channel
     lines = [l.split() for l in text.splitlines() if " rateParam " in l and not l.startswith("#")]
     assert [l[0] for l in lines].count("f_m400up_dsa0") == 2
@@ -187,11 +193,38 @@ def test_cr_card_puts_the_control_region_in_the_fit():
     routes.loc[(routes["bin"] == ">=400") & (routes["class"] == "dsa1+"), "B"] = 0.0
     fields, bins, nuis = parse(bc.card_text(POINT, routes, yields_frame(), "split at 400", "cr", control=control_frame()))
     assert "cr_m400up_dsa1p" not in bins[0] and fields["imax"] == "5"
-    # without an A event in the reference plane the factor starts from the fitted value
+    # without an A event in the reference plane the factor starts from the fitted value, and the control channel
+    # expects the fitted count against an observation of zero
     routes = routes_frame()
     routes.loc[(routes["bin"] == ">=400") & (routes["class"] == "dsa1+"), ["A ref", "A/B"]] = [0.0, 0.0]
     fields, bins, nuis = parse(bc.card_text(POINT, routes, yields_frame(), "split at 400", "cr", control=control_frame()))
     assert float(fields["rate"][0][5]) == pytest.approx(4 * 0.26)
+    assert float(fields["observation"][0][5]) == 0.0 and float(fields["rate"][0][13]) == pytest.approx(21 * 0.26)
+    # without a B event in the reference plane there is no control channel: the class keeps the gmN treatment
+    routes = routes_frame()
+    routes.loc[(routes["bin"] == ">=400") & (routes["class"] == "dsa1+"), ["A ref", "B ref", "A/B"]] = [0.0, 0.0, np.nan]
+    text = bc.card_text(POINT, routes, yields_frame(), "split at 400", "cr", control=control_frame())
+    fields, bins, nuis = parse(text)
+    assert "cr_m400up_dsa1p" not in bins[0] and fields["imax"] == "5"
+    assert float(fields["rate"][0][5]) == pytest.approx(4 * 0.26) and nuis["factor_m400up_dsa1p"][0] == "lnN"
+    assert "shape_m400up_dsa1p" in nuis
+    assert not any(l.split()[0] == "f_m400up_dsa1p" for l in text.splitlines() if " rateParam " in l)
+
+
+def test_control_signal_off_zeroes_the_control_channels_only():
+    spec = importlib.util.spec_from_file_location("control_signal_off", Path(__file__).with_name("control_signal_off.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    text = bc.card_text(POINT, routes_frame(), yields_frame(), "split at 400", "cr", control=control_frame())
+    zeroed, n = mod.zero_control_signal(text)
+    before, after = parse(text), parse(zeroed)
+    assert n == 3 and zeroed.startswith(mod.HEADER)          # the three control channels with a signal yield in the fixture
+    rates0, rates1 = [float(v) for v in before[0]["rate"][0]], [float(v) for v in after[0]["rate"][0]]
+    cols = list(zip(before[1][1], before[0]["process"][0]))
+    assert cols == list(zip(after[1][1], after[0]["process"][0]))
+    for (b, p), r0, r1 in zip(cols, rates0, rates1):
+        assert r1 == (0.0 if b.startswith("cr_") and p == "sig" else r0)
+    assert after[0]["observation"] == before[0]["observation"] and after[2] == before[2]
 
 
 def test_card_names_parse_both_ways(tmp_path):
@@ -215,7 +248,7 @@ def test_card_names_parse_both_ways(tmp_path):
     assert parsed["m_mediator"] == 800.0 and parsed["ctau"] == 0.25
     assert mod.read_normalisation(paths[0]) == "theory"
     signal, background = mod.read_rates(paths[0])
-    assert signal == pytest.approx(0.10) and background == pytest.approx(35 * 1.07 + 30 * 0.47, rel=1e-5)
+    assert signal == pytest.approx(0.10) and background == pytest.approx(35 * 1155 / 1083 + 30 * 84 / 177, rel=1e-4)
 
 
 def test_limits_comparison_is_relative_to_the_same_model(tmp_path):

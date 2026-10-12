@@ -1,0 +1,31 @@
+created_utc: '2026-10-12T02:00:02Z'
+produced_by: sidm/scripts/run_combine_limits.py
+producer: murtazas
+host: cmslpc309.fnal.gov
+combine:
+  method: AsymptoticLimits
+  version:
+  - v10.2.1
+  cmssw_release: /uscms_data/d3/scampbel/CMSSW_14_1_0_pre4
+  blinded: true
+  expected_kind: a-priori (Asimov, observation ignored)
+  observed_limits_present: false
+  rmax_strategy: fixed
+  rmax_fixed: 300.0
+  extra_args: null
+  timeout_s: 600
+  jobs: 8
+run:
+  datacard_dir: /uscms_data/d3/murtazas/abcd6d_local/scratch/probe_nocrsig
+  pattern: datacard_SR_2mu2e_*.txt
+  n_datacards_matched: 8
+  n_limits: 8
+  n_failed: 0
+  failures: null
+results_summary:
+  median_expected_r: 0.4449
+  min_expected_r: 0.152
+  max_expected_r: 0.6757
+  median_observed_r: null
+warning: null
+datacards: null

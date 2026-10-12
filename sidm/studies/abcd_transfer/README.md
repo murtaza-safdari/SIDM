@@ -70,9 +70,10 @@ below 150 GeV, where the closure splits into κ(DD)/κ(PD) times the C/D ratio a
 compensate; its C/D against PD's per bin above 150 GeV; κ per bin in the open planes), on the
 cube bins and on the split at 400 GeV: no bin fails, nothing tightens the 33 % per bin, which
 stays assumed. The control region the factor is measured from, A of PD, is not signal-blind at
-high mass (an 800 GeV point at μ = 1 puts up to 18 events among its 25 dsa0 events above
+high mass (an 800 GeV point at μ = 1 puts up to 19 events among its 25 dsa0 events above
 600 GeV); section 4.2 measures by signal injection what the estimate absorbs of a signal that is
-in the data (a few per cent of the signal in the search region, linear in μ). Section 5.1 runs
+in the data (up to 8 % of the signal in the search region in a ≥ 600 GeV bin with the measured
+factor, 4 % in the split at 400 GeV, 3 % in one bin). Section 5.1 runs
 the same counting experiments through combine (`binned_cards.py` writes one datacard per
 binning, signal point and background model; the limits come from
 `sidm/scripts/run_combine_limits.py`, blind asymptotic, every card with a fixed `--rmax 300`
@@ -84,10 +85,16 @@ likelihood, per bin and class a channel with A of PD observed, B of PD times the
 background and the point's yield there as its signal, the factor a free parameter shared with
 the search bin, so that a signal in the control region is part of the signal hypothesis instead
 of a bias of the estimate. It costs the binnings with a ≥ 600 GeV bin 35 % of their expected limit
-at 800 GeV, three quarters of it because the bin's factor is then what its own 25 and 16 control
-events say (1.56 for dsa0) and not the fitted 0.90, the split at 400 GeV 2 %; in that model the
-cube bins and the split at 400 GeV tie at 0.28 of the one-bin limit for the 800 GeV points. The
-absolute limits are on μ relative to the stored cross section,
+at 800 GeV: a factor 1.30 because the bin's factor is then what its own 25 and 16 control events
+say (1.56 for dsa0) and not the fitted 0.90, and 1.04 (1.03 to 1.05 over the three 800 GeV
+points) for the signal in the control region (measured by running the cr cards once more with
+that signal set to zero, `control_signal_off.py`);
+the split at 400 GeV pays 2 %, all of it the control-region signal. In that model the cube bins
+and the split at 400 GeV tie at 0.28 of the one-bin limit for the 800 GeV points, while the rule's
+own metric still ranks the cube bins first through the 500 GeV point. The cr model was built after
+the binning result as a cross-check and departs from the rule's factor clause; with its factor the
+≥ 600 GeV bin fails the rule's count requirement. Section 7 lays this out and leaves the choice
+to the group. The absolute limits are on μ relative to the stored cross section,
 without the dark-photon branching fractions. 4μ gains little: its three sideband events sit
 below 600 GeV, where the heavy points have 5–17 % of their yield, and its estimate stays
 count-limited. Section 7 carries the comparison with the one-bin estimate.
@@ -152,8 +159,9 @@ signal-contamination checks.
 | `_build_binning.py` | writes `binning.ipynb` |
 | `binned_cards.py` | the combine datacards of `binning.ipynb` section 5.1: one per binning, signal point and background model (`lnN`: the per-bin estimate with its asymmetric statistical and shape log-normals; `gmN`: the B count of each DSA class as a Gamma-distributed sideband with its factor as a log-normal; `cr`: the gmN model with a control channel per bin and class, A of PD observed, the factor a free `rateParam` shared with the search bin), the 33 % transfer systematic, the luminosity and the signal's statistical error, with their provenance sidecar; reads the runner's `limits.csv` back and compares the binnings relative to one bin against the toy |
 | `test_binned_cards.py` | the lnN and gmN cards mirror the frames they are written from, the cr card puts the control region's counts and signal in their own channels with one shared factor, zero counts drop processes and bins, the card names parse in `run_combine_limits.py` with the right channel, normalisation and rates, the comparison is relative to the same model |
+| `control_signal_off.py` | the cr cards of the decision points with the control channels' signal set to zero, the probe behind the two-part decomposition of section 5.1 |
 | `binning_cards/` | the 105 datacards (five binnings, seven 2μ2e points, three models) and `datacards.meta.yaml` |
-| `binning_limits/` | combine's expected limits on them, `limits.csv` with the sidecar `run_combine_limits.py` writes |
+| `binning_limits/` | combine's expected limits on them, `limits.csv` with the sidecar `run_combine_limits.py` writes; `control_signal_off/` the same for the eight cards without the control-region signal |
 | `merge_abcd8d.py` | EOS per-chunk outputs → one file per sample and family, manifests, rescue lists; chunks with an exception or without the sample are left out and listed for rescue, a sample with such chunks is written only with `--allow-missing` |
 | `test_merge_abcd8d.py` | weighted combination of chunks, mismatched histogram sets refused, the merge plan (listed chunks only, bad chunks to the rescue list) |
 | `campaign/` | the histogram producers and patches the `abcd8d` campaign ran (reference copies, not imported here) |

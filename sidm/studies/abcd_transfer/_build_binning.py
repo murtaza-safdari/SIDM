@@ -382,7 +382,7 @@ for name in ("cube bins", "split at 400"):
 cells.append(md(r"""### 4.2 What the estimate absorbs of a signal in the control region
 
 The last table of section 4 shows that A of PD, where the factor is measured, is not signal-blind at
-high mass: at μ = 1 an 800 GeV point puts up to 18 events among the 25 dsa0 events above 600 GeV. A
+high mass: at μ = 1 an 800 GeV point puts up to 19 events among the 25 dsa0 events above 600 GeV. A
 signal that exists therefore raises the measured factor and with it the estimate under itself. The
 size of that is measured here by injection (`binning_lib.injection_table`): μ times each signal
 point is added to every region of the data cube as counts (the hidden box stays hidden), the
@@ -394,13 +394,22 @@ leak is exactly B of DD × signal in A of PD / B of PD per class (`leak expected
 linear in μ. The fitted factor pools the seven bins and absorbs less in the bin that holds the
 signal, but the injected points move the fit, and with it the estimate of bins without signal,
 either way. `choice` shows where the injected signal changes the rule's choice of factor: a
-signal in A of PD makes the measured factor more precise. Section 5.1 removes the bias by
-putting A of PD into the likelihood."""))
+signal in A of PD makes the measured factor more precise. The second table repeats the 800 GeV,
+0.25 mm point at μ = 0.2, 1 and 5, for the bins above 400 GeV and the sum over bins: with the
+measured factor the leak is linear in μ up to the signal in the sidebands, with the fitted factor
+it is not, since the fit moves (the dsa1+ fit most, with no event above 600 GeV in A of PD: at
+μ = 1 it raises the selected estimate of the 400–600 GeV bin by 0.7 events, half of the 1.4 signal
+events there, while the measured route moves by 0.04). Section 5.1 removes the bias by putting
+A of PD into the likelihood."""))
 
 cells.append(code(r"""INJECTION = bl.injection_table(BASE, SIGNAL_POINTS["2mu2e"], "2mu2e", d2, NOMINAL,
                                {name: BINNINGS[name] for name in ("one bin", "cube bins", "split at 400")}, form=FORM)
 print("the B route on the data with mu = 1 of each signal point added to every region, against the route on the data alone")
-display(bl.injection_view(INJECTION))"""))
+display(bl.injection_view(INJECTION))
+INJECTION_MU = bl.injection_table(BASE, ["2Mu2E_800GeV_0p25GeV_0p25mm"], "2mu2e", d2, NOMINAL,
+                                  {name: BINNINGS[name] for name in ("cube bins", "split at 400")}, form=FORM, mus=(0.2, 1.0, 5.0))
+print("the 800 GeV, 0.25 mm point at mu = 0.2, 1 and 5: the bins above 400 GeV and the sum over bins")
+display(bl.injection_view(INJECTION_MU[(INJECTION_MU["lo"] >= 400) | (INJECTION_MU["bin"] == bl.TOTAL)]))"""))
 
 cells.append(md(r"""## 5. The toy expected limit and the choice of binning
 
@@ -487,12 +496,18 @@ and the factor an asymmetric log-normal; and **cr**, the gmN model with the cont
 likelihood: per bin and class a second channel whose observation is A of PD (an open region),
 whose background is B of PD times the factor and whose signal is the point's yield there
 (section 4.2), with the factor a free parameter (`rateParam`) shared by the search bin and its
-control channel. In the cr model the factor is measured in every bin and class by the bin's own
-control counts (a free parameter constrained by the 25 A and 16 B events of PD above 600 GeV is
-the honest form of a factor measured to 32%), so the A/B(M) fit and its shape systematic have no
-place in it, and a signal in the
-control region is part of the signal hypothesis instead of a bias of the estimate; the signal in
-the B sidebands (0.2 events at μ = 1 for the heaviest leak) is not modelled. The lnN and gmN
+control channel. In the cr model the factor is a free parameter in every bin and class,
+constrained by the bin's own control counts — above 600 GeV by the 25 A and 16 B events of PD's
+dsa0 class, where the rule found the measured factor too imprecise to use (45% by its measure,
+the larger side of the interval) and took the fit — so the model carries no shape systematic; the
+A/B(M) fit enters only as the starting value and the Asimov expectation of the one class without
+an A event in PD (dsa1+ above 600 GeV, 0.95 expected events in its control channel against 0
+observed, a channel the signal dominates at the expected limit). A signal in the control region is
+part of the signal hypothesis instead of a bias of the estimate; the signal in the B sidebands
+(0.3–0.5 events at μ = 1 for the 800 GeV points) is not modelled. The cr model was built after the
+binning result as a cross-check: it is not a candidate of the rule, and it replaces the rule's
+factor clause (measured where precise to 20%, else fitted) by the bin's own counts everywhere;
+section 7 says what follows from that. The lnN and gmN
 models carry the shape systematic where the factor is fitted; all three carry the 33% as one
 log-normal common to the search bins, the signal per bin at the stored cross section with its
 simulation-statistics log-normal, and the 2.5% luminosity uncertainty on the signal. The
@@ -517,30 +532,42 @@ display(pd.DataFrame({"toy / combine (lnN)": (part["relative toy"] / part["relat
 print("r cr / r gmN per binning, decision points")
 display((part["r cr"] / part["r gmN"]).groupby(part["binning"]).agg(["min", "mean", "max"]).round(3))"""))
 
-cells.append(md(r"""The cr model differs from the gmN model in three ways, each with a size of its own. Where the
-rule took the fitted factor the cr model has the measured one (the toy's limit with the measured
-factor over the toy's with the selected factor, section 5, measures that part). Under the signal
-hypothesis the signal in the control region lowers the factor by its share of the control counts,
-which takes the part of the signal the estimate would absorb out of the excess the search bin has
-to show: 1 / (1 − leak / signal) with the measured factor of section 4.2. And the factor's
-constraint is the bin's own counts in place of the fitted factor's error and the shape
-systematic: the remainder. The table has the three per binning, averaged over the decision
-points (the injection of section 4.2 covers one bin, the cube bins and the split at 400, so the
-leak and the remainder are given for those)."""))
+cells.append(md(r"""Combine itself separates the cost of the cr model into its two parts. The cr cards of the cube bins
+and the split at 400 GeV were run once more with the control channels' signal set to zero
+(`control_signal_off.py`, `binning_limits/control_signal_off/`): the same likelihood without a signal
+in the control region. Its limit over the gmN limit is the price of the free factor, the bin's own
+counts in every class with the constraint those counts give, in place of the selected factor with
+its error and shape systematic; the cr limit over it is the price of the signal in the control
+region, which under the signal hypothesis lowers the factor fitted to A of PD and with it the
+background the search bin has to show an excess over. The two multiply to r cr / r gmN exactly.
+Beside them, two toy estimates of the same parts: the toy's limit with the measured factor over
+the toy's with the selected factor (section 5) for the first, and 1 / (1 − leak / signal) with the
+measured leak of section 4.2 for the second. The table gives the means per binning and mass over
+the decision points. The last table applies the rule's own metric, the relative limit averaged
+over the two masses, to the limits of each model."""))
 
 cells.append(code(r"""TOY_FACTOR = (LIMITS[LIMITS["factor"] == "measured"].set_index(["point", "binning"])["limit on mu"]
               / LIMITS[LIMITS["factor"] == "selected"].set_index(["point", "binning"])["limit on mu"])
 LEAK = INJECTION[(INJECTION["bin"] == bl.TOTAL) & (INJECTION["mu"] == 1.0)].set_index(["point", "binning"])["measured leak / signal"]
-part = part.copy()
+CR_OFF = bc.read_limits("binning_limits/control_signal_off/limits.csv").set_index(["point", "binning"])["r"]
+part = COMPARISON[COMPARISON["point"].isin(DECISION_POINTS["2mu2e"]) & COMPARISON["binning"].isin(["cube bins", "split at 400"])].copy()
 keys = list(zip(part["point"], part["binning"]))
+part["r cr, control signal off"] = [CR_OFF.get(k, np.nan) for k in keys]
 part["r cr / r gmN"] = part["r cr"] / part["r gmN"]
-part["factor: toy measured / selected"] = [TOY_FACTOR.get(k, np.nan) for k in keys]
-part["leak: 1 / (1 - leak / signal)"] = [1 / (1 - LEAK[k]) if k in LEAK.index else np.nan for k in keys]
-part["constraint: remainder"] = part["r cr / r gmN"] / (part["factor: toy measured / selected"] * part["leak: 1 / (1 - leak / signal)"])
+part["free factor: r cr off / r gmN"] = part["r cr, control signal off"] / part["r gmN"]
+part["control signal: r cr / r cr off"] = part["r cr"] / part["r cr, control signal off"]
+part["toy: measured / selected"] = [TOY_FACTOR.get(k, np.nan) for k in keys]
+part["toy: 1 / (1 - leak / signal)"] = [1 / (1 - LEAK[k]) if k in LEAK.index else np.nan for k in keys]
 part["points"] = [f"{bl.mediator_mass(p):g} GeV" for p in part["point"]]
-print("r cr / r gmN of the decision points and its three parts, per binning, mean over the points of each mass")
-display(part.groupby(["binning", "points"], sort=False)[["r cr / r gmN", "factor: toy measured / selected",
-                                                         "leak: 1 / (1 - leak / signal)", "constraint: remainder"]].mean().round(3))"""))
+print("the cost of the cr model and its two parts measured in combine, with the toy's estimates of them; mean over the decision points of each mass")
+display(part.groupby(["binning", "points"], sort=False)[["r cr / r gmN", "free factor: r cr off / r gmN", "control signal: r cr / r cr off",
+                                                         "toy: measured / selected", "toy: 1 / (1 - leak / signal)"]].mean().round(3))
+rel = COMPARISON[COMPARISON["point"].isin(DECISION_POINTS["2mu2e"])].copy()
+rel["points"] = [f"{bl.mediator_mass(p):g} GeV" for p in rel["point"]]
+METRIC = pd.DataFrame({model: rel.groupby(["binning", "points"], sort=False)[f"relative {model}"].mean().unstack("points").mean(axis=1)
+                       for model in ("lnN", "gmN", "cr")})
+print("the rule's metric (the relative limit averaged over the two masses) on the limits of each model; the count requirement is not applied here")
+display(METRIC.round(3))"""))
 
 cells.append(md(r"""## 6. 4μ
 
@@ -650,7 +677,7 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   600 GeV put at 1.56 −0.48 +0.70, the pooled fit at 0.90 ± 0.13 and the first version's
   least-squares fit at 0.64 ± 0.12; and the 25 A events of PD it is measured from would hold, if an
   800 GeV signal exists at its stored cross section, 3 to 19 signal events (section 4, last table),
-  so that the measured factor there is not signal-blind (the estimate would absorb 7–8% of that
+  so that the measured factor there is not signal-blind (the estimate would absorb 4–8% of that
   signal, section 4.2), and the fit, which includes those bins, is only partly so.
 - **The split at 400 GeV** (added after the result of the four, not a candidate of the rule).
   150–400 GeV: 51.6 ± 7.3 on 65 B events of DD, both classes measured in the bin (dsa0
@@ -672,7 +699,7 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   factor is measured from, A of PD above 400 GeV, has 98 events, and at the stored cross section
   an 800 GeV signal would add 3 to 19 of them (3.7 for the 500 GeV point; section 4, last table):
   a 3–20% pull on the factor if that signal exists, against 12–76% on the 25 events above 600 GeV
-  (the estimate would absorb 2–4% of the signal, against 7–8% in a ≥ 600 GeV bin, section 4.2);
+  (the estimate would absorb 2–4% of the signal, against 4–8% in a ≥ 600 GeV bin, section 4.2);
   the dsa1+ control region there (6 events) would hold up to 4.7, which is one reason that part
   is fitted. And the measured 0.82 is PD's average weighted by its own B events, 104 of the 120
   at 400–600 GeV, while DD's 9 B events sit higher (3 above 600 GeV, mean 567 GeV), where the fit
@@ -739,9 +766,10 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   70–130%) and nothing above 600 GeV; the 33% per bin stays assumed, contradicted by nothing at
   the level the counts allow.
 - **Signal in the control region** (section 4.2). The two 800 GeV points with 59–63 signal events
-  put 21–23 of them, 33–38% of their yield in A of DD, into A of PD at μ = 1, all but 0.2 above
-  600 GeV, where the data have 25 (the 0.25 mm point: 17.8 dsa0 and 4.6 dsa1+ against 25 and 0);
-  the 1.2 mm point 3.9 (18%), the 500 GeV point 4.3 at 400–600 GeV among 79. Added to the data as
+  in A of DD have 21–23 events in A of PD at μ = 1, 33–38% of that yield, all but 0.2 of them above
+  600 GeV, where the data have 25 (the 0.25 mm point: 17.8 dsa0 and 4.6 dsa1+ against 25 and 0; the
+  1.2 GeV point 19.1 dsa0); the 0.25 GeV, 1.2 mm point has 3.9 (18%), the 500 GeV point 4.3 at
+  400–600 GeV among 79. Added to the data as
   counts, the 0.25 mm point raises the one-bin estimate
   from 61.3 to 62.9, 3% of its 58.8 signal events in A of DD; the ≥ 600 GeV bin of the cube bins
   with the measured factor from 4.7 to 9.2, 4.5 events or 8% of the 57.3 signal events there (4.2
@@ -751,13 +779,18 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   bin of the split from 8.5 to 10.9 (4%) measured and 8.4 to 11.0 (4%) selected. The other heavy
   points: 7% and 3% (800 GeV, 1.2 GeV, 1.2 mm), 4% and 2% (800 GeV, 0.25 GeV, 1.2 mm, 21.5 signal
   events), 7–8% and 3–4% of the 1000 GeV points' 1.5–2.1 events; the 500 GeV point 3% in either
-  binning (0.4 events). The leak is linear in μ, so at the expected limit it is the same share of a
-  signal of that size, and no injected point moves a factor across the rule's 20% precision
-  threshold. That is the size of the flaw: an excess of 800 GeV signal in the cube bins would
-  appear 8% smaller than it is against the measured factor, 2% against the fitted one, 4% in the
-  split at 400 GeV; the expected limits do not see it, since they are computed without signal in
-  the data. The cr model of section 5.1 puts A of PD into the likelihood so that the signal there
-  is part of the hypothesis, at the price below.
+  binning (0.4 events). With the measured factor the leak is linear in μ up to the signal in the
+  sidebands (the 0.25 mm 800 GeV point at μ = 0.2, 1 and 5 leaks 8, 8 and 9% of its signal into
+  the ≥ 600 GeV bin, 4% at each μ into the ≥ 400 GeV bin of the split), so at the expected limit it
+  is the same share of a signal of that size; with the fitted factor it is not, since the fit moves
+  (2% of the signal at each μ in the ≥ 600 GeV bin, but 0.7 events into the 400–600 GeV bin at
+  μ = 1 from the dsa1+ fit alone). No injected point moves a factor
+  across the rule's 20% precision threshold. That is the size of the bias: an excess of the 0.25 mm
+  800 GeV signal would appear up to 8% smaller than it is in the cube bins with the measured factor,
+  2% with the fitted one, 4% in the split at 400 GeV and 3% in one bin. The lnN and gmN cards, and
+  the toy of the rule, do not carry it, because their model has no signal in the control region;
+  the cr model of section 5.1 puts A of PD into the likelihood so that the signal there is part of
+  the hypothesis, and its expected limit pays for it (section 5.1 measures the price with combine).
 - **Combine** (section 5.1) reproduces the toy. Relative to one bin, the lnN model (the toy's,
   with the asymmetric intervals) gives 0.22 (cube bins), 0.37 (three bins), 0.39 (two windows)
   and 0.27 (split at 400) at 500 GeV, and 0.18, 0.18, 0.39 and 0.26 for the 800 GeV points,
@@ -769,25 +802,34 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   for the two windows (0.40): a log-normal on an estimate resting on 4 to 13 events understates
   its uncertainty, and the finer the binning the more of the estimate rests on such counts. In
   absolute terms, with μ = 1 the stored cross section and no branching fractions, one bin gives
-  r = 0.57 and 0.54 for the two 800 GeV points with 59–63 signal events, 1.6 for the 21-event one
-  and 2.3 for the 500 GeV point; the cube bins 0.10, 0.10, 0.28 and 0.51 (gmN 0.12, 0.12, 0.34,
+  r = 0.57 and 0.53 for the two 800 GeV points with 59–63 signal events, 1.6 for the 21-event one
+  and 2.3 for the 500 GeV point; the cube bins 0.10, 0.09, 0.28 and 0.51 (gmN 0.12, 0.12, 0.34,
   0.58), the split at 400 0.15, 0.14, 0.41 and 0.61 (gmN 0.17, 0.16, 0.46, 0.68); the 1000 GeV
-  points stay above r = 2.9 in every binning (17–23 for one bin), the 200 GeV point above 39. The
+  points stay above r = 2.9 in every binning (16–23 for one bin), the 200 GeV point above 39. The
   cr model, the gmN model with the control region in the likelihood and the factor a free parameter
   per bin and class, costs the binnings with a ≥ 600 GeV bin 35% at 800 GeV (r 0.17, 0.16 and 0.46
-  for the cube bins against gmN's 0.12, 0.12 and 0.34; the three bins the same) and 4% at 500 GeV,
-  the split at 400 GeV 2% and the two windows and one bin 1%. The 35% has three parts, each
-  measured: the factor of the ≥ 600 GeV bin is the one its own counts give, 1.56 for dsa0 against
-  the fitted 0.90, which alone is 24% (the toy with the measured factor over the toy with the
-  selected one); the signal in the control region, which under the signal hypothesis lowers the
-  factor and with it the background the search bin has to show an excess over, 6.5% (1 / (1 − 0.065)
-  with the leak of section 4.2); and the factor's constraint from 25 and 16 events in place of the
-  fitted factor's error with the shape systematic, 2%. For the split at 400 GeV the same three
-  parts are 1%, 3% and −2%. Relative to one bin in the cr model the cube bins stand at 0.28 for the
+  for the cube bins against gmN's 0.12, 0.12 and 0.34; the three bins the same), and at 500 GeV 4%
+  for the cube bins and 1% for the three bins; the split at 400 GeV 2%, the two windows and one bin
+  1%. Combine separates the 35% into two parts (the cr cards run once more with the control
+  channels' signal set to zero): without the signal in the control region the cr cards give 1.30
+  times the gmN limit for the cube bins at 800 GeV, the price of a factor that is the bin's own
+  counts in every class, 1.56 for dsa0 above 600 GeV against the fitted 0.90, with the constraint
+  those counts give in place of the fitted factor's error and shape systematic (the toy puts 1.24 of
+  it on the factor's value alone); the signal in the control region is the remaining 1.03–1.05 at
+  800 GeV (1.05 for the 0.25 mm point, 1.04 on average), 1.02 at 500 GeV, because under the signal
+  hypothesis the factor fitted to A of PD falls
+  and with it the background the search bin has to show an excess over (the toy's 1 / (1 − leak /
+  signal), 1.07, overstates it: the dsa1+ class above 600 GeV has a fitted expectation in the cr
+  cards where the measured estimate of section 4.2 has none). For the split at 400 GeV the cr cards
+  without the control-region signal give the gmN limit to four digits: its 2–3% is the signal in
+  the control region alone. Relative to one bin in the cr model the cube bins stand at 0.28 for the
   800 GeV points, the three bins at 0.28, the split at 400 at 0.28 and the two windows at 0.40; at
   500 GeV 0.25, 0.39, 0.29 and 0.40. The gain of the ≥ 600 GeV bin over the split at 400 GeV, a
-  factor 1.5 in the lnN model and 1.35 in gmN, rests on the fitted factor there and is gone once the bin's
-  factor is what the bin's own counts say and the signal in those counts is part of the hypothesis.
+  factor 1.5 in the lnN model and 1.34 in gmN, rests on the fitted factor there and is gone once the
+  bin's factor is what the bin's own counts say and the signal in those counts is part of the
+  hypothesis. The rule's own metric, the relative limit averaged over the two masses, applied to the
+  cr limits with the count requirement set aside, still ranks the cube bins first, 0.27 against 0.29
+  for the split and 0.34 for the three bins, on the 500 GeV point alone.
 - **4μ.** Count-limited: 3 B events of DD above 150 GeV, at 200–300 GeV (two) and 400–600 GeV
   (one), against 98–99.7% of the 500–800 GeV signal yield above 300 GeV and 83–95% of the 800 and
   1000 GeV points' above 600 GeV, where the search plane has no B event. The one-bin estimate of
@@ -810,25 +852,36 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   prefers not to lean on four events, and the cube bins remain the rule's choice. Combine agrees
   with the toy on all of this to 5%, and says that a Gamma treatment of the B counts costs the
   binnings with a 4-event bin another 10–19%, the split at 400 7%. The control region of the
-  estimate is not signal-blind above 400 GeV, and least above 600 GeV: an 800 GeV signal at its
-  stored cross section would raise the estimate under itself by 8% of its size in a ≥ 600 GeV bin
-  with the measured factor, 4% in the split at 400 GeV, 3% in one bin. With the control region in
-  the likelihood (the cr model) that bias is part of the fit, and the comparison changes: the cube
-  bins and the split at 400 GeV both stand at 0.28 of one bin for the 800 GeV points, since what
-  separated them, a factor 1.35–1.5 from the ≥ 600 GeV bin, was the fitted factor 0.90 in a bin whose
-  own 25 and 16 control events say 1.56 and would hold up to 18 signal events. The cards to carry
-  forward are the cr cards; in them the choice between the two binnings is the 500 GeV point's
-  0.25 against 0.29, and the split at 400 GeV rests on 13 sideband events where the cube bins rest
-  on 4.
+  estimate is not signal-blind above 400 GeV, and least of all above 600 GeV: an 800 GeV signal at
+  its stored cross section would raise the estimate under itself by up to 8% of its size in a
+  ≥ 600 GeV bin with the measured factor (2% with the fitted one), 4% in the split at 400 GeV, 3% in
+  one bin. With the control region in the likelihood (the cr model) that bias is part of the fit,
+  and the comparison changes: the cube bins and the split at 400 GeV both stand at 0.28 of one bin
+  for the 800 GeV points, since what separated them, a factor 1.34–1.5 from the ≥ 600 GeV bin, was
+  the fitted factor 0.90 in a bin whose own 25 and 16 dsa0 control events say 1.56 −0.48 +0.70, 1.3
+  standard deviations above the fit, and would hold up to 19 signal events. The cr model is a
+  cross-check built after the result, not a candidate of the rule, and it departs from the rule in
+  two places: its factor is the bin's own counts in every class, where the rule took the fit when
+  the counts were imprecise, and with that factor the ≥ 600 GeV bin's estimate is 4.9 events on 4
+  sideband events, which fails the rule's count requirement, so that by the rule's letter only one
+  bin and the two windows would stay eligible and the two windows (0.40) be chosen; the split at
+  400 GeV was never a candidate. The rule's own metric on the cr limits, the count requirement set
+  aside, still ranks the cube bins first (0.27 against 0.29 and 0.34), through the 500 GeV point.
+  What this notebook puts to the group, beside the rule's choice, is to carry the control region in
+  the likelihood and, with it there, to prefer the split at 400 GeV: the same limit at 800 GeV from
+  13 sideband events where the cube bins rest on 4, at the price of 0.29 against 0.25 at 500 GeV.
+  The decision is the group's.
 
 ## Files
 
 `binning_lib.py` (the tables, the fits, the signal injection, the toy limit and the decision rule
 of this notebook), `test_binning_lib.py`, `binning_plots.py` (its figures and cartoons),
 `binned_cards.py` (the combine datacards of section 5.1 in the lnN, gmN and cr models and the
-reading of their limits; `test_binned_cards.py`), `binning_cards/` (the 105 cards with their
-provenance sidecar), `binning_limits/` (combine's
-expected limits, `limits.csv`, with the sidecar of `run_combine_limits.py`), `_build_binning.py`
+reading of their limits; `test_binned_cards.py`), `control_signal_off.py` (the cr cards with the
+control channels' signal set to zero), `binning_cards/` (the 105 cards with their provenance
+sidecar), `binning_limits/` (combine's
+expected limits, `limits.csv`, with the sidecar of `run_combine_limits.py`; `control_signal_off/`
+the same for the eight cards without the control-region signal), `_build_binning.py`
 (writes this notebook). The estimate it bins is that of `estimate.ipynb` (`estimate_lib.py`,
 `_build_estimate.py`)."""))
 

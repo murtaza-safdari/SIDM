@@ -23,8 +23,13 @@ models of the background's statistical uncertainty are written for every binning
     with the factor a free ``rateParam`` shared by the two channels (its nominal the measured A/B
     of the bin), so that a signal in the control region is part of the signal hypothesis instead
     of a bias of the estimate (:func:`binning_lib.injection_table` measures that bias).  The factor
-    is measured in every bin, as a free parameter constrained by the bin's own control counts;
-    the A/B(M) fit and its shape systematic have no place in it.
+    is a free parameter in every bin and class, constrained by the bin's own control counts, so
+    the model carries no shape systematic; the A/B(M) fit enters only as the nominal of a class
+    whose A of the reference plane is empty (its control channel then expects the fitted count),
+    and a class whose B of the reference plane is empty has no control channel and keeps the
+    ``gmN`` treatment.  This replaces the factor clause of the binning rule (measured where
+    precise to 20%, else fitted) by the bin's own counts everywhere; the model was built after the
+    binning result, as a cross-check, and the notebook says so.
 
 All carry the systematic of the estimate (``syst_rel``) as one log-normal common to every search
 bin, the signal per bin at the stored cross section (mu = 1 is the cross section of
@@ -115,34 +120,17 @@ def _processes(routes, model):
             out.append((b, "bkg", rate, nuis))
         elif model == "gmN":
             for _, row in part[part["class"] != bl.SUM].iterrows():
-                cls = str(row["class"]).replace("+", "p")
-                name = f"bkg_{cls}"
-                n = int(round(float(row["B"])))
-                if n == 0:
-                    out.append((b, name, 0.0, []))
-                    continue
-                if row["choice"] == "measured":
-                    f, minus, plus = (float(row[c]) for c in ("A/B", "A/B minus", "A/B plus"))
-                else:
-                    f = float(row["A/B fit"])
-                    minus = plus = float(row["A/B fit err"])
-                if not np.isfinite(f) or f <= 0:
-                    raise ValueError(f"{label} {row['class']}: no usable factor ({row['choice']})")
-                alpha = float(_fmt(f))                 # the rate is N times the alpha as written
-                rate = n * alpha
-                nuis = [(f"nB_{b}_{cls}", f"gmN {n}", _fmt(alpha)),
-                        (f"factor_{b}_{cls}", "lnN", _kappas(f, minus, plus))]
-                shape = float(row["shape carried"])
-                if shape > 0:
-                    nuis.append((f"shape_{b}_{cls}", "lnN", _fmt(1 + shape / rate)))
-                out.append((b, name, rate, nuis))
+                out.append(_gmn_process(label, b, row))
         elif model == "cr":
             for _, row in part[part["class"] != bl.SUM].iterrows():
                 cls = str(row["class"]).replace("+", "p")
                 name = f"bkg_{cls}"
                 n, n_ref = int(round(float(row["B"]))), int(round(float(row["B ref"])))
-                if n == 0 or n_ref == 0:       # nothing to scale, or no sideband to measure the factor from
+                if n == 0:                      # nothing to scale
                     out.append((b, name, 0.0, []))
+                    continue
+                if n_ref == 0:                  # no sideband in the reference plane: no control channel, the gmN treatment
+                    out.append(_gmn_process(label, b, row))
                     continue
                 alpha = float(_fmt(_nominal_factor(row)))
                 out.append((b, name, n * alpha, [(f"nB_{b}_{cls}", f"gmN {n}", _fmt(alpha)),
@@ -150,6 +138,32 @@ def _processes(routes, model):
         else:
             raise ValueError(f"unknown model {model!r}")
     return out
+
+
+def _gmn_process(label, b, row):
+    """One class's background in the gmN model: the B count of the search plane as ``gmN`` with the
+    selected factor as its per-event rate, the factor's interval as a log-normal and, where the
+    factor is fitted, the shape systematic."""
+    cls = str(row["class"]).replace("+", "p")
+    name = f"bkg_{cls}"
+    n = int(round(float(row["B"])))
+    if n == 0:
+        return (b, name, 0.0, [])
+    if row["choice"] == "measured":
+        f, minus, plus = (float(row[c]) for c in ("A/B", "A/B minus", "A/B plus"))
+    else:
+        f = float(row["A/B fit"])
+        minus = plus = float(row["A/B fit err"])
+    if not np.isfinite(f) or f <= 0:
+        raise ValueError(f"{label} {row['class']}: no usable factor ({row['choice']})")
+    alpha = float(_fmt(f))                 # the rate is N times the alpha as written
+    rate = n * alpha
+    nuis = [(f"nB_{b}_{cls}", f"gmN {n}", _fmt(alpha)),
+            (f"factor_{b}_{cls}", "lnN", _kappas(f, minus, plus))]
+    shape = float(row["shape carried"])
+    if shape > 0:
+        nuis.append((f"shape_{b}_{cls}", "lnN", _fmt(1 + shape / rate)))
+    return (b, name, rate, nuis)
 
 
 def _control_bins(routes, control, point):
