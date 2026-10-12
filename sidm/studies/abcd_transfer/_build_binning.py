@@ -502,9 +502,9 @@ dsa0 class, where the rule found the measured factor too imprecise to use (45% b
 the larger side of the interval) and took the fit — so the model carries no shape systematic; the
 A/B(M) fit enters only as the starting value and the Asimov expectation of the one class without
 an A event in PD (dsa1+ above 600 GeV, 0.95 expected events in its control channel against 0
-observed, a channel the signal dominates at the expected limit). A signal in the control region is
-part of the signal hypothesis instead of a bias of the estimate; the signal in the B sidebands
-(0.3–0.5 events at μ = 1 for the 800 GeV points) is not modelled. The cr model was built after the
+observed; the 0.25 mm point puts 4.6 signal events there at μ = 1, 0.8 at its expected limit). A
+signal in the control region is part of the signal hypothesis instead of a bias of the estimate;
+the signal in the B sidebands (0.1–0.5 events at μ = 1 for the 800 GeV points) is not modelled. The cr model was built after the
 binning result as a cross-check: it is not a candidate of the rule, and it replaces the rule's
 factor clause (measured where precise to 20%, else fitted) by the bin's own counts everywhere;
 section 7 says what follows from that. The lnN and gmN
@@ -815,7 +815,7 @@ cells.append(md(r"""## 7. Comparison with the one-bin estimate, and conclusions
   times the gmN limit for the cube bins at 800 GeV, the price of a factor that is the bin's own
   counts in every class, 1.56 for dsa0 above 600 GeV against the fitted 0.90, with the constraint
   those counts give in place of the fitted factor's error and shape systematic (the toy puts 1.24 of
-  it on the factor's value alone); the signal in the control region is the remaining 1.03–1.05 at
+  it on the factor's value alone); the signal in the control region is the remaining 1.02–1.05 at
   800 GeV (1.05 for the 0.25 mm point, 1.04 on average), 1.02 at 500 GeV, because under the signal
   hypothesis the factor fitted to A of PD falls
   and with it the background the search bin has to show an excess over (the toy's 1 / (1 − leak /

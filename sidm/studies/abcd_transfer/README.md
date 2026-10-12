@@ -86,7 +86,7 @@ background and the point's yield there as its signal, the factor a free paramete
 the search bin, so that a signal in the control region is part of the signal hypothesis instead
 of a bias of the estimate. It costs the binnings with a ≥ 600 GeV bin 35 % of their expected limit
 at 800 GeV: a factor 1.30 because the bin's factor is then what its own 25 and 16 control events
-say (1.56 for dsa0) and not the fitted 0.90, and 1.04 (1.03 to 1.05 over the three 800 GeV
+say (1.56 for dsa0) and not the fitted 0.90, and 1.04 (1.02 to 1.05 over the three 800 GeV
 points) for the signal in the control region (measured by running the cr cards once more with
 that signal set to zero, `control_signal_off.py`);
 the split at 400 GeV pays 2 %, all of it the control-region signal. In that model the cube bins
