@@ -346,6 +346,7 @@ def _sum_rows(label, lo, hi, per):
     weighted by B, the shape systematics in quadrature."""
     row = {"bin": label, "lo": lo, "hi": hi, "class": SUM, "B": float(sum(p["B"] for p in per)),
            "B err": float(np.sqrt(sum(p["B err"] ** 2 for p in per))),
+           "A ref": float(sum(p["A ref"] for p in per)), "B ref": float(sum(p["B ref"] for p in per)),
            "x": _weighted([p["x"] for p in per], [p["B"] for p in per])}
     for name in FACTORS:
         total = (0.0, 0.0, 0.0)
@@ -363,8 +364,9 @@ def binned_routes(cube, cfg, binning, ref_plane="PD", search="DD", classes=CLASS
     """The B route per bin of ``binning`` and DSA class of the muon LJ, as a numeric frame.
 
     Per bin and class: ``B`` of the search plane (``B err`` its Poisson error), ``x`` the mean mass
-    of those B events (:func:`mean_mass`), ``A/B`` of ``ref_plane`` measured in the bin with its 68%
-    interval and ``A/B rel`` the larger side of it over the value (``estimate_lib.precision``),
+    of those B events (:func:`mean_mass`), ``A ref`` and ``B ref`` the counts of ``ref_plane`` in
+    the bin, ``A/B`` of ``ref_plane`` measured in the bin from them with its 68% interval and
+    ``A/B rel`` the larger side of it over the value (``estimate_lib.precision``),
     ``A/B fit`` and ``A/B fit err`` the fitted A/B at ``x`` (``fits[(ref_plane, class)]``, a
     :func:`fit_ab` result; NaN without one), and three estimates, each as value, ``minus`` and
     ``plus`` (``transfer_lib._pred``: Poisson error of B and the factor's error): ``measured`` and
@@ -398,6 +400,7 @@ def binned_routes(cube, cfg, binning, ref_plane="PD", search="DD", classes=CLASS
             est["selected"] = est[choice]
             shape = abs(est["measured"][0] - est["fitted"][0])
             row = {"bin": label, "lo": lo, "hi": hi, "class": cls, "B": b[0], "B err": float(np.sqrt(b[1])), "x": x,
+                   "A ref": ref["A"][0], "B ref": ref["B"][0],
                    "A/B": meas[0], "A/B minus": meas[1], "A/B plus": meas[2], "A/B rel": rel,
                    "A/B fit": fitted[0], "A/B fit err": fitted[1], "choice": choice,
                    "shape": shape, "shape carried": shape if choice == "fitted" and np.isfinite(shape) else 0.0}
@@ -616,14 +619,36 @@ def signal_yields(base, names, topology, cfg, binning, prefix="abcd8d", profiles
     return pd.DataFrame(rows)
 
 
-def signal_regions_table(base, names, topology, cfg, binning, data=None,
-                         regions=(("PD:dsa0", "A"), ("PD:dsa0", "B"), ("PD:dsa1+", "A"), ("PD:dsa1+", "B"), ("DD", "B")),
-                         prefix="abcd8d"):
+ESTIMATE_REGIONS = (("PD:dsa0", "A"), ("PD:dsa0", "B"), ("PD:dsa1+", "A"), ("PD:dsa1+", "B"), ("DD", "B"))
+
+
+def signal_region_yields(base, names, topology, cfg, binning, regions=ESTIMATE_REGIONS, prefix="abcd8d"):
+    """The yield of each signal point per bin of ``binning`` in ``regions`` ((plane with an optional
+    DSA class, region); by default the regions the estimate reads from), at the stored cross
+    section, as a numeric frame: one row per point, region and bin with ``plane``, ``region``,
+    ``label`` (``"A PD:dsa0"``), ``lo``, ``hi``, ``yield`` and its simulation-statistics ``error``.
+    Signal cubes are never hidden; samples are loaded one at a time."""
+    rows = []
+    for name in names:
+        cube = tl.sample_cubes(base, "signal", [name], topologies=(topology,), prefix=prefix)[name][topology]
+        for plane, region in regions:
+            edges, sumw, sumw2 = el.spectrum(cube, "ljlj_mass", cfg, plane, region)
+            for label, (lo, hi) in binning:
+                sl = _folded_slice(edges, lo, hi)
+                rows.append({"point": name, "plane": plane, "region": region, "label": f"{region} {plane}", "bin": label,
+                             "lo": lo, "hi": hi, "yield": float(np.sum(sumw[sl])), "error": float(np.sqrt(np.sum(sumw2[sl])))})
+        del cube
+    return pd.DataFrame(rows)
+
+
+def signal_regions_table(base, names, topology, cfg, binning, data=None, regions=ESTIMATE_REGIONS, prefix="abcd8d",
+                         yields=None):
     """The yield of each signal point per bin of ``binning`` in the regions the estimate reads from
     (``regions``: (plane with an optional DSA class, region)), at the stored cross section, one
     row per point and region with a column per bin and the sum; with ``data`` (a blinded data
-    cube) a first row per region with the data counts, "blind" where hidden.  Signal cubes are
-    never hidden; samples are loaded one at a time."""
+    cube) a first row per region with the data counts, "blind" where hidden.  Read from ``yields``
+    when given (the :func:`signal_region_yields` of the same regions and binning), otherwise from
+    the samples, loaded one at a time."""
     rows = []
     if data is not None:
         for plane, region in regions:
@@ -633,19 +658,19 @@ def signal_regions_table(base, names, topology, cfg, binning, data=None,
             lo, hi = binning[0][1][0], binning[-1][1][1]
             row["sum"] = tl.fmt_count(ps.regions(data, bin_cfg(cfg, lo, hi), plane)[region])
             rows.append(row)
+    if yields is None:
+        yields = signal_region_yields(base, names, topology, cfg, binning, regions, prefix)
     for name in names:
-        cube = tl.sample_cubes(base, "signal", [name], topologies=(topology,), prefix=prefix)[name][topology]
         for plane, region in regions:
-            edges, sumw, _ = el.spectrum(cube, "ljlj_mass", cfg, plane, region)
+            part = yields[(yields["point"] == name) & (yields["label"] == f"{region} {plane}")].set_index("bin")
             row = {"point": name, "region": f"{region} {plane}"}
             total = 0.0
-            for label, (lo, hi) in binning:
-                v = float(np.sum(sumw[_folded_slice(edges, lo, hi)]))
+            for label, _ in binning:
+                v = float(part.loc[label, "yield"])
                 row[label] = f"{v:.2f}"
                 total += v
             row["sum"] = f"{total:.2f}"
             rows.append(row)
-        del cube
     return pd.DataFrame(rows)
 
 
@@ -655,6 +680,110 @@ def yields_view(yields):
     table = table.reindex(index=list(dict.fromkeys(yields["point"])), columns=list(dict.fromkeys(yields["bin"])))
     table["sum"] = table.sum(axis=1)
     return pd.DataFrame({c: [f"{v:.2f}" for v in table[c]] for c in table.columns}, index=table.index).reset_index()
+
+
+# ----------------------------------------------------------------------------- signal injection
+
+
+def inject(data, signal, mu=1.0):
+    """``data`` with ``mu`` times ``signal`` added in every cell, as counts: a data set that held the
+    signal would hold it as events, so the injected cube's variance is its content (``sumw2 = sumw``,
+    the data's error model) and not the signal's simulation statistics, and the intervals and the
+    rule's precision test treat it as they treat data.  The hidden cells of a blinded data cube
+    stay hidden (NaN plus anything is NaN), so the search region's A is still never read."""
+    if signal.spec != data.spec or signal.topology != data.topology:
+        raise ValueError("inject needs a signal cube with the data cube's axes and topology")
+    sumw = data.sumw + mu * signal.sumw
+    return dataclasses.replace(data, sumw=sumw, sumw2=sumw.copy())
+
+
+def injection_table(base, names, topology, data, cfg, binnings, form="exponential", mus=(1.0,), fit_bins=FIT_BINS,
+                    classes=CLASSES, max_rel_err=MAX_REL_ERR, prefix="abcd8d"):
+    """What the estimate absorbs of a signal that is in the data: the B route per bin on the data
+    with ``mu`` times each signal point added to every region (:func:`inject`), against the route
+    on the data alone, with the A/B(M) fit redone on the injected cube.
+
+    One row per point, ``mu``, binning and bin (plus a ``"sum over bins"`` row): ``signal`` the
+    injected signal in A of the search plane in the bin; for each factor of :data:`FACTORS` the
+    estimate on the data, the estimate on the injected cube (``<factor> injected``), their
+    difference ``<factor> leak`` and ``<factor> leak / signal``, the share of the injected signal
+    the estimate would absorb; ``choice`` and ``choice injected`` the decision rule's factor per
+    class before and after (a signal in the reference plane's A can change its precision);
+    ``signal in A ref`` and ``signal in B`` the injected signal in the reference plane's A (summed
+    over the classes) and in the sidebands B of both planes, and ``leak expected`` the leak of the
+    measured factor if the sidebands held no signal, sum over the classes of B(search) x
+    signal(A ref) / B(ref).  Signal cubes are loaded one at a time; the search region's A of the
+    data is never read."""
+    ref_plane, search = "PD", "DD"
+    points0 = {c: ab_points(data, cfg, fit_bins, ref_plane, c) for c in classes}
+    fits0 = {(ref_plane, c): fit_ab(points0[c], form) for c in classes}
+    routes0 = {name: binned_routes(data, cfg, bins, ref_plane, search, classes, fits0, max_rel_err)
+               for name, bins in binnings.items()}
+    rows = []
+    for name in names:
+        signal = tl.sample_cubes(base, "signal", [name], topologies=(topology,), prefix=prefix)[name][topology]
+        for mu in mus:
+            cube = inject(data, signal, mu)
+            points = {c: ab_points(cube, cfg, fit_bins, ref_plane, c) for c in classes}
+            fits = {(ref_plane, c): fit_ab(points[c], form) for c in classes}
+            for bname, bins in binnings.items():
+                routes = binned_routes(cube, cfg, bins, ref_plane, search, classes, fits, max_rel_err)
+                sums = []
+                for label, (lo, hi) in bins:
+                    c = bin_cfg(cfg, lo, hi)
+                    s_a = mu * ps.regions(signal, c, search)["A"][0]
+                    s_ref, s_b, expected = 0.0, 0.0, 0.0
+                    for cls in classes:
+                        sr = ps.regions(signal, c, _label(ref_plane, cls))
+                        ss = ps.regions(signal, c, _label(search, cls))
+                        dr = ps.regions(data, c, _label(ref_plane, cls))
+                        ds = ps.regions(data, c, _label(search, cls))
+                        s_ref += mu * sr["A"][0]
+                        s_b += mu * (sr["B"][0] + ss["B"][0])
+                        if dr["B"][0] > 0:
+                            expected += ds["B"][0] * mu * sr["A"][0] / dr["B"][0]
+                    before = routes0[bname][(routes0[bname]["bin"] == label) & (routes0[bname]["class"] == SUM)].iloc[0]
+                    after = routes[(routes["bin"] == label) & (routes["class"] == SUM)].iloc[0]
+                    row = {"point": name, "mu": mu, "binning": bname, "bin": label, "lo": lo, "hi": hi, "signal": s_a,
+                           "signal in A ref": s_ref, "signal in B": s_b, "leak expected": expected,
+                           "choice": before["choice"], "choice injected": after["choice"]}
+                    for factor in FACTORS:
+                        b0, b1 = float(before[factor]), float(after[factor])
+                        row.update({factor: b0, f"{factor} injected": b1, f"{factor} leak": b1 - b0,
+                                    f"{factor} leak / signal": (b1 - b0) / s_a if s_a > 0 else np.nan})
+                    rows.append(row)
+                    sums.append(row)
+                total = {"point": name, "mu": mu, "binning": bname, "bin": TOTAL, "lo": bins[0][1][0], "hi": bins[-1][1][1],
+                         "choice": "", "choice injected": ""}
+                for key in ("signal", "signal in A ref", "signal in B", "leak expected"):
+                    total[key] = float(sum(r[key] for r in sums))
+                for factor in FACTORS:
+                    for key in (factor, f"{factor} injected", f"{factor} leak"):
+                        total[key] = float(sum(r[key] for r in sums))
+                    total[f"{factor} leak / signal"] = total[f"{factor} leak"] / total["signal"] if total["signal"] > 0 else np.nan
+                rows.append(total)
+        del signal
+    return pd.DataFrame(rows)
+
+
+def injection_view(table, factors=("measured", "selected"), min_signal=1.0):
+    """:func:`injection_table` formatted for display: the signal and the estimates to one decimal,
+    the leaks as events and, where the bin holds at least ``min_signal`` events of the signal, as a
+    share of it (a bin without signal can still move through the fit, by a share of nothing)."""
+    rows = []
+    for _, r in table.iterrows():
+        row = {"point": r["point"], "mu": f"{r['mu']:g}", "binning": r["binning"], "bin": r["bin"],
+               "signal in A DD": f"{r['signal']:.1f}", "signal in A PD": f"{r['signal in A ref']:.1f}",
+               "signal in the B sidebands": f"{r['signal in B']:.2f}"}
+        for factor in factors:
+            row[f"estimate, {factor}"] = f"{r[factor]:.1f} -> {r[f'{factor} injected']:.1f}"
+            leak = r[f"{factor} leak"]
+            share = f" ({_pct(r[f'{factor} leak / signal'])} of the signal)" if r["signal"] >= min_signal else ""
+            row[f"leak, {factor}"] = f"{leak:.2f}{share}" if np.isfinite(leak) else "n/a"
+        row["leak expected, measured"] = f"{r['leak expected']:.2f}"
+        row["choice"] = r["choice"] if r["choice"] == r["choice injected"] else f"{r['choice']} -> {r['choice injected']}"
+        rows.append(row)
+    return pd.DataFrame(rows)
 
 
 # ----------------------------------------------------------------------------- toy expected limit

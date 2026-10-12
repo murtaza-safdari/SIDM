@@ -1,4 +1,4 @@
-created_utc: '2026-10-11T23:57:56Z'
+created_utc: '2026-10-12T01:03:33Z'
 produced_by: sidm/scripts/run_combine_limits.py
 producer: murtazas
 host: cmslpc309.fnal.gov
@@ -16,16 +16,16 @@ combine:
   timeout_s: 600
   jobs: 8
 run:
-  datacard_dir: /uscms_data/d3/murtazas/abcd6d_local/scratch/binning_cards
+  datacard_dir: /uscms_data/d3/murtazas/abcd6d_local/scratch/binning_cards_v2
   pattern: datacard_SR_2mu2e_*.txt
-  n_datacards_matched: 70
-  n_limits: 70
+  n_datacards_matched: 105
+  n_limits: 105
   n_failed: 0
   failures: null
 results_summary:
   median_expected_r: 0.9448
   min_expected_r: 0.0948
-  max_expected_r: 62.3438
+  max_expected_r: 62.5781
   median_observed_r: null
 warning: null
 datacards:
@@ -38,6 +38,7 @@ datacards:
   models:
   - lnN
   - gmN
+  - cr
   binnings:
     one bin:
     - - '>=150'
@@ -115,4 +116,5 @@ datacards:
   - 2Mu2E_800GeV_1p2GeV_1p2mm
   - 2Mu2E_1000GeV_1p2GeV_0p96mm
   - 2Mu2E_800GeV_0p25GeV_1p2mm
-  commit: null
+  commit: the commit that adds this directory (written from its working tree in the
+    LPC scratch copy)

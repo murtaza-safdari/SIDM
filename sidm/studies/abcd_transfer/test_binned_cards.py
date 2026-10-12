@@ -14,30 +14,51 @@ BINNING = [("150-400", (150.0, 400.0)), (">=400", (400.0, None))]
 POINT = "2Mu2E_800GeV_0p25GeV_0p25mm"
 
 
+# per bin and class: B of the search plane, A and B of the reference plane, the measured A/B with its
+# interval, the rule's choice, the fitted A/B with its error, the shape systematic carried
+SPEC = {"150-400": {"dsa0": (35, 1155, 1083, 1.07, 0.05, 0.05, "measured", 1.05, 0.04, 0.0),
+                    "dsa1+": (30, 84, 177, 0.47, 0.06, 0.07, "measured", 0.48, 0.06, 0.0)},
+        ">=400": {"dsa0": (9, 98, 120, 0.82, 0.11, 0.13, "measured", 0.94, 0.10, 0.0),
+                  "dsa1+": (4, 6, 21, 0.29, 0.13, 0.21, "fitted", 0.26, 0.10, 0.12)}}
+
+
 def routes_frame():
     """Two bins, two classes: the first bin measured in both classes, the second with dsa1+ fitted
     and carrying a shape systematic, and no dsa1+ B event in it would be the edge case below."""
     rows = []
-    spec = {"150-400": {"dsa0": (35, 1.07, 0.05, 0.05, "measured", 1.05, 0.04, 0.0),
-                        "dsa1+": (30, 0.47, 0.06, 0.07, "measured", 0.48, 0.06, 0.0)},
-            ">=400": {"dsa0": (9, 0.82, 0.11, 0.13, "measured", 0.94, 0.10, 0.0),
-                      "dsa1+": (4, 0.29, 0.13, 0.21, "fitted", 0.26, 0.10, 0.12)}}
     for label, (lo, hi) in BINNING:
         per = []
-        for cls, (b, f, fm, fp, choice, ffit, ferr, shape) in spec[label].items():
+        for cls, (b, a_ref, b_ref, f, fm, fp, choice, ffit, ferr, shape) in SPEC[label].items():
             est = b * (f if choice == "measured" else ffit)
             rel = (fm + fp) / 2 / f if choice == "measured" else ferr / ffit
             err = est * math.hypot(1 / math.sqrt(b), rel)
-            row = {"bin": label, "lo": lo, "hi": hi, "class": cls, "B": float(b), "A/B": f, "A/B minus": fm,
-                   "A/B plus": fp, "A/B fit": ffit, "A/B fit err": ferr, "choice": choice,
-                   "selected": est, "selected minus": err, "selected plus": err, "shape carried": shape}
+            row = {"bin": label, "lo": lo, "hi": hi, "class": cls, "B": float(b), "A ref": float(a_ref),
+                   "B ref": float(b_ref), "A/B": f, "A/B minus": fm, "A/B plus": fp, "A/B fit": ffit,
+                   "A/B fit err": ferr, "choice": choice, "selected": est, "selected minus": err,
+                   "selected plus": err, "shape carried": shape}
             per.append(row)
         total = sum(r["selected"] for r in per)
         rows.extend(per + [{"bin": label, "lo": lo, "hi": hi, "class": bl.SUM, "B": sum(r["B"] for r in per),
+                            "A ref": sum(r["A ref"] for r in per), "B ref": sum(r["B ref"] for r in per),
                             "selected": total, "selected minus": math.hypot(*(r["selected minus"] for r in per)),
                             "selected plus": math.hypot(*(r["selected plus"] for r in per)),
                             "shape carried": math.hypot(*(r["shape carried"] for r in per))}])
     rows.append({"bin": bl.TOTAL, "lo": 150.0, "hi": None, "class": bl.SUM, "selected": 60.0})
+    df = pd.DataFrame(rows)
+    df.attrs.update(ref_plane="PD", search="DD")
+    return df
+
+
+# the signal in the regions the estimate reads from, per bin: (A PD:dsa0, B PD:dsa0, A PD:dsa1+, B PD:dsa1+, B DD)
+CONTROL = {"150-400": (0.03, 0.0, 0.0, 0.0, 0.0), ">=400": (17.79, 0.07, 4.68, 0.0, 0.18)}
+
+
+def control_frame():
+    rows = []
+    for label, (lo, hi) in BINNING:
+        for (plane, region), v in zip(bl.ESTIMATE_REGIONS, CONTROL[label]):
+            rows.append({"point": POINT, "plane": plane, "region": region, "label": f"{region} {plane}", "bin": label,
+                         "lo": lo, "hi": hi, "yield": v, "error": 0.1 * v})
     return pd.DataFrame(rows)
 
 
@@ -131,12 +152,57 @@ def test_zero_counts_drop_processes_and_bins():
         bc.card_text(POINT, routes, yields_frame(first=0.0, second=0.0), "split at 400", "lnN")
 
 
+def test_cr_card_puts_the_control_region_in_the_fit():
+    text = bc.card_text(POINT, routes_frame(), yields_frame(), "split at 400", "cr", syst_rel=0.33, control=control_frame())
+    fields, bins, nuis = parse(text)
+    # the search bins first, then one control channel per bin and class, observed A of the reference plane
+    assert bins[0] == ["m150to400", "m400up", "cr_m150to400_dsa0", "cr_m150to400_dsa1p", "cr_m400up_dsa0", "cr_m400up_dsa1p"]
+    assert fields["imax"] == "6" and fields["jmax"] == "2"
+    obs = [float(v) for v in fields["observation"][0]]
+    assert obs[2:] == [1155.0, 84.0, 98.0, 6.0]
+    assert fields["process"][0] == ["sig", "bkg_dsa0", "bkg_dsa1p"] * 2 + ["sig", "bkg_dsa0", "sig", "bkg_dsa1p"] * 2
+    assert fields["process"][1] == ["0", "1", "2"] * 2 + ["0", "1", "0", "2"] * 2
+    rates = [float(v) for v in fields["rate"][0]]
+    # the factor is measured in every bin of the cr model: the search bin's rate is B x the measured A/B ...
+    assert rates[4] == pytest.approx(9 * 0.82) and rates[5] == pytest.approx(4 * 0.29)
+    # ... the control channel's background is B of the reference plane x the same factor, its signal the leak
+    assert rates[10] == pytest.approx(17.79) and rates[11] == pytest.approx(120 * 0.82)
+    assert rates[12] == pytest.approx(4.68) and rates[13] == pytest.approx(21 * 0.29)
+    assert nuis["nB_m400up_dsa0"][:2] == ["gmN", "9"] and nuis["nBref_m400up_dsa0"][:2] == ["gmN", "120"]
+    assert float(nuis["nBref_m400up_dsa0"][2 + 11]) == pytest.approx(0.82)
+    # the factor is one free parameter per bin and class, on the search bin and its control channel
+    lines = [l.split() for l in text.splitlines() if " rateParam " in l and not l.startswith("#")]
+    assert [l[0] for l in lines].count("f_m400up_dsa0") == 2
+    assert [(l[2], l[3]) for l in lines if l[0] == "f_m400up_dsa0"] == [("m400up", "bkg_dsa0"), ("cr_m400up_dsa0", "bkg_dsa0")]
+    assert all(l[4] == "1.0" and l[5] == bc.RATE_PARAM_RANGE for l in lines) and len(lines) == 8
+    # the transfer systematic sits on the search bins only, the luminosity on every signal column
+    assert nuis["transfer"] == ["lnN", "-", "1.33", "1.33", "-", "1.33", "1.33"] + ["-"] * 8
+    assert nuis["lumi_13TeV"][1:] == ["1.025", "-", "-"] * 2 + ["1.025", "-"] * 4
+    assert "shape_m400up_dsa1p" not in nuis and "factor_m400up_dsa1p" not in nuis
+    assert "B DD >=400 0.18" in text and "theory cross section" in text
+    with pytest.raises(ValueError):
+        bc.card_text(POINT, routes_frame(), yields_frame(), "split at 400", "cr")
+    # a class without a sideband event in either plane has no control channel
+    routes = routes_frame()
+    routes.loc[(routes["bin"] == ">=400") & (routes["class"] == "dsa1+"), "B"] = 0.0
+    fields, bins, nuis = parse(bc.card_text(POINT, routes, yields_frame(), "split at 400", "cr", control=control_frame()))
+    assert "cr_m400up_dsa1p" not in bins[0] and fields["imax"] == "5"
+    # without an A event in the reference plane the factor starts from the fitted value
+    routes = routes_frame()
+    routes.loc[(routes["bin"] == ">=400") & (routes["class"] == "dsa1+"), ["A ref", "A/B"]] = [0.0, 0.0]
+    fields, bins, nuis = parse(bc.card_text(POINT, routes, yields_frame(), "split at 400", "cr", control=control_frame()))
+    assert float(fields["rate"][0][5]) == pytest.approx(4 * 0.26)
+
+
 def test_card_names_parse_both_ways(tmp_path):
     paths = bc.write_cards({"split at 400": routes_frame()}, {"split at 400": yields_frame()}, tmp_path,
-                           meta={"note": "test"})
-    assert sorted(p.name for p in paths) == [f"datacard_SR_2mu2e_split400_gmn_{POINT}.txt",
+                           meta={"note": "test"}, control_by_binning={"split at 400": control_frame()})
+    assert sorted(p.name for p in paths) == [f"datacard_SR_2mu2e_split400_cr_{POINT}.txt",
+                                             f"datacard_SR_2mu2e_split400_gmn_{POINT}.txt",
                                              f"datacard_SR_2mu2e_split400_lnn_{POINT}.txt"]
     assert (tmp_path / "datacards.meta.yaml").read_text().startswith("note: test")
+    assert bc.parse_card_name(paths[2].stem)["model"] == "cr"
+    paths = [p for p in paths if "_lnn_" in p.name] + [p for p in paths if "_lnn_" not in p.name]
     info = bc.parse_card_name(paths[0].stem)
     assert info == {"topology": "2mu2e", "binning": "split at 400", "model": "lnN", "point": POINT}
     # the runner of limit_plotting reads the channel and the signal point out of the same name

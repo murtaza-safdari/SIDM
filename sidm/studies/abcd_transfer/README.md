@@ -69,14 +69,26 @@ fitted dsa0 factor. Section 4.1 tests the route per bin where the data allow it 
 below 150 GeV, where the closure splits into κ(DD)/κ(PD) times the C/D ratio and the two
 compensate; its C/D against PD's per bin above 150 GeV; κ per bin in the open planes), on the
 cube bins and on the split at 400 GeV: no bin fails, nothing tightens the 33 % per bin, which
-stays assumed. Section 5.1 runs the same counting experiments through combine
-(`binned_cards.py` writes one datacard per binning, signal point and background model; the
-limits come from `sidm/scripts/run_combine_limits.py`, blind asymptotic, every card with a fixed
-`--rmax 300` because the runner's automatic range reads the first bin's signal only): the toy's
-relative limits agree with combine's to 5 % with the same ordering, and a Gamma treatment of
-the sideband counts (`gmN`) in place of the log-normal costs the binnings with a four-event bin
-10–19 %, the split at 400 GeV 7 %. The absolute limits are on μ relative to the stored cross
-section, without the dark-photon branching fractions. 4μ gains little: its three sideband events sit
+stays assumed. The control region the factor is measured from, A of PD, is not signal-blind at
+high mass (an 800 GeV point at μ = 1 puts up to 18 events among its 25 dsa0 events above
+600 GeV); section 4.2 measures by signal injection what the estimate absorbs of a signal that is
+in the data (a few per cent of the signal in the search region, linear in μ). Section 5.1 runs
+the same counting experiments through combine (`binned_cards.py` writes one datacard per
+binning, signal point and background model; the limits come from
+`sidm/scripts/run_combine_limits.py`, blind asymptotic, every card with a fixed `--rmax 300`
+because the runner's automatic range reads the first bin's signal only): the toy's relative
+limits agree with combine's to 5 % with the same ordering, and a Gamma treatment of the
+sideband counts (`gmN`) in place of the log-normal costs the binnings with a four-event bin
+10–19 %, the split at 400 GeV 7 %. A third model (`cr`) puts the control region into the
+likelihood, per bin and class a channel with A of PD observed, B of PD times the factor as its
+background and the point's yield there as its signal, the factor a free parameter shared with
+the search bin, so that a signal in the control region is part of the signal hypothesis instead
+of a bias of the estimate. It costs the binnings with a ≥ 600 GeV bin 35 % of their expected limit
+at 800 GeV, three quarters of it because the bin's factor is then what its own 25 and 16 control
+events say (1.56 for dsa0) and not the fitted 0.90, the split at 400 GeV 2 %; in that model the
+cube bins and the split at 400 GeV tie at 0.28 of the one-bin limit for the 800 GeV points. The
+absolute limits are on μ relative to the stored cross section,
+without the dark-photon branching fractions. 4μ gains little: its three sideband events sit
 below 600 GeV, where the heavy points have 5–17 % of their yield, and its estimate stays
 count-limited. Section 7 carries the comparison with the one-bin estimate.
 
@@ -134,13 +146,13 @@ signal-contamination checks.
 | `test_estimate_lib.py` | the tables split by b-tag and class, the pulls and the final table, flow folding of the spectra, the four routes against the observed A (the per-class sum differs from the inclusive form by construction), reduced cubes against the full one, the closure scan's flags, `parse_fmt`, the count-limited tables on a blinded 4μ cube, the Poisson upper limits |
 | `estimate_plots.py` | spectra of a stored variable per region (data over the stacked groups), ABCD ratios against an object class; used by the earlier version of `estimate.ipynb`, not by the current one |
 | `_build_estimate.py` | writes `estimate.ipynb` |
-| `binning_lib.py` | the per-bin estimate: counts and A/B per mass bin, the fits of A/B against the mass, the B route per bin with the measured or the fitted factor, the signal yields per bin, the per-bin validation (the open test below 150 GeV, the sideband test C/D against PD's, κ per bin), the toy asymptotic expected limit, the decision rule |
-| `test_binning_lib.py` | the fit recovers a known slope, the binned sums equal the one-bin estimate for a flat factor and differ for a falling one, the rule takes the fitted factor where PD is imprecise, the hidden A stays hidden in every mass bin, the per-bin validation reads the open regions only, the toy limit against reference values |
+| `binning_lib.py` | the per-bin estimate: counts and A/B per mass bin, the fits of A/B against the mass, the B route per bin with the measured or the fitted factor, the signal yields per bin and per region read by the estimate, the per-bin validation (the open test below 150 GeV, the sideband test C/D against PD's, κ per bin), the signal-injection test, the toy asymptotic expected limit, the decision rule |
+| `test_binning_lib.py` | the fit recovers a known slope, the binned sums equal the one-bin estimate for a flat factor and differ for a falling one, the rule takes the fitted factor where PD is imprecise, the hidden A stays hidden in every mass bin, the per-bin validation reads the open regions only, the injected signal leaks into the estimate by B × signal / B of the control plane, the toy limit against reference values |
 | `binning_plots.py` | the four planes and the per-bin route as cartoons, signal and sideband spectra against the mass, A/B against the mass with its fits, background and signal per bin of each binning, the three per-bin validation tests against the mass, the toy limits per signal point |
 | `_build_binning.py` | writes `binning.ipynb` |
-| `binned_cards.py` | the combine datacards of `binning.ipynb` section 5.1: one per binning, signal point and background model (`lnN`: the per-bin estimate with its asymmetric statistical and shape log-normals; `gmN`: the B count of each DSA class as a Gamma-distributed sideband with its factor as a log-normal), the 33 % transfer systematic, the luminosity and the signal's statistical error, with their provenance sidecar; reads the runner's `limits.csv` back and compares the binnings relative to one bin against the toy |
-| `test_binned_cards.py` | the lnN and gmN cards mirror the frames they are written from, zero counts drop processes and bins, the card names parse in `run_combine_limits.py` with the right channel, normalisation and rates, the comparison is relative to the same model |
-| `binning_cards/` | the 70 datacards (five binnings, seven 2μ2e points, two models) and `datacards.meta.yaml` |
+| `binned_cards.py` | the combine datacards of `binning.ipynb` section 5.1: one per binning, signal point and background model (`lnN`: the per-bin estimate with its asymmetric statistical and shape log-normals; `gmN`: the B count of each DSA class as a Gamma-distributed sideband with its factor as a log-normal; `cr`: the gmN model with a control channel per bin and class, A of PD observed, the factor a free `rateParam` shared with the search bin), the 33 % transfer systematic, the luminosity and the signal's statistical error, with their provenance sidecar; reads the runner's `limits.csv` back and compares the binnings relative to one bin against the toy |
+| `test_binned_cards.py` | the lnN and gmN cards mirror the frames they are written from, the cr card puts the control region's counts and signal in their own channels with one shared factor, zero counts drop processes and bins, the card names parse in `run_combine_limits.py` with the right channel, normalisation and rates, the comparison is relative to the same model |
+| `binning_cards/` | the 105 datacards (five binnings, seven 2μ2e points, three models) and `datacards.meta.yaml` |
 | `binning_limits/` | combine's expected limits on them, `limits.csv` with the sidecar `run_combine_limits.py` writes |
 | `merge_abcd8d.py` | EOS per-chunk outputs → one file per sample and family, manifests, rescue lists; chunks with an exception or without the sample are left out and listed for rescue, a sample with such chunks is written only with `--allow-missing` |
 | `test_merge_abcd8d.py` | weighted combination of chunks, mismatched histogram sets refused, the merge plan (listed chunks only, bad chunks to the rescue list) |

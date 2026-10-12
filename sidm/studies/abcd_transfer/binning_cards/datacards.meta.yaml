@@ -7,6 +7,7 @@ systematic: 0.33
 models:
 - lnN
 - gmN
+- cr
 binnings:
   one bin:
   - - '>=150'

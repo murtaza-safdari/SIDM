@@ -370,3 +370,60 @@ def test_rule_table_counts_each_mass_once_and_skips_ineligible_binnings():
     assert np.isclose(table.loc["fine", "mean over the masses"], 0.75)       # 0.725 averaged per point, below coarse's 0.8
     assert list(table.index[table["chosen"]]) == ["coarse"] and not table.loc["finest", "eligible"]
     assert bl.mediator_mass("4Mu_1000GeV_1p2GeV_0p96mm") == 1000.0
+
+
+def test_injection_measures_the_leak_of_the_control_region(monkeypatch):
+    """A signal in A of the reference plane raises the measured factor by s / B(ref); the estimate
+    absorbs B(search) x that, exactly the ``leak expected`` column; the fitted factor, pooled over
+    the seven bins, absorbs less; the hidden A stays hidden; the leak is linear in mu; the injected
+    cube stays a cube of counts, so the rule's precision test sees the same interval as on data."""
+    data = flat_cube()
+    h = make_hist8d("2mu2e")
+    fill(h, 25, "A", PD, 500.0, ndsa0=0)             # the signal in the control region of the 400-600 bin
+    fill(h, 40, "A", DD, 500.0)                      # and in the search region
+    signal = io.cube_from_hist(h, "2mu2e")
+    monkeypatch.setattr(tl, "sample_cubes", lambda base, kind, names, topologies, prefix: {names[0]: {"2mu2e": signal}})
+    injected = bl.inject(data, signal, 2.0)
+    assert injected.blinded and np.isnan(ps.regions(injected, bl.bin_cfg(NOMINAL, 150.0, None), "DD")["A"][0])
+    a_ref = ps.regions(injected, bl.bin_cfg(NOMINAL, 400.0, 600.0), "PD:dsa0")["A"]
+    assert a_ref[0] == 200 + 50 and a_ref[1] == a_ref[0]       # Poisson counts: the data's error model survives the injection
+    table = bl.injection_table("/nowhere", ["sig"], "2mu2e", data, NOMINAL, {"cube bins": bl.BINNINGS["cube bins"]},
+                               form="linear", mus=(1.0, 2.0))
+    one = table[(table["mu"] == 1.0) & (table["bin"] == "400-600")].iloc[0]
+    assert one["signal"] == 40.0 and one["signal in A ref"] == 25.0 and one["signal in B"] == 0.0
+    assert np.isclose(one["measured leak"], FLAT_B[3] * 25 / 100) and np.isclose(one["leak expected"], one["measured leak"])
+    assert np.isclose(one["measured leak / signal"], FLAT_B[3] * 25 / 100 / 40)
+    assert 0 < one["fitted leak"] < one["measured leak"]
+    assert one["choice"] == one["choice injected"] == "measured"
+    other = table[(table["mu"] == 1.0) & (table["bin"] == "150-200")].iloc[0]
+    assert other["signal"] == 0.0 and other["measured leak"] == 0.0 and np.isnan(other["measured leak / signal"])
+    two = table[(table["mu"] == 2.0) & (table["bin"] == "400-600")].iloc[0]
+    assert np.isclose(two["measured leak"], 2 * one["measured leak"]) and two["signal"] == 80.0
+    total = table[(table["mu"] == 1.0) & (table["bin"] == bl.TOTAL)].iloc[0]
+    assert np.isclose(total["measured leak"], one["measured leak"]) and total["signal"] == 40.0
+    view = bl.injection_view(table)
+    assert view.loc[(view["mu"] == "1") & (view["bin"] == "400-600"), "leak, measured"].iloc[0].startswith("1.00 (2% of the signal)")
+    assert view.loc[(view["mu"] == "1") & (view["bin"] == "150-200"), "leak, measured"].iloc[0] == "0.00"    # no share of no signal
+    # the routes frame carries the reference plane's counts the control channel needs
+    routes = bl.binned_routes(data, NOMINAL, bl.BINNINGS["cube bins"])
+    row = routes[(routes["bin"] == "400-600") & (routes["class"] == "dsa0")].iloc[0]
+    assert (row["A ref"], row["B ref"]) == (200.0, 100.0)
+    assert routes[(routes["bin"] == "400-600") & (routes["class"] == bl.SUM)].iloc[0]["A ref"] == 300.0
+
+
+def test_signal_region_yields_feed_the_regions_table(monkeypatch):
+    h = make_hist8d("2mu2e")
+    fill(h, 25, "A", PD, 500.0, ndsa0=0)
+    fill(h, 3, "B", PD, 500.0, ndsa0=1)
+    fill(h, 2, "B", DD, 250.0)
+    signal = io.cube_from_hist(h, "2mu2e")
+    monkeypatch.setattr(tl, "sample_cubes", lambda base, kind, names, topologies, prefix: {names[0]: {"2mu2e": signal}})
+    bins = bl.BINNINGS["two windows"]
+    yields = bl.signal_region_yields("/nowhere", ["sig"], "2mu2e", NOMINAL, bins)
+    assert len(yields) == len(bl.ESTIMATE_REGIONS) * len(bins)
+    get = lambda label, b: yields[(yields["label"] == label) & (yields["bin"] == b)]["yield"].item()
+    assert get("A PD:dsa0", ">=300") == 25.0 and get("A PD:dsa0", "150-300") == 0.0
+    assert get("B PD:dsa1+", ">=300") == 3.0 and get("B DD", "150-300") == 2.0 and get("B DD", ">=300") == 0.0
+    table = bl.signal_regions_table("/nowhere", ["sig"], "2mu2e", NOMINAL, bins, yields=yields)
+    assert table.set_index("region").loc["A PD:dsa0", ">=300"] == "25.00"
+    assert list(table.columns) == ["point", "region", "150-300", ">=300", "sum"]
