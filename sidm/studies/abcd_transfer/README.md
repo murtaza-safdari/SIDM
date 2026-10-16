@@ -1,5 +1,13 @@
 # Prompt-to-displaced transfer of the ABCD factors
 
+**Start here: `nominal.ipynb`** (2026-10-16). It presents the 2μ2e background estimate as the search
+plane's own ABCD, A = B·C/D = 46 ± 15 (stat.) ± 9 (syst.) events, validates it in every open region
+of the data and in the seven validation regions of Dongyub Lee's programme recomputed from the same
+histograms, and derives the 20% systematic from those regions by a rule stated in the notebook. It is
+written for readers new to the analysis. The notebooks below are the longer record and are kept as
+they were run; where their conclusions make the borrowed-factor estimate (61 ± 8) the headline,
+`nominal.ipynb` supersedes them and makes it the cross-check.
+
 Can the factors of the ABCD background estimate (pass/fail ratios of one axis of the plane at a
 fixed state of the other) be measured with prompt lepton jets and used with displaced ones?
 `transfer_factors.ipynb` answers that in 2018 data for the analysis plane (|Δφ| between the
@@ -156,6 +164,10 @@ signal-contamination checks.
 | `binning_lib.py` | the per-bin estimate: counts and A/B per mass bin, the fits of A/B against the mass, the B route per bin with the measured or the fitted factor, the signal yields per bin and per region read by the estimate, the per-bin validation (the open test below 150 GeV, the sideband test C/D against PD's, κ per bin), the signal-injection test, the toy asymptotic expected limit, the decision rule |
 | `test_binning_lib.py` | the fit recovers a known slope, the binned sums equal the one-bin estimate for a flat factor and differ for a falling one, the rule takes the fitted factor where PD is imprecise, the hidden A stays hidden in every mass bin, the per-bin validation reads the open regions only, the injected signal leaks into the estimate by B × signal / B of the control plane, the toy limit against reference values |
 | `binning_plots.py` | the four planes and the per-bin route as cartoons, signal and sideband spectra against the mass, A/B against the mass with its fits, background and signal per bin of each binning, the three per-bin validation tests against the mass, the toy limits per signal point |
+| `nominal_lib.py` | the validation regions of `nominal.ipynb` (ours and Dongyub Lee's seven, with his working point), κ per region with the hidden-cell flag, the egamma-type and DSA-class shares per region, the κ drop between mass windows, the rule for the closure systematic with its alternatives, the four routes per window, the signal share per mass bin, the projected precision of an opened window |
+| `nominal_plots.py` | the ABCD cartoon, the isolation × \|Δφ\| plane with the regions and the hidden box, κ per region (open planes, the seven validation regions at three settings, the displacement ladder, the mass windows, the systematic candidates with the band), the photon-only share per region, the signal share per mass bin |
+| `_build_nominal.py` | writes `nominal.ipynb`; every number in its text is computed by the builder from the same functions the code cells call |
+| `test_nominal_lib.py` | the seven region definitions and the hidden-cell flag on synthetic histograms, the systematic rule, the share tables, the signal shares (`pytest`) |
 | `_build_binning.py` | writes `binning.ipynb` |
 | `binned_cards.py` | the combine datacards of `binning.ipynb` section 5.1: one per binning, signal point and background model (`lnN`: the per-bin estimate with its asymmetric statistical and shape log-normals; `gmN`: the B count of each DSA class as a Gamma-distributed sideband with its factor as a log-normal; `cr`: the gmN model with a control channel per bin and class, A of PD observed, the factor a free `rateParam` shared with the search bin), the 33 % transfer systematic, the luminosity and the signal's statistical error, with their provenance sidecar; reads the runner's `limits.csv` back and compares the binnings relative to one bin against the toy |
 | `test_binned_cards.py` | the lnN and gmN cards mirror the frames they are written from, the cr card puts the control region's counts and signal in their own channels with one shared factor, zero counts drop processes and bins, the card names parse in `run_combine_limits.py` with the right channel, normalisation and rates, the comparison is relative to the same model |
