@@ -207,10 +207,12 @@ def test_signal_shares_sum_to_one_per_point():
     assert shares[cols].sum(axis=1).tolist() == pytest.approx([1.0, 1.0])
     first = shares.iloc[0]
     assert first["yield"] == 100 and first["150-200"] == 0.5 and first["150-300"] == pytest.approx(0.98)
-    assert first["below"] == pytest.approx(0.02)
+    assert first["below"] == pytest.approx(2.0)                 # events, not a share
+    assert nl.below_share(shares).tolist() == pytest.approx([2 / 102, 0.0])
     assert shares.iloc[1][">=600"] == pytest.approx(97 / 100) and shares.iloc[1]["150-300"] == 0
     summary = nl.share_summary(shares)
     assert summary["mediator mass [GeV]"].tolist() == ["200", "800"]
+    assert summary["yield, M < 150 [events]"].tolist() == ["2.00–2.00", "0.00–0.00"]
 
 
 def test_kappa_drop_and_projected_precision():
@@ -233,3 +235,68 @@ def test_route_estimates_are_the_numbers_of_the_routes_table():
     assert nl.fmt(got["direct"], 1) == row["direct B C/D"]
     for sideband, name in el.ROUTES:
         assert nl.fmt(got[sideband], 1) == row[f"{sideband} x {name} per class"]
+
+
+def type_cube():
+    """PD: electron egamma LJs with kappa 1 (A/B/C/D 200 each), photon-only ones with kappa 1.4
+    (A 280); DD: electron B/C/D 10/10/10 (B C/D 10), photon-only 30/20/10 (B C/D 60), A in the box."""
+    h = make_hist8d("2mu2e")
+    content = [(5, 1, dict(A=200, B=200, C=200, D=200)), (5, 999, dict(A=280, B=200, C=200, D=200)),
+               (1, 1, dict(A=7, B=10, C=10, D=10)), (1, 999, dict(A=9, B=30, C=20, D=10))]
+    for d0, d1, counts in content:
+        for r, n in counts.items():
+            iso0, dphi = CORNERS[r]
+            fill(h, n, iso0, 0.1, d0, d1, dphi, 400.0)
+    return io.blind(io.cube_from_hist(h, "2mu2e"))
+
+
+def test_kappa_corrected_weights_the_reference_kappa_by_the_search_planes_prediction():
+    cube = type_cube()
+    got = nl.kappa_corrected(cube, nl.NOMINAL, ("e", "g"))
+    assert got["direct"] == pytest.approx(40 * 30 / 20)
+    assert got["parts"]["e"]["direct"] == pytest.approx(10) and got["parts"]["g"]["direct"] == pytest.approx(60)
+    assert got["parts"]["e"]["kappa"][0] == pytest.approx(1.0) and got["parts"]["g"]["kappa"][0] == pytest.approx(1.4)
+    assert got["parts"]["g"]["share"] == pytest.approx(60 / 70)
+    assert got["corrected"] == pytest.approx(1.0 * 10 + 1.4 * 60) and got["ratio"] == pytest.approx(94 / 60)
+    inclusive = nl.kappa_corrected(cube, nl.NOMINAL, (None,))
+    assert inclusive["ratio"] == pytest.approx(1.2) and inclusive["corrected"] == pytest.approx(72)
+    in_pd = nl.kappa_corrected(cube, nl.NOMINAL, ("e", "g"), search="PD")
+    assert in_pd["parts"]["g"]["share"] == pytest.approx(0.5)
+
+
+def test_route_ratio_is_the_class_weighted_kappa_times_the_sideband_ratio():
+    cube = routes_cube()
+    got = nl.route_ratio_factors(cube, nl.NOMINAL)
+    assert got["sideband"] == pytest.approx((3 / 4) / (3 / 2))           # C/D of PD over C/D of DD
+    assert got["kappa_mix"] == pytest.approx(7.5 / (5 * 3 / 4))          # B route / (B x C/D of PD)
+    assert got["ratio"] == pytest.approx(got["kappa_mix"] * got["sideband"]) == pytest.approx(1.0)
+    ro = nl.route_estimates(cube, nl.NOMINAL)
+    assert got["ratio"] == pytest.approx(ro["B"][0] / ro["direct"][0])
+
+
+def test_shared_b_separation_carries_b_in_first_order():
+    reg = {"B": (50.0, 50.0), "C": (10.0, 10.0), "D": (25.0, 25.0)}
+    parts = [("dsa0", 30.0, 30.0, 1.0), ("dsa1+", 20.0, 20.0, 0.5)]          # route 30 x 1.0 + 20 x 0.5 = 40
+    direct = (20.0, 20.0 * np.sqrt(1 / 50 + 1 / 10 + 1 / 25))
+    indep, shared = nl.shared_b_separation(direct, (40.0, 7.0, 8.0), reg, parts)
+    assert indep == pytest.approx(20 / np.hypot(7.0, direct[1]))
+    d_rest2 = 20.0**2 * (1 / 10 + 1 / 25)                                     # C and D only
+    r_rest2 = 7.0**2 - (1.0**2 * 30 + 0.5**2 * 20)                            # route error without B
+    var_b = 30 * (1.0 - 0.4) ** 2 + 20 * (0.5 - 0.4) ** 2                    # C/D = 0.4
+    assert shared == pytest.approx(20 / np.sqrt(d_rest2 + r_rest2 + var_b))
+    below, _ = nl.shared_b_separation(direct, (10.0, 7.0, 8.0), reg, parts)
+    assert below == pytest.approx(10 / np.hypot(8.0, direct[1]))           # the side facing the direct estimate
+
+
+def test_b_route_parts_rebuild_the_b_route():
+    cube = routes_cube()
+    parts = nl.b_route_parts(cube, nl.NOMINAL)
+    assert [(c, b) for c, b, _, _ in parts] == [("dsa0", 2.0), ("dsa1+", 3.0)]
+    assert sum(b * r for _, b, _, r in parts) == pytest.approx(nl.route_estimates(cube, nl.NOMINAL)["B"][0])
+
+
+def test_same_regions_names_the_rows_with_the_same_events():
+    cube = tagged_cube()
+    table = nl.systematic_table(cube, nl.our_vrs() + nl.DONGYUB_VRS)
+    assert nl.same_regions(table, "PP") == ["V1"]
+    assert nl.same_regions(table, "V5") == []

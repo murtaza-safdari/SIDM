@@ -87,8 +87,9 @@ def compute():
     N["vr_ours"] = "/".join(f"{ours.loc[n, 'kappa']:.2f}" for n in names)
     match = [n for n in names if round(his.loc[n, "kappa"], 2) == round(his.loc[n, "quoted kappa"], 2)]
     N["vr_match"] = f"{len(match)} of {len(names)}"
-    N["vr_nomatch"] = ", ".join(f"{n} ({his.loc[n, 'kappa']:.3f} against {his.loc[n, 'quoted kappa']:.2f})"
-                                for n in names if n not in match) or "none"
+    nomatch = [f"{n}, which reads {his.loc[n, 'kappa']:.3f} here against {his.loc[n, 'quoted kappa']:.2f} on the slides"
+               for n in names if n not in match]
+    N["vr_nomatch"] = ("; the exception is " + " and ".join(nomatch)) if nomatch else ""
     N["vr_dA"] = rng((abs(his.loc[n, "A"] - his.loc[n, "quoted A"]) / his.loc[n, "quoted A"] for n in names),
                      lambda x: pct(x, 1))
     N["vr_err"] = rng((his.loc[n, "minus"] for n in names), lambda x: f(x, 2))
@@ -133,13 +134,36 @@ def compute():
     same = N["dsa_dir_PP"] == N["dsa_dir_PD"]
     N["dsa_dir"] = (f"In both planes κ of the `dsa1+` class is the {N['dsa_dir_PD']} one" if same else
                     f"κ of the `dsa1+` class is {N['dsa_dir_PP']} in PP and {N['dsa_dir_PD']} in PD")
-    N["dsa_pull"] = ("down, against the photon argument of 7b, which pulls it up" if same and N["dsa_dir_PD"] == "lower" else
-                     "up, the same way as the photon argument of 7b" if same else "in no consistent direction")
+    kc_inc = nl.kappa_corrected(d2, nom, (None,))
+    kc_dsa = nl.kappa_corrected(d2, nom, ("dsa0", "dsa1+"))
+    kc_typ = nl.kappa_corrected(d2, nom, ("g", "e"))
+    kc_typ_pd = nl.kappa_corrected(d2, nom, ("g", "e"), search="PD")
+    N.update(kc_kPD=f(kc_inc["ratio"], 2), kc_inc=f"{kc_inc['corrected']:.0f}", kc_est=f(est[0], 1),
+             kc_dsa=f"{kc_dsa['corrected']:.0f}", kc_dsa_ratio=f(kc_dsa["ratio"], 2),
+             kc_dsa_terms=" + ".join(f"{p['kappa'][0]:.2f} × {p['direct']:.1f}" for p in kc_dsa["parts"].values()),
+             kc_typ=f"{kc_typ['corrected']:.0f}", kc_typ_ratio=f(kc_typ["ratio"], 2),
+             kc_typ_terms=" + ".join(f"{p['kappa'][0]:.2f} × {p['direct']:.1f}" for p in kc_typ["parts"].values()),
+             g_direct_DD=f"{kc_typ['parts']['g']['direct']:.1f}", e_direct_DD=f"{kc_typ['parts']['e']['direct']:.1f}",
+             g_pred_DD=pct(kc_typ["parts"]["g"]["share"]), g_pred_PD=pct(kc_typ_pd["parts"]["g"]["share"]),
+             e_counts_DD="/".join(nl.fmt_count(ps.regions(d2, nom, "DD:e")[x][0]) for x in "BCD"))
+    pull = abs(kc_dsa["ratio"] - kc_inc["ratio"]) >= 0.005
+    N["dsa_pull"] = (f"down, from {N['kc_kPD']} to about {N['kc_dsa_ratio']} (section 8), against the photon argument of 7b, "
+                     "which pulls it up" if same and N["dsa_dir_PD"] == "lower" and pull else
+                     f"up, from {N['kc_kPD']} to about {N['kc_dsa_ratio']} (section 8), the same way as the photon argument of 7b"
+                     if same and pull else "in no consistent direction")
     mass_vrs = [nl.VR(f"{p}, {w}", "this analysis", p[0], p[1], mass=m) for p in ("PP", "PD") for w, m in WINDOWS]
     mk = nl.kappa_table(d2, mass_vrs, nom).set_index("region")
     for p in ("PP", "PD"):
         for (w, _), key in zip(WINDOWS, ("lo", "hi")):
             N[f"k_{p}_{key}"] = f(tri(mk.loc[f"{p}, {w}"]))
+    lo_cfg, hi_cfg = bl.bin_cfg(nom, 150.0, 300.0), bl.bin_cfg(nom, 300.0, None)
+    for p in ("DD", "PD"):
+        N[f"dshare_{p}"] = pct(ps.regions(d2, lo_cfg, p)["D"][0] / ps.regions(d2, nom, p)["D"][0])
+    lo_d, hi_d = nl.route_estimates(d2, lo_cfg)["direct"], nl.route_estimates(d2, hi_cfg)["direct"]
+    two = (lo_d[0] + hi_d[0], float(np.hypot(lo_d[1], hi_d[1])))
+    N.update(two_lo=f"{lo_d[0]:.1f}", two_hi=f"{hi_d[0]:.1f}", two_bin=f(two, 0),
+             d_hi=f"{ps.regions(d2, hi_cfg, 'DD')['D'][0]:.0f}",
+             two_ok="consistent with" if abs(two[0] - est[0]) <= np.hypot(two[1], est[1]) else "in tension with")
     drop = nl.kappa_drop([(tri(mk.loc[f"{p}, {WINDOWS[0][0]}"]), tri(mk.loc[f"{p}, {WINDOWS[1][0]}"])) for p in ("PP", "PD")])
     N["drop"], N["drop_z"] = f(drop[:2], 2), f(drop[2], 1)
     N["win_dev"] = rng((abs(k - 1) for k in mk["kappa"]), pct)
@@ -154,6 +178,8 @@ def compute():
     reaches_one = r["ratio"] - r["ratio minus"] <= 1.0 <= r["ratio"] + r["ratio plus"]
     N["cd_verdict"] = ("is consistent with the failing-|Δφ| half of DD being like PD's" if reaches_one else
                        "finds the failing-|Δφ| half of DD unlike PD's")
+    N["cd_transfer"] = (f"C/D does not transfer at the central value, {r['ratio']:.2f}, and the interval reaches one only at "
+                        "its upper edge" if reaches_one else f"C/D does not transfer: {r['ratio']:.2f}, with one outside the interval")
     for c in ("dsa0", "dsa1+"):
         r = sb[(sb["bin"] == ">=150") & (sb["class"] == c)].iloc[0]
         N[f"cd_{c.replace('+', '')}"] = f((r["ratio"], r["ratio minus"], r["ratio plus"]))
@@ -171,6 +197,17 @@ def compute():
              second=f"{qual.iloc[1]['region']} ({pct(qual.iloc[1]['candidate'])})" if len(qual) > 1 else "none")
     g_row = sys_t.set_index("region").loc["PD:g"]
     N["pdg_cand"] = pct(g_row["candidate"])
+    N["typ_dev"] = pct(kc_typ["ratio"] - 1)
+    lo_g, hi_g = sorted((g_row["candidate"], kc_typ["ratio"] - 1))
+    N["syst_g"] = f"{100 * lo_g:.0f}–{100 * hi_g:.0f}%"
+    N["syst_both"] = f"{N['syst']} by the rule; {N['syst_g']} if the photon-only sub-population is taken as the carrier"
+    dups = nl.same_regions(qual, "PP")
+    n_distinct = len({tuple(r[x] for x in "ABCD") for _, r in qual.iterrows()})
+    N["n_distinct"] = f"{n_distinct}"
+    N["dup_clause"] = (f" ({' and '.join(dups)} at our working point {'is' if len(dups) == 1 else 'are'} PP)" if dups else "")
+    v1_dup = nl.same_regions(nl.kappa_table(d2, [vrs["PP"], nl.DONGYUB_VRS[0]], nom), "PP")
+    N["v1_pp"] = (f"At our working point V1 selects exactly the events of PP ({N['pp_counts']} in A/B/C/D), so the "
+                  "two are one validation region, not two." if v1_dup else "V1 and PP differ in their events.")
     N["headline"] = f"{est[0]:.0f} ± {est[1]:.0f} (stat.) ± {est[0] * syst:.0f} (syst.)"
     N["total_err"] = f(float(np.hypot(est[1], est[0] * syst)), 0)
 
@@ -191,16 +228,24 @@ def compute():
         N[f"o_{key}_prec"] = pct(nl.projected_precision(r["direct"][0], r["direct"][1]))
         N[f"o_{key}_prec_a"] = pct(1 / np.sqrt(r["direct"][0]))
         N[f"o_{key}_ratio"] = f(r["B"][0] / r["direct"][0], 1)
-        N[f"o_{key}_sep"] = f((r["B"][0] - r["direct"][0]) / np.hypot(r["B"][1], r["direct"][1]), 1)
         reg = nl.ps.regions(d2, bl.bin_cfg(nom, lo, hi), "DD")
+        sep, sep_b = nl.shared_b_separation(r["direct"][:2], r["B"], reg, nl.b_route_parts(d2, bl.bin_cfg(nom, lo, hi)))
+        N[f"o_{key}_sep"], N[f"o_{key}_sep_b"] = f(sep, 1), f(sep_b, 1)
+        fac = nl.route_ratio_factors(d2, bl.bin_cfg(nom, lo, hi))
+        N[f"o_{key}_kmix"], N[f"o_{key}_sbr"] = f(fac["kappa_mix"], 2), f(fac["sideband"], 2)
         N[f"o_{key}_bcd"] = "/".join(nl.fmt_count(reg[x][0]) for x in "BCD")
     names = sorted(os.path.basename(p)[: -len(".coffea")] for p in tl.sample_paths(base, "signal")
                    if os.path.basename(p).startswith("2Mu2E_"))
     shares = nl.signal_share_table(bl.signal_profiles(base, names, "2mu2e", nom, plane="DD", region="A"))
     mass = shares["point"].map(nl.mediator_mass)
     s200, heavy = shares[mass == 200], shares[mass >= 500]
+    s200_below = (s200["below"] / s200["yield"]).where(s200["yield"] > 0).dropna()
+    bshare = nl.below_share(shares)
+    light = sorted(set(mass[mass < 200]))
+    N["light_masses"] = " and ".join(f"{m:g}" for m in light)
+    N["light_below"] = ", ".join(f"{rng(bshare[mass == m].dropna(), lambda x: f'{100 * x:.0f}')}% at {m:g} GeV" for m in light)
     N.update(n_points=f"{len(shares)}", n200=f"{len(s200)}", s200_lo=rng(s200["150-200"], pct),
-             s200_150300=rng(s200["150-300"], pct), s200_below=rng(s200["below"], lambda x: pct(x, 1)),
+             s200_150300=rng(s200["150-300"], pct), s200_below=rng(s200_below, lambda x: pct(x, 1)),
              s200_yield=rng(s200["yield"], lambda x: f(x, 2)), heavy_150300=pct(heavy["150-300"].max(), 1),
              heavy_masses=", ".join(f"{m:g}" for m in sorted(set(mass[mass >= 500]))))
     p800 = shares.set_index("point").loc["2Mu2E_800GeV_0p25GeV_0p25mm"]
@@ -223,7 +268,8 @@ def compute():
         readings.append(tl._pred(lo4["A"], ratio))
     central = [r[0] for r in readings if np.isfinite(r[0])]
     med = float(np.median(central))
-    N.update(four_range=rng(central, lambda x: f(x, 1)), four_med=f(med, 1))
+    N.update(four_range=rng(central, lambda x: f(x, 1)), four_med=f(med, 1),
+             four_rel=rng((el.precision(r) for r in readings if np.isfinite(r[0])), lambda x: f"{100 * x:.0f}") + "%")
     for n in (1, 2):
         a, b = el.counting_limit(n, med / 2.5), el.counting_limit(n, med * 2.5)
         N[f"lim{n}"] = f"{a:.1f} → {b:.1f} ({pct(1 - b / a)})"
@@ -252,8 +298,10 @@ this in every region of the data where the corresponding A is open (not blinded)
 in which at least one lepton jet is prompt, the search plane itself below 150 GeV, and the seven
 validation regions of Dongyub Lee's programme, recomputed from these histograms. In the regions
 measured to 20% or better the method holds within 20%; the largest deviation is in the plane where
-only the egamma lepton jet is displaced (PD, κ = {k_PD}). That deviation is the {syst} systematic
-uncertainty. The earlier notebooks borrowed a factor from that plane and quoted {r_B0} events; here
+only the egamma lepton jet is displaced (PD, κ = {k_PD}). That deviation sets the systematic
+uncertainty: {syst} by the rule of section 8, {syst_g} if the photon-only egamma lepton jets, which
+carry PD's deviation, are taken as what decides κ of the search plane; that choice is put to the
+group. The earlier notebooks borrowed a factor from that plane and quoted {r_B0} events; here
 that number is a cross-check.
 
 **How to read this notebook.** Every number is from data unless it is marked as simulation. The
@@ -293,7 +341,7 @@ print("8D inputs:", BASE)
 data = tl.summed_cubes(BASE, "data", prefix="abcd8d")     # the only data path: hidden cells are NaN
 print("hidden box:", io.blind_signature(prefix="abcd8d"))
 for t, c in data.items():
-    print(f"{t}: {c.sumw.shape}, {int(np.isnan(c.sumw).sum())} hidden cells, {np.nansum(c.sumw):.0f} open events")
+    print(f"{t}: {c.sumw.shape}, {int(np.isnan(c.sumw).sum())} hidden cells")
 d2, d4 = data["2mu2e"], data["4mu"]
 NOMINAL, LOW, HIS_WP = nl.NOMINAL, nl.LOW, nl.HIS_WP
 VRS = {v.name: v for v in nl.our_vrs()}
@@ -315,7 +363,7 @@ the signal sits where both cuts pass. Those two cuts split the plane of (x, y) i
 * **D** fails both.
 
 If x and y are independent for the background, the fraction of events that pass x is the same
-whether y passes or not, A/C = B/D, and so **A = B·C/D**. B, C and D are dominated by background,
+whether y passes or not: A/B = C/D, equivalently A/C = B/D, and so **A = B·C/D**. B, C and D are dominated by background,
 so the right-hand side can be counted in data.
 
 The test of the assumption is the closure ratio **κ = A·D/(B·C)**, measured in a plane where A is
@@ -337,14 +385,15 @@ electrons and photons. A 2μ2e event has one of each.
 
 The two ABCD variables are properties of the pair:
 
-* **x = the muon LJ's isolation.** Take the nearest jet within ΔR < 0.4 of the muon LJ; its energy
-  that is not carried by the LJ's own particles (its energy minus its electromagnetic and muon
-  fractions), divided by the LJ's energy. It is 0 when no jet is near. A signal LJ is isolated;
+* **x = the muon LJ's isolation.** Take the nearest jet within ΔR < 0.4 of the muon LJ and remove
+  from its energy all of its electromagnetic and muon energy (the jet's charged and neutral
+  electromagnetic fractions and its muon fraction, whichever particles carry them, not only the
+  LJ's own); the remainder divided by the LJ's energy is the isolation. It is 0 when no jet is near. A signal LJ is isolated;
   a muon LJ inside a QCD jet is not.
 * **y = |Δφ|, the azimuthal angle between the two LJs.** The two LJs of a signal event come from
   one heavy particle at rest and are back-to-back (|Δφ| near π); background pairs are spread out.
 
-Other cuts, applied everywhere: the egamma LJ is isolated (its isolation, defined the same way,
+The search region's other cuts (the validation regions relax them as stated in sections 5 and 6): the egamma LJ is isolated (its isolation, defined the same way,
 < 0.5); the LJ-pair mass M(LJ, LJ) ≥ 150 GeV; both LJs displaced (section 3).
 
 The **working point** (WP) is the pair of cuts that defines A: isolated means isolation < 0.25,
@@ -367,9 +416,10 @@ plt.show()"""))
 Each LJ is **prompt** or **displaced**, judged from hit counts in the tracker:
 
 * a muon LJ is displaced when the largest number of **pixel hits** (hits in the innermost tracker
-  layers) over its muons is ≤ 2, prompt when it is ≥ 3. A **DSA muon** (displaced standalone muon,
-  reconstructed from the muon chambers alone) has no pixel hits, so an LJ with one counts as
-  displaced;
+  layers) over its PF muons (the muons reconstructed with a tracker track) is ≤ 2, prompt when it
+  is ≥ 3. A **DSA muon** (displaced standalone muon, reconstructed from the muon chambers alone)
+  adds no pixel hits, so it never makes an LJ prompt: the LJ is displaced only when none of its PF
+  muons has 3 or more pixel hits, and an LJ made only of DSA muons is displaced by that rule;
 * an egamma LJ is displaced when the smallest number of **lostHits** (missing hits in the inner
   tracker before the first hit of an electron's track) over its electrons is ≥ 1, prompt when it is
   0. A photon-only egamma LJ has no track and counts as displaced.
@@ -430,13 +480,15 @@ Dongyub Lee tested the same plane (muon-LJ isolation × |Δφ|) in seven data va
 (slides of 2026-10-13 and 2026-10-16), with his own analysis code. The table defines them: the
 displacement of each LJ (P prompt, D displaced, "any" = either), the egamma-LJ isolation band and
 the mass window. His working point is isolation < 0.3 and |Δφ| ≥ 2.6 (ours: < 0.25 and ≥ 2.4);
-V1 keeps the egamma LJ isolated (< 0.5), the others put it in a non-isolated band, which keeps
-their A away from the signal. We recompute all seven from our histograms at his working point and
-at ours.
+V1 keeps the egamma LJ isolated (< 0.5); V2–V4 put it in a non-isolated band (≥ 1 or ≥ 0.75),
+which keeps their A away from the signal; V5–V7 use bands, 0.2–1 and 0.15–1, that straddle the
+isolation boundary 0.5 of the search region, so they hold isolated and non-isolated egamma LJs
+alike (V7 overlaps V1 in 0.15–0.5). {v1_pp} We recompute all seven from our histograms at his
+working point and at ours.
 
 * **At his working point** the slides read {vr_quoted}, these histograms {vr_his} (errors
-  {vr_err}): equal to the printed digit in {vr_match} regions (otherwise: {vr_nomatch}), with A
-  counts within {vr_dA} of his. This is two codes on one data set: a cross-check of both codes,
+  {vr_err}): equal to the printed digit in {vr_match} regions{vr_nomatch}. The A counts agree
+  within {vr_dA}. This is two codes on one data set: a cross-check of both codes,
   not an independent measurement. The A counts differ by selection details we cannot remove (our
   HEM15/16 veto applies to runs ≥ 319077 only, his to every run; our raw-event pre-filter; our
   isolation clipped at zero).
@@ -508,10 +560,14 @@ display(nl.class_share_view(nl.class_share_table(d2, NOMINAL, ("PD", "DD"), ("ds
 
 κ in 150–300 GeV and above 300 GeV: PP {k_PP_lo} → {k_PP_hi}, PD {k_PD_lo} → {k_PD_hi}. κ falls
 with the mass in both planes; the drop, combined over the two planes, is {drop} ({drop_z} standard
-deviations). For a one-bin search region the integrated κ of section 5 is the right test, because
-the mass dependence averages over the same mass distribution of the background. For a search
-region binned in mass, each bin needs its own κ, and the per-window deviations, up to {win_dev_max},
-would be the systematic. Both statements hold; this notebook estimates the one-bin search region.
+deviations). For a one-bin search region the integrated κ of section 5 is the right test if the
+validation plane's mass distribution resembles the search plane's, so that the mass dependence
+averages the same way in both. It roughly does: {dshare_DD} of DD's D lies in 150–300 GeV, against
+{dshare_PD} of PD's. The same question asked of the estimate itself: the direct estimate in the two
+windows separately, {two_lo} + {two_hi} = {two_bin} events (errors in quadrature), is {two_ok} the
+one-bin {est0}, but the window above 300 GeV rests on {d_hi} events in D. For a search region binned
+in mass, each bin needs its own κ, and the per-window deviations, up to {win_dev_max}, would be the
+systematic. This notebook estimates the one-bin search region.
 
 *How to read the figure:* κ per mass window in PP (black) and PD (blue); the dashed line is κ = 1.
 The table below it gives κ in the finer bins of the histograms.""", N))
@@ -523,15 +579,19 @@ fig = npl.kappa_mass_figure({p: [(r["kappa"], r["minus"], r["plus"]) for _, r in
 plt.show()
 display(ps.mass_table(d2, NOMINAL, planes=("PP", "PD")))"""))
 
-    cells.append(md(r"""### 7e. The sideband test in the search plane
+    cells.append(md(r"""### 7e. The borrowed-factor premise: is PD's sideband ratio DD's?
 
-One half of the independence condition can be tested in the search plane above 150 GeV without
-opening A: C/D, the isolation pass/fail ratio among events that fail |Δφ|. If DD behaves like PD,
-C/D of DD equals C/D of PD. DD over PD: {cd_all} above 150 GeV ({cd_lo} in 150–300 GeV, {cd_hi}
-above 300 GeV); per DSA class {cd_dsa0} (`dsa0`) and {cd_dsa1} (`dsa1+`). The test is open and
-{cd_verdict}; in 150–300 GeV alone it reads {cd_lo}, {cd_lo_z} standard deviations low, the
-window where the direct and the B-route predictions differ most (section 10). It cannot say
-anything about the passing half, which is where A sits.""", N))
+The borrowed-factor routes of section 9 take a ratio from PD and apply it to DD. One of the
+premises they rest on can be tested without opening A: C/D, the isolation pass/fail ratio among
+events that fail |Δφ|, compared between the two planes. This is a comparison between planes, not a
+test of independence inside DD (that would be A/B = C/D within DD, which needs A), and the direct
+estimate does not depend on it: it uses DD's own C/D. The B route does: A/B of PD equals κ_PD × C/D
+of PD, so B × (A/B)_PD is right for DD only if both κ and C/D transfer from PD to DD. DD over PD:
+{cd_all} above 150 GeV ({cd_lo} in 150–300 GeV, {cd_hi} above 300 GeV); per DSA class {cd_dsa0}
+(`dsa0`) and {cd_dsa1} (`dsa1+`). {cd_transfer}. With
+DD's own C/D, the B route's {r_B0} events therefore require κ_DD = {implied_k}. In 150–300 GeV
+alone the ratio reads {cd_lo}, {cd_lo_z} standard deviations low, the window where the direct and
+the B-route predictions differ most (section 10).""", N))
     cells.append(code(r"""SB = bl.sideband_test_table(d2, NOMINAL, [(">=150", (150.0, None)), ("150-300", (150.0, 300.0)), (">=300", (300.0, None))])
 display(SB.drop(columns=["ratio", "ratio minus", "ratio plus"]))"""))
 
@@ -540,16 +600,30 @@ display(SB.drop(columns=["ratio", "ratio minus", "ratio plus"]))"""))
 The rule, written after the regions above were measured (so it is not blind to their values):
 
 > Among the validation regions at our working point that differ from the search region only in
-> named respects (one LJ's displacement, the mass window, the partner-isolation band) and are
-> measured to 20% or better, take the largest of |κ − 1| and its uncertainty.
+> the displacement of one or both lepton jets, the mass window, or the band of the partner's
+> isolation, and whose κ is measured to 20% or better, take for each the larger of |κ − 1| and the
+> uncertainty facing one, and quote the largest of those.
 
-"Its uncertainty" is the side of the 68% interval facing one. The table lists every region: ours
-(PP, PD and its two egamma types, DP, DD below 150 GeV) and Dongyub Lee's seven at our working
-point, sorted by the number of respects in which each differs from the search region. {n_qual} of
-the {n_rows} rows qualify ({qual_names}). The photon-only part of PD (PD:g) does not: it is a
-sub-population of PD selected on the egamma LJ type, not a region of the plane, and the inclusive PD
-already has the search region's photon-only share ({g_PD_bcd} in its sidebands against {g_DD_bcd} in
-DD's, section 7b), so the inclusive κ is the comparator; admitted, PD:g would give {pdg_cand}.
+"The uncertainty facing one" is the side of κ's 68% interval that points towards one; "measured to
+20% or better" means that the larger side of the interval is at most 20% of κ. The table lists
+every region: ours (PP, PD and its two egamma types, DP, DD below 150 GeV) and Dongyub Lee's seven
+at our working point, sorted by the number of respects in which each differs from the search
+region. {n_qual} of the {n_rows} rows qualify, {n_distinct} distinct regions{dup_clause}:
+{qual_names}.
+
+The photon-only part of PD (PD:g, κ = {k_PDg}) is excluded by the rule's letter: it is a
+sub-population of PD selected on the egamma LJ type, not a region of the plane. Whether the
+inclusive κ is the right comparator depends on how much of the prediction each egamma type
+carries, not on how many events it has. In DD, B·C/D per type is {g_direct_DD} events for the
+photon-only LJs and {e_direct_DD} for the electron ones, so the photon-only LJs carry {g_pred_DD} of
+the direct prediction in DD against {g_pred_PD} in PD. Applying PD's κ per egamma type to DD's
+prediction per type, {kc_typ_terms} ≈ {kc_typ} events, gives {kc_typ_ratio} times the direct
+estimate, a number that rests on DD's {e_counts_DD} electron LJs in B/C/D. The same reweighting by
+the muon LJ's DSA class (section 7c) gives {kc_dsa_ratio}. The two reweightings pull in opposite
+directions, by egamma type to {kc_typ_ratio} and by DSA class to {kc_dsa_ratio}, and the inclusive
+{kc_kPD} sits between them. The rule takes the inclusive value, {syst}; admitting PD:g
+as a region would give {pdg_cand}, and taking the type reweighting at face value {typ_dev}. That
+choice, {syst} against {syst_g}, is put to the group.
 
 **Result: {syst_name}, {syst}, ± {syst_ev} events.** The next largest qualifying value is {second}.
 
@@ -564,8 +638,9 @@ The 2μ2e background in the one-bin search region:
 **{headline} events.**
 
 *How to read the figure:* κ per region at our working point, ordered from the regions closest to
-the search region (fewest differences) to the farthest; the green band is 1 ± {syst}, the dashed
-line κ = 1.""", N))
+the search region (fewest differences, in brackets) to the farthest; filled circles qualify for the
+rule, open circles (PD:g, PD:e, DP, DD below 150 GeV) do not; the green band is 1 ± {syst}, the
+dashed line κ = 1.""", N))
     cells.append(code(r"""SYS = nl.systematic_table(d2, nl.our_vrs() + nl.DONGYUB_VRS)
 display(nl.systematic_view(SYS))
 SYST, SYST_FROM = nl.closure_systematic(SYS)
@@ -575,9 +650,11 @@ EST = nl.kappa_row(d2, nl.SR, NOMINAL)
 print(f"rule: {nl.pct(SYST)} from {SYST_FROM}; quadrature {nl.pct(QUAD)}; imprecise regions admitted {nl.pct(ALT)} from {ALT_FROM}")
 print(f"estimate: {EST['B C/D']:.1f} ± {EST['B C/D err']:.1f} (stat.) ± {EST['B C/D'] * SYST:.1f} (syst.) events")
 points, labels = npl.table_points(SYS)
-labels = [f"{r} ({n})" for r, n in zip(labels, SYS["n differences"])]
+SAME_AS_PP = nl.same_regions(SYS, "PP")
+labels = [f"{r} ({n})" + (" = PP here" if r in SAME_AS_PP else "") for r, n in zip(labels, SYS["n differences"])]
 fig = npl.kappa_points_figure(points, labels, "2μ2e, our WP; in brackets: respects differing from the search region",
-                              "nominal_kappa_systematic", band=SYST, band_label=f"1 ± {nl.pct(SYST)}", ylim=(0, 2.6))
+                              "nominal_kappa_systematic", band=SYST, band_label=f"1 ± {nl.pct(SYST)}", ylim=(0, 2.6),
+                              hollow_label="does not qualify")
 plt.show()"""))
 
     cells.append(md(r"""## 9. Cross-check: the three borrowed-factor routes
@@ -585,10 +662,15 @@ plt.show()"""))
 `estimate.ipynb` estimated A of DD three more ways, each by borrowing a ratio from PD per DSA class
 and summing: B × (A/B), C × (A/C) and D × (A/D) give {r_B}, {r_C} and {r_D} events. Their spread
 is not a systematic uncertainty: they share DD's sidebands with the direct estimate, and each
-assumes that κ of DD equals κ of PD. The B route is the direct estimate times κ_PD-like factors:
-{r_B0} events is what the search region holds if κ of DD is like PD's (it implies κ_DD =
-{implied_k}). The two differ by {r_B_diff} events, {r_B_total} of the combined statistical and
-systematic uncertainty of the direct estimate.
+assumes that a ratio of PD transfers to DD. The B route holds if A/B itself transfers from PD to
+DD. A/B of PD is κ_PD × C/D of PD, and DD's C/D is {cd_all} times PD's (section 7e), so with DD's own
+C/D the B route's {r_B0} events require κ_DD = {implied_k}. The C and D routes likewise assume that
+A/C and A/D transfer. The two estimates differ by {r_B_diff} events, {r_B_total} of the combined
+statistical and systematic uncertainty of the direct estimate.
+
+If the search plane's κ were PD's, A would be {kc_kPD} × {kc_est} ≈ {kc_inc} events, or
+{kc_dsa_terms} ≈ {kc_dsa} with PD's κ per DSA class applied to DD's prediction per class; {r_B0}
+assumes more than that.
 
 The earlier notebooks made the B route the headline and the direct estimate a cross-check. This
 one does the opposite: with Dongyub Lee's regions added, the validation regions favour κ = 1 within
@@ -606,12 +688,16 @@ The background predicted there (direct, and B route):
 * 150–300 GeV: {o_150_300_direct} (B route {o_150_300_B}).
 
 The two predictions for 150–300 GeV differ by a factor {o_150_300_ratio}: the direct one uses DD's own
-C/D in the window ({o_150_300_bcd} events in B/C/D), the B route uses PD's A/B, and their ratio is the
-sideband deficit of section 7e. A count near the first would say that DD's own sidebands are right
-there; one near the second, that the direct route under-predicts the window. The two predictions
-are {o_150_300_sep} standard deviations apart, so the window can tell them apart, but not sharply.
-κ of DD in the window would be measured to about {o_150_300_prec} ({o_150_300_prec_a} from A's count
-alone, the rest from C and D), which separates 1.0 from 1.9 but not from 1.2; and section 7d shows
+C/D in the window ({o_150_300_bcd} events in B/C/D), the B route uses PD's A/B. Their ratio is the
+product of two factors: PD's κ per DSA class weighted by the search plane's B, {o_150_300_kmix} here,
+and the sideband ratio (C/D)_PD / (C/D)_DD, {o_150_300_sbr} (the inverse of the {cd_lo} of section
+7e). The first is close to one, so the factor between the predictions is almost all sideband ratio.
+A count near the first prediction would say that DD's own sidebands are right there; one near the
+second, that the direct route under-predicts the window. The two predictions are {o_150_300_sep}
+standard deviations apart if treated as independent, about {o_150_300_sep_b} once the shared B is
+accounted for (both scale with DD's B, with different factors), so the window can tell them apart, but not sharply. κ of DD in the
+window would be measured to about {o_150_300_prec} ({o_150_300_prec_a} from A's count alone, the
+rest from B, C and D), which separates 1.0 from 1.9 but not from 1.2; and section 7d shows
 that κ changes with the mass, so the window's κ is not the search region's. 150–200 GeV alone
 would measure it to about {o_150_200_prec}. The window is the only direct test there is; it is
 not a sharp one.
@@ -624,6 +710,12 @@ already-open DD validation region). The heavier points ({heavy_masses} GeV) put 
 events, {p800_300} of them below 300 GeV and {p800_600} at ≥ 600 GeV. Opening 150–300 GeV ends the
 200 GeV search; opening 150–200 GeV costs about half of it. The decision is the group's.
 
+The table also lists the {light_masses} GeV mediators. These masses are outside the range the
+analysis targets (the group's grid of interest starts at 200 GeV) and are kept in the table for
+completeness. For them much or most of the signal in A of DD sits below 150 GeV ({light_below}),
+so DD below 150 GeV, used here as a validation region, would be signal-contaminated for those
+hypotheses.
+
 *How to read the figure:* one bar per signal point (the 200 GeV points and the seven points of
 `estimate.ipynb`), split into the share of its search-region yield in each mass bin; the label
 gives the mediator mass, dark-photon mass and decay length, and the yield in brackets
@@ -633,8 +725,8 @@ display(el.routes_table(d2, OPEN)[["window", "DD B/C/D", "direct B C/D", "B x A/
 NAMES = sorted(os.path.basename(p)[: -len(".coffea")] for p in tl.sample_paths(BASE, "signal")
                if os.path.basename(p).startswith("2Mu2E_"))
 SIGNAL = nl.signal_share_table(bl.signal_profiles(BASE, NAMES, "2mu2e", NOMINAL, plane="DD", region="A"))
-print(f"{len(SIGNAL)} 2mu2e signal points; share of the search-region yield per mass bin, min-max per mediator mass "
-      "('below': yield below 150 GeV over the search-region yield)")
+print(f"{len(SIGNAL)} 2mu2e signal points; share of the search-region yield per mass bin, min-max per mediator mass, "
+      "and the yields in A of DD above and below 150 GeV in events")
 display(nl.share_summary(SIGNAL))
 SHOWN = SIGNAL[SIGNAL["point"].str.startswith("2Mu2E_200GeV_") | SIGNAL["point"].isin(bl.SIGNAL_POINTS["2mu2e"])]
 display(SHOWN.round(3))
@@ -648,7 +740,7 @@ it: no κ of the search plane can be measured, and no B·C/D exists above 150 Ge
 empty). `estimate.ipynb` (section 5.2) gives six count-limited readings from the open neighbouring
 regions, by B of DD above 150 GeV times A/B of a plane below it, and by A of DD below 150 GeV times
 the above/below ratio of the neighbouring regions: they read {four_range} events, median
-{four_med}, each with a 60–100% statistical error, so the 4μ background is uncertain by a factor
+{four_med}, each with a {four_rel} statistical error, so the 4μ background is uncertain by a factor
 two to three. Of the open DD events, {dsa_pairs} have both muon LJs made only of DSA muons, the
 signature of the instrumental background seen in July 2026 before the cosmic and spread cuts.
 
@@ -676,12 +768,15 @@ display(el.counting_limit_table((0, 1, 2), (0.5, 1.0, 1.7, 3.0, 4.5)))"""))
   agree to the printed digit in {vr_match}); DP ({k_DP}) and DD below 150 GeV ({k_DD150}) are
   consistent with one but imprecise.
 * PD is {dev_PD} above one ({k_PD}), carried by photon-only egamma LJs ({k_PDg}); DD's sidebands
-  are {g_cmp} PD's. PD sets the {syst} systematic.
+  are {g_cmp} PD's. PD sets the systematic: {syst_both} (the choice is put to the group).
 * κ depends on the working point (V2–V4: {vr_low_his} at his, {vr_low_ours} at ours) and falls
-  with the mass ({drop_z} standard deviations from 150–300 GeV to above 300 GeV): irrelevant for one
-  bin, an effect of up to {win_dev_max} per window for a binned search region.
-* The B route ({r_B0} events) is the cross-check; it is what the search region would hold if κ of
-  DD were PD's.
+  with the mass ({drop_z} standard deviations from 150–300 GeV to above 300 GeV). For one bin the
+  integrated κ is the right test as long as the validation planes' mass distributions resemble the
+  search plane's ({dshare_DD} of DD's D in 150–300 GeV, {dshare_PD} of PD's); for a binned search
+  region it is an effect of up to {win_dev_max} per window.
+* The B route ({r_B0} events) is the cross-check; it holds if A/B transfers from PD, which with DD's
+  own C/D requires κ_DD = {implied_k}. With PD's κ itself, A would be {kc_inc} ({kc_dsa} per DSA
+  class).
 * 4μ: about {four_med} events, uncertain by a factor two to three; nothing more to do.
 
 To do, for the group:

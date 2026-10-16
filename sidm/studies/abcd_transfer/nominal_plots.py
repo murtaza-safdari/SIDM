@@ -35,18 +35,18 @@ def abcd_cartoon():
     ax.set_xlim(-1.2, 7.6)
     ax.set_ylim(-1.0, 4.4)
     half = 1.6
-    cells = {"A": (0.0, half, "passes both"), "B": (half, half, "fails isolation"),
-             "C": (0.0, 0.0, "fails |Δφ|"), "D": (half, 0.0, "fails both")}
+    cells = {"A": (0.0, half, "iso < 0.25\n|Δφ| ≥ 2.4"), "B": (half, half, "iso ≥ 0.25\n|Δφ| ≥ 2.4"),
+             "C": (0.0, 0.0, "iso < 0.25\n|Δφ| < 2.4"), "D": (half, 0.0, "iso ≥ 0.25\n|Δφ| < 2.4")}
     for r, (x, y, text) in cells.items():
         ax.add_patch(patches.Rectangle((x, y), half, half, facecolor="#dff0d8" if r == "A" else "white",
                                        edgecolor="black", lw=2))
-        ax.text(x + half / 2, y + half * 0.62, r, ha="center", va="center", fontsize=TEXT + 14, fontweight="bold")
-        ax.text(x + half / 2, y + half * 0.25, text, ha="center", va="center", fontsize=TEXT - 2)
+        ax.text(x + half / 2, y + half * 0.68, r, ha="center", va="center", fontsize=TEXT + 14, fontweight="bold")
+        ax.text(x + half / 2, y + half * 0.27, text, ha="center", va="center", fontsize=TEXT - 2)
     ax.annotate("", xy=(2 * half + 0.15, -0.35), xytext=(0, -0.35), arrowprops=dict(arrowstyle="-|>", lw=2))
     ax.text(half, -0.7, "x: muon-LJ isolation (boundary 0.25)", ha="center", va="center", fontsize=TEXT)
     ax.annotate("", xy=(-0.35, 2 * half + 0.15), xytext=(-0.35, 0), arrowprops=dict(arrowstyle="-|>", lw=2))
     ax.text(-0.75, half, "y: |Δφ| (boundary 2.4)", ha="center", va="center", rotation=90, fontsize=TEXT)
-    ax.text(4.0, 2.7, "x, y independent:\nA / C = B / D", ha="left", va="center", fontsize=TEXT + 2)
+    ax.text(4.0, 2.7, "x, y independent:\nA / B = C / D", ha="left", va="center", fontsize=TEXT + 2)
     ax.text(4.0, 1.55, "estimate:  A = B · C / D", ha="left", va="center", fontsize=TEXT + 4,
             bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="tab:green", lw=2))
     ax.text(4.0, 0.45, "test where A is open:\nκ = A · D / (B · C) = 1 ?", ha="left", va="center", fontsize=TEXT + 2)
@@ -105,20 +105,23 @@ def plane_figure(h2d, cfg, title, name):
 
 # ----------------------------------------------------------------------------- kappa
 
-def _point(ax, x, v, m, p, color, marker, label, ms=10):
+def _point(ax, x, v, m, p, color, marker, label, ms=10, hollow=False):
     if not np.isfinite(v):
         return
+    face = dict(mfc="white", mew=2) if hollow else {}
     if np.isinf(p):
-        ax.errorbar([x], [v], yerr=[[m], [0]], fmt=marker, color=color, ms=ms, capsize=4, label=label)
+        ax.errorbar([x], [v], yerr=[[m], [0]], fmt=marker, color=color, ms=ms, capsize=4, label=label, **face)
         ax.annotate("", xy=(x, v + 0.5), xytext=(x, v), arrowprops=dict(arrowstyle="->", color=color, lw=1.5))
         return
-    ax.errorbar([x], [v], yerr=[[m], [p]], fmt=marker, color=color, ms=ms, capsize=4, label=label)
+    ax.errorbar([x], [v], yerr=[[m], [p]], fmt=marker, color=color, ms=ms, capsize=4, label=label, **face)
 
 
-def kappa_points_figure(points, labels, title, name, band=None, band_label=None, ylim=None, width=16):
+def kappa_points_figure(points, labels, title, name, band=None, band_label=None, ylim=None, width=16,
+                        hollow_label=None):
     """kappa per region: ``points`` a list of dicts (``x`` the index into ``labels``, ``series``,
-    ``value``, ``minus``, ``plus``, ``hidden``), the line at one, an optional band 1 ± ``band``;
-    a hidden point is written as "hidden" at one."""
+    ``value``, ``minus``, ``plus``, ``hidden`` and optionally ``hollow``), the line at one, an
+    optional band 1 ± ``band``; a hidden point is written as "hidden" at one, a ``hollow`` point is
+    drawn with an open marker and labelled ``hollow_label`` in the legend."""
     fig, ax = plt.subplots(figsize=(width, 9))
     series = list(dict.fromkeys(p["series"] for p in points))
     offsets = dict(zip(series, np.linspace(-0.22, 0.22, len(series)) if len(series) > 1 else [0.0]))
@@ -133,9 +136,12 @@ def kappa_points_figure(points, labels, title, name, band=None, band_label=None,
             ax.text(x, 1.0, "hidden", ha="center", va="center", fontsize=TEXT - 4, color="0.35", rotation=90,
                     bbox=dict(boxstyle="round,pad=0.2", **HIDDEN))
             continue
-        _point(ax, x, p["value"], p["minus"], p["plus"], color, marker, None if p["series"] in seen else p["series"])
+        hollow = bool(p.get("hollow"))
+        key = (p["series"], hollow)
+        label = None if key in seen else (hollow_label or p["series"]) if hollow else p["series"]
+        _point(ax, x, p["value"], p["minus"], p["plus"], color, marker, label, hollow=hollow)
         if np.isfinite(p["value"]):
-            seen.add(p["series"])
+            seen.add(key)
     ax.set_xticks(np.arange(len(labels)))
     ax.set_xticklabels(labels, fontsize=TICK, rotation=30 if max(len(s) for s in labels) > 6 else 0,
                        ha="right" if max(len(s) for s in labels) > 6 else "center")
@@ -144,7 +150,8 @@ def kappa_points_figure(points, labels, title, name, band=None, band_label=None,
     ax.set_ylabel("κ = A·D / (B·C)", fontsize=AXIS)
     if ylim is not None:
         ax.set_ylim(*ylim)
-    ax.legend(title=title, loc="upper left", ncol=max(1, len(series) + (band is not None)), fontsize=TEXT - 2,
+    ncol = len(series) + (band is not None) + any(p.get("hollow") for p in points)
+    ax.legend(title=title, loc="upper left", ncol=max(1, ncol), fontsize=TEXT - 2,
               **tp.LEGEND)
     tp.label(ax)
     tp.save(fig, name)
@@ -152,9 +159,11 @@ def kappa_points_figure(points, labels, title, name, band=None, band_label=None,
 
 
 def table_points(df, series=OURS):
-    """Points and labels of a ``nominal_lib.kappa_table`` / ``systematic_table`` frame, in row order."""
+    """Points and labels of a ``nominal_lib.kappa_table`` / ``systematic_table`` frame, in row order;
+    in a systematic table the rows that do not qualify for the rule are ``hollow``."""
     points = [{"x": i, "series": series, "value": r["kappa"], "minus": r["minus"], "plus": r["plus"],
-               "hidden": bool(r["hidden"])} for i, (_, r) in enumerate(df.iterrows())]
+               "hidden": bool(r["hidden"]), "hollow": "qualifies" in df and not r["qualifies"]}
+              for i, (_, r) in enumerate(df.iterrows())]
     return points, list(df["region"])
 
 
@@ -224,7 +233,7 @@ def kappa_mass_figure(rows, windows, name="nominal_kappa_mass"):
 
 def photon_share_figure(table, name="nominal_photon_share"):
     """Photon-only share of the egamma LJs per region of PD and DD (``nominal_lib.class_share_table``
-    with the splits ("e", "g")), with binomial errors; a hidden region is a hatched bar."""
+    with the splits ("e", "g")), with binomial errors; a hidden region has no bar, only the word "hidden"."""
     fig, ax = plt.subplots(figsize=(12, 8))
     planes = list(dict.fromkeys(table["plane"]))
     width = 0.8 / len(planes)
@@ -234,8 +243,7 @@ def photon_share_figure(table, name="nominal_photon_share"):
         for i, r in part.iterrows():
             x = i + (k - (len(planes) - 1) / 2) * width
             if r["hidden"]:
-                ax.bar(x, 1.0, width * 0.9, **HIDDEN)
-                ax.text(x, 0.5, "hidden", ha="center", va="center", rotation=90, fontsize=TEXT - 2)
+                ax.text(x, 0.1, f"{plane}: hidden", ha="center", va="bottom", rotation=90, fontsize=TEXT - 2, color="0.35")
                 continue
             share = r["g share"]
             err = np.sqrt(share * (1 - share) / r["total"]) if r["total"] > 0 else 0.0

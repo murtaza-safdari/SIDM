@@ -234,6 +234,83 @@ def route_estimates(cube, cfg, classes=("dsa0", "dsa1+"), ref_plane="PD", search
     return out
 
 
+def _label(plane, split):
+    return plane if split is None else f"{plane}:{split}"
+
+
+def kappa_corrected(cube, cfg, splits=("dsa0", "dsa1+"), ref_plane="PD", search="DD"):
+    """The direct estimate of ``search`` corrected by the kappa of ``ref_plane``, split by split:
+    ``{"direct": inclusive B C / D of the search plane, "parts": {split: {"direct": B C / D of the
+    split in the search plane, "kappa": (value, minus, plus) of the split in the reference plane,
+    "share": the split's part of the summed per-split direct estimates}}, "corrected": the sum over
+    splits of kappa x direct, "ratio": corrected over the inclusive direct estimate}``.  A split of
+    ``None`` is the inclusive plane, so ``splits=(None,)`` gives kappa of the reference plane times
+    the direct estimate.  Only B, C and D of the search plane are read."""
+    direct = ps.prediction(ps.regions(cube, cfg, search))[0]
+    parts = {}
+    for s in splits:
+        parts[s] = {"direct": ps.prediction(ps.regions(cube, cfg, _label(search, s)))[0],
+                    "kappa": ps.kappa(ps.regions(cube, cfg, _label(ref_plane, s)))}
+    total = sum(p["direct"] for p in parts.values())
+    for p in parts.values():
+        p["share"] = p["direct"] / total if total > 0 else np.nan
+    corrected = float(sum(p["kappa"][0] * p["direct"] for p in parts.values()))
+    return {"direct": direct, "parts": parts, "corrected": corrected,
+            "ratio": corrected / direct if direct > 0 else np.nan}
+
+
+def route_ratio_factors(cube, cfg, classes=("dsa0", "dsa1+"), ref_plane="PD", search="DD"):
+    """The B route over the direct estimate as a product of two factors: ``{"ratio": B route /
+    (B C / D), "kappa_mix": B route / (B x (C/D) of the reference plane), the reference plane's
+    kappa per class weighted by the search plane's B, "sideband": (C/D) of the reference plane over
+    (C/D) of the search plane}``, with ratio = kappa_mix x sideband."""
+    s, r = ps.regions(cube, cfg, search), ps.regions(cube, cfg, ref_plane)
+    route = route_estimates(cube, cfg, classes, ref_plane, search)["B"][0]
+    direct = ps.prediction(s)[0]
+    cd_s, cd_r = s["C"][0] / s["D"][0], r["C"][0] / r["D"][0]
+    return {"ratio": route / direct, "kappa_mix": route / (s["B"][0] * cd_r), "sideband": cd_r / cd_s}
+
+
+def b_route_parts(cube, cfg, classes=("dsa0", "dsa1+"), ref_plane="PD", search="DD"):
+    """Per class of the muon LJ, the inputs of the B route: ``[(class, B sumw, B sumw2, A/B of the
+    reference plane)]``, with B from the search plane."""
+    out = []
+    for cls in classes:
+        b = ps.regions(cube, cfg, _label(search, cls))["B"]
+        r = ps.regions(cube, cfg, _label(ref_plane, cls))
+        out.append((cls, b[0], b[1], r["A"][0] / r["B"][0]))
+    return out
+
+
+def shared_b_separation(direct, route, reg, parts):
+    """Separation in standard deviations of the direct estimate ``direct`` (value, err) of one
+    search plane with regions ``reg`` and its B route ``route`` (value, minus, plus) built from
+    ``parts`` (:func:`b_route_parts`): (treated as independent, with the shared B in first order).
+    The second splits the variance of route - direct into the parts that do not involve B,
+    sigma_direct'^2 = direct^2 (var C / C^2 + var D / D^2) and sigma_route'^2 = sigma_route^2 -
+    sum_c r_c^2 var B_c, and the part that does: B_c enters the direct estimate with derivative C/D
+    and the route with r_c = (A/B) of the reference plane, so it adds sum_c var B_c (r_c - C/D)^2.
+    Each error is taken on the side facing the other estimate."""
+    d, d_err = direct
+    v, m, p = route
+    r_err = m if v >= d else p
+    (c, c2), (dd, dd2) = reg["C"], reg["D"]
+    cd = c / dd
+    independent = abs(v - d) / np.hypot(r_err, d_err)
+    d_err_b = d * np.sqrt(c2 / c**2 + dd2 / dd**2)
+    r_err_b2 = max(r_err**2 - sum(r_c**2 * b2 for _, _, b2, r_c in parts), 0.0)
+    var_b = sum(b2 * (r_c - cd) ** 2 for _, _, b2, r_c in parts)
+    return float(independent), float(abs(v - d) / np.sqrt(d_err_b**2 + r_err_b2 + var_b))
+
+
+def same_regions(table, ref):
+    """Names of the rows of a kappa or systematic table (other than ``ref``) whose A, B, C and D
+    equal those of the row ``ref``: the same events under another name."""
+    by = table.drop_duplicates("region").set_index("region")
+    want = by.loc[ref, list("ABCD")].to_numpy(float)
+    return [n for n in by.index if n != ref and np.array_equal(by.loc[n, list("ABCD")].to_numpy(float), want)]
+
+
 # ----------------------------------------------------------------------------- the systematic
 
 def distance_to_sr(vr, cfg, sr=SR, nominal=NOMINAL):
@@ -429,8 +506,8 @@ def signal_share_table(profiles, bins=SHARE_BINS):
     """Per signal point, from flow-folded mass profiles of one region (``(edges, {point: (sumw,
     sumw2)})``, ``binning_lib.signal_profiles``): the search-region yield (M >= the first bin's low
     edge), the share of it in each bin of ``bins`` (which partition that range, so the shares sum
-    to one), the share in 150-300 GeV and below 300 GeV, and the yield below the first bin as a
-    fraction of the search-region yield."""
+    to one), the share in 150-300 GeV, and ``below``, the yield in events below the first bin (A of
+    the plane at M < 150 GeV, the open validation region)."""
     edges, prof = profiles
     low = bins[0][1][0]
     rows = []
@@ -441,7 +518,7 @@ def signal_share_table(profiles, bins=SHARE_BINS):
             y = float(np.sum(sumw[_folded_slice(edges, lo, hi)]))
             row[label] = y / total if total > 0 else np.nan
         row["150-300"] = float(np.sum(sumw[_folded_slice(edges, 150.0, 300.0)])) / total if total > 0 else np.nan
-        row["below"] = float(np.sum(sumw[_folded_slice(edges, None, low)])) / total if total > 0 else np.nan
+        row["below"] = float(np.sum(sumw[_folded_slice(edges, None, low)]))
         rows.append(row)
     return pd.DataFrame(rows)
 
@@ -451,17 +528,25 @@ def mediator_mass(name):
     return float(name.split("_")[1].replace("GeV", ""))
 
 
-def share_summary(shares, columns=("below", "150-200", "200-300", "150-300", ">=600")):
-    """Min-max of each share column per mediator mass, and the number of points."""
+def share_summary(shares, columns=("150-200", "200-300", "150-300", ">=600")):
+    """Per mediator mass: the number of points, min-max of each share column, of the search-region
+    yield and of the yield below 150 GeV, both in events."""
     df = shares.assign(mass=shares["point"].map(mediator_mass))
     rows = []
     for m, part in df.groupby("mass"):
         row = {"mediator mass [GeV]": f"{m:g}", "points": len(part)}
         for c in columns:
             row[c] = f"{100 * part[c].min():.0f}–{100 * part[c].max():.0f}%"
-        row["yield"] = f"{part['yield'].min():.2f}–{part['yield'].max():.2f}"
+        row["yield, M ≥ 150 [events]"] = f"{part['yield'].min():.2f}–{part['yield'].max():.2f}"
+        row["yield, M < 150 [events]"] = f"{part['below'].min():.2f}–{part['below'].max():.2f}"
         rows.append(row)
     return pd.DataFrame(rows)
+
+
+def below_share(shares):
+    """Per signal point, the part of its yield in A of the plane (every mass) that lies below 150 GeV."""
+    tot = shares["yield"] + shares["below"]
+    return (shares["below"] / tot).where(tot > 0)
 
 
 # ----------------------------------------------------------------------------- formatting
