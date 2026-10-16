@@ -116,12 +116,29 @@ def _point(ax, x, v, m, p, color, marker, label, ms=10, hollow=False):
     ax.errorbar([x], [v], yerr=[[m], [p]], fmt=marker, color=color, ms=ms, capsize=4, label=label, **face)
 
 
+def _off_scale(ax, x, v, ylim, color, dx=0.08):
+    """Mark a kappa above the drawn range ``ylim``: an arrow up at the top edge, and the value written
+    beside the error bar at two thirds of the height, clear of a legend in the top corner."""
+    bottom, top = ylim
+    ax.annotate("", xy=(x, top), xytext=(x, top - 0.08 * (top - bottom)),
+                arrowprops=dict(arrowstyle="->", color=color, lw=1.5))
+    ax.text(x + dx, bottom + 0.65 * (top - bottom), f"κ = {v:.2f}", ha="left", va="center", fontsize=TEXT - 6,
+            color=color, bbox=dict(boxstyle="round,pad=0.15", facecolor="white", edgecolor="none", alpha=0.9))
+
+
+def _undefined(ax, x):
+    ax.text(x, 1.0, "κ undefined", ha="center", va="center", fontsize=TEXT - 6, color="0.35", rotation=90,
+            bbox=dict(boxstyle="round,pad=0.2", facecolor="white", edgecolor="0.4"))
+
+
 def kappa_points_figure(points, labels, title, name, band=None, band_label=None, ylim=None, width=16,
-                        hollow_label=None):
+                        hollow_label=None, filled_label=None):
     """kappa per region: ``points`` a list of dicts (``x`` the index into ``labels``, ``series``,
     ``value``, ``minus``, ``plus``, ``hidden`` and optionally ``hollow``), the line at one, an
-    optional band 1 ± ``band``; a hidden point is written as "hidden" at one, a ``hollow`` point is
-    drawn with an open marker and labelled ``hollow_label`` in the legend."""
+    optional band 1 ± ``band``; a hidden point is written as "hidden" at one, an undefined kappa (an
+    empty region) as "κ undefined", a value above ``ylim`` under the top edge with an arrow; a
+    ``hollow`` point is drawn with an open marker and labelled ``hollow_label`` in the legend, the
+    filled points then ``filled_label`` (default: the series name)."""
     fig, ax = plt.subplots(figsize=(width, 9))
     series = list(dict.fromkeys(p["series"] for p in points))
     offsets = dict(zip(series, np.linspace(-0.22, 0.22, len(series)) if len(series) > 1 else [0.0]))
@@ -136,12 +153,16 @@ def kappa_points_figure(points, labels, title, name, band=None, band_label=None,
             ax.text(x, 1.0, "hidden", ha="center", va="center", fontsize=TEXT - 4, color="0.35", rotation=90,
                     bbox=dict(boxstyle="round,pad=0.2", **HIDDEN))
             continue
+        if not np.isfinite(p["value"]):
+            _undefined(ax, x)
+            continue
         hollow = bool(p.get("hollow"))
         key = (p["series"], hollow)
-        label = None if key in seen else (hollow_label or p["series"]) if hollow else p["series"]
+        label = None if key in seen else (hollow_label or p["series"]) if hollow else (filled_label or p["series"])
         _point(ax, x, p["value"], p["minus"], p["plus"], color, marker, label, hollow=hollow)
-        if np.isfinite(p["value"]):
-            seen.add(key)
+        seen.add(key)
+        if ylim is not None and p["value"] > ylim[1]:
+            _off_scale(ax, x, p["value"], ylim, color)
     ax.set_xticks(np.arange(len(labels)))
     ax.set_xticklabels(labels, fontsize=TICK, rotation=30 if max(len(s) for s in labels) > 6 else 0,
                        ha="right" if max(len(s) for s in labels) > 6 else "center")
@@ -186,20 +207,31 @@ def vr_points(table):
 
 def ladder_figure(rows, name="nominal_kappa_ladder"):
     """kappa against the number of displaced LJs: ``rows`` (label, n displaced, (value, minus, plus))."""
-    fig, ax = plt.subplots(figsize=(11, 8))
+    fig, ax = plt.subplots(figsize=(13, 9))
     ax.axhline(1, color="gray", lw=1.5, ls="--")
     by_n = {}
     for label, n, k in rows:
         by_n.setdefault(n, []).append((label, k))
+    top = 2.4
+    ax.set_ylim(0, top)
     for n, items in by_n.items():
-        xs = np.linspace(n - 0.12, n + 0.12, len(items)) if len(items) > 1 else [n]
+        half = min(0.4, 0.12 * (len(items) - 1))
+        xs = np.linspace(n - half, n + half, len(items)) if len(items) > 1 else [n]
         for x, (label, k) in zip(xs, items):
+            if not np.isfinite(k[0]):
+                _undefined(ax, x)
+                ax.text(x, 0.05, label, ha="center", va="bottom", fontsize=TEXT - 8, rotation=90)
+                continue
             _point(ax, x, *k, "black", "o", None)
-            ax.text(x + 0.05, k[0], label, ha="left", va="bottom", fontsize=TEXT - 4)
+            if k[0] > top:
+                _off_scale(ax, x, k[0], (0, top), "black", dx=0.03)
+                ax.text(x + 0.03, 0.05, label, ha="left", va="bottom", fontsize=TEXT - 8, rotation=90)
+                continue
+            ax.text(x + 0.03, min(k[0], top * 0.8), label, ha="left", va="bottom", fontsize=TEXT - 8, rotation=90)
     ax.set_xticks(sorted(by_n))
     ax.set_xticklabels([str(n) for n in sorted(by_n)], fontsize=TICK)
-    ax.set_xlim(-0.5, max(by_n) + 0.7)
-    ax.set_ylim(0, 2.4)
+    ax.set_xlim(-0.6, max(by_n) + 0.7)
+    ax.set_ylim(0, top)
     ax.tick_params(axis="y", labelsize=TICK)
     ax.set_xlabel("number of displaced LJs in the plane", fontsize=AXIS)
     ax.set_ylabel("κ = A·D / (B·C)", fontsize=AXIS)

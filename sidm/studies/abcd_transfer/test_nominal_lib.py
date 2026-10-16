@@ -9,7 +9,7 @@ import abcd6d_io as io
 import estimate_lib as el
 import nominal_lib as nl
 import plane_search_lib as ps
-from test_abcd6d_io import make_hist8d
+from test_abcd6d_io import event8d, make_hist8d
 from test_estimate_lib import routes_cube
 from test_plane_search_lib import CORNERS
 
@@ -300,3 +300,186 @@ def test_same_regions_names_the_rows_with_the_same_events():
     table = nl.systematic_table(cube, nl.our_vrs() + nl.DONGYUB_VRS)
     assert nl.same_regions(table, "PP") == ["V1"]
     assert nl.same_regions(table, "V5") == []
+
+
+def test_dd_bands_are_open_and_differ_from_the_search_region_only_in_the_partner_band():
+    cube = tagged_cube()
+    bands = nl.dd_band_vrs()
+    assert [v.iso1 for v in bands] == list(nl.DD_BANDS) and all(v in nl.our_vrs() for v in bands)
+    for vr in bands:
+        reg = nl.vr_regions(cube, vr, nl.NOMINAL)
+        for r in "ABCD":
+            assert reg[r][0] == expected(("D", "D", vr.iso1, (150.0, None)), r)
+        assert not nl.kappa_row(cube, vr, nl.NOMINAL)["hidden"]
+        assert nl.distance_to_sr(vr, nl.NOMINAL) == ("partner-isolation band",)
+    table = nl.systematic_table(cube, nl.our_vrs()).set_index("region")
+    assert table.loc[[v.name for v in bands], "n differences"].tolist() == [1] * len(bands)
+    assert bands[0].name == "DD, egamma iso ≥ 0.5" and bands[-1].name == "DD, egamma iso 0.5–1"
+
+
+def window_cube():
+    """Two mass windows, 150-300 GeV (at 175) and >= 300 GeV (at 350).  DD: B/C/D 40/10/20 and
+    20/12/4, A in the box.  PP: the same B/C/D with A = B C / D in each window (kappa 1 per window)."""
+    h = make_hist8d("2mu2e")
+    for d0, d1, windows in ((1, 1, ((175.0, dict(B=40, C=10, D=20)), (350.0, dict(B=20, C=12, D=4)))),
+                            (5, 0, ((175.0, dict(A=20, B=40, C=10, D=20)), (350.0, dict(A=60, B=20, C=12, D=4))))):
+        for mass, counts in windows:
+            for r, n in counts.items():
+                iso0, dphi = CORNERS[r]
+                fill(h, n, iso0, 0.1, d0, d1, dphi, mass)
+    return io.blind(io.cube_from_hist(h, "2mu2e"))
+
+
+def test_split_ratio_is_the_one_bin_kappa_when_each_window_closes():
+    cube = window_cube()
+    windows = ((150.0, 300.0), (300.0, None))
+    got = nl.split_ratio(cube, nl.NOMINAL, "DD", windows)
+    assert got["windows"] == [(40.0, 10.0, 20.0), (20.0, 12.0, 4.0)] and got["one"] == (60.0, 22.0, 24.0)
+    assert got["split"] == pytest.approx(20 + 60) and got["one_bin"] == pytest.approx(55)
+    assert got["ratio"] == pytest.approx(80 / 55)
+    pp = nl.split_ratio(cube, nl.NOMINAL, "PP", windows)
+    assert ps.kappa(ps.regions(cube, nl.NOMINAL, "PP"))[0] == pytest.approx(pp["ratio"])
+
+
+def test_bootstrap_reproduces_the_first_order_spread_for_large_counts():
+    big = nl.bootstrap_abcd([(10000.0, 10000.0, 10000.0)], n_toys=20000, seed=1)
+    lo, med, hi = nl.interval68(big["one_bin"])
+    assert med == pytest.approx(10000, rel=0.005)
+    assert (hi - lo) / 2 == pytest.approx(10000 * np.sqrt(3 / 10000), rel=0.05)
+    assert np.allclose(big["ratio"], 1.0) and big["kept"] == 1.0
+    two = nl.bootstrap_abcd([(4000.0, 2000.0, 1000.0), (8000.0, 4000.0, 2000.0)], n_toys=5000, seed=2)
+    assert nl.interval68(two["ratio"])[1] == pytest.approx(1.0, abs=0.002)
+    # B/D and C/D differ between the windows: one bin gives 3000 x 5000 / 2000, the windows 2000 + 4000
+    mixed = nl.bootstrap_abcd([(2000.0, 1000.0, 1000.0), (1000.0, 4000.0, 1000.0)], n_toys=5000, seed=4)
+    assert nl.interval68(mixed["one_bin"])[1] == pytest.approx(7500, rel=0.01)
+    assert nl.interval68(mixed["split"])[1] == pytest.approx(6000, rel=0.01)
+    assert nl.interval68(mixed["ratio"])[1] == pytest.approx(0.8, abs=0.005)
+    small = nl.bootstrap_abcd([(26.0, 6.0, 3.0)], n_toys=40000, seed=3)
+    assert small["kept"] == pytest.approx(1 - np.exp(-3.0), abs=0.005)
+    again = nl.bootstrap_abcd([(26.0, 6.0, 3.0)], n_toys=40000, seed=3)
+    assert np.array_equal(small["one_bin"], again["one_bin"])
+    with pytest.raises(ValueError):
+        nl.bootstrap_abcd([(np.nan, 6.0, 3.0)])
+
+
+BLOCK_ISO = (0.1, 0.27, 0.6)            # < 0.25, 0.25-0.3, >= 0.3
+BLOCK_DPHI = (1.0, 2.5, 3.0)            # < 2.4, 2.4-2.6, >= 2.6
+BLOCKS = np.array([[30, 12, 50], [8, 3, 9], [60, 20, 80]], float)   # [iso block][dphi block]
+
+
+def block_cube():
+    h = make_hist8d("2mu2e")
+    for i, iso0 in enumerate(BLOCK_ISO):
+        for j, dphi in enumerate(BLOCK_DPHI):
+            fill(h, int(BLOCKS[i, j]), iso0, 0.1, 5, 0, dphi, 400.0)
+    return io.blind(io.cube_from_hist(h, "2mu2e"))
+
+
+def _kappas(n):
+    ours = (n[0, 1] + n[0, 2]) * (n[1, 0] + n[2, 0]) / ((n[1:, 1:].sum()) * n[0, 0])
+    his = (n[0, 2] + n[1, 2]) * (n[2, 0] + n[2, 1]) / (n[2, 2] * n[:2, :2].sum())
+    return his, ours
+
+
+def test_wp_shift_error_is_the_first_order_propagation_over_the_shared_blocks():
+    cube = block_cube()
+    pp = nl.VR("PP", "", "P", "P")
+    got = nl.wp_shift(cube, pp, nl.HIS_WP, nl.NOMINAL)
+    his, ours = _kappas(BLOCKS)
+    assert got["a"] == pytest.approx(his) and got["b"] == pytest.approx(ours)
+    assert got["a"] == pytest.approx(nl.kappa_row(cube, pp, nl.HIS_WP)["kappa"])
+    assert got["b"] == pytest.approx(nl.kappa_row(cube, pp, nl.NOMINAL)["kappa"])
+    var = 0.0                                       # numerical derivative of the shift, block by block
+    for i in range(3):
+        for j in range(3):
+            step = np.zeros((3, 3))
+            step[i, j] = 1e-4
+            d = (np.subtract(*_kappas(BLOCKS + step)[::-1]) - np.subtract(*_kappas(BLOCKS - step)[::-1])) / 2e-4
+            var += BLOCKS[i, j] * d**2
+    assert got["shift"] == pytest.approx(ours - his) and got["err"] == pytest.approx(np.sqrt(var), rel=1e-5)
+    same = nl.wp_shift(cube, pp, nl.NOMINAL, nl.NOMINAL)
+    assert same["shift"] == 0 and same["err"] == 0
+    table = nl.wp_shift_table(cube, [pp])
+    assert table.loc[0, "shift / error"] == pytest.approx(got["z"])
+
+
+def test_signal_contamination_takes_the_largest_ratio_over_the_points():
+    data = rule_cube()
+    vrs = [nl.VR("PP", "", "P", "P"), nl.VR("DP", "", "D", "P")]
+    counts = {"p1": {"PP": dict(A=40.0, B=0, C=0, D=0), "DP": dict(A=1.0, B=0, C=0, D=0),
+                     "search region": dict(A=9.0, B=2.0, C=0.5, D=0.0)},
+              nl.REFERENCE_POINT: {"PP": dict(A=4.0, B=0, C=0, D=0), "DP": dict(A=2.0, B=0, C=0, D=0),
+                                   "search region": dict(A=30.0, B=1.0, C=1.0, D=1.0)}}
+    t = nl.signal_contamination_table(counts, data, vrs, nl.NOMINAL).set_index(["region", "ABCD region"])
+    assert list(t.index) == [("PP", "A"), ("DP", "A"), ("search region", "B"), ("search region", "C"),
+                             ("search region", "D")]                     # A of the search region is not read
+    assert t.loc[("PP", "A"), "observed"] == 400 and t.loc[("PP", "A"), "point"] == "p1"
+    assert t.loc[("PP", "A"), "largest signal / observed"] == pytest.approx(0.1)
+    assert t.loc[("DP", "A"), "point"] == nl.REFERENCE_POINT and t.loc[("DP", "A"), "largest signal / observed"] == 0.5
+    assert t.loc[("search region", "B"), "reference signal / observed"] == pytest.approx(1 / 20)
+    assert t.loc[("search region", "B"), "largest signal / observed"] == pytest.approx(2 / 20)
+    assert t.loc[("PP", "A"), "its search-region yield"] == 9.0
+    assert len(nl.contamination_view(t.reset_index())) == 5
+
+
+def test_fourmu_readings_use_the_same_window_where_its_a_is_open():
+    h = make_hist8d("4mu")
+    for d0, d1, mass, counts in ((5, 5, 400.0, dict(A=30, B=40)), (5, 5, 100.0, dict(A=10, B=40)),
+                                 (1, 5, 100.0, dict(A=20, B=40)), (5, 1, 100.0, dict(A=5, B=40)),
+                                 (1, 5, 400.0, dict(B=20)), (5, 1, 400.0, dict(B=10)),
+                                 (1, 1, 400.0, dict(B=4)), (1, 1, 100.0, dict(A=2))):
+        for r, n in counts.items():
+            iso0, dphi = CORNERS[r]
+            for _ in range(n):
+                event8d(h, iso0, 0.1, d0, d1, dphi=dphi, mass=mass)
+    cube = io.blind(io.cube_from_hist(h, "4mu"))
+    got = dict(nl.fourmu_readings(cube, nl.NOMINAL, nl.LOW))
+    assert len(got) == 6
+    assert got["B of DD × A/B of PP, same window"][0] == pytest.approx(4 * 30 / 40)
+    assert got["B of DD × A/B of DP below the window"][0] == pytest.approx(4 * 20 / 40)
+    assert got["B of DD × A/B of PD below the window"][0] == pytest.approx(4 * 5 / 40)
+    assert got["A of DD below × A of PP between the windows"][0] == pytest.approx(2 * 30 / 10)
+    assert got["A of DD below × B of DP between the windows"][0] == pytest.approx(2 * 20 / 40)
+
+
+def test_expected_limit_is_the_limit_at_the_poisson_median():
+    assert nl.expected_counting_limit(0.5) == (pytest.approx(-np.log(0.05)), 0)     # n = 0: 3.0 for any b
+    lim, n = nl.expected_counting_limit(3.7)
+    assert n == 4 and lim == pytest.approx(el.counting_limit(4, 3.7))
+    lim, n = nl.expected_counting_limit(1.665)
+    assert n == 1 and lim == pytest.approx(el.counting_limit(1, 1.665))
+
+
+def test_overlap_and_nesting_of_the_qualifying_regions():
+    v = {r.name: r for r in nl.our_vrs() + nl.DONGYUB_VRS}
+    assert nl.vr_contains(v["V6"], v["V7"]) and nl.vr_contains(v["V6"], v["V5"]) and not nl.vr_contains(v["V7"], v["V6"])
+    assert nl.vr_contains(v["V4"], v["V2"]) and nl.vr_contains(v["V4"], v["V3"])
+    assert nl.vr_overlap(v["V6"], v["PP"]) and nl.vr_overlap(v["V6"], v["PD"]) and not nl.vr_overlap(v["PP"], v["PD"])
+    assert not nl.vr_overlap(v["PD:g"], v["PD:e"]) and nl.vr_overlap(v["PD:g"], v["PD"])
+    names = ["PP", "PD", "V1", "V2", "V3", "V4", "V5", "V6", "V7"] + [b.name for b in nl.dd_band_vrs()]
+    nest = nl.nesting([v[n] for n in names])
+    for pair in (("V7", "V6"), ("V5", "V6"), ("V2", "V4"), ("V3", "V4"),
+                 ("DD, egamma iso ≥ 1", "DD, egamma iso ≥ 0.5"), ("DD, egamma iso 0.5–1", "DD, egamma iso ≥ 0.5")):
+        assert pair in nest
+    assert ("DD, egamma iso ≥ 1", "DD, egamma iso ≥ 0.75") not in nest      # only the largest container
+    assert not any("V1" in pair or "PP" == pair[0] for pair in nest)        # V1 and PP are one definition
+    disjoint = nl.max_disjoint([v[n] for n in names])
+    assert len(disjoint) == 5 and {"PP", "PD", "DD, egamma iso ≥ 1", "DD, egamma iso 0.5–1"} <= set(disjoint)
+    assert all(not nl.vr_overlap(v[a], v[b]) for a in disjoint for b in disjoint if a != b)
+    assert len(nl.max_disjoint([v[n] for n in names[:9]])) == 3
+
+
+def test_largest_deviation_is_over_the_qualifying_rows():
+    table = nl.systematic_table(rule_cube(), nl.our_vrs())
+    dev, name = nl.largest_deviation(table)
+    assert name == "PD" and dev == pytest.approx(0.2)
+
+
+def test_fourmu_b_scan_spans_the_smallest_error_about_the_median():
+    readings = [("a", (1.2, 0.636, 0.636)), ("b", (2.0, 1.2, 1.2)), ("c", (3.0, 2.4, 2.4)),
+                ("d", (np.nan, np.nan, np.nan))]
+    scan = nl.fourmu_b_scan(readings)
+    assert scan["central"] == (1.2, 2.0, 3.0)
+    assert scan["error"] == pytest.approx(0.5)            # 0.53 rounded to 0.1
+    assert scan["factor"] == pytest.approx(2.0)
+    assert scan["b"] == pytest.approx([1.0, 1.2, 2.0, 3.0, 4.0])

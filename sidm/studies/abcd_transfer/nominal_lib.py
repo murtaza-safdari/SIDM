@@ -22,6 +22,7 @@ import dataclasses
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 import abcd6d_io as io
 import estimate_lib as el
@@ -95,12 +96,25 @@ DONGYUB_VRS = (
 )
 
 
+# Egamma-LJ isolation bands of the search plane above 150 GeV whose A is open: the hidden box ends
+# at egamma-LJ isolation 0.5.
+DD_BANDS = ((0.5, None), (0.75, None), (1.0, None), (0.5, 1.0))
+
+
+def dd_band_vrs():
+    """The search plane (both LJs displaced) at M >= 150 GeV with the egamma LJ in a non-isolated
+    band of :data:`DD_BANDS`: the only open regions with both LJs displaced in the search mass
+    window; each differs from the search region only in the egamma LJ's isolation."""
+    return tuple(VR(f"DD, egamma iso {_range(b)}", "this analysis", "D", "D", iso1=b) for b in DD_BANDS)
+
+
 def our_vrs():
-    """The open planes of this analysis as validation regions: PP, PD (and its photon-only and
-    electron parts), DP at M >= 150 GeV and the search plane below 150 GeV."""
+    """The open regions of this analysis as validation regions: PP, PD (and its photon-only and
+    electron parts), DP at M >= 150 GeV, the search plane below 150 GeV and the search plane above
+    150 GeV in the egamma-isolation bands of :func:`dd_band_vrs`."""
     return (VR("PP", "this analysis", "P", "P"), VR("PD", "this analysis", "P", "D"),
             VR("PD:g", "this analysis", "P", "D", split="g"), VR("PD:e", "this analysis", "P", "D", split="e"),
-            VR("DP", "this analysis", "D", "P"), VR("DD < 150", "this analysis", "D", "D", mass=BELOW))
+            VR("DP", "this analysis", "D", "P"), VR("DD < 150", "this analysis", "D", "D", mass=BELOW)) + dd_band_vrs()
 
 
 # ----------------------------------------------------------------------------- regions
@@ -311,6 +325,75 @@ def same_regions(table, ref):
     return [n for n in by.index if n != ref and np.array_equal(by.loc[n, list("ABCD")].to_numpy(float), want)]
 
 
+
+def _states(state):
+    return {"P", "D"} if state == "any" else {state}
+
+
+def _band_contains(outer, inner):
+    (lo_o, hi_o), (lo_i, hi_i) = outer, inner
+    lo_ok = lo_o is None or (lo_i is not None and lo_i >= lo_o)
+    hi_ok = hi_o is None or (hi_i is not None and hi_i <= hi_o)
+    return lo_ok and hi_ok
+
+
+def _band_overlap(a, b):
+    lo = max((x for x in (a[0], b[0]) if x is not None), default=None)
+    hi = min((x for x in (a[1], b[1]) if x is not None), default=None)
+    return lo is None or hi is None or lo < hi
+
+
+def vr_contains(outer, inner):
+    """True if every event of the region ``inner`` is in ``outer`` (same working point): each
+    displacement state, the egamma-isolation band and the mass window of ``outer`` contain those of
+    ``inner``, and ``outer`` has no split that ``inner`` lacks."""
+    if outer.split is not None and outer.split != inner.split:
+        return False
+    return (_states(inner.mu) <= _states(outer.mu) and _states(inner.egm) <= _states(outer.egm)
+            and _band_contains(outer.iso1, inner.iso1) and _band_contains(outer.mass, inner.mass))
+
+
+def vr_overlap(a, b):
+    """True if the regions ``a`` and ``b`` can share events: their displacement states, egamma
+    isolation bands and mass windows all intersect (splits of one plane are treated as overlapping
+    unless they are different splits of it)."""
+    if a.split is not None and b.split is not None and a.split != b.split:
+        return False
+    return (bool(_states(a.mu) & _states(b.mu)) and bool(_states(a.egm) & _states(b.egm))
+            and _band_overlap(a.iso1, b.iso1) and _band_overlap(a.mass, b.mass))
+
+
+def nesting(vrs):
+    """``[(inner, outer)]`` names of the regions of ``vrs`` that lie inside another one of them, each
+    with its largest container (one that no other region of ``vrs`` contains); regions with the same
+    definition are not listed (:func:`same_regions` finds regions with the same events)."""
+    out = []
+    for inner in vrs:
+        containers = [o for o in vrs if o is not inner and vr_contains(o, inner) and not vr_contains(inner, o)]
+        tops = [o for o in containers if not any(c is not o and vr_contains(c, o) and not vr_contains(o, c)
+                                                 for c in containers)]
+        out.extend((inner.name, o.name) for o in tops)
+    return out
+
+
+def max_disjoint(vrs):
+    """A largest set of regions of ``vrs`` that pairwise share no events (by definition, through
+    :func:`vr_overlap`), as a list of names in the order of ``vrs``."""
+    vrs = list(vrs)
+    n = len(vrs)
+    if n > 20:
+        raise ValueError("max_disjoint enumerates subsets: at most 20 regions")
+    clash = [[i != j and vr_overlap(vrs[i], vrs[j]) for j in range(n)] for i in range(n)]
+    best = []
+    for mask in range(1 << n):
+        members = [i for i in range(n) if mask >> i & 1]
+        if len(members) <= len(best):
+            continue
+        if all(not clash[i][j] for k, i in enumerate(members) for j in members[k + 1:]):
+            best = members
+    return [vrs[i].name for i in best]
+
+
 # ----------------------------------------------------------------------------- the systematic
 
 def distance_to_sr(vr, cfg, sr=SR, nominal=NOMINAL):
@@ -378,6 +461,16 @@ def closure_systematic(table, column="candidate", qualifying=True):
     best = rows.loc[rows[column].idxmax()]
     return float(best[column]), best["region"]
 
+
+
+def largest_deviation(table):
+    """(|kappa - 1|, region) of the qualifying row of a :func:`systematic_table` farthest from one;
+    (NaN, None) when no row qualifies."""
+    rows = table[table["qualifies"] & np.isfinite(table["|kappa-1|"])]
+    if rows.empty:
+        return np.nan, None
+    best = rows.loc[rows["|kappa-1|"].idxmax()]
+    return float(best["|kappa-1|"]), best["region"]
 
 def systematic_view(table):
     rows = []
@@ -484,11 +577,135 @@ def kappa_drop(rows):
     return mean, err, mean / err
 
 
+
+def split_ratio(cube, cfg, plane, windows):
+    """The direct estimate summed over mass windows against the one-bin estimate: ``{"one": (B, C,
+    D) of ``plane`` in the window of ``cfg``, "windows": [(B, C, D)] per window of ``windows``
+    ((low, high) pairs that partition it), "split": sum over windows of B C / D, "one_bin": B C / D,
+    "ratio": split / one_bin}``.  The one-bin kappa equals sum_w A_w / (B C / D), so if kappa = 1
+    in every window the one-bin estimate is low by exactly ``ratio``."""
+    def bcd(c):
+        reg = ps.regions(cube, c, plane)
+        return tuple(float(reg[r][0]) for r in "BCD")
+    one = bcd(cfg)
+    per = [bcd(dataclasses.replace(cfg, mass=w)) for w in windows]
+    split = float(sum(b * c / d for b, c, d in per))
+    one_bin = one[0] * one[1] / one[2]
+    return {"one": one, "windows": per, "split": split, "one_bin": one_bin, "ratio": split / one_bin}
+
+
+BOOTSTRAP_TOYS = 40000
+BOOTSTRAP_SEED = 20261016
+
+
+def bootstrap_abcd(windows, n_toys=BOOTSTRAP_TOYS, seed=BOOTSTRAP_SEED):
+    """Poisson parametric bootstrap of the direct estimate from the observed B, C, D of each window
+    (``[(B, C, D)]``): each count is drawn from a Poisson distribution with the observed count as its
+    mean, independently, and the toys with D = 0 in any window are dropped.  Returns ``{"one_bin":
+    (sum B)(sum C)/(sum D), "split": sum over windows of B C / D, "ratio": split / one_bin, "kept":
+    the fraction of toys kept}`` as arrays over the kept toys."""
+    rng = np.random.default_rng(seed)
+    obs = np.asarray(windows, float)
+    if np.isnan(obs).any():
+        raise ValueError("bootstrap_abcd takes open counts only")
+    toys = rng.poisson(obs, size=(n_toys,) + obs.shape).astype(float)
+    b, c, d = toys[..., 0], toys[..., 1], toys[..., 2]
+    keep = (d > 0).all(axis=1)
+    b, c, d = b[keep], c[keep], d[keep]
+    one_bin = b.sum(axis=1) * c.sum(axis=1) / d.sum(axis=1)
+    split = (b * c / d).sum(axis=1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ratio = split / one_bin
+    return {"one_bin": one_bin, "split": split, "ratio": ratio, "kept": float(keep.mean())}
+
+
+def interval68(x):
+    """(16th, 50th, 84th) percentiles of the finite values of ``x``."""
+    x = np.asarray(x, float)
+    x = x[np.isfinite(x)]
+    lo, med, hi = np.percentile(x, [15.87, 50.0, 84.13])
+    return float(lo), float(med), float(hi)
+
 def projected_precision(pred, pred_err):
     """Relative precision of kappa if A held ``pred`` events: Poisson on A with the prediction's own
     relative error in quadrature."""
     return float(np.hypot(1 / np.sqrt(pred), pred_err / pred)) if pred > 0 else np.nan
 
+
+# ----------------------------------------------------------------------------- the working point
+
+def _intervals(edges):
+    edges = sorted(set(edges))
+    return list(zip([None] + edges, edges + [None]))
+
+
+def _region_of(cfg, iso, dphi):
+    """The region (A, B, C, D or None in a buffer) of the block with isolation interval ``iso`` and
+    |dphi| interval ``dphi`` under the working point of ``cfg``."""
+    lo_i, hi_i = iso
+    lo_d, hi_d = dphi
+    passes_iso = hi_i is not None and hi_i <= cfg.wp0
+    fails_iso = lo_i is not None and lo_i >= cfg.fail0
+    passes_dphi = lo_d is not None and lo_d >= cfg.dphi_pass
+    fails_dphi = hi_d is not None and hi_d <= cfg.dphi_fail
+    if passes_iso and passes_dphi:
+        return "A"
+    if fails_iso and passes_dphi:
+        return "B"
+    if passes_iso and fails_dphi:
+        return "C"
+    if fails_iso and fails_dphi:
+        return "D"
+    return None
+
+
+def wp_shift(cube, vr, cfg_a, cfg_b):
+    """kappa of the region ``vr`` at two working points and the error of their difference with the
+    shared events taken into account.  The isolation and |dphi| edges of both working points cut
+    the plane (within the region's other selections) into disjoint blocks; each block's count is
+    independent, enters each kappa through the region that holds it, and the variance of
+    kappa_b - kappa_a is sum over blocks of var(n) (d kappa_b/dn - d kappa_a/dn)^2 in first order,
+    with d kappa/dn = kappa (+1/A, -1/B, -1/C, +1/D) for a block in A, B, C, D.  Returns ``{"a",
+    "b": kappa at each, "shift": b - a, "err", "z": shift / err, "blocks": {(iso, dphi): (sumw,
+    sumw2)}}``; NaN values when a block is hidden or a region is empty."""
+    iso_edges = _intervals([cfg_a.wp0, cfg_a.fail0, cfg_b.wp0, cfg_b.fail0])
+    dphi_edges = _intervals([cfg_a.dphi_pass, cfg_a.dphi_fail, cfg_b.dphi_pass, cfg_b.dphi_fail])
+    disp = vr_selection(cube.topology, vr.mu, vr.egm, vr.split)
+    extra = dict(cfg_a.extra)
+    if dict(cfg_b.extra) != extra:
+        raise ValueError("the two working points must share their extra cuts")
+    blocks = {(i, d): ps.project(cube, iso0=i, abs_dphi=d, iso1=vr.iso1, ljlj_mass=vr.mass, **extra, **disp)
+              for i in iso_edges for d in dphi_edges}
+    nan = {"a": np.nan, "b": np.nan, "shift": np.nan, "err": np.nan, "z": np.nan, "blocks": blocks}
+    if any(np.isnan(v[0]) for v in blocks.values()):
+        return nan
+    grads, kappas = [], []
+    for cfg in (cfg_a, cfg_b):
+        where = {key: _region_of(cfg, *key) for key in blocks}
+        tot = {r: sum(blocks[k][0] for k, w in where.items() if w == r) for r in "ABCD"}
+        if min(tot.values()) <= 0:
+            return nan
+        k = tot["A"] * tot["D"] / (tot["B"] * tot["C"])
+        sign = {"A": 1.0, "B": -1.0, "C": -1.0, "D": 1.0}
+        grads.append({key: (k * sign[w] / tot[w] if w else 0.0) for key, w in where.items()})
+        kappas.append(k)
+    var = sum(blocks[key][1] * (grads[1][key] - grads[0][key]) ** 2 for key in blocks)
+    err = float(np.sqrt(var))
+    shift = kappas[1] - kappas[0]
+    return {"a": kappas[0], "b": kappas[1], "shift": shift, "err": err, "z": shift / err if err > 0 else np.nan,
+            "blocks": blocks}
+
+
+def wp_shift_table(cube, vrs, cfg_a=HIS_WP, cfg_b=NOMINAL):
+    """:func:`wp_shift` per region, from the working point ``cfg_a`` (default Dongyub Lee's) to
+    ``cfg_b`` (ours): kappa at each, the shift, its error with the shared events and the shift in
+    standard deviations."""
+    rows = []
+    for vr in vrs:
+        w = wp_shift(cube, vr, cfg_a, cfg_b)
+        rows.append({"region": vr.name, "kappa at his WP": w["a"], "kappa at our WP": w["b"], "shift": w["shift"],
+                     "error of the shift": w["err"], "shift / error": w["z"]})
+    return pd.DataFrame(rows)
 
 # ----------------------------------------------------------------------------- signal
 
@@ -549,6 +766,105 @@ def below_share(shares):
     return (shares["below"] / tot).where(tot > 0)
 
 
+
+REFERENCE_POINT = "2Mu2E_800GeV_0p25GeV_0p25mm"
+
+
+def signal_region_counts(base, names, vrs, cfg, topology="2mu2e", prefix="abcd8d"):
+    """``{point: {region name: {"A"/"B"/"C"/"D": sumw}}}``: each signal point's yield at the stored
+    cross section in the four regions of every validation region of ``vrs`` (and whatever else is
+    in ``vrs``, such as the search region) at the working point of ``cfg``.  Signal cubes are never
+    hidden; the samples are loaded one at a time and only these sums are kept."""
+    out = {}
+    for name in names:
+        cube = tl.sample_cubes(base, "signal", [name], topologies=(topology,), prefix=prefix)[name][topology]
+        out[name] = {vr.name: {r: float(v[0]) for r, v in vr_regions(cube, vr, cfg).items()} for vr in vrs}
+        del cube
+    return out
+
+
+def signal_contamination_table(counts, data_cube, vrs, cfg, sr=SR, reference=REFERENCE_POINT):
+    """Signal in the regions the estimate and its validation read, against the data there: for A of
+    every region of ``vrs`` and for B, C and D of the search region ``sr``, the observed count, the
+    largest ratio of a signal point's yield to that count over the points of ``counts``
+    (:func:`signal_region_counts`), the point that gives it with its yield in A of ``sr`` (when
+    ``counts`` holds ``sr``), and the ratio and yield of the ``reference`` point.  All at the stored cross sections: the ratios scale linearly with the
+    signal cross section.  A region whose observed count is hidden is skipped (the search region's
+    A is not read)."""
+    cells = [(vr, "A") for vr in vrs] + [(sr, r) for r in "BCD"]
+    rows = []
+    for vr, region in cells:
+        observed = vr_regions(data_cube, vr, cfg)[region][0]
+        if np.isnan(observed):
+            continue
+        sig = {p: c[vr.name][region] for p, c in counts.items()}
+        ratios = {p: (v / observed if observed > 0 else np.nan) for p, v in sig.items()}
+        worst = max(ratios, key=lambda p: ratios[p] if np.isfinite(ratios[p]) else -np.inf)
+        ref = sig.get(reference, np.nan)
+        rows.append({"region": vr.name, "ABCD region": region, "observed": observed,
+                     "largest signal / observed": ratios[worst], "point": worst, "signal of that point": sig[worst],
+                     "its search-region yield": counts[worst].get(sr.name, {}).get("A", np.nan),
+                     "reference signal": ref, "reference signal / observed": ref / observed if observed > 0 else np.nan})
+    return pd.DataFrame(rows)
+
+
+def contamination_view(table):
+    rows = []
+    for _, r in table.iterrows():
+        rows.append({"region": f"{r['ABCD region']} of {r['region']}", "observed": f"{r['observed']:.0f}",
+                     "largest signal / observed": pct(r["largest signal / observed"], 1),
+                     "at the point": r["point"], "its signal [events]": f"{r['signal of that point']:.2f}",
+                     "its search-region yield [events]": f"{r['its search-region yield']:.2f}",
+                     f"{REFERENCE_POINT} [events]": f"{r['reference signal']:.2f}",
+                     "reference / observed": pct(r["reference signal / observed"], 1)})
+    return pd.DataFrame(rows)
+
+
+# ----------------------------------------------------------------------------- 4mu
+
+def fourmu_readings(cube, cfg, low):
+    """The six count-limited readings of A of the 4mu search plane in the window of ``cfg``, each a
+    ``(label, (value, minus, plus))``: B of DD in the window times A/B of a plane whose A is open in
+    the same window (PP) or, where it is hidden (DP and PD), below it (``low``); and A of DD in
+    ``low`` times the ratio between the windows of an open region of a neighbouring plane."""
+    hi = ps.regions(cube, cfg, "DD")
+    lo = ps.regions(cube, low, "DD")
+    out = []
+    for plane in ("PP", "DP", "PD"):
+        same = ps.regions(cube, cfg, plane)
+        if np.isfinite(same["A"][0]):
+            out.append((f"B of DD × A/B of {plane}, same window", tl._pred(hi["B"], tl.ratio(same["A"], same["B"]))))
+        else:
+            r = ps.regions(cube, low, plane)
+            out.append((f"B of DD × A/B of {plane} below the window", tl._pred(hi["B"], tl.ratio(r["A"], r["B"]))))
+    for plane, region in (("PP", "A"), ("DP", "B"), ("PD", "B")):
+        ratio = tl.ratio(ps.regions(cube, cfg, plane)[region], ps.regions(cube, low, plane)[region])
+        out.append((f"A of DD below × {region} of {plane} between the windows", tl._pred(lo["A"], ratio)))
+    return out
+
+
+def expected_counting_limit(b, cl=0.95):
+    """The expected 95% CL upper limit on a signal count for a known background ``b``:
+    ``estimate_lib.counting_limit`` at the median of a Poisson distribution of mean ``b``, as
+    (limit, that median)."""
+    n = int(stats.poisson.ppf(0.5, b))
+    return el.counting_limit(n, b, cl), n
+
+
+def fourmu_b_scan(readings):
+    """The backgrounds at which the 4mu expected limit is read, from the ``(label, (value, minus,
+    plus))`` readings of :func:`fourmu_readings`: ``{"central": (lowest, median, highest) of the
+    central values, "error": the smallest relative error of the readings rounded to 0.1, "factor":
+    1 / (1 - error), the lower edge of that error as a factor, "b": median / factor, lowest, median,
+    highest and median x factor, in increasing order}``."""
+    ks = [k for _, k in readings if np.isfinite(k[0])]
+    central = [k[0] for k in ks]
+    med = float(np.median(central))
+    err = round(min(el.precision(k) for k in ks), 1)
+    factor = 1 / (1 - err) if err < 1 else np.inf
+    return {"central": (min(central), med, max(central)), "error": err, "factor": factor,
+            "b": sorted((med / factor, min(central), med, max(central), med * factor))}
+
 # ----------------------------------------------------------------------------- formatting
 
 def fmt(x, digits=2):
@@ -563,3 +879,8 @@ def fmt(x, digits=2):
 
 def pct(x, digits=0):
     return f"{100 * x:.{digits}f}%"
+
+
+def fmt_asym(k, digits=2):
+    """A (value, minus, plus) triple with both sides printed, even when they are nearly equal."""
+    return f"{k[0]:.{digits}f} −{k[1]:.{digits}f} +{k[2]:.{digits}f}"
