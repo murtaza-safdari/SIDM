@@ -54,13 +54,14 @@ def _mass_axis(ax, label=True):
 # ----------------------------------------------------------------------------- cartoons
 
 
-def planes_cartoon(cube, cfg, topology="2mu2e"):
+def planes_cartoon(cube, cfg, topology="2mu2e", routes=True):
     """The four displacement planes as a 2 x 2 grid (rows: muon LJ prompt, displaced; columns: the
     other LJ prompt, displaced), each a square split into A (isolated muon LJ, back-to-back; top
     left), B (top right), C (bottom left) and D (bottom right), with the data counts of ``cfg`` in
     each cell; a hidden cell is hatched and reads "hidden".  The solid arrow is the estimate (A/B of
     PD per DSA class applied to B of DD), the dashed one the same step from PP to DP; where the A
-    an arrow starts or ends in is hidden, the label says so."""
+    an arrow starts or ends in is hidden, the label says so.  ``routes=False`` draws the planes
+    without the two arrows (for an estimate that borrows nothing) and saves under its own name."""
     fig, ax = plt.subplots(figsize=(18, 14))
     ax.set_axis_off()
     ax.set_aspect("equal")
@@ -96,6 +97,17 @@ def planes_cartoon(cube, cfg, topology="2mu2e"):
         ax.annotate("", xy=(x0 + 0.95, -0.12), xytext=(x0 + 0.05, -0.12), arrowprops=dict(arrowstyle="-|>", lw=2))
         ax.text(x0 + size / 2, -0.3, f"muon-LJ isolation (boundary {cfg.wp0:g})", ha="center", va="center",
                 fontsize=TEXT - 3)
+    if routes:
+        _route_arrows(ax, hidden_a)
+    window = f"M >= {cfg.mass[0]:g} GeV" if cfg.mass[1] is None else f"M {cfg.mass[0]:g}-{cfg.mass[1]:g} GeV"
+    ax.text(-1.05, 3.12, f"{topology}: the four displacement planes, data, {window}", ha="left", va="top",
+            fontsize=TEXT + 2)
+    tp.save(fig, f"binning_planes_cartoon_{topology}" if routes else f"planes_cartoon_{topology}")
+    return fig
+
+
+def _route_arrows(ax, hidden_a):
+    """The two borrowing arrows of :func:`planes_cartoon`."""
     ax.add_patch(patches.FancyArrowPatch((2.93, 2.3), (2.93, 0.75), connectionstyle="arc3,rad=-0.45",
                                          arrowstyle="-|>", mutation_scale=35, lw=3.5, color=tp.COLORS["DD"],
                                          ls="--" if hidden_a["PD"] else "-"))
@@ -105,11 +117,6 @@ def planes_cartoon(cube, cfg, topology="2mu2e"):
                                          arrowstyle="-|>", mutation_scale=30, lw=2.5, ls="--", color=tp.COLORS["DP"]))
     step = "the same step\n(A of DP hidden)" if hidden_a["DP"] else "the same step,\ntested where\nA is open"
     ax.text(1.2, 1.275, step, ha="left", va="center", fontsize=TEXT - 2, color=tp.COLORS["DP"])
-    window = f"M >= {cfg.mass[0]:g} GeV" if cfg.mass[1] is None else f"M {cfg.mass[0]:g}-{cfg.mass[1]:g} GeV"
-    ax.text(-1.05, 3.12, f"{topology}: the four displacement planes, data, {window}", ha="left", va="top",
-            fontsize=TEXT + 2)
-    tp.save(fig, f"binning_planes_cartoon_{topology}")
-    return fig
 
 
 def route_cartoon():
