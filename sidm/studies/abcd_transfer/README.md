@@ -1,7 +1,7 @@
 # Prompt-to-displaced transfer of the ABCD factors
 
 **Start here: `nominal.ipynb`** (2026-10-16). It presents the 2μ2e background estimate as the search
-plane's own ABCD, A = B·C/D = 46 ± 15 (stat.) ± 9 (syst.) events, validates it in every open region
+plane's own ABCD, A = B·C/D = 46 ± 15 (stat.) events with a systematic of 20% by its stated rule, or −20%/+31% as it recommends (the group's choice), validates it in every open region
 of the data and in the seven validation regions of Dongyub Lee's programme recomputed from the same
 histograms, and derives the 20% systematic from those regions by a rule stated in the notebook. It is
 written for readers new to the analysis. The notebooks below are the longer record and are kept as
