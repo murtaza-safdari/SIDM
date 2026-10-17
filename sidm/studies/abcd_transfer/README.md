@@ -8,6 +8,18 @@ written for readers new to the analysis. The notebooks below are the longer reco
 they were run; where their conclusions make the borrowed-factor estimate (61 ± 8) the headline,
 `nominal.ipynb` supersedes them and makes it the cross-check.
 
+`mass_decorrelation.ipynb` (2026-10-16) asks whether the pair mass confounds that estimate. When the
+isolation pass probability a(M) = C/(C+D) and the |Δφ| pass probability b(M) = B/(B+D) both change
+with the mass, B·C/D summed over the mass differs from the sum of B·C/D per mass bin by a mixing
+factor, 1 when either probability is flat. The factor is 1.04 in PP and 1.01 in PD, but 2.06 in DD over
+five bins and 1.62 over the two windows split at 300 GeV, driven by the 300–400 GeV bin, where D of DD
+holds one event. The notebook removes the confounding three ways: stratifying in the two windows
+(74 events, 46–134, with a 33% closure systematic), a logistic fit of a(M) in ln M (72 with DD's own
+slope, 46 with PD's), and an isolation cut whose edge moves with the mass, chosen to flatten a(M) (41 when
+calibrated on PD, 38 when calibrated on DD, at a signal cost of up to 9%). It proposes the
+stratified estimate in two windows as the simplest analysis that carries its systematics, and names
+the measurement that decides between the routes: D of DD above 300 GeV, three events.
+
 Can the factors of the ABCD background estimate (pass/fail ratios of one axis of the plane at a
 fixed state of the other) be measured with prompt lepton jets and used with displaced ones?
 `transfer_factors.ipynb` answers that in 2018 data for the analysis plane (|Δφ| between the
@@ -168,6 +180,10 @@ signal-contamination checks.
 | `nominal_plots.py` | the ABCD cartoon, the isolation × \|Δφ\| plane with the regions and the hidden box, κ per region (open planes, the seven validation regions at three settings, the displacement ladder, the mass windows, the systematic candidates with the band), the photon-only share per region, the signal share per mass bin |
 | `_build_nominal.py` | writes `nominal.ipynb`; every number in its text is computed by the builder from the same functions the code cells call |
 | `test_nominal_lib.py` | the seven region definitions and the hidden-cell flag on synthetic histograms, the systematic rule, the share tables, the signal shares (`pytest`) |
+| `decorrelation_lib.py` | the mass confounding of `mass_decorrelation.ipynb`: a(M) and b(M) per plane with Clopper–Pearson intervals, the mixing factor with its bootstrap and sensitivity, the shape test of a(M) between planes, the stratified estimate with its per-bin systematic, the logistic fit of a(M) in ln M (own slope or another plane's) and its estimate, the mass-flattened isolation cut (edge choice, flatness, estimate, signal cost), the comparison table |
+| `decorrelation_plots.py` | a(M) and b(M) per plane, the B, C, D mass spectra, the logistic fits with their toy bands, the flattened cut's edges and a(M) before and after |
+| `_build_mass_decorrelation.py` | writes `mass_decorrelation.ipynb`; every number in its text is computed by the builder from the same functions the code cells call |
+| `test_decorrelation_lib.py` | the mixing identity and its covariance form, the factor is 1 for a flat a(M), empty-bin merging, the logistic fit and its toys recover known parameters, the edge choice flattens a known a(M), the flattened cut keeps the sidebands outside the hidden box and no DD route reads A, the systematic rule and the stratified table (`pytest`) |
 | `_build_binning.py` | writes `binning.ipynb` |
 | `binned_cards.py` | the combine datacards of `binning.ipynb` section 5.1: one per binning, signal point and background model (`lnN`: the per-bin estimate with its asymmetric statistical and shape log-normals; `gmN`: the B count of each DSA class as a Gamma-distributed sideband with its factor as a log-normal; `cr`: the gmN model with a control channel per bin and class, A of PD observed, the factor a free `rateParam` shared with the search bin), the 33 % transfer systematic, the luminosity and the signal's statistical error, with their provenance sidecar; reads the runner's `limits.csv` back and compares the binnings relative to one bin against the toy |
 | `test_binned_cards.py` | the lnN and gmN cards mirror the frames they are written from, the cr card puts the control region's counts and signal in their own channels with one shared factor, zero counts drop processes and bins, the card names parse in `run_combine_limits.py` with the right channel, normalisation and rates, the comparison is relative to the same model |
@@ -197,6 +213,8 @@ python ../../scripts/run_combine_limits.py --datacards binning_cards --pattern '
     --outdir binning_limits --rmax 300             # combine, in Sam's CMSSW area (see the runner)
 python _build_binning.py
 jupyter nbconvert --to notebook --execute --inplace binning.ipynb
+python _build_mass_decorrelation.py
+jupyter nbconvert --to notebook --execute --inplace mass_decorrelation.ipynb
 ```
 
 The tests run anywhere with numpy, scipy, pandas and hist: `pytest -q`.
