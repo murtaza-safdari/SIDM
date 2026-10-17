@@ -356,10 +356,27 @@ def test_bootstrap_reproduces_the_first_order_spread_for_large_counts():
     assert nl.interval68(mixed["ratio"])[1] == pytest.approx(0.8, abs=0.005)
     small = nl.bootstrap_abcd([(26.0, 6.0, 3.0)], n_toys=40000, seed=3)
     assert small["kept"] == pytest.approx(1 - np.exp(-3.0), abs=0.005)
+    # every toy is kept: those with D = 0 have no upper bound and push the 84th percentile up
+    assert len(small["one_bin"]) == 40000
+    assert np.mean(np.isinf(small["one_bin"])) == pytest.approx(np.exp(-3.0), abs=0.005)
+    finite = small["one_bin"][np.isfinite(small["one_bin"])]
+    assert nl.interval68(small["one_bin"])[2] > np.percentile(finite, 84.13) * 1.1
+    assert nl.interval68(small["one_bin"])[0] >= np.percentile(finite, 15.87)
     again = nl.bootstrap_abcd([(26.0, 6.0, 3.0)], n_toys=40000, seed=3)
     assert np.array_equal(small["one_bin"], again["one_bin"])
     with pytest.raises(ValueError):
         nl.bootstrap_abcd([(np.nan, 6.0, 3.0)])
+
+
+def test_interval68_counts_infinite_toys_as_the_largest():
+    x = np.array([1.0, 2.0, 3.0, 4.0, np.inf, np.inf, np.nan])
+    lo, med, hi = nl.interval68(x)
+    assert np.isfinite(lo) and np.isinf(hi)
+    assert med == pytest.approx(np.percentile([1.0, 2.0, 3.0, 4.0, 1e300, 1e300], 50))
+    finite = np.random.default_rng(5).normal(size=999)
+    assert np.allclose(nl.interval68(finite), np.percentile(finite, [15.87, 50.0, 84.13]))
+    assert nl.fmt_range((3.0, 5.0, np.inf)) == "3, no upper bound"
+    assert nl.fmt_range((3.0, 5.0, 7.0)) == "3–7"
 
 
 BLOCK_ISO = (0.1, 0.27, 0.6)            # < 0.25, 0.25-0.3, >= 0.3

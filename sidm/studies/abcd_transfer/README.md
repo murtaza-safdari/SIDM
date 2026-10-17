@@ -14,11 +14,12 @@ with the mass, B·C/D summed over the mass differs from the sum of B·C/D per ma
 factor, 1 when either probability is flat. The factor is 1.04 in PP and 1.01 in PD, but 2.06 in DD over
 five bins and 1.62 over the two windows split at 300 GeV, driven by the 300–400 GeV bin, where D of DD
 holds one event. The notebook removes the confounding three ways: stratifying in the two windows
-(74 events, 46–134, with a 33% closure systematic), a logistic fit of a(M) in ln M (72 with DD's own
+(74 events, 47–155, with a 33% closure systematic), a logistic fit of a(M) in ln M (72 with DD's own
 slope, 46 with PD's), and an isolation cut whose edge moves with the mass, chosen to flatten a(M) (41 when
 calibrated on PD, 38 when calibrated on DD, at a signal cost of up to 9%). It proposes the
 stratified estimate in two windows as the simplest analysis that carries its systematics, and names
-the measurement that decides between the routes: D of DD above 300 GeV, three events.
+the measurement that decides between the routes: D of DD above 300 GeV, three events. The open
+egamma-isolation bands of the search plane have no C or D event above 300 GeV and cannot decide it.
 
 Can the factors of the ABCD background estimate (pass/fail ratios of one axis of the plane at a
 fixed state of the other) be measured with prompt lepton jets and used with displaced ones?

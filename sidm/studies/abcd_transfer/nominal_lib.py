@@ -601,30 +601,56 @@ BOOTSTRAP_SEED = 20261016
 def bootstrap_abcd(windows, n_toys=BOOTSTRAP_TOYS, seed=BOOTSTRAP_SEED):
     """Poisson parametric bootstrap of the direct estimate from the observed B, C, D of each window
     (``[(B, C, D)]``): each count is drawn from a Poisson distribution with the observed count as its
-    mean, independently, and the toys with D = 0 in any window are dropped.  Returns ``{"one_bin":
-    (sum B)(sum C)/(sum D), "split": sum over windows of B C / D, "ratio": split / one_bin, "kept":
-    the fraction of toys kept}`` as arrays over the kept toys."""
+    mean, independently.  Every toy is kept: a toy with D = 0 in some window has no finite estimate
+    there, and its sum and ratio are set to +inf (its one-bin estimate to +inf when the summed D is
+    0), so that percentiles over all toys (:func:`interval68`) are not conditioned on D > 0.  Returns
+    ``{"one_bin": (sum B)(sum C)/(sum D), "split": sum over windows of B C / D, "ratio": split /
+    one_bin, "kept": the fraction of toys whose split is finite}`` as arrays over all toys."""
     rng = np.random.default_rng(seed)
     obs = np.asarray(windows, float)
     if np.isnan(obs).any():
         raise ValueError("bootstrap_abcd takes open counts only")
     toys = rng.poisson(obs, size=(n_toys,) + obs.shape).astype(float)
     b, c, d = toys[..., 0], toys[..., 1], toys[..., 2]
-    keep = (d > 0).all(axis=1)
-    b, c, d = b[keep], c[keep], d[keep]
-    one_bin = b.sum(axis=1) * c.sum(axis=1) / d.sum(axis=1)
-    split = (b * c / d).sum(axis=1)
+    empty = (d <= 0).any(axis=1)
+    total_d = d.sum(axis=1)
     with np.errstate(divide="ignore", invalid="ignore"):
-        ratio = split / one_bin
-    return {"one_bin": one_bin, "split": split, "ratio": ratio, "kept": float(keep.mean())}
+        one_bin = np.where(total_d > 0, b.sum(axis=1) * c.sum(axis=1) / np.where(total_d > 0, total_d, 1), np.inf)
+        split = np.where(empty, np.inf, np.sum(b * c / np.where(d > 0, d, 1), axis=1))
+        ratio = np.where(empty, np.inf, split / one_bin)
+    return {"one_bin": one_bin, "split": split, "ratio": ratio, "kept": float(np.isfinite(split).mean())}
+
+
+def _percentile(sorted_x, q):
+    """The q-th percentile of sorted values with numpy's linear interpolation, +inf when it falls
+    on or next to an infinite value."""
+    pos = q / 100 * (len(sorted_x) - 1)
+    lo = int(np.floor(pos))
+    hi = min(lo + 1, len(sorted_x) - 1)
+    frac = pos - lo
+    if frac == 0 or sorted_x[lo] == sorted_x[hi]:
+        return float(sorted_x[lo])
+    if np.isinf(sorted_x[hi]):
+        return np.inf
+    return float(sorted_x[lo] + (sorted_x[hi] - sorted_x[lo]) * frac)
 
 
 def interval68(x):
-    """(16th, 50th, 84th) percentiles of the finite values of ``x``."""
+    """(16th, 50th, 84th) percentiles of ``x`` over all toys, +inf counted as the largest value (a
+    percentile among the infinite toys is +inf, no bound); NaN values, which have no estimate at
+    all, are left out."""
     x = np.asarray(x, float)
-    x = x[np.isfinite(x)]
-    lo, med, hi = np.percentile(x, [15.87, 50.0, 84.13])
-    return float(lo), float(med), float(hi)
+    x = np.sort(x[~np.isnan(x)])
+    return tuple(_percentile(x, q) for q in (15.87, 50.0, 84.13))
+
+
+def fmt_range(x, digits=0):
+    """"lo–hi" of a (16th, 50th, 84th) percentile triple; an infinite upper end prints as "lo, no upper
+    bound"."""
+    if np.isinf(x[2]):
+        return f"{x[0]:.{digits}f}, no upper bound"
+    return f"{x[0]:.{digits}f}–{x[2]:.{digits}f}"
+
 
 def projected_precision(pred, pred_err):
     """Relative precision of kappa if A held ``pred`` events: Poisson on A with the prediction's own

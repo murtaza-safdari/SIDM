@@ -250,8 +250,9 @@ def compute():
     boot = nl.bootstrap_abcd(spl["DD"]["windows"])
     boot_hi = nl.bootstrap_abcd([spl["DD"]["windows"][1]])
     i_hi, i_sum, i_ratio = nl.interval68(boot_hi["one_bin"]), nl.interval68(boot["split"]), nl.interval68(boot["ratio"])
-    N["hi_int"] = f"{i_hi[0]:.0f}–{i_hi[2]:.0f}"
-    N["sum_int"] = f"{i_sum[0]:.0f}–{i_sum[2]:.0f}"
+    N["hi_int"] = nl.fmt_range(i_hi)
+    N["sum_int"] = nl.fmt_range(i_sum)
+    N["hi_inf"] = pct(1 - boot_hi["kept"])
     N["ratio_pct"] = "/".join(f"{x:.2f}" for x in i_ratio)
     N["ratio_below1"] = pct(float(np.mean(boot["ratio"] < 1)))
     N["boot_kept"] = pct(boot["kept"])
@@ -875,7 +876,8 @@ same way in both. In D it roughly does: {dshare_DD} of DD's D lies in 150–300 
 
 The same question asked of the estimate itself. The direct estimate above 300 GeV alone is
 {two_hi} events from B/C/D = {hi_bcd}, with a 68% interval of {hi_int} from a Poisson bootstrap of
-the three counts ({n_toys} toys, those with D = 0 dropped); in 150–300 GeV it is {two_lo}, and the
+the three counts ({n_toys} toys, all kept: a toy with D = 0 has no finite estimate and counts as
+above every other, {hi_inf} of them); in 150–300 GeV it is {two_lo}, and the
 sum of the two windows, {two_sum} events, has the interval {sum_int}. The ratio of that sum to the
 one-bin estimate, Σ_w B_w C_w/D_w ÷ (B·C/D), is {split_PP} in PP, {split_PD} in PD and {split_DD}
 in DD; for DD its bootstrap 16th/50th/84th percentiles are {ratio_pct}, and it is below one in
@@ -911,7 +913,7 @@ display(pd.DataFrame([{"plane": p, "B/C/D, 150-300": "/".join(f"{x:.0f}" for x i
                        "ratio": f"{v['ratio']:.2f}"} for p, v in SPLIT.items()]))
 BOOT = nl.bootstrap_abcd(SPLIT["DD"]["windows"])
 BOOT_HI = nl.bootstrap_abcd([SPLIT["DD"]["windows"][1]])
-print(f"DD, Poisson bootstrap ({nl.BOOTSTRAP_TOYS} toys; D > 0 in both windows in {nl.pct(BOOT['kept'])}), 16th/50th/84th percentiles:")
+print(f"DD, Poisson bootstrap ({nl.BOOTSTRAP_TOYS} toys, all kept; a finite sum in {nl.pct(BOOT['kept'])}), 16th/50th/84th percentiles:")
 print("  B C/D above 300 GeV:", "/".join(f"{x:.1f}" for x in nl.interval68(BOOT_HI["one_bin"])))
 print("  B C/D summed over the two windows:", "/".join(f"{x:.1f}" for x in nl.interval68(BOOT["split"])))
 print("  ratio of the sum to the one-bin estimate:", "/".join(f"{x:.2f}" for x in nl.interval68(BOOT["ratio"])),

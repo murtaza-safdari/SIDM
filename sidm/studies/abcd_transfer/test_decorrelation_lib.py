@@ -6,6 +6,7 @@ import pytest
 
 import abcd6d_io as io
 import decorrelation_lib as dl
+import nominal_lib as nl
 import plane_search_lib as ps
 from test_abcd6d_io import make_hist8d
 from test_nominal_lib import DISP, fill
@@ -78,6 +79,34 @@ def test_a_bin_with_empty_d_is_merged_into_its_lower_neighbour():
     assert m[-1].tolist() == [13, 1, 2]
     bins, m = dl.merge_empty(list(dl.FIVE), [(5, 1, 0), (24, 5, 10), (13, 5, 1), (9, 1, 2), (4, 1, 3)])
     assert [lab for lab, _ in bins][0] == "150-300" and m[0].tolist() == [29, 6, 10]
+
+
+def test_toys_merge_empty_bins_as_the_data_do():
+    # the middle bin's D is empty in the data and in every toy: it is merged, never dropped
+    big = [(1e4, 1e4, 1e4), (1e4, 5e3, 0.0), (2e4, 1e4, 1e4)]
+    _, m = dl.merge_empty(dl.FIVE[:3], [row for row in big])
+    t = dl.merged_toys(big, n_toys=4000, seed=1)
+    assert t["kept"] == 1.0
+    assert np.median(t["split"]) == pytest.approx(np.sum(m[:, 0] * m[:, 1] / m[:, 2]), rel=0.01)
+    # five bins with one D event in two of them: a toy has no finite sum only when every D is drawn as 0
+    small = [(20.0, 5.0, 1.0), (10.0, 3.0, 0.0), (8.0, 4.0, 1.0), (4.0, 1.0, 0.0), (2.0, 0.0, 0.0)]
+    t = dl.merged_toys(small, n_toys=40000, seed=2)
+    assert t["kept"] == pytest.approx(1 - np.exp(-2.0), abs=0.006)
+    boot = dl.bootstrap_bins(small, n_toys=40000, seed=2)
+    assert boot["kept"] == t["kept"]
+    assert boot["groups"] == [[0, 1], [2, 3, 4]]
+    assert np.isfinite(boot["sum"][2])          # P(every D = 0) = exp(-2) is below the 16% above the 84th percentile
+    # two windows have no merge rule: a toy with D = 0 in a window has no finite sum, as in nominal_lib
+    two = [(52.0, 11.0, 26.0), (26.0, 6.0, 3.0)]
+    assert dl.merge_rule(dl.FIVE) and not dl.merge_rule(dl.TWO)
+    t = dl.merged_toys(two, n_toys=40000, seed=3, merge=False)
+    ref = nl.bootstrap_abcd(two, n_toys=40000, seed=3)
+    assert t["kept"] == pytest.approx(1 - np.exp(-3.0), abs=0.005)
+    assert np.array_equal(t["split"], ref["split"]) and np.array_equal(t["ratio"], ref["ratio"])
+    boot = dl.bootstrap_bins(two, n_toys=40000, seed=3, merge=False)
+    assert boot["sum"] == nl.interval68(ref["split"])
+    assert dl.bootstrap_bins(two, n_toys=40000, seed=3, merge=True)["sum"][2] < boot["sum"][2]
+    assert boot["per_bin"][1] == nl.interval68(nl.bootstrap_abcd([two[1]], n_toys=40000, seed=3)["one_bin"])
 
 
 def test_shape_test_is_zero_for_a_scaled_copy_of_the_reference():

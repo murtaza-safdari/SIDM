@@ -79,6 +79,26 @@ def counts(regs):
     return np.array([[r[x][0] for x in "ABCD"] for r in regs], float)
 
 
+def as_vr(region):
+    """A plane name ("PP", "PD", "DP", "DD") as that plane's validation region above 150 GeV with
+    the egamma LJ isolated; a ``nominal_lib.VR`` as it is."""
+    if isinstance(region, str):
+        return nl.VR(region, "this analysis", region[0], region[1])
+    return region
+
+
+def region_counts(cube, cfg, region, bins):
+    """``(nbins, 4)`` A, B, C, D of a plane or validation region in each bin of ``bins`` at the working
+    point of ``cfg`` (A NaN where it touches the hidden box)."""
+    if isinstance(region, str):
+        return counts(bin_regions(cube, cfg, region, bins))
+    return counts([nl.vr_regions(cube, dataclasses.replace(region, mass=rng), cfg) for _, rng in bins])
+
+
+def region_name(region):
+    return region if isinstance(region, str) else region.name
+
+
 def merge_empty(bins, bcd):
     """Merge every bin whose D is zero into its lower neighbour (the first bin into the one above),
     so that each bin's B C / D exists: returns the merged ``bins`` and ``(nbins, 3)`` B, C, D sums.
@@ -97,6 +117,64 @@ def merge_empty(bins, bcd):
         bins[lo:hi + 1] = [(bin_label(*rng), rng)]
         bcd[lo:hi + 1] = [merged]
     return bins, np.array(bcd, float)
+
+
+def merge_groups(empty):
+    """The bins :func:`merge_empty` joins for a pattern of empty D (one boolean per bin), as lists of
+    bin indices.  The merging depends only on which bins have D = 0, since a merged bin's D is empty
+    only when all its parts are."""
+    bins = [(str(i), (float(i), float(i + 1))) for i in range(len(empty))]
+    bcd = [(0.0, 0.0, 0.0 if e else 1.0) for e in empty]
+    merged, _ = merge_empty(bins, bcd)
+    return [list(range(int(lo), int(hi))) for _, (lo, hi) in merged]
+
+
+def _ratio_or_inf(b, c, d):
+    """B C / D, +inf where D = 0."""
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return np.where(d > 0, b * c / np.where(d > 0, d, 1), np.inf)
+
+
+def merge_rule(bins):
+    """Whether the binned procedure over ``bins`` merges empty bins: the five-bin procedure does (its
+    data path merges DD's empty >= 600 GeV bin); the two windows and the one bin have no merge rule."""
+    return tuple(bins) == FIVE
+
+
+def merged_toys(c, n_toys=N_TOYS, seed=SEED, merge=True):
+    """Poisson toys of per-bin counts ``c`` (one row per bin, B, C, D in the last three columns, A in
+    front when present) with the data's procedure applied in each toy.  With ``merge`` the bins whose
+    drawn D is 0 are merged as :func:`merge_empty` merges them and the estimate is summed over the
+    merged bins, and only a toy whose merged D is still 0 has no finite estimate; without it a toy with
+    D = 0 in any bin has none (the convention of ``nominal_lib.bootstrap_abcd``).  A toy without a
+    finite estimate has its sum set to +inf.  Returns ``{"toys": (n_toys, bins, columns), "split": the
+    summed estimate per toy, "one_bin": (sum B)(sum C)/(sum D) per toy (+inf when sum D = 0), "ratio":
+    split / one_bin, "kept": fraction of toys with a finite split, "fallback": fraction of toys merged
+    differently from the data}``."""
+    obs = np.asarray(c, float)
+    if np.isnan(obs).any():
+        raise ValueError("merged_toys takes open counts only")
+    rng = np.random.default_rng(seed)
+    toys = rng.poisson(obs, size=(n_toys,) + obs.shape).astype(float)
+    b, cc, d = toys[..., -3], toys[..., -2], toys[..., -1]
+    split = np.empty(n_toys)
+    patterns, inverse = np.unique(d <= 0, axis=0, return_inverse=True)
+    inverse = np.asarray(inverse).ravel()
+    data_groups = merge_groups(obs[:, -1] <= 0) if merge else [[i] for i in range(len(obs))]
+    fallback = 0
+    for k, pattern in enumerate(patterns):
+        sel = inverse == k
+        groups = merge_groups(pattern) if merge else [[i] for i in range(len(pattern))]
+        fallback += int(sel.sum()) if groups != data_groups else 0
+        total = np.zeros(int(sel.sum()))
+        for g in groups:
+            total = total + _ratio_or_inf(b[sel][:, g].sum(axis=1), cc[sel][:, g].sum(axis=1), d[sel][:, g].sum(axis=1))
+        split[sel] = total
+    one_bin = _ratio_or_inf(b.sum(axis=1), cc.sum(axis=1), d.sum(axis=1))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ratio = np.where(np.isinf(split), np.inf, split / one_bin)
+    return {"toys": toys, "split": split, "one_bin": one_bin, "ratio": ratio, "kept": float(np.isfinite(split).mean()),
+            "fallback": fallback / n_toys}
 
 
 # ----------------------------------------------------------------------------- section 1: the problem
@@ -148,14 +226,13 @@ def synthetic_table(populations=None):
 
 
 def pass_table(cube, cfg, planes=PLANES, bins=FIVE):
-    """Per plane and mass bin: the counts, a = C / (C + D) and b = B / (B + D) with their 68%
-    Clopper-Pearson intervals (NaN where the denominator is empty).  A is reported as stored (NaN in
-    the hidden box) and enters neither a nor b."""
+    """Per plane (or validation region, :func:`region_counts`) and mass bin: the counts, a = C / (C + D)
+    and b = B / (B + D) with their 68% Clopper-Pearson intervals (NaN where the denominator is empty).
+    A is reported as stored (NaN in the hidden box) and enters neither a nor b."""
     rows = []
     for plane in planes:
-        for (label, (lo, hi)), r in zip(bins, bin_regions(cube, cfg, plane, bins)):
-            A, B, C, D = (r[x][0] for x in "ABCD")
-            row = {"plane": plane, "bin": label, "M": centre(lo, hi), "A": A, "B": B, "C": C, "D": D}
+        for (label, (lo, hi)), (A, B, C, D) in zip(bins, region_counts(cube, cfg, plane, bins)):
+            row = {"plane": region_name(plane), "bin": label, "M": centre(lo, hi), "A": A, "B": B, "C": C, "D": D}
             for name, k, n in (("a", C, C + D), ("b", B, B + D)):
                 if n > 0:
                     lo_, hi_ = tl.clopper_pearson(k, n)
@@ -182,35 +259,37 @@ def spectra_table(cube, cfg, planes=PLANES, bins=FIVE):
 def mixing_factor(cube, cfg, plane, bins):
     """The mixing factor of ``plane`` over ``bins``: ``{"bins": the bins after :func:`merge_empty`,
     "windows": their (B, C, D), "split": sum of B C / D, "one_bin": (sum B)(sum C)/(sum D), "ratio":
-    split / one_bin, "merged": whether a bin was merged}``.  Reads B, C, D only."""
+    split / one_bin, "raw": the (B, C, D) before merging, "merged": whether a bin was merged}``.  Reads
+    B, C, D only."""
     bcd = counts(bin_regions(cube, cfg, plane, bins))[:, 1:]
     merged_bins, m = merge_empty(bins, bcd)
     split = float(np.sum(m[:, 0] * m[:, 1] / m[:, 2]))
     tot = m.sum(axis=0)
     one_bin = float(tot[0] * tot[1] / tot[2])
-    return {"bins": merged_bins, "windows": [tuple(row) for row in m], "split": split, "one_bin": one_bin,
-            "ratio": split / one_bin, "merged": len(merged_bins) < len(bins)}
+    return {"bins": merged_bins, "windows": [tuple(row) for row in m], "raw": [tuple(row) for row in bcd],
+            "split": split, "one_bin": one_bin, "ratio": split / one_bin, "merged": len(merged_bins) < len(bins)}
 
 
-def mixing_bootstrap(windows, n_toys=N_TOYS, seed=SEED):
-    """``nominal_lib.bootstrap_abcd`` of the per-bin (B, C, D), summarised: the 16/50/84th percentiles
-    of the mixing factor and of the summed estimate, the share of toys below one, the share kept
-    (toys with D = 0 in some bin are dropped, so the interval is conditional on D > 0 in every bin)."""
-    t = nl.bootstrap_abcd(windows, n_toys=n_toys, seed=seed)
-    ratio = t["ratio"][np.isfinite(t["ratio"])]
+def mixing_bootstrap(bcd, n_toys=N_TOYS, seed=SEED, merge=True):
+    """:func:`merged_toys` of the per-bin (B, C, D) before merging (``merge``: whether the binning has
+    the merge rule, :func:`merge_rule`), summarised: the 16/50/84th percentiles over all toys of the
+    mixing factor and of the summed estimate, the share of toys below one, and the share with a
+    finite factor."""
+    t = merged_toys(bcd, n_toys=n_toys, seed=seed, merge=merge)
+    ratio = t["ratio"][~np.isnan(t["ratio"])]
     return {"ratio": nl.interval68(ratio), "split": nl.interval68(t["split"]), "one_bin": nl.interval68(t["one_bin"]),
-            "below_one": float(np.mean(ratio < 1)), "kept": t["kept"]}
+            "below_one": float(np.mean(ratio < 1)), "kept": float(np.isfinite(ratio).mean())}
 
 
 def mixing_table(cube, cfg, planes=PLANES, binnings=None, n_toys=N_TOYS, seed=SEED):
     """Per plane and binning: the bins used, the summed and one-bin estimates, the mixing factor with
-    its bootstrap interval, the share of toys below one and the share kept."""
+    its bootstrap interval, the share of toys below one and the share with a finite factor."""
     binnings = BINNINGS if binnings is None else binnings
     rows = []
     for plane in planes:
         for name, bins in binnings.items():
             m = mixing_factor(cube, cfg, plane, bins)
-            boot = mixing_bootstrap(m["windows"], n_toys, seed) if len(m["windows"]) > 1 else None
+            boot = mixing_bootstrap(m["raw"], n_toys, seed, merge_rule(bins)) if len(m["windows"]) > 1 else None
             rows.append({"plane": plane, "binning": name, "bins": ", ".join(lab for lab, _ in m["bins"]),
                          "split": m["split"], "one_bin": m["one_bin"], "ratio": m["ratio"],
                          "lo": boot["ratio"][0] if boot else np.nan, "med": boot["ratio"][1] if boot else np.nan,
@@ -266,23 +345,38 @@ def shape_test(test, ref, n_toys=N_TOYS, seed=SEED):
             "p_toys": float(np.mean(chi2_toys >= chi2)), "k": float(k), "pulls": pulls, "used": used}
 
 
+def log_odds_ratio(cd):
+    """ln of the isolation odds C/D in the second of two windows over the first (``cd``: (C, D) per
+    window), with its first-order error sqrt(sum of 1/count); NaN when a count is zero."""
+    cd = np.asarray(cd, float)
+    if (cd <= 0).any():
+        return (np.nan, np.nan)
+    return float(np.log(cd[1, 0] / cd[1, 1]) - np.log(cd[0, 0] / cd[0, 1])), float(np.sqrt(np.sum(1 / cd)))
+
+
+def separation(test, ref):
+    """The difference of the log odds ratios (:func:`log_odds_ratio`) of two regions over two windows,
+    its first-order error and their ratio, the separation in standard deviations; with every count
+    scaled by a factor f (more data at the same rates) the separation grows as sqrt(f)."""
+    v_t, e_t = log_odds_ratio(test)
+    v_r, e_r = log_odds_ratio(ref)
+    diff, err = v_t - v_r, float(np.hypot(e_t, e_r))
+    return {"diff": float(diff), "err": err, "z": float(diff / err) if err > 0 else np.nan}
+
+
 # ----------------------------------------------------------------------------- route 1: stratify
 
-def bootstrap_bins(windows, n_toys=N_TOYS, seed=SEED):
-    """Poisson toys of the per-bin (B, C, D): ``{"per_bin": [16/50/84th percentiles of B C / D of each
-    bin over the toys with D > 0 in that bin], "sum": percentiles of the sum over the toys with D > 0
-    in every bin, "kept": share of toys kept for the sum}``."""
-    rng = np.random.default_rng(seed)
-    obs = np.asarray(windows, float)
-    if np.isnan(obs).any():
-        raise ValueError("bootstrap_bins takes open counts only")
-    toys = rng.poisson(obs, size=(n_toys,) + obs.shape).astype(float)
-    b, c, d = toys[..., 0], toys[..., 1], toys[..., 2]
-    with np.errstate(divide="ignore", invalid="ignore"):
-        est = b * c / d
-    per = [nl.interval68(est[d[:, i] > 0, i]) for i in range(obs.shape[0])]
-    keep = (d > 0).all(axis=1)
-    return {"per_bin": per, "sum": nl.interval68(est[keep].sum(axis=1)), "kept": float(keep.mean())}
+def bootstrap_bins(bcd, n_toys=N_TOYS, seed=SEED, merge=True):
+    """Poisson toys of the per-bin (B, C, D) before merging: ``{"groups": the bins the data merge into,
+    "per_bin": [16/50/84th percentiles over all toys of B C / D of each merged data bin, drawn alone
+    as ``nominal_lib.bootstrap_abcd`` draws one window (+inf where D is drawn as 0)], "sum":
+    percentiles of the summed estimate (:func:`merged_toys` with ``merge``), "kept": share of toys
+    with a finite sum, "fallback": share of toys merged differently from the data}``."""
+    obs = np.asarray(bcd, float)
+    t = merged_toys(obs, n_toys, seed, merge)
+    groups = merge_groups(obs[:, 2] <= 0)
+    per = [nl.interval68(nl.bootstrap_abcd([tuple(obs[g].sum(axis=0))], n_toys, seed)["one_bin"]) for g in groups]
+    return {"groups": groups, "per_bin": per, "sum": nl.interval68(t["split"]), "kept": t["kept"], "fallback": t["fallback"]}
 
 
 def binned_vrs(bins, vrs=None):
@@ -311,14 +405,15 @@ def per_bin_systematic(cube, cfg, bins, vrs=None, max_precision=MAX_PRECISION):
 
 def stratified_table(cube, cfg, bins, search="DD", ref_planes=OPEN_PLANES, vrs=None, n_toys=N_TOYS, seed=SEED):
     """Route 1 per bin: B, C, D of the search plane (bins with D = 0 merged, :func:`merge_empty`), its
-    B C / D with the first-order error and the bootstrap interval, kappa of each reference plane in
-    the same bin, and the closure systematic of the bin (:func:`per_bin_systematic`) with the region
-    that sets it; a last row with the sum and its bootstrap interval (toys with D > 0 in every bin).
+    B C / D with the first-order error (linear propagation of the Poisson errors of B, C and D) and
+    the bootstrap interval, kappa of each reference plane in the same bin, and the closure systematic
+    of the bin (:func:`per_bin_systematic`) with the region that sets it; a last row with the sum and
+    its bootstrap interval (:func:`bootstrap_bins`, with the binning's merge rule, :func:`merge_rule`).
     The systematic on the sum takes the bins as fully correlated (sum of value x systematic) and is
     undefined when a bin has none."""
     bcd = counts(bin_regions(cube, cfg, search, bins))[:, 1:]
     merged, m = merge_empty(bins, bcd)
-    boot = bootstrap_bins([tuple(r) for r in m], n_toys, seed)
+    boot = bootstrap_bins(bcd, n_toys, seed, merge_rule(bins))
     syst = per_bin_systematic(cube, cfg, merged, vrs)
     rows = []
     for i, (label, rng) in enumerate(merged):
@@ -344,6 +439,7 @@ def stratified_table(cube, cfg, bins, search="DD", ref_planes=OPEN_PLANES, vrs=N
                  "qualifying": ""})
     out = pd.DataFrame(rows)
     out.attrs["kept"] = boot["kept"]
+    out.attrs["fallback"] = boot["fallback"]
     return out
 
 
@@ -392,11 +488,12 @@ def logistic_fit(c, n, x, slope=None, max_iter=100, tol=1e-10):
     p = np.clip(1 / (1 + np.exp(-eta)), 1e-300, 1 - 1e-16)
     w = n * p * (1 - p)
     h00, h01, h11 = np.sum(w, axis=-1), np.sum(w * x, axis=-1), np.sum(w * x * x, axis=-1)
-    if fixed:
-        cov = 1 / h00
-    else:
-        det = h00 * h11 - h01**2
-        cov = np.stack([np.stack([h11, -h01], -1), np.stack([-h01, h00], -1)], -2) / det[..., None, None]
+    with np.errstate(divide="ignore", invalid="ignore"):         # a degenerate toy (no C or no D) has no finite error
+        if fixed:
+            cov = 1 / h00
+        else:
+            det = h00 * h11 - h01**2
+            cov = np.stack([np.stack([h11, -h01], -1), np.stack([-h01, h00], -1)], -2) / det[..., None, None]
     with np.errstate(divide="ignore", invalid="ignore"):
         t1 = np.where(c > 0, c * np.log(c / (n * p)), 0.0)
         t2 = np.where(n - c > 0, (n - c) * np.log((n - c) / (n * (1 - p))), 0.0)
@@ -416,48 +513,71 @@ def logistic_r(alpha, slope, mass, pivot=PIVOT):
     return np.exp(alpha + slope * np.log(np.asarray(mass, float) / pivot))
 
 
+def overdispersion(fit):
+    """sqrt(deviance / ndf) of a :func:`logistic_fit` when it exceeds one, else one: the factor by which
+    the fit's errors are scaled when the data scatter about the fitted curve more than binomial
+    counts would."""
+    dev, ndf = float(fit["deviance"]), int(fit["ndf"])
+    return float(np.sqrt(dev / ndf)) if ndf > 0 and dev > ndf else 1.0
+
+
 def smooth_route(cube, cfg, plane, bins=FIVE, slope_plane=None, n_toys=N_TOYS, seed=SEED):
-    """Route 2 in one plane: a(M) fitted to the per-bin (C, C + D) with the logistic in ln M at the bin
-    centres (:func:`centre`), and the prediction sum_w B_w r(M_w).  With ``slope_plane`` the slope is
-    the one fitted in that plane and only the intercept is fitted here.  Poisson toys of every count
-    (both planes when the slope is borrowed; A only where it is open) are refitted one by one.
-    Returns the fit (alpha, slope and their errors, deviance/ndf), the prediction with its bootstrap
-    interval, and where A is open the observed A, kappa = A / prediction and its bootstrap interval."""
-    c4 = counts(bin_regions(cube, cfg, plane, bins))
+    """Route 2 in one plane or validation region (``plane``: a plane name or a ``nominal_lib.VR``):
+    a(M) fitted to the per-bin (C, C + D) with the logistic in ln M at the bin centres
+    (:func:`centre`), and the prediction sum_w B_w r(M_w).  With ``slope_plane`` (a plane name) the
+    slope is the one fitted in that plane and only the intercept is fitted here.  Poisson toys of
+    every count (both when the slope is borrowed; A only where it is open) are refitted one by one.
+    When a fit's deviance exceeds its ndf, its errors and the spread of its toys about the fitted
+    values are scaled by sqrt(deviance / ndf) (:func:`overdispersion`; a borrowed slope carries the
+    scale of its own plane's fit).  Returns the fit (alpha, slope and their errors, deviance/ndf, the
+    scale), the prediction with its bootstrap interval, and where A is open the observed A, kappa =
+    A / prediction and its bootstrap interval; the prediction and kappa are NaN when the region has no
+    C or no D, where the fit has no finite solution."""
+    name = region_name(plane)
+    c4 = region_counts(cube, cfg, plane, bins)
     x = np.log(np.array([centre(*rng) for _, rng in bins]) / PIVOT)
     A, B, C, D = c4.T
-    fixed = None
-    if slope_plane == plane:
+    fixed, ref_scale = None, 1.0
+    if slope_plane == name:
         slope_plane = None                       # the plane's own slope: the ordinary two-parameter fit
     if slope_plane is not None:
-        ref = counts(bin_regions(cube, cfg, slope_plane, bins))
-        fixed = float(logistic_fit(ref[:, 2], ref[:, 2] + ref[:, 3], x)["slope"])
+        ref = region_counts(cube, cfg, slope_plane, bins)
+        ref_fit = logistic_fit(ref[:, 2], ref[:, 2] + ref[:, 3], x)
+        fixed, ref_scale = float(ref_fit["slope"]), overdispersion(ref_fit)
     fit = logistic_fit(C, C + D, x, slope=fixed)
     alpha, slope = float(fit["alpha"]), float(fit["slope"])
+    scale = overdispersion(fit)
     pred = float(np.sum(B * np.exp(alpha + slope * x)))
     rng = np.random.default_rng(seed)
     tB, tC, tD = (rng.poisson(v, size=(n_toys, len(v))).astype(float) for v in (B, C, D))
     if slope_plane is not None:
         tCr, tDr = (rng.poisson(v, size=(n_toys, len(v))).astype(float) for v in (ref[:, 2], ref[:, 3]))
-        s_toys = logistic_fit(tCr, tCr + tDr, x)["slope"]
+        s_toys = fixed + ref_scale * (logistic_fit(tCr, tCr + tDr, x)["slope"] - fixed)
     else:
         s_toys = None
     tf = logistic_fit(tC, tC + tD, x, slope=s_toys)
-    pred_toys = np.sum(tB * np.exp(tf["alpha"][:, None] + tf["slope"][:, None] * x), axis=1)
+    a_toys = alpha + scale * (tf["alpha"] - alpha)
+    s_toys = slope + scale * (tf["slope"] - slope) if s_toys is None else s_toys
+    with np.errstate(over="ignore"):
+        pred_toys = np.sum(tB * np.exp(a_toys[:, None] + s_toys[:, None] * x), axis=1)
     ok = tf["converged"] & np.isfinite(pred_toys)
-    out = {"plane": plane, "x": x, "counts": c4, "alpha": alpha, "slope": slope, "fixed_slope": fixed,
-           "alpha_err": float(np.sqrt(fit["cov"] if fixed is not None else fit["cov"][0, 0])),
-           "slope_err": (float(np.sqrt(fit["cov"][1, 1])) if fixed is None else float(np.std(s_toys[ok]))),
+    out = {"plane": name, "x": x, "counts": c4, "alpha": alpha, "slope": slope, "fixed_slope": fixed,
+           "scale": scale, "ref_scale": ref_scale,
+           "alpha_err": scale * float(np.sqrt(fit["cov"] if fixed is not None else fit["cov"][0, 0])),
+           "slope_err": (scale * float(np.sqrt(fit["cov"][1, 1])) if fixed is None else float(np.std(s_toys[ok]))),
            "deviance": float(fit["deviance"]), "ndf": int(fit["ndf"]), "pred": pred,
            "pred_interval": nl.interval68(pred_toys[ok]), "converged": float(ok.mean()),
-           "slope_toys": tf["slope"][ok], "alpha_toys": tf["alpha"][ok]}
+           "slope_toys": s_toys[ok], "alpha_toys": a_toys[ok]}
     out["p"] = float(stats.chi2.sf(out["deviance"], out["ndf"])) if out["ndf"] > 0 else np.nan
-    if np.all(np.isfinite(A)):
+    if C.sum() <= 0 or D.sum() <= 0:              # no C or no D: the logistic runs off to a = 0 or 1
+        out.update({"pred": np.nan, "pred_interval": (np.nan,) * 3, "A": float(A.sum()), "kappa": (np.nan,) * 3})
+    elif np.all(np.isfinite(A)):
         tA = rng.poisson(A, size=(n_toys, len(A))).astype(float)
-        k_toys = tA[ok].sum(axis=1) / pred_toys[ok]
-        k = float(A.sum() / pred)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            k_toys = tA[ok].sum(axis=1) / pred_toys[ok]
+        k = float(A.sum() / pred) if pred > 0 else np.nan
         lo, _, hi = nl.interval68(k_toys)
-        out.update({"A": float(A.sum()), "kappa": (k, k - lo, hi - k)})
+        out.update({"A": float(A.sum()), "kappa": (k, k - lo, hi - k) if np.isfinite(k) else (np.nan,) * 3})
     else:
         out.update({"A": np.nan, "kappa": (np.nan, np.nan, np.nan)})
     return out
@@ -558,12 +678,20 @@ def flat_route(cube, cfg, plane, bins, edges, n_toys=N_TOYS, seed=SEED):
     bcd = counts(regs)[:, 1:]
     merged, m = merge_empty(bins, bcd)
     split = float(np.sum(m[:, 0] * m[:, 1] / m[:, 2]))
-    mix = mixing_bootstrap([tuple(r) for r in m], n_toys, seed) if len(m) > 1 else None
+    mix = mixing_bootstrap(bcd, n_toys, seed, merge_rule(bins)) if len(m) > 1 else None
     return {"plane": plane, "regions": tot, "per_bin": counts(regs), "mixing_windows": [tuple(r) for r in m],
             "pred": pred, "pred_interval": boot_one,
             "mixing": split / pred[0], "mixing_interval": mix["ratio"] if mix else (np.nan,) * 3,
             "mixing_bins": [lab for lab, _ in merged], "kappa": ps.kappa(tot), "A": tot["A"][0],
             "flatness": flatness(counts(regs)[:, 2:])}
+
+
+def flat_kappa(cube, cfg, region, bins, edges):
+    """kappa of a plane or validation region with the per-bin isolation edges of route 3, the regions
+    summed over the bins (Clopper-Pearson-based interval, ``plane_search_lib.kappa``)."""
+    vr = as_vr(region)
+    regs = [nl.vr_regions(cube, dataclasses.replace(vr, mass=rng), flat_cfg(cfg, e, *rng)) for (_, rng), e in zip(bins, edges)]
+    return ps.kappa(summed(regs))
 
 
 def signal_cost(base, names, cfg, bins, edge_sets, topology="2mu2e", prefix="abcd8d"):
@@ -602,7 +730,8 @@ def rule(readings, max_precision=MAX_PRECISION):
     when none qualifies."""
     best = (np.nan, None)
     for name, k in readings:
-        if not np.isfinite(k[0]) or el.precision(k) > max_precision:
+        prec = el.precision(k)
+        if not np.isfinite(k[0]) or not np.isfinite(prec) or prec > max_precision:
             continue
         v = max(abs(k[0] - 1), nl.side_facing_one(k))
         if not np.isfinite(best[0]) or v > best[0]:
@@ -610,39 +739,69 @@ def rule(readings, max_precision=MAX_PRECISION):
     return best
 
 
-def route_closure(cube, cfg, plane, bins, n_toys=N_TOYS, seed=SEED):
-    """kappa of the stratified estimate in an open plane: A summed over ``bins`` over sum_w B_w C_w / D_w,
-    with the interval from Poisson toys of all four counts per bin (toys with D = 0 in a bin dropped)."""
-    c4 = counts(bin_regions(cube, cfg, plane, bins))
+def route_closure(cube, cfg, region, bins, n_toys=N_TOYS, seed=SEED):
+    """kappa of the stratified estimate in an open plane or validation region: A summed over ``bins``
+    over sum_w B_w C_w / D_w (bins with D = 0 merged, :func:`merge_empty`), with the interval from
+    Poisson toys of all four counts per bin with the binning's merge rule (:func:`merged_toys`,
+    :func:`merge_rule`)."""
+    c4 = region_counts(cube, cfg, region, bins)
     if not np.all(np.isfinite(c4)):
         return (np.nan, np.nan, np.nan)
-    A, B, C, D = c4.T
-    k = float(A.sum() / np.sum(B * C / D))
-    rng = np.random.default_rng(seed)
-    t = rng.poisson(c4, size=(n_toys,) + c4.shape).astype(float)
-    keep = (t[..., 3] > 0).all(axis=1)
-    t = t[keep]
-    k_toys = t[..., 0].sum(axis=1) / np.sum(t[..., 1] * t[..., 2] / t[..., 3], axis=1)
+    _, m = merge_empty(bins, c4[:, 1:])
+    pred = float(np.sum(_ratio_or_inf(m[:, 0], m[:, 1], m[:, 2])))
+    k = float(c4[:, 0].sum() / pred)
+    t = merged_toys(c4, n_toys, seed, merge_rule(bins))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        k_toys = t["toys"][..., 0].sum(axis=1) / t["split"]
     lo, _, hi = nl.interval68(k_toys)
     return (k, k - lo, hi - k)
 
 
+def rule_regions(cube, cfg, vrs=None):
+    """The validation regions the rule of nominal.ipynb section 8 may use for every route above 150
+    GeV: those of :func:`binned_vrs` at M >= 150 GeV that touch no hidden cell and differ from the
+    search region only in named respects (a split of a plane does not qualify).  Whether a region's
+    kappa is measured to 20% is judged per route, by :func:`rule`."""
+    regions = binned_vrs(ONE, vrs)[ONE[0][0]]
+    table = nl.systematic_table(cube, regions, {"ours": cfg})
+    excluded = table["reason"].str.contains("hidden|differs in")
+    names = set(table.loc[~excluded, "region"])
+    return [v for v in regions if v.name in names]
+
+
+def fmt_p(p):
+    """"p = 0.12", "p = 0.004" or "p < 0.001"."""
+    if not np.isfinite(p):
+        return "p n/a"
+    if p < 0.001:
+        return "p < 0.001"
+    return f"p = {p:.3f}" if p < 0.01 else f"p = {p:.2f}"
+
+
 def fmt_interval(x, digits=0):
-    """"lo–hi" of a (16th, 50th, 84th) percentile triple."""
-    return f"{x[0]:.{digits}f}–{x[2]:.{digits}f}"
+    """"lo–hi" of a (16th, 50th, 84th) percentile triple (``nominal_lib.fmt_range``: an infinite upper
+    end prints as no upper bound)."""
+    return nl.fmt_range(x, digits)
+
+
+def _syst_text(syst):
+    return "no region qualifies" if not np.isfinite(syst[0]) else f"{100 * syst[0]:.0f}% ({syst[1]})"
 
 
 def comparison(cube, cfg, flat_edges, cost=None, n_toys=N_TOYS, seed=SEED):
     """One record per route for the comparison table of mass_decorrelation.ipynb: the DD estimate with
     its bootstrap 16/50/84th percentiles, the mixing factor the estimate still carries, the closure of
-    the route in PP and PD, the systematic by the rule, the free choices, fitted parameters and
-    systematics the route brings, the smallest count it rests on, the signal yield ratio and what is
-    left to validate.  ``flat_edges`` is ``{calibration plane: per-bin edges}`` of route 3; ``cost``
-    the :func:`signal_cost` table with a column per calibration label "<plane>-calibrated"."""
+    the route in PP and PD, the systematic by the rule over the same validation regions for every
+    route (:func:`rule_regions`; per bin for route 1, :func:`per_bin_systematic`) with the readings
+    behind it, the free choices, fitted parameters and systematics the route brings, the smallest
+    count it rests on, the signal yield ratio and what is left to validate.  ``flat_edges`` is
+    ``{calibration plane: per-bin edges}`` of route 3; ``cost`` the :func:`signal_cost` table with a
+    column per calibration label "<plane>-calibrated"."""
     out = []
+    regions = rule_regions(cube, cfg)
     mix5 = mixing_factor(cube, cfg, "DD", FIVE)
     mix2 = mixing_factor(cube, cfg, "DD", TWO)
-    b5, b2 = mixing_bootstrap(mix5["windows"], n_toys, seed), mixing_bootstrap(mix2["windows"], n_toys, seed)
+    b5, b2 = mixing_bootstrap(mix5["raw"], n_toys, seed, True), mixing_bootstrap(mix2["raw"], n_toys, seed, False)
 
     def closures(fn):
         return {p: fn(p) for p in OPEN_PLANES}
@@ -651,12 +810,14 @@ def comparison(cube, cfg, flat_edges, cost=None, n_toys=N_TOYS, seed=SEED):
     one = counts(bin_regions(cube, cfg, "DD", ONE))[0]
     est = one[1] * one[2] / one[3]
     k = closures(lambda p: route_closure(cube, cfg, p, ONE, n_toys, seed))
-    syst = rule(list(k.items()))
+    readings = [(v.name, ps.kappa(nl.vr_regions(cube, v, cfg))) for v in regions]
+    syst = rule(readings)
     out.append({"route": "one bin (nominal.ipynb)", "estimate": est,
                 "interval": nl.interval68(nl.bootstrap_abcd([tuple(one[1:])], n_toys, seed)["one_bin"]),
                 "mixing": f"{mix2['ratio']:.2f} between the windows ({fmt_interval(b2['ratio'], 2)}); "
                           f"{mix5['ratio']:.2f} over the bins ({fmt_interval(b5['ratio'], 2)})",
-                "kappa": k, "syst": syst, "syst text": f"{100 * syst[0]:.0f}% ({syst[1]}); the mixing not covered",
+                "kappa": k, "syst": syst, "syst text": _syst_text(syst) + "; the mixing not covered",
+                "readings": {"one bin": readings},
                 "choices": 0, "parameters": "0", "n syst": "1 + the mixing caveat",
                 "smallest": f"D = {one[3]:.0f}", "cost": "1", "validate": "the mixing factor in DD"})
 
@@ -669,53 +830,65 @@ def comparison(cube, cfg, flat_edges, cost=None, n_toys=N_TOYS, seed=SEED):
         n_undefined = int(np.sum(~np.isfinite(body["syst"].to_numpy(float))))
         within = (f"{mix5['split'] / total['estimate']:.2f} inside the windows (the five-bin sum over this one)"
                   if bins is TWO else "inside the bins: not measurable (C and D of DD are empty above 600 GeV)")
-        out.append({"route": f"1, stratified, {name}" + (" (≥ 600 merged)" if len(body) < len(bins) else ""),
-                    "estimate": float(total["estimate"]), "interval": (total["lo"], np.nan, total["hi"]),
-                    "kept": t.attrs["kept"], "mixing": within, "kappa": k,
-                    "syst": (float(total["syst"]), None),
-                    "syst text": " / ".join(per) + ("" if n_undefined else f" per bin; {100 * total['syst']:.0f}% on the sum"),
-                    "choices": len(body) - 1, "parameters": "0",
-                    "n syst": f"{len(body)}" + (f", {n_undefined} without a qualifying region" if n_undefined else ""),
-                    "smallest": f"D = {body['D'].min():.0f}", "cost": "1",
-                    "validate": "kappa per bin with a displaced LJ" + (" above 300 GeV" if n_undefined == 0 else
-                                                                       "; no region measures it above 300 GeV")})
+        rec = {"route": f"1, stratified, {name}" + (" (≥ 600 merged)" if len(body) < len(bins) else ""),
+               "estimate": float(total["estimate"]), "interval": (total["lo"], np.nan, total["hi"]),
+               "kept": t.attrs["kept"], "mixing": within, "kappa": k,
+               "syst": (float(total["syst"]), None),
+               "syst text": " / ".join(per) + ("" if n_undefined else f" per bin; {100 * total['syst']:.0f}% on the sum"),
+               "choices": len(body) - 1, "parameters": "0",
+               "n syst": f"{len(body)}" + (f", {n_undefined} without a qualifying region" if n_undefined else ""),
+               "smallest": f"D = {body['D'].min():.0f}", "cost": "1",
+               "validate": "kappa per bin with a displaced LJ" + (" above 300 GeV" if n_undefined == 0 else
+                                                                  "; no region measures it above 300 GeV")}
+        if bins is TWO:
+            names = {v.name for v in regions}
+            merged, _ = merge_empty(bins, counts(bin_regions(cube, cfg, "DD", bins))[:, 1:])
+            rec["readings"] = {}
+            for label, r in per_bin_systematic(cube, cfg, merged).items():
+                tab = r["table"][r["table"]["region"].isin(names)]
+                rec["readings"][f"1: {label.replace('>=', '≥ ')}"] = [
+                    (row["region"], (row["kappa"], row["minus"], row["plus"])) for _, row in tab.iterrows()]
+        out.append(rec)
 
     # route 2
     fits = {p: smooth_route(cube, cfg, p, n_toys=n_toys, seed=seed) for p in PLANES}
     shared = smooth_route(cube, cfg, "DD", slope_plane="PD", n_toys=n_toys, seed=seed)
-    k = {p: fits[p]["kappa"] for p in OPEN_PLANES}
-    syst = rule(list(k.items()))
+    own = {v.name: (fits[v.name] if v.name in fits else smooth_route(cube, cfg, v, n_toys=n_toys, seed=seed)) for v in regions}
+    readings = [(n, f["kappa"]) for n, f in own.items()]
+    syst = rule(readings)
     out.append({"route": "2, logistic a(M), DD's own fit", "estimate": fits["DD"]["pred"],
                 "interval": fits["DD"]["pred_interval"], "mixing": "absorbed by the fit",
-                "kappa": k, "syst": syst, "syst text": f"{100 * syst[0]:.0f}% ({syst[1]}) + the fit form",
+                "kappa": {p: fits[p]["kappa"] for p in OPEN_PLANES}, "syst": syst,
+                "syst text": _syst_text(syst) + " + the fit form", "readings": {"2, own slope": readings},
                 "choices": 1, "parameters": "2 per plane", "n syst": "2 (closure, fit form)",
                 "smallest": "D = 1 at 300–400 GeV sets the slope; B = 4 at ≥ 600 GeV is extrapolated",
                 "cost": "1", "validate": f"the form (PD's fit: deviance {fits['PD']['deviance']:.1f}/{fits['PD']['ndf']})"})
     transfer = abs(fits["DD"]["pred"] - shared["pred"]) / shared["pred"]
-    k_sh = {p: (fits[p]["kappa"] if p == "PD" else smooth_route(cube, cfg, p, slope_plane="PD", n_toys=n_toys, seed=seed)["kappa"])
-            for p in OPEN_PLANES}
-    syst_sh = rule(list(k_sh.items()))
+    borrowed = {v.name: (own[v.name] if v.name == "PD" else smooth_route(cube, cfg, v, slope_plane="PD", n_toys=n_toys, seed=seed))
+                for v in regions}
+    readings = [(n, f["kappa"]) for n, f in borrowed.items()]
+    syst_sh = rule(readings)
     out.append({"route": "2, logistic a(M), PD's slope", "estimate": shared["pred"], "interval": shared["pred_interval"],
-                "mixing": "absorbed by the fit", "kappa": k_sh, "syst": syst_sh,
-                "syst text": f"{100 * syst_sh[0]:.0f}% ({syst_sh[1]}) + {100 * transfer:.0f}% for the slope (DD's own gives "
-                             f"{fits['DD']['pred']:.0f})",
+                "mixing": "absorbed by the fit", "kappa": {p: borrowed[p]["kappa"] for p in OPEN_PLANES}, "syst": syst_sh,
+                "syst text": f"{_syst_text(syst_sh)} + {100 * transfer:.0f}% for the slope (DD's own gives "
+                             f"{fits['DD']['pred']:.0f})", "readings": {"2, PD's slope": readings},
                 "transfer": transfer, "choices": 1, "parameters": "1 in DD + PD's slope",
                 "n syst": "2 (closure, slope transfer)", "smallest": f"C + D = {(one[2] + one[3]):.0f} in DD for the intercept",
                 "cost": "1", "validate": "that DD's slope is PD's"})
 
     # route 3
     for cal, edges in flat_edges.items():
-        f = {p: flat_route(cube, cfg, p, FIVE, edges, n_toys, seed) for p in PLANES}
-        k = {p: f[p]["kappa"] for p in OPEN_PLANES}
-        syst = rule(list(k.items()))
+        dd = flat_route(cube, cfg, "DD", FIVE, edges, n_toys, seed)
+        readings = [(v.name, flat_kappa(cube, cfg, v, FIVE, edges)) for v in regions]
+        syst = rule(readings)
         label = f"{cal}-calibrated"
         cost_text = "n/a"
         if cost is not None and label in cost:
             cost_text = f"{cost[label].min():.2f}–{cost[label].max():.2f}"
-        dd = f["DD"]
         out.append({"route": f"3, flattened cut, {label}", "estimate": dd["pred"][0], "interval": dd["pred_interval"],
-                    "mixing": f"{dd['mixing']:.2f} ({fmt_interval(dd['mixing_interval'], 2)})", "kappa": k, "syst": syst,
-                    "syst text": f"{100 * syst[0]:.0f}% ({syst[1]}) + the calibration transfer",
+                    "mixing": f"{dd['mixing']:.2f} ({fmt_interval(dd['mixing_interval'], 2)})",
+                    "kappa": {p: flat_kappa(cube, cfg, p, FIVE, edges) for p in OPEN_PLANES}, "syst": syst,
+                    "syst text": _syst_text(syst) + " + the calibration transfer", "readings": {f"3, {label}": readings},
                     "choices": len(edges), "parameters": "0",
                     "n syst": "2 (closure, calibration)",
                     "smallest": f"D = {min(w[2] for w in dd['mixing_windows']):.0f} in a bin; D = {dd['regions']['D'][0]:.0f} summed",
@@ -727,13 +900,41 @@ def comparison_view(records):
     """The comparison records as the table of the notebook."""
     rows = []
     for r in records:
-        lo, _, hi = r["interval"]
-        rows.append({"route": r["route"], "DD estimate (68% interval)": f"{r['estimate']:.1f} ({lo:.0f}–{hi:.0f})",
+        rows.append({"route": r["route"], "DD estimate (68% interval)": f"{r['estimate']:.1f} ({fmt_interval(r['interval'])})",
                      "mixing still carried": r["mixing"],
                      "closure PP": tl.fmt(r["kappa"]["PP"], 2), "closure PD": tl.fmt(r["kappa"]["PD"], 2),
                      "systematic by the rule": r["syst text"], "free choices": r["choices"],
                      "fitted parameters": r["parameters"], "systematics carried": r["n syst"],
                      "rests on": r["smallest"], "signal yield ratio": r["cost"], "still to validate": r["validate"]})
+    return pd.DataFrame(rows)
+
+
+def readings_view(records, max_precision=MAX_PRECISION):
+    """kappa of every validation region of the rule under each route (one column per route, or per
+    window for route 1), "*" marking a reading not measured to ``max_precision`` ("not measured" when
+    its interval is wider than the value or undefined, n/a when kappa is undefined), and the region
+    the rule picks in brackets."""
+    columns, picks = {}, {}
+    for r in records:
+        for label, readings in r.get("readings", {}).items():
+            columns[label] = dict(readings)
+            picks[label] = rule(readings, max_precision)[1]
+    names = list(dict.fromkeys(n for col in columns.values() for n in col))
+    rows = []
+    for n in names:
+        row = {"region": n}
+        for label, col in columns.items():
+            k = col.get(n, (np.nan,) * 3)
+            prec = el.precision(k)
+            if not np.isfinite(k[0]):
+                row[label] = "n/a"
+                continue
+            if not np.isfinite(prec) or prec > 1:
+                row[label] = "not measured *"
+                continue
+            cell = tl.fmt(k, 2) + ("" if prec <= max_precision else " *")
+            row[label] = f"[{cell}]" if picks[label] == n else cell
+        rows.append(row)
     return pd.DataFrame(rows)
 
 
@@ -757,7 +958,7 @@ def mixing_view(table):
                      "sum of B C/D": f"{r['split']:.1f}", "one-bin B C/D": f"{r['one_bin']:.1f}",
                      "mixing factor": f"{r['ratio']:.2f}", "bootstrap 16/50/84%": boot,
                      "toys below 1": "" if not np.isfinite(r["below_one"]) else f"{100 * r['below_one']:.0f}%",
-                     "toys kept": f"{100 * r['kept']:.0f}%"})
+                     "toys with a finite factor": f"{100 * r['kept']:.0f}%"})
     return pd.DataFrame(rows)
 
 
@@ -765,12 +966,13 @@ def stratified_view(table, ref_planes=OPEN_PLANES):
     rows = []
     for _, r in table.iterrows():
         row = {"bin": r["bin"], "B/C/D of DD": f"{r['B']:.0f}/{r['C']:.0f}/{r['D']:.0f}",
-               "B C/D": f"{r['estimate']:.1f} ± {r['error']:.1f}", "bootstrap 68%": f"{r['lo']:.1f}–{r['hi']:.1f}"}
+               "B C/D": f"{r['estimate']:.1f} ± {r['error']:.1f}", "bootstrap 68%": fmt_interval((r["lo"], np.nan, r["hi"]), 1)}
         for p in ref_planes:
             k = (r.get(f"kappa {p}", np.nan), r.get(f"kappa {p} minus", np.nan), r.get(f"kappa {p} plus", np.nan))
             row[f"kappa {p}"] = "" if not np.isfinite(k[0]) else tl.fmt(k, 2)
+        region = r["syst region"] if isinstance(r["syst region"], str) else None
         row["systematic (rule)"] = ("none qualifies" if not np.isfinite(r["syst"]) else
-                                    f"{100 * r['syst']:.0f}%" + (f" ({r['syst region']})" if r["syst region"] else ""))
+                                    f"{100 * r['syst']:.0f}%" + (f" ({region})" if region else ""))
         row["regions measured to 20%"] = r["qualifying"]
         rows.append(row)
     return pd.DataFrame(rows)
@@ -782,8 +984,9 @@ def fit_view(fits):
         rows.append({"plane": name, "intercept alpha (log-odds at 200 GeV)": f"{f['alpha']:.2f} ± {f['alpha_err']:.2f}",
                      "slope s": (f"{f['slope']:.2f} ± {f['slope_err']:.2f}" + (" (PD's)" if f["fixed_slope"] is not None else "")),
                      "deviance / ndf": f"{f['deviance']:.1f} / {f['ndf']}",
-                     "p": "" if not np.isfinite(f["p"]) else f"{f['p']:.2f}",
-                     "sum B r(M)": f"{f['pred']:.1f} ({f['pred_interval'][0]:.0f}–{f['pred_interval'][2]:.0f})",
+                     "p": "" if not np.isfinite(f["p"]) else fmt_p(f["p"]).removeprefix("p = ").removeprefix("p "),
+                     "errors scaled by": f"{f['scale']:.2f}" + (f" (slope {f['ref_scale']:.2f})" if f["fixed_slope"] is not None else ""),
+                     "sum B r(M)": f"{f['pred']:.1f} ({fmt_interval(f['pred_interval'])})",
                      "observed A": nl.fmt_count(f["A"]),
                      "kappa = A / sum B r(M)": "hidden" if not np.isfinite(f["kappa"][0]) else tl.fmt(f["kappa"], 2)})
     return pd.DataFrame(rows)
@@ -809,12 +1012,11 @@ def flat_view(results):
     rows = []
     for (cal, plane), f in results.items():
         fl = f["flatness"]
-        lo, _, hi = f["pred_interval"]
         rows.append({"calibration": cal, "plane": plane,
                      "a per bin": " / ".join("–" if not np.isfinite(v) else f"{v:.2f}" for v in fl["a"]),
-                     "chi2 vs constant": f"{fl['chi2']:.1f} / {fl['ndf']} (p = {fl['p']:.2f})",
+                     "chi2 vs constant": f"{fl['chi2']:.1f} / {fl['ndf']} ({fmt_p(fl['p'])})",
                      "B'/C'/D'": "/".join(f"{f['regions'][x][0]:.0f}" for x in "BCD"),
-                     "B' C'/D'": f"{f['pred'][0]:.1f} ({lo:.0f}–{hi:.0f})",
+                     "B' C'/D'": f"{f['pred'][0]:.1f} ({fmt_interval(f['pred_interval'])})",
                      "mixing factor": f"{f['mixing']:.2f} ({fmt_interval(f['mixing_interval'], 2)})",
                      "A'": nl.fmt_count(f["A"]),
                      "kappa": "hidden" if not np.isfinite(f["kappa"][0]) else tl.fmt(f["kappa"], 2)})
