@@ -42,6 +42,13 @@ python3 --version
 # ------------------------------------------------------------
 # 2. Create venv inside Condor scratch
 # ------------------------------------------------------------
+# Temporary files go in a subdirectory of the sandbox: HTCondor sets TMPDIR to the
+# scratch directory and, when transfer_output_files is unset, transfers every new
+# top-level file back to the submit directory; the venv bootstrap below leaves a copy of pip's CA bundle
+# (tmp*cacert.pem) in TMPDIR.
+export TMPDIR="${_CONDOR_SCRATCH_DIR}/tmp"
+mkdir -p "${TMPDIR}"
+
 python3 -m venv sidm_venv --system-site-packages
 source sidm_venv/bin/activate
 
@@ -109,13 +116,11 @@ ls -lh "${OUTFILE}"
 echo "Copying to EOS:"
 echo "${EOS_OUTDIR}/${OUTFILE}"
 
-xrdcp -f "${OUTFILE}" "${EOS_OUTDIR}/${OUTFILE}"
-
-XRDEXIT=$?
-if [[ ${XRDEXIT} -ne 0 ]]; then
+xrdcp -f "${OUTFILE}" "${EOS_OUTDIR}/${OUTFILE}" || {
+    XRDEXIT=$?
     echo "xrdcp failed with exit code ${XRDEXIT}"
     exit ${XRDEXIT}
-fi
+}
 
 rm -f "${OUTFILE}"
 

@@ -7,6 +7,8 @@ arguments = $(chunk) $(filelist) root://cmseos.fnal.gov//store/user/$ENV(USER)/s
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
+# Outputs reach EOS by xrdcp inside the wrapper; only stdout and stderr come back.
+transfer_output_files = ""
 
 transfer_input_files = sidm_code.tar.gz, requirements.txt, constraints.txt, $(filelist)
 

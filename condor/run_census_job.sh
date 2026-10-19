@@ -23,6 +23,13 @@ cd CMSSW_14_1_0_pre4/src
 eval `scramv1 runtime -sh`
 cd "${_CONDOR_SCRATCH_DIR}"
 
+# Temporary files go in a subdirectory of the sandbox: HTCondor sets TMPDIR to the
+# scratch directory and, when transfer_output_files is unset, transfers every new
+# top-level file back to the submit directory; the venv bootstrap below leaves a copy of pip's CA bundle
+# (tmp*cacert.pem) in TMPDIR.
+export TMPDIR="${_CONDOR_SCRATCH_DIR}/tmp"
+mkdir -p "${TMPDIR}"
+
 python3 -m venv sidm_venv --system-site-packages
 source sidm_venv/bin/activate
 export PIP_CACHE_DIR="${_CONDOR_SCRATCH_DIR}/pip_cache"

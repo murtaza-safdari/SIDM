@@ -108,6 +108,14 @@ vector==1.6.2
 uproot==5.6.2
 ```
 
+The wrappers also point `TMPDIR` at a subdirectory of the scratch directory. The venv bootstrap
+runs pip from the wheel bundled with the CMSSW Python, and that pip leaves a copy of its CA bundle
+(`tmp*cacert.pem`, about 266 KB) in `TMPDIR`; with `transfer_output_files` unset, Condor transfers every
+new top-level file of the sandbox back to the submit directory, one such file per job (about 24 GB
+for a 90k-job campaign). The submit files set `transfer_output_files = ""` as well, since every output
+reaches EOS by `xrdcp` inside the wrapper and nothing needs to come back; a job whose `xrdcp` fails
+exits non-zero and keeps no local copy of its output, so resubmit it.
+
 ---
 
 ## 5. Sample lists
