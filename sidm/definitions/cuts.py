@@ -224,6 +224,8 @@ obj_cut_defs = {
         "endcap": lambda objs, muons: ((abs(muons.eta) > 1.479) & (abs(muons.eta) < 2.4)),
         "pfRelIso04_all <= 0.15": lambda objs, muons: muons.pfRelIso04_all <= 0.15,
         "sip3d < 4": lambda objs, muons: abs(muons.sip3d) < 4,
+        "DT + CSC hits > 3": lambda objs, muons: (muons.trkNumDTHits
+                                            + muons.trkNumCSCHits) > 3,
     },
     "photons":{
         "pT > 20 GeV": lambda objs: objs["photons"].pt > 20,

@@ -18,6 +18,7 @@ ljsource_cuts: &ljsource_cuts
       - "pT > 5 GeV"
       - "|eta| < 2.4"
       - "eta-phi_veto"
+      - "DT + CSC hits > 3"
     photons: &photons_ljsource_cuts
       - "pT > 20 GeV"
       - "|eta| < 2.5"
