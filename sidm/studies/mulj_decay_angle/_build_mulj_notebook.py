@@ -107,7 +107,7 @@ M_ZD_REFERENCE = 1.2                 # mass point used for the single-point figu
 lib.configure(input_dir=INPUT_DIR, lumi_fb=LUMI_FB)
 lib.set_style(dpi=85)
 print("input directory :", lib.INPUT_DIR)
-print("figures written to:", lib.FIG_DIR)"""))
+print("figures written to:", lib.display_path(lib.FIG_DIR))"""))
 
     cells.append(new_markdown_cell("""### What is in the input directory
 
