@@ -153,7 +153,11 @@ ran, so a channel here that shares its name with a channel there selects differe
 * main cuts on `dzSpread` and `dxySpread` in the muon-lepton-jet cuts of its signal channels.
   None of the signal-like channels here has a spread cut; the four spread-veto regions cut on
   `dzSpread` and `vxySpread`, with main's thresholds (50 for all muons, 10 for particle-flow
-  muons).
+  muons);
+* main has since also required `DT + CSC hits > 3` (`trkNumDTHits + trkNumCSCHits > 3`) of every
+  particle-flow muon at the lepton-jet source (the `muons_ljsource_cuts` anchor, commit
+  `65b46a86`).  None of the channels here has it, and its effect on the shapes and counts of this
+  study was not measured.
 
 The four spread-veto regions, `data_control_region_1muLj_spread_cosAlpha_mu_veto`,
 `cr_2lj_invDisplaced_spread_cosAlpha_mu_veto` and the two `test_VR_*` regions, are not defined on
@@ -605,7 +609,8 @@ These apply to every reading of the figures above.
 
 4. **These are the as-run definitions, not main's.** Every channel here is defined by
    `selections_mulj_decay_angle_as_run.yaml`.  Main's channels of the same names add an eta-phi
-   veto and the base-cut and spread-cut differences listed under "Selections used in this study",
+   veto, the `DT + CSC hits > 3` requirement on the muons at the lepton-jet source, and the
+   base-cut and spread-cut differences listed under "Selections used in this study",
    and under them the shapes would change as well as the yields: the cleaned single-lepton-jet
    control region, which differs from the uncut one by the spread and opening-angle vetoes alone,
    shows how strongly such cuts move the angle (data hi/lo 0.008 against 0.035).
@@ -613,11 +618,14 @@ These apply to every reading of the figures above.
 5. **Histograms are raw counts; cutflows are not.** The campaign ran with unweighted histograms, so
    nothing in the histograms carries a cross-section or generator weight, while the cutflows in the
    same files are luminosity times cross-section scaled.  The two must never be combined.  A
-   normalised simulation prediction needs luminosity times cross section divided by the number of
-   *generated* events per sample; the sum of weights stored in the metadata counts events that
-   survived the skim, and the signal skim keeps only about a tenth of what was generated, so the
-   generated count from the file census has to be substituted before any yield is quoted.  Shapes
-   are unaffected, because the factor cancels in a unit-area normalisation.
+   normalised simulation prediction is luminosity times cross section divided by the sum of
+   generator weights over the events stored in the input files, the normalisation the processor
+   itself applies and the one `lumi_xs_weight` and `planes_weight` return.  The figure of about
+   one event in ten kept by the signal skim, which would call for a generated count in the
+   denominator instead, came from summing a cumulative counter of the Runs tree across files, an
+   artefact found on 2026-08-10.  No generator filter is recorded in the files,
+   and neither signal ntuple location file the campaigns read sets a `skim_factor`.  Shapes are
+   unaffected in any case, because the factor cancels in a unit-area normalisation.
 
 6. **Signal-region channels evaluate their event cuts on unfiltered lepton jets**, so an event whose
    lepton jets are all prompt can still pass a signal-region channel with no muon lepton jets left in
@@ -666,7 +674,61 @@ These apply to every reading of the figures above.
    cosine of 1,136 of 33,352 and 2,544 of 17,752 generated muons as not a number, which the
    histogram counts as overflow, and none at one or above; in double precision every one of
    those muons has a finite cosine.  Every figure and number here is built from the in-range
-   bins alone."""))
+   bins alone.
+
+10. **The data regions hold signal.**  Collision data is read in seven regions.  The three
+    single-lepton-jet control regions (uncut, with the cosmic veto, and with the spread and
+    opening-angle vetoes) ask for one muon lepton jet.  The two validation regions and the
+    two-lepton-jet control region are the signal-region selection with the displacement
+    requirement inverted on every lepton jet and no isolation requirement: the prompt-prompt
+    corner of the displacement plane, with no isolation split and no ABCD cells.  A signal with a
+    short proper lifetime is prompt by that definition, so these three regions collect it: in the
+    table below (column reg/ch, the region's entries over those of the sample's signal channel)
+    0.851 of the four-muon channel's muon-lepton-jet entries of 4Mu_500GeV_5p0GeV_0p08mm fall in
+    the four-muon validation region.
+
+    The table counts each region as each campaign draws it, with each campaign's own histogram and
+    its own sum of generator weights, at a cross section of 1 fb.  The first and the pair campaign
+    count muon lepton jets, so their expected numbers are muon-lepton-jet entries, not events; the
+    decay-plane campaign counts events.  For m_XX = 500 and 1000 GeV the largest shares of the
+    data are 1.7289 percent in the four-muon validation region (4Mu_500GeV_5p0GeV_0p08mm; the
+    pair and decay-plane campaigns give 1.7293 and 1.7305 percent for the same sample), 0.3452
+    percent in the first campaign's two-muon-two-electron validation region, 0.5216 percent in
+    the two-lepton-jet control region, at most 0.0005 percent in the single-lepton-jet control
+    regions, and 10.6436 percent in the decay-plane campaign's two-muon-two-electron validation
+    region (2Mu2E_500GeV_5p0GeV_0p08mm; 4 of 22 samples above 1 percent).  The decay-plane
+    campaign's own single-lepton-jet control regions are not in the table: its muon one is the
+    cleaned region above under the same definition, and its electromagnetic one is not counted.
+
+    The expected count is proportional to the assumed cross section.  `cross_sections.yaml` lists
+    1.264 fb at m_XX = 500 GeV and 0.342 fb at 1000 GeV, and the table prints each region's
+    largest share at the listed value as well: 2.1854 percent in the four-muon validation region
+    and 13.4536 percent in the decay-plane two-muon-two-electron one.
+
+    The two-muon-two-electron validation region holds 7,403 muon-lepton-jet entries in the first
+    campaign and 86 events in the decay-plane campaign.  The first campaign fills one entry per
+    muon lepton jet with two or more muons, whatever the other lepton jet is.  The decay-plane
+    histograms are filled only for events with two qualifying lepton jets, each a muon lepton jet
+    with two or more muons or an electromagnetic one with two or more electrons
+    (`lj_pair_evt_mask` in `sidm/definitions/hists.py`).  In that region's data 64 of the 7,447
+    electromagnetic lepton jets hold two or more electrons, so few events qualify, while the
+    signal's electron pair at m_Zd = 5.0 GeV is resolved far more often; in the four-muon
+    validation region, where both lepton jets are muon lepton jets, the two counts differ by the
+    factor 2.00 of two jets per event.  This is why the same region holds 0.3452 percent signal in
+    one campaign and 10.6436 percent in the other.
+
+    The effect on the two numbers quoted from the validation regions, computed in the same cell:
+    subtracting each sample's expected entries at 1 fb from the four-muon validation region moves
+    its data high-to-low ratio of 0.327 +- 0.018 by at most +0.013 (4Mu_1000GeV_1p2GeV_0p0096mm),
+    within its statistical error; and in the decay-plane two-muon-two-electron validation region,
+    where the data give A = -0.507 +- 0.150 on 86 events (section j), the shift f x (A_s - A) a signal of
+    fraction f and coefficient A_s adds is at most +0.096 (2Mu2E_500GeV_5p0GeV_0p08mm,
+    A_s = +0.394).  The signal pulls A towards positive values, so the negative value is not
+    produced by signal; both shifts scale with the assumed cross section."""))
+    cells.append(new_code_cell(f"""# signal expected in each data region at 1 fb, region by region and campaign by campaign
+lib.configure_pair("{PAIR_INPUT}")
+lib.configure_planes("{PLANES_INPUT}")
+rows = lib.signal_contamination_table()"""))
 
     # ---------------------------------------------------------------- (h) verdict
     cells.append(new_markdown_cell("""## h. Verdict
@@ -1163,7 +1225,8 @@ signal's.  The simulated background gives +0.094 +- 0.010 counting its unweighte
 how little the simulation can settle here, and the numbers below are taken from the data regions
 for that reason.  Fakes are not flat in Phi.  The one outlier is the two-muon-two-electron
 validation region, A = -0.51 +- 0.15 on 86 events; on that sample size and with that region's
-mixed pair composition it is not a result, and more data would be needed to check it."""))
+mixed pair composition it is not a result, and more data would be needed to check it.  Caveat 10
+of section g explains why that region holds so few events here and sizes the signal in it."""))
 
     cells.append(new_markdown_cell("""### Do the two lepton jets balance
 
