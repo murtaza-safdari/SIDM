@@ -29,8 +29,8 @@ notebook is where those come from.
 It has two halves.  The first runs here, on two files of one signal sample and two of one
 data sample, and its outputs are committed: they are the evidence that the recipe below
 works, not a physics result.  The second half is the full campaign, 193,770 files over 152
-samples, which does not run in a notebook; it is written out as the exact commands that
-produced the inputs the study uses.
+samples, which does not run in a notebook; section 2 shows how to run it and points to the
+README for the exact commands that produced the inputs the study uses.
 
 Nothing here is specific to one working copy: the sample lists, the submit files and the
 job-argument generator are all in the repository."""))
@@ -240,83 +240,12 @@ coffea.util.save(output["out"], "signal_4mu.coffea")
 
 ### Route (b): Condor, which is what produced the study's inputs
 
-Three steps: generate the file lists and job arguments, submit, merge.  All three tools are
-in the repository, as are the sample lists and the submit files.
-
-The job arguments are generated, not stored.  One call per category, from the repository
-root with the environment sourced:
-
-```bash
-cd <repository root>
-source /uscms_data/d3/murtazas/SIDM/sidm_venv/bin/activate
-
-python condor/make_job_args.py --samples-file condor/mulj_signal_4mu_samples.txt \\
-  --location-cfg signal_4mu_v10.yaml --files-per-job 5 --replace-xcache \\
-  --outdir condor/filelists_mulj_signal --job-args condor/job_args_mulj_signal_4mu.txt
-
-python condor/make_job_args.py --samples-file condor/mulj_signal_2mu2e_samples.txt \\
-  --location-cfg signal_2mu2e_v10.yaml --files-per-job 5 --replace-xcache \\
-  --outdir condor/filelists_mulj_signal --job-args condor/job_args_mulj_signal_2mu2e.txt
-
-python condor/make_job_args.py --samples-file condor/mulj_background_samples.txt \\
-  --location-cfg backgrounds.yaml --dataset skimmed_llpNanoAOD_v2 \\
-  --files-per-job 30 --replace-xcache \\
-  --outdir condor/filelists_mulj_bkg --job-args condor/job_args_mulj_bkg.txt
-
-python condor/make_job_args.py --samples-file condor/mulj_data_samples.txt \\
-  --location-cfg data_skimmed.yaml --files-per-job 30 --replace-xcache \\
-  --outdir condor/filelists_mulj_data --job-args condor/job_args_mulj_data.txt
-```
-
-That chunking gives 701, 2,109 and 4,278 jobs over 152 samples and 193,770 files.  Submit
-from inside `condor/`, with the proxy on shared NFS rather than in `/tmp`, which the schedd
-cannot read.  The channel lists, the collections and the selections file of the configuration
-cell above are baked into the three submit files, so they do not have to be passed again:
-
-```bash
-cd condor
-export X509_USER_PROXY=/uscms_data/d3/murtazas/x509_proxy.pem
-condor_submit submit_mulj_signal.sub    #   701 jobs
-condor_submit submit_mulj_bkg.sub       # 2,109 jobs
-condor_submit submit_mulj_data.sub      # 4,278 jobs
-```
-
-A drained queue is not success.  Read the exit-code histogram and count the chunks on EOS,
-then reconcile each cluster against what it should have produced:
-
-```bash
-python condor/condor_campaign.py reconcile \\
-  --job-args condor/job_args_mulj_data.txt \\
-  --logs-dir condor/logs_mulj_data \\
-  --eos-chunk-dir /store/user/<user>/sidm_condor/MuljDecayAngle_Run2018_v1 \\
-  --run-id mulj_data_v1
-```
-
-Finally merge the chunks into one file per sample.  All three categories write into the same
-EOS directory and sample names are unique across them, so one pass covers everything.  The
-chunks were produced unweighted, so the merge has to be told; the channel names and the
-selections file only feed the metadata written next to each merged file, which then records
-the definitions the chunks were actually run with:
-
-```bash
-python sidm/scripts/merge_coffea_chunks_eos.py \\
-  --input-eos-dir  /store/user/<user>/sidm_condor/MuljDecayAngle_Run2018_v1 \\
-  --output-eos-dir /store/group/lpcmetx/SIDM/coffea_outputs/<user>/mulj_decay_angle \\
-  --unweighted-hist \\
-  --filelists-dir condor/filelists_mulj_data \\
-  --hist-collections mulj_decay_angle,mulj_decay_angle_gen \\
-  --selections-cfg configs/selections_mulj_decay_angle_as_run.yaml \\
-  --selections data_control_region_1muLj,data_control_region_1muLj_cosmic_veto,\\
-data_control_region_1muLj_spread_cosAlpha_mu_veto,test_VR_2mu2e_invDisplaced_spread_cosAlpha_mu_veto,\\
-test_VR_4mu_invDisplaced_spread_cosAlpha_mu_veto,4mu,2mu2e,4mu_sr,2mu2e_sr,4mu_noMuPtCut,2mu2e_noMuPtCut
-```
-
-### What the study expects
-
-One merged `.coffea` per sample, all in one directory, named after the sample.  Point
-`INPUT_DIR` in `mulj_decay_angle.ipynb` at it, either as a local path or as a
-`root://` URL, and set `LUMI_FB`.  The sample lists there are read from whatever is present
-in the directory, so nothing else has to be edited."""))
+The commands are in this directory's `README.md`, under "Reproducing the inputs": step 1
+generates the file lists and job arguments and submits one cluster per category, step 2
+merges the chunks into one `.coffea` per sample, and step 3 points `mulj_decay_angle.ipynb`
+at the merged directory.  The channel lists, the collections and the selections file of the
+configuration cell above are baked into the submit files, so they do not have to be passed
+again."""))
 
     notebook = new_notebook(cells=cells, metadata={
         "kernelspec": {"display_name": "SIDM (LCG_107 Py3.11)",
