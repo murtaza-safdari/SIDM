@@ -31,22 +31,34 @@ def build():
     # ---------------------------------------------------------------- title and setup
     cells.append(new_markdown_cell("""# Decay angle of the leading muon pair in a muon lepton jet
 
-This study measures, for every muon-type lepton jet with at least two constituent muons,
-the decay angle of its two leading muons in their own rest frame, and compares that angle
-between simulated signal, simulated background and collision data across a set of control
-and validation regions.
+A lepton jet is a group of collimated muons, electrons or photons clustered into one object, the
+signature of a light, highly boosted dark photon (Zd) decaying to a lepton pair.  A muon lepton
+jet is built from muons, an electromagnetic lepton jet from electrons and photons.  A fake lepton
+jet is one not produced by a dark-photon decay, for example two unrelated muons that happen to be
+clustered together.
 
-The notebook is a driver: all of the loading, normalisation and drawing lives in
-`_mulj_lib.py` in this directory, and each figure comes from one function there.  The
-configuration cell below is the only cell that needs to change when the inputs change --
-the sample lists are read from whatever is present in the input directory.
+This study takes every muon lepton jet with at least two constituent muons and measures the decay
+angle theta* of its two leading muons: the angle of the leading muon in the rest frame of the
+pair, relative to the pair's direction in the laboratory (section a).  It compares |cos(theta*)|
+between simulated signal, simulated background and collision data in a set of control regions
+(CR) and validation regions (VR), and asks whether the angle separates genuine from fake muon
+lepton jets.  Signal samples are labelled by the mass m_XX of the heavy bound state that decays to
+two dark photons, the dark-photon mass m_Zd and the dark photon's proper decay length c tau.
 
-Each section states what its figures show and what follows from them; section g collects the
-caveats that apply to every reading of them, and section h states the verdict.  Sections i and j
-are addenda written after two later campaigns, and each reads its own separate set of merged
-files from its own configuration cell: section i measures the two muon lepton jets of a four-muon
-event together, and section j adds the electron pair of an electromagnetic lepton jet and the
-angle between the two lepton jets' decay planes."""))
+All loading, normalisation and drawing lives in `_mulj_lib.py` in this directory, and each figure
+comes from one function there.  Only the configuration cell below needs to change when the inputs
+change; the sample lists are read from whatever is in the input directory.
+
+The histograms come from three production campaigns run on Condor, listed under "Selections used
+in this study".  The first campaign fills one entry per muon lepton jet and feeds sections a to h.
+The pair campaign records the two muon lepton jets of a four-muon event together and feeds
+section i.  The decay-plane campaign feeds section j, which adds the electron pair of an
+electromagnetic lepton jet and the angle between the two lepton jets' decay planes.  Sections i
+and j were added after the first campaign, and each reads its own merged files, set in its own
+configuration cell.
+
+Each section states what its figures show and what follows from them.  Section g collects the
+caveats that apply to every figure, and section h states the verdict."""))
 
     cells.append(new_code_cell("""import os
 import sys
@@ -122,6 +134,9 @@ the branch `mulj-decay-angle-dev`:
 | `MuljPairAngle_Run2018_v1` | 2026-08-31 to 2026-09-01 | `mulj_pair_merged` | section i |
 | `LjAnglePlanes_Run2018_v1` | 2026-09-02 to 2026-09-05 | `lj_angle_planes_merged` | section j |
 
+The text calls them the first campaign, the pair campaign and the decay-plane campaign.  The
+merged-outputs column names the directory that holds each campaign's merged files.
+
 All three ran the channel definitions of `sidm/configs/selections.yaml` at commit `61224901` of
 that branch.  Those definitions are kept in `sidm/configs/selections_mulj_decay_angle_as_run.yaml`,
 with every YAML anchor resolved, every cut list in the order it is applied, and every channel under
@@ -131,9 +146,9 @@ pass that file to the processor explicitly.
 Three pieces of evidence tie the file to the inputs.  The jobs ran from a working copy with
 uncommitted changes, and commit `61224901` was made on 2026-09-07, after all three campaigns had
 run.  The metadata file written next to each merged output (152, 101 and 154 such files) records a
-definition for every channel, and every recorded definition agrees with this file; those
-definitions are read from the checkout that did the merging, not from the jobs, and the commit
-recorded there is likewise the merging checkout's.  For the third campaign the code shipped to the
+definition for every channel, and every recorded definition agrees with this file; but those
+definitions, and the commit recorded with them, come from the checkout that did the merging, not
+from the jobs.  For the third campaign the code shipped to the
 jobs was kept and is identical, file by file, to commit `61224901`; the code shipped to the first
 two campaigns was not kept.  The strongest evidence is a rerun: stored Condor outputs of all three
 campaigns (signal chunks of each, data chunks of the first and third) rerun from this branch with
@@ -177,9 +192,10 @@ display(Markdown(lib.selections_vs_reference()))"""))
     # ---------------------------------------------------------------- (a) definitions
     cells.append(new_markdown_cell("""## a. Definitions and method
 
-Every quantity below is computed per muon-type lepton jet, from the **two leading-transverse-momentum
-constituent muons** of that lepton jet.  The constituent list mixes particle-flow muons and
-displaced-standalone muons, and is sorted by transverse momentum inside each lepton jet; only lepton
+Every quantity below is computed per muon lepton jet, from the **two leading-transverse-momentum
+constituent muons** of that lepton jet.  The constituent list mixes particle-flow muons, which
+use the inner tracker, and displaced-standalone muons, reconstructed from the muon system alone so
+that muons from decays far from the beam line are kept.  It is sorted by transverse momentum inside each lepton jet; only lepton
 jets holding at least two muons contribute, which is imposed explicitly rather than inherited from a
 channel's muon-multiplicity cut.
 
@@ -197,10 +213,9 @@ channel's muon-multiplicity cut.
   each muon's transverse momentum, and the lepton-jet-level impact-parameter spreads used by the
   cleaning cuts.
 
-Every histogram axis for a given histogram is filled from the same jagged array, so a pair
-contributes one entry to each axis of the same histogram.  The implementation is a single helper in
-`sidm/definitions/hists.py`; the axis lambdas only pick fields off it, which is what keeps the axes
-structurally identical.
+All axes of a histogram are filled from one shared jagged array, so each pair contributes exactly
+one entry per axis.  A single helper in `sidm/definitions/hists.py` computes the quantities, and the
+per-axis functions only pick fields from it.
 
 ### The two-leading-muon convention
 
@@ -212,8 +227,10 @@ muons in the pair is recorded so that this population can be separated out.
 
 ### Regions
 
-Each region has one name in the text, given in the first column; the figures and printed tables
-abbreviate it ("1 mu-LJ CR", "VR").
+Each region has one name in the text, given in the first column.  Figures and printed tables
+abbreviate control region to CR, validation region to VR and muon lepton jet to mu-LJ, as in
+"1 mu-LJ CR".  The validation regions and the two-lepton-jet control region are the signal-region
+selection with the displacement requirement inverted, described below the table.
 
 | region, as named in the text | channel | what it selects |
 | --- | --- | --- |
@@ -226,11 +243,13 @@ abbreviate it ("1 mu-LJ CR", "VR").
 | electromagnetic-lepton-jet control region | `data_control_region_1egmLj_cosmic_veto` | events with exactly one lepton jet, an electromagnetic one, with the cosmic-muon veto (section j) |
 
 The two validation regions are orthogonal to the signal region by construction: the signal region
-requires every lepton jet to be displaced, and these require the exact negation.  For a muon lepton
-jet the negation is that at least one of its muons has more than two pixel hits.  A
-displaced-standalone muon is given zero pixel hits, so that muon is always a particle-flow muon,
-but the requirement does not exclude displaced-standalone muons from the lepton jet, nor from the
-two leading muons the angle is computed from.  The dependence of the angle on displacement is
+requires every lepton jet to be displaced, and these require the exact negation (inverted
+displacement).  A muon's pixel hits are the hits its track leaves in the silicon pixel detector,
+the innermost part of the tracker; a muon from a decay beyond the pixel layers has few or none.
+For a muon lepton jet the negation is that at least one of its muons has more than two pixel hits.
+A displaced-standalone muon is given zero pixel hits, so that muon is always a particle-flow muon.
+The requirement does not exclude displaced-standalone muons from the lepton jet, nor from the two
+leading muons the angle is computed from.  The dependence of the angle on displacement is
 measured in the uncut single-lepton-jet control region, which has no requirement on displacement.
 
 The table below counts the data pairs of each control and validation region by the number of
@@ -262,13 +281,15 @@ muon speed in the pair rest frame: alpha is 0.94 at m_Zd = 1.2 GeV, 0.996 at 5.0
 0.25 GeV, and exactly at threshold the muons are produced at rest in the pair frame and no decay
 direction exists to measure. The dark photons of this signal are transverse because the mediator
 couples to them through the field-strength operator (phi F F), which produces only transverse
-states. A fake muon
-lepton jet, meaning two muons that happen to be clustered together, has no reason to follow
-this distribution. In the lab the accessible observables are |cos(theta*)| and the momentum
+states.
+
+A fake muon lepton jet has no reason to follow this distribution.  In the laboratory the accessible observables are |cos(theta*)| and the momentum
 ratio r = pT_sub / pT_lead; for a collimated pair r = (1 - beta* cos(theta*)) / (1 + beta* cos(theta*)),
 so the narrow band in the (|cos(theta*)|, r) plane is a kinematic identity shared by any
 collimated pair, and the discriminating information is the position along the band, not the
-band itself. This study measures that position for signal in its inclusive four-muon and
+band itself.
+
+This study measures that position for signal in its inclusive four-muon and
 two-muon-two-electron channels, for simulated backgrounds, and for fake-enriched data control
 and validation regions, and asks two questions:
 does the shape separate genuine from fake muon lepton jets, and is it correlated with the
@@ -277,9 +298,10 @@ variables the background estimate already uses."""))
     cells.append(new_markdown_cell("""## b. Signal reference
 
 Generator-level and reconstructed angle for one dark-photon mass, and the plane of angle against
-momentum ratio with the two-body-decay band drawn on it.  All lifetimes and mediator masses of the
-mass point are summed; the angular distribution of a two-body decay does not depend on how far the
-parent travelled before decaying, so the sum is legitimate and buys statistics.
+momentum ratio with the two-body-decay band drawn on it.  All lifetimes and bound-state masses of
+the dark-photon mass point are summed; the angular distribution of a two-body decay does not
+depend on how far the parent travelled before decaying, so the sum is legitimate and enlarges the
+sample.
 
 The band is the ratio of laboratory momenta expected for a two-body decay of a fast parent,
 (1 - beta* cos theta*) / (1 + beta* cos theta*), with beta* the muon speed in the pair rest frame
@@ -308,7 +330,9 @@ its dark photon's rest frame in single precision. A 0.25 GeV dark photon from a 
 bound state has a Lorentz factor of 1,000 to 2,000, so 1 - beta^2 of the dark photon, 1e-6 to
 3e-7, is only a few times the single-precision resolution of 6e-8, and the boost misplaces the
 muon, more often towards |cos(theta*)| = 1. The expectation is alpha = 0.17 for beta* = 0.53, a
-hi/lo of 1.13: the decay is nearly flat. A reading of the angle that needs no boost,
+hi/lo of 1.13: the decay is nearly flat.
+
+A reading of the angle that needs no boost,
 |cos(theta*)| = |E1 - E2| / (beta* |p1 + p2|), confirms it in an offline check of one file
 (check_gen_boost_precision.py in this directory), the 4mu sample with m_XX = 500 GeV,
 m_Zd = 0.25 GeV and c tau = 0.004 mm (its file part-0, no selection, 16,674 dark photons with
@@ -339,8 +363,10 @@ mantissa bits, a step of up to 5e-4 rad for the values that occur.  Every boost 
 single precision.
 
 The toy below generates XX -> Zd Zd -> 4 mu decays with the angular distributions of the model,
-stores them at these precisions, and recomputes both angles with the processor's own functions;
-its docstring gives the kinematics.  There is no generator filter, no selection and no detector
+stores them at these precisions, and recomputes both angles with the processor's own functions.
+The two angles are |cos(theta*)|, whose shape coefficient is alpha, and the azimuthal angle Phi
+between the two dark photons' decay planes, whose coefficient A is defined in section j.  The
+toy's docstring gives the kinematics.  There is no generator filter, no selection and no detector
 resolution.  It reads no files and runs in about twenty seconds."""))
 
     cells.append(new_code_cell("""toy_rows = lib.storage_precision_toy()"""))
@@ -368,8 +394,8 @@ sizes the effect and does not correct the stored histograms, which cannot be ref
 rerunning the campaign.  The stored generated histogram of the 4mu channel at m_XX = 500 GeV,
 m_Zd = 0.25 GeV reads hi/lo 1.46 (table below), in line with the 1.41 of the unselected file.
 
-"Reconstructed precision" is the reconstruction construction at truth level -- each pair the sum
-of its two stored muons, the angle that of the leading muon -- with no detector resolution.  At
+"Reconstructed precision" is the reconstruction construction at truth level (each pair the sum
+of its two stored muons, the angle that of the leading muon), with no detector resolution.  At
 m_Zd = 0.25 GeV it is distorted as well (alpha 0.25 at m_XX = 500 GeV, 2.5 at 1000 GeV), so the
 reconstructed angle at that mass carries the arithmetic on top of the detector resolution; at 1.2
 and 5.0 GeV it equals the exact value, and the reconstructed plane angle keeps A to better than
@@ -412,7 +438,7 @@ shapes under a fixed selection, compared like for like."""))
     cells.append(new_markdown_cell("""## d. Signal, simulated background and data, region by region
 
 Unit-area shapes so that only the shape is compared: rows are the five regions, columns the
-dark-photon mass.  Signal curves sum the three mediator masses with raw-count weights; the
+dark-photon mass.  Signal curves sum the three bound-state masses with raw-count weights; the
 per-mass table below shows the spread that sum hides.
 Simulated backgrounds are combined with their cross-section weights before the shape is taken.  The
 observed distribution carries asymmetric Poisson error bars.
@@ -443,7 +469,9 @@ validation region (hi/lo 0.008 to 0.035) and only mildly in the four-muon valida
 (0.33). The signal curves as
 drawn give hi/lo 1.24 and 1.16 in 4mu at m_Zd = 1.2 and 5.0 GeV; in 2mu2e they give 0.64
 and 0.66, the tail above 0.8 removed by acceptance, with the separation from data living in
-the middle of the axis, 0.4 < |cos(theta*)| < 0.8. Three qualifications. First, at
+the middle of the axis, 0.4 < |cos(theta*)| < 0.8.
+
+Three qualifications.  First, at
 m_Zd = 0.25 GeV the signal column is nearly flat (hi/lo 0.73 and 0.72 as drawn), as the decay
 itself is, 1 + 0.17 cos^2(theta*) (section b). Against the steeply falling single-lepton-jet
 fakes a flat shape still separates: signal efficiency over the square root of the fake
@@ -510,7 +538,7 @@ for signal, where the angle is a property of a real decay."""))
 identical normalized shapes across slices (overlays) and a flat profile of the mean (profiles)
 would mean the decay angle carries information independent of that companion. The profile
 figure overlays the three single-lepton-jet control regions: uncut, with the cosmic veto, and
-cleaned by the spread and cos-alpha vetoes. Against lepton-jet
+cleaned by the spread cuts and the muon-pair opening-angle (cos alpha) veto.  Against lepton-jet
 pT the mean rises in every region (Spearman rank correlation +0.98, +0.95, +0.31; from 0.31 at
 40 GeV to 0.53 at 750 GeV in the uncut region): harder jets keep their asymmetric pairs, the
 acceptance mechanism again. Against isolation the dependence is a moderate fall (mean 0.322 to
@@ -521,7 +549,7 @@ one centimeter and then rises to 24 percent above its inner value in the outer b
 cosmic veto the same profile falls by 20 percent (rank correlation -0.92, the visible
 difference confined to the outermost bins), because the outer displacement bins of the uncut
 region are dominated by the cosmic-ray population the veto removes, together with its |dxy| <=
-40 cm requirement on the displaced-standalone muons; after the spread and cos-alpha cleaning it
+40 cm requirement on the displaced-standalone muons; after the spread and opening-angle cleaning it
 rises again (+63 percent, rank +0.68) on a much smaller residual sample. The size and even the
 sign of the displacement dependence change with the cleaning applied, that is, with the
 composition of the surviving fakes. The decay angle is therefore not measured to be independent
@@ -536,11 +564,11 @@ Solid curves are the fraction of signal pairs a threshold keeps, measured in the
 each final state; dashed curves are the fraction of control-region pairs it rejects.  Bands are
 Clopper-Pearson intervals.  Both directions of the cut are shown.
 
-Signal efficiency and fake rejection are measured under different selections -- signal in its own
-channel, fakes in the data control region -- so the two curves in a panel answer "what would this
+Signal efficiency and fake rejection are measured under different selections (signal in its own
+channel, fakes in the data control region), so the two curves in a panel answer "what would this
 threshold do here", not "what would it do to the same sample".
 
-The signal curves sum the three mediator masses with raw-count weights; the per-mass table below
+The signal curves sum the three bound-state masses with raw-count weights; the per-mass table below
 shows the spread that sum hides.  The figure draws only the two single-lepton-jet control regions
 as fakes, so the two validation regions are tabulated under it as well."""))
 
@@ -589,7 +617,7 @@ These apply to every reading of the figures above.
 
 2. **The inverted-displacement requirement does not exclude displaced-standalone muons.** In the
    two validation regions and the two-lepton-jet control region every muon lepton jet must contain
-   at least one muon with more than two pixel hits.  The vector builder sets the pixel-hit count of
+   at least one muon with more than two pixel hits.  The processor sets the pixel-hit count of
    a displaced-standalone track to zero, so that muon is a particle-flow muon, but the two leading
    muons the angle is computed from can include displaced-standalone ones.  In data the pairs split
    71, 29 and 0.2 percent into particle-flow, mixed and displaced-standalone pairs in the four-muon
@@ -620,10 +648,11 @@ These apply to every reading of the figures above.
    same files are luminosity times cross-section scaled.  The two must never be combined.  A
    normalised simulation prediction is luminosity times cross section divided by the sum of
    generator weights over the events stored in the input files, the normalisation the processor
-   itself applies and the one `lumi_xs_weight` and `planes_weight` return.  The figure of about
-   one event in ten kept by the signal skim, which would call for a generated count in the
-   denominator instead, came from summing a cumulative counter of the Runs tree across files, an
-   artefact found on 2026-08-10.  No generator filter is recorded in the files,
+   itself applies and the one `lumi_xs_weight` and `planes_weight` return.  An earlier figure of
+   about one event in ten kept by the signal skim, which would call for a generated count in the
+   denominator instead, was an artefact: the per-file generated-event counter in the Runs tree is
+   cumulative, so summing it over files overcounts the generated events by a factor of about ten.
+   No generator filter is recorded in the files,
    and neither signal ntuple location file the campaigns read sets a `skim_factor`.  Shapes are
    unaffected in any case, because the factor cancels in a unit-area normalisation.
 
@@ -678,17 +707,21 @@ These apply to every reading of the figures above.
 
 10. **The data regions hold signal.**  Collision data is read in seven regions.  The three
     single-lepton-jet control regions (uncut, with the cosmic veto, and with the spread and
-    opening-angle vetoes) ask for one muon lepton jet.  The two validation regions and the
-    two-lepton-jet control region are the signal-region selection with the displacement
-    requirement inverted on every lepton jet and no isolation requirement: the prompt-prompt
-    corner of the displacement plane, with no isolation split and no ABCD cells.  A signal with a
-    short proper lifetime is prompt by that definition, so these three regions collect it: in the
+    opening-angle vetoes) ask for one muon lepton jet, and the electromagnetic-lepton-jet control
+    region, read by the decay-plane campaign only, asks for one electromagnetic lepton jet.  The
+    two validation regions and the two-lepton-jet control region are the signal-region selection
+    with the displacement requirement inverted on every lepton jet and no isolation requirement.
+    They form the prompt-prompt corner of the displacement plane, where every lepton jet fails the
+    displacement requirement, with no isolation split and no ABCD cells (the four regions of the
+    two-variable background estimate).  A signal with a short proper lifetime is prompt by that
+    definition, so these three regions collect it: in the
     table below (column reg/ch, the region's entries over those of the sample's signal channel)
     0.851 of the four-muon channel's muon-lepton-jet entries of 4Mu_500GeV_5p0GeV_0p08mm fall in
     the four-muon validation region.
 
-    The table counts each region as each campaign draws it, with each campaign's own histogram and
-    its own sum of generator weights, at a cross section of 1 fb.  The first and the pair campaign
+    The table counts each region as each campaign draws it, at a signal cross section of 1 fb:
+    each raw entry of the campaign's own histogram is weighted by the luminosity times that cross
+    section over the campaign's own sum of generator weights.  The first and the pair campaign
     count muon lepton jets, so their expected numbers are muon-lepton-jet entries, not events; the
     decay-plane campaign counts events.  For m_XX = 500 and 1000 GeV the largest shares of the
     data are 1.7289 percent in the four-muon validation region (4Mu_500GeV_5p0GeV_0p08mm; the
@@ -745,7 +778,9 @@ single-lepton-jet control region (1.6 to 2.1) and against the two-muon-two-elect
 region (1.2 to 1.6 for 2mu2e signal), less against the uncut single-lepton-jet control region (1.0
 to 1.3), and not against the four-muon validation region (0.8 to 1.0 for 4mu signal) nor the
 two-lepton-jet control region (0.8 to 1.1). Within each region it is larger at m_XX = 1000 GeV
-than at 500 GeV. The handle is real but narrower than a single number suggests. In the 2mu2e
+than at 500 GeV.
+
+The handle is real but narrower than a single number suggests. In the 2mu2e
 channel a |cos(theta*)| > 0.4 requirement on the muon lepton jet keeps 55 to 74 percent of
 signal pairs at m_XX = 500-1000 GeV while removing about 80 percent of validation-region fakes
 (from the validation-region shapes, printed under the cut scan), but it keeps only 5 percent at
@@ -758,7 +793,8 @@ separates (1.6 to 1.7, section j), but the angle as computed at this mass carrie
 single-precision arithmetic of section b and needs a double-precision recomputation before use.
 
 On correlation: the decay angle rises strongly with lepton-jet pT in every region, so a cut
-would sculpt pT-correlated spectra, including the dijet mass of the 4mu windowed search.
+would sculpt pT-correlated spectra, including the muon-lepton-jet-pair mass that the 4mu search
+cuts into windows (section i).
 Its dependence on displacement changes size and sign with the cleaning applied (flat with
 rising tail uncut, falling after the cosmic veto, rising after the spread cleaning), which
 means the fake composition, not the geometry, sets the shape; this study does not establish
@@ -786,7 +822,7 @@ two questions about the pair were left open: whether the two decay angles of one
 correlated, and whether the angle still separates once the muon-lepton-jet-pair mass has been
 used, that is, inside a mass window of the four-muon search.
 
-A second campaign answers them.  It fills two histograms: one carries both angles of an event,
+The pair campaign answers them.  It fills two histograms: one carries both angles of an event,
 ordered by the transverse momentum of the parent lepton jet, and one carries the angle of each
 qualifying lepton jet against the muon-lepton-jet-pair invariant mass of its event, on a binning
 fine enough to cut that mass into windows.  The mass is built exactly as the validation
@@ -811,7 +847,8 @@ print("signal points  :", " | ".join(f"m_XX = {{m:.0f}}, m_Zd = {{z}}"
 
 The figure divides the observed plane of the two angles by the product of its own two marginal
 distributions.  A plane of ones is what independence looks like; a cell above one means that
-combination occurs more often than two independent draws would give."""))
+combination occurs more often than two independent draws would give.  The independence
+chi-square quoted below compares the observed plane with that product."""))
 
     cells.append(new_code_cell("""c_pair_plane = lib.fig_pair_plane()"""))
     cells.append(new_code_cell("""_ = lib.pair_correlation_table()"""))
@@ -845,8 +882,8 @@ campaign ran holds m_XX = 100, 500 and 1000 GeV only.  The 200 to 250 GeV range 
 of the search is not in it, and is bracketed by the 100 and 500 GeV points rather than measured.
 
 Fake muon lepton jets in one event are therefore correlated with each other and signal ones are
-not, which is what a cause shared by the whole event -- the trigger that selected it, its
-kinematics, the source of its fake muons -- produces.
+not, which is what a cause shared by the whole event produces: the trigger that selected it, its
+kinematics, or the source of its fake muons.
 
 The second figure says the same thing without a model: it normalises the subleading jet's angle
 separately in three slices of the leading jet's.  In signal the three curves lie on top of each
@@ -857,12 +894,12 @@ section g bites.
 
 The practical consequence is in the printed table, and how large it is depends on what "the
 per-lepton-jet rate" is taken to mean, so the table prints both.  Against **one inclusive
-per-jet efficiency squared** -- the usual shorthand, both lepton jets of every event pooled into
-one sample -- a requirement applied to both jets keeps 1.029 +- 0.008 times as many
+per-jet efficiency squared** (the usual shorthand, with both lepton jets of every event pooled
+into one sample), a requirement applied to both jets keeps 1.029 +- 0.008 times as many
 validation-region events at a threshold of 0.2, 1.102 +- 0.020 at 0.4, 1.185 +- 0.046 at 0.6 and
-1.286 +- 0.221 at 0.8.  Against the **product of the two ordered marginals** -- the leading jet's
+1.286 +- 0.221 at 0.8.  Against the **product of the two ordered marginals** (the leading jet's
 rate times the subleading jet's, which at the tightest threshold are 0.116 and 0.064 and so are
-not the same number -- they are 1.029, 1.102, 1.187 and 1.405 +- 0.240.
+not the same number), they are 1.029, 1.102, 1.187 and 1.405 +- 0.240.
 
 In summary: about 10 percent at a threshold of 0.4, where the two
 definitions agree to three decimals and the uncertainty is a fifth of the effect, and roughly 30
@@ -901,8 +938,8 @@ The fake shape is not the same in every window: the mean angle rises from 0.411 
 to 200 GeV to 0.449 +- 0.027 at 380 to 500 GeV, and the lowest window alone contributes 16 to the
 chi-square against the pooled shape.  A fake shape measured where the data is cannot be carried
 unchanged to where the signal is.  The left panel of the first figure draws the five windows from
-150 to 500 GeV.  The four windows above it hold 26, 20, 2 and 2 pairs -- 500 to 600, 600 to 780,
-780 to 1000 and above 1000 GeV -- every one below the fifty-entry floor this study draws a shape
+150 to 500 GeV.  The four windows above it (500 to 600, 600 to 780,
+780 to 1000 and above 1000 GeV) hold 26, 20, 2 and 2 pairs, every one below the fifty-entry floor this study draws a shape
 at, so they are named on the panel itself and read from the table above it instead of being drawn
 as a picket fence of five bins holding four entries each.
 
@@ -920,10 +957,10 @@ on their own read as six numbers above one while the correction moves the three 
 it.
 
 So the answer at m_XX = 500 GeV is a corrected gain of 1.040 +- 0.040, one standard deviation from
-unity: **consistent with zero, and at most a few percent per lepton jet**.  At 1000 GeV the three
+unity: **consistent with no gain, and at most a few percent per lepton jet**.  At 1000 GeV the three
 corrected values are 0.966, 0.999 and 0.987 with an uncertainty of 0.15 to 0.16 on 24 fake pairs,
-which is nothing distinguishable from zero.  Measured instead against the larger pooled fake
-sample above 300 GeV -- which assumes the mass independence the window table has just rejected --
+which is no gain distinguishable from none.  Measured instead against the larger pooled fake
+sample above 300 GeV, which assumes the mass independence the window table has just rejected,
 the raw values are 1.016 to 1.049 at 500 GeV and 1.031 to 1.143 at 1000 GeV.
 
 The last table repeats the exercise on the plane of both angles, where the data sample is large
@@ -933,7 +970,7 @@ square of the corresponding one-jet number.  The correlation among fakes costs a
 what two independent lepton jets would have given, no more.  That comparison is inclusive in the
 pair mass, and the difference between it and the per-window numbers is the point.  The natural
 reading of that difference is that most of the inclusive separation is the steeper angular shape
-of the low-mass fakes and the mass window removes it -- but that is an **inference** from the two
+of the low-mass fakes and the mass window removes it.  That is an **inference** from the two
 sets of numbers side by side, not a measurement: nothing here decomposes the inclusive gain into a
 mass-shape part and an angle-shape part, and the study would need the gain recomputed window by
 window on a fake sample large enough to support it before the reading could be called
@@ -946,18 +983,19 @@ two decay angles of an event have a linear correlation of +0.124 +- 0.019
 on 2516 events and an independence chi-square of 57 for 16 degrees of freedom, the excess sitting
 on the diagonal.  In the inclusive four-muon channel every signal point that still matters is
 consistent with independence at the +-0.003 level; in the smaller signal-region channel two of
-the twelve sets sit at about two standard deviations, which is what twelve sets do.  The
+the twelve sets sit at about two standard deviations, which chance alone produces among twelve
+sets.  The
 arithmetic consequence is that an event rate built by squaring a per-lepton-jet efficiency is
 optimistic here by about 10 percent at a threshold of 0.4, where the measurement is solid, and by
 roughly 30 percent at 0.8, where it rests on 26 events and the two reasonable definitions of the
-per-jet rate differ by half their own uncertainty.  That retires the squaring shorthand of
-section h on the fake side; on the signal side, which does factorise, it stands.
+per-jet rate differ by half their own uncertainty.  So the squaring shorthand of
+section h fails for fakes; for signal, whose two jets are independent, it stands.
 
 Inside a mass window the angle adds nothing this data can resolve.  The validation data falls
 steeply in the pair mass and its angular shape is itself mass dependent, so the fake shape has to
 be measured where the signal is, and there it rests on 127 pairs at m_XX = 500 GeV and 24 above
 600 GeV.  No single threshold helps.  The whole five-bin shape gives a bias-corrected gain of
-1.040 +- 0.040 per lepton jet at 500 GeV -- consistent with zero, at most a few percent -- and
+1.040 +- 0.040 per lepton jet at 500 GeV (consistent with no gain, at most a few percent) and
 0.97 to 1.00 with an uncertainty of 0.16 at 1000 GeV.  The larger inclusive numbers, 1.24 and
 1.63 for the two-angle plane over all pair masses, are most naturally read as the low-mass fakes'
 steeper shape, which the window removes; that reading is an inference from the two sets of
@@ -980,27 +1018,27 @@ fake shape measured in the validation region transfers to the signal region, and
 short of the 200 to 250 GeV bound-state masses at the low edge of the search.  The
 recommendation keeps section h's direction and sharpens its size: do not add the decay angle to
 the four-muon selection or to its background estimate, and do
-keep the pair correlation as a measured fact about fakes -- the two muon lepton jets of a fake
+keep the pair correlation as a measured fact about fakes: the two muon lepton jets of a fake
 four-muon event are not independent, which any factorised estimate in that channel must face."""))
 
     # ---------------------------------------------------------------- (j) the decay planes
     cells.append(new_markdown_cell("""## j. The lepton jets as a decay-plane system
 
 Sections b to i take the decay angle of one muon lepton jet, and then the two of a four-muon
-event.  A third campaign, `LjAnglePlanes_Run2018_v1`, closes the construction.  It adds three
+event.  The decay-plane campaign (`LjAnglePlanes_Run2018_v1`) completes the construction.  It adds three
 things: the **signed** decay angle, so that the negatively charged lepton picks a direction and
 not only an axis; the same pair of quantities for the two leading **electrons** of an
 electromagnetic lepton jet; and the event-level observables of the two leading qualifying lepton
-jets of either type -- their two helicity angles in the rest frame of their sum, the azimuthal
+jets of either type (their two helicity angles in the rest frame of their sum, the azimuthal
 angle between their two decay planes, their transverse balance, and the missing transverse
-momentum with and without the displaced-standalone muons added back.
+momentum with and without the displaced-standalone muons added back).
 
 Why the plane angle is worth a section.  The signal as generated is **CP even**: the mediator
 couples to the two dark photons through a field-strength operator, phi F F, which produces only
 transverse dark photons.  Each dark photon decay then follows 1 + alpha cos^2(theta*) in its own
-rest frame, with alpha = beta*^2 / (2 - beta*^2), and the angle between the two decay planes
-follows 1 + A cos(2 Phi) with A = [beta*^2 / (3 - beta*^2)]^2, the product of the two decays'
-analyzing powers -- planes preferentially parallel, with A = +1/4 for massless leptons, 0.228 for
+rest frame, with alpha = beta*^2 / (2 - beta*^2), and the azimuthal angle Phi between the two
+decay planes follows 1 + A cos(2 Phi) with A = [beta*^2 / (3 - beta*^2)]^2, the product of the two
+decays' analyzing powers.  The planes are preferentially parallel, with A = +1/4 for massless leptons, 0.228 for
 muons at m_Zd = 1.2 GeV and 0.011 at 0.25 GeV, all for an unselected sample.  A CP-odd parent of
 the same mass would give 1 - A cos(2 Phi), the same magnitude with the opposite sign.  That is
 the one place in this whole study where the
@@ -1023,8 +1061,8 @@ carry.
 
 Collision data was written in control and validation regions only; the loader refuses to open a
 data file in any other channel rather than trusting the caller.  The search uses bound-state
-masses of 200 GeV and above, so every number is led by m_XX = 500 and 1000 GeV, and this
-campaign's grid holds 100, 500 and 1000 GeV only -- the 200 to 250 GeV range is bracketed by it,
+masses of 200 GeV and above, so every number is led by m_XX = 500 and 1000 GeV.  This
+campaign's grid holds 100, 500 and 1000 GeV only, so the 200 to 250 GeV range is bracketed by it,
 not covered."""))
 
     cells.append(new_code_cell(f"""# the decay-plane campaign has its own merged outputs, so this is a third input directory
@@ -1056,7 +1094,7 @@ capped at the 99th percentile so that one sparsely filled row cannot set it for 
 Two features carry the figure.  In the signal panels the row at the dark photon's own mass is
 spread nearly flat across the angle, which is the decay; the brightest cells sit elsewhere, at
 high dimuon mass and high |cos(theta*)|, and they are the pairs whose two hardest muons are not
-one dark photon's -- a muon lepton jet may hold more than two muons and this study always takes
+one dark photon's: a muon lepton jet may hold more than two muons and this study always takes
 the two hardest, as section a says.  In the fake panels the population traces a **ridge**: the
 angle a pair reconstructs climbs steadily with its dimuon mass, from a fraction of a GeV up to a
 few GeV, and there is no comparable population anywhere else in the plane.  The same ridge is
@@ -1078,8 +1116,8 @@ nothing.
 The right-hand panel is the same statement without a threshold: the curve against the
 cleaned single-lepton-jet control region bows well above the diagonal, and the curve against the
 two-lepton-jet control region lies almost on it.  This is the sharpest form of the warning
-sections e and h already gave -- a fake shape measured in one region does not transfer -- and it
-is measured here rather than argued.  Against the cleaned single-lepton-jet control region the
+of sections e and h, that a fake shape measured in one region does not transfer, and here it is
+measured rather than argued.  Against the cleaned single-lepton-jet control region the
 m_Zd = 0.25 GeV signal column is below the heavier masses in four-muon (1.65 and 1.74 against
 1.90 to 2.04 at m_XX = 500 and 1000 GeV) and level with them in two-muon-two-electron at
 m_XX = 500 GeV (1.62 against 1.59 and 1.61): a nearly flat decay still separates against steeply
@@ -1112,8 +1150,8 @@ m_Zd = 1.2 GeV are not a representative tenth of the decays: they are the asymme
 happened to split, with a mean momentum ratio of 0.15 against 0.38 at m_Zd = 5.0 GeV and a mean
 |cos(theta*)| of 0.76 against 0.50.  A cut placed on the electron-pair angle would therefore be
 acting on a sample that is already selected by whether the pair resolved, and what the numbers
-support is that the electron pair separates from the fake control regions strongly -- mean
-|cos(theta*)| of 0.50 to 0.87 in signal against 0.31 to 0.33 in data -- **on the subset where it
+support is that the electron pair separates from the fake control regions strongly (mean
+|cos(theta*)| of 0.50 to 0.87 in signal against 0.31 to 0.33 in data), **on the subset where it
 exists at all**, which at the masses the search cares about is a few percent of electromagnetic
 lepton jets or less.  The panels draw only the shapes with enough entries to draw; the data
 control regions carry 257 and 575 resolved pairs and are rebinned to five bins for that
@@ -1132,7 +1170,7 @@ independence."""))
     cells.append(new_code_cell("""pair_rows = lib.planes_pair_correlation_table()"""))
 
     cells.append(new_markdown_cell("""How to read these: signal is independent and fakes are not, which is section i's conclusion
-again -- but with the opposite **sign**, and that is worth stating because the two are different
+again, but with the opposite **sign**, and that is worth stating because the two are different
 measurements and not two views of one.  On the signed angle the two-lepton-jet control region
 gives
 r = -0.062 +- 0.011 on 8,445 events and the four-muon validation region -0.053 +- 0.021 on 2,516;
@@ -1141,7 +1179,7 @@ sample can be positively correlated in |cos| and negatively correlated in cos: t
 statement about how central the two pairs are together, the second about whether their two
 negative leptons prefer the same hemisphere.  The simulated background has a coefficient
 consistent with zero, -0.006 +- 0.007, so the linear effect the data shows is not reproduced by
-the simulation -- but see the second caution below before reading that as independence.
+the simulation; see the second caution below before reading that as independence.
 
 Signal is flat in the four-muon channel on **both** tests: the coefficient is no larger than
 0.006 in absolute value at m_XX = 500 and 1000 GeV, on 118,000 to 612,000 events, and the
@@ -1162,8 +1200,8 @@ linearly correlated and it is not independent either, so "the simulation does no
 data's correlation" is a statement about the coefficient alone and must not be carried further
 than that.
 
-Second, the **two-muon-two-electron signal points also carry large chi-squares** -- 392 for 16
-degrees of freedom at m_XX = 500 GeV, m_Zd = 1.2 GeV, and 46 at m_Zd = 5.0 GeV -- with
+Second, the **two-muon-two-electron signal points also carry large chi-squares** (392 for 16
+degrees of freedom at m_XX = 500 GeV, m_Zd = 1.2 GeV, and 46 at m_Zd = 5.0 GeV) with
 coefficients consistent with zero.  In that channel the two lepton jets are of different types,
 one muon and one electromagnetic, and their acceptances in the helicity angle are not the same
 function of it; a test against the product of the two marginals registers that difference as
@@ -1199,9 +1237,9 @@ Reconstruction dilutes the coefficient but does not destroy it: the four-muon po
 86 percent of their generated value (+0.193 reconstructed against +0.255 generated at
 m_XX = 500 GeV, m_Zd = 1.2 GeV; +0.255 against +0.296 at 5.0 GeV; +0.150 against +0.213 and
 +0.218 against +0.256 at 1000 GeV).  For the four-muon points the generated and reconstructed
-histograms are filled from the **same events** -- the two entry counts agree exactly at
+histograms are filled from the **same events** (the two entry counts agree exactly at
 m_Zd = 1.2 and 5.0 GeV and differ by at most 27 entries in 156,000 at m_Zd = 0.25 GeV, where a
-few events have no negatively charged daughter in the generator record -- so that ratio is a
+few events have no negatively charged daughter in the generator record), so that ratio is a
 dilution and not an acceptance difference.  For the two-muon-two-electron points they are not the
 same events, because a reconstructed pair needs a resolved electron pair that the generated one
 does not: at m_XX = 500 GeV, m_Zd = 5.0 GeV the generated histogram holds 183,000 events and the
@@ -1209,7 +1247,7 @@ reconstructed one 54,000, and the reconstructed coefficient there is **larger** 
 generated one, +0.393 +- 0.006 against +0.346 +- 0.003, for that reason alone rather than because
 reconstruction improved anything.
 
-What this can and cannot say about 0+ against 0-.  It **can** say that the sign of A survives
+What this can and cannot say about a CP-even (0+) against a CP-odd (0-) parent.  It **can** say that the sign of A survives
 reconstruction with a dilution of 14 to 30 percent in the four-muon channel at the masses where
 beta* is close to one, measured against a generated reference the precision check shows to be
 sound there, so a sample of real signal events would show a positive A and a CP-odd parent would show a negative
@@ -1259,12 +1297,12 @@ One result to read carefully, because it is the opposite of what the correction 
 The displaced-standalone correction should shrink the missing momentum of a signal pair, and in
 every sample here it enlarges it: the mean goes from 51 to 64 GeV at m_XX = 500 GeV, m_Zd = 0.25
 GeV, from 78 to 88 GeV at 1000 GeV, m_Zd = 5.0 GeV, from 35 to 41 GeV in the two-lepton-jet control
-region and from 40 to 44 GeV in the weighted simulated background -- a 10 to 25 percent increase
+region and from 40 to 44 GeV in the weighted simulated background: a 10 to 25 percent increase
 everywhere, signal and fakes alike. It is a **bulk shift, not a tail effect**: the median moves
 from 30.4 to 35.2 GeV in the two-lepton-jet control region and from 35.7 to 42.8 GeV for the m_XX =
 500 GeV, m_Zd = 0.25 GeV signal.
 
-The formula is the intended one.  `lj_pair_met_observables` subtracts the vector sum of the
+The formula is the intended one.  The function `lj_pair_met_observables` subtracts the vector sum of the
 displaced-standalone constituents of the **two leading qualifying lepton jets** from the
 missing-momentum vector, with the sign that should cancel them, so the premise fails rather than
 the code: either those muons' momentum already enters particle-flow missing momentum through
@@ -1317,11 +1355,12 @@ no larger for signal than for the control region at any threshold."""))
 5. Missing transverse momentum separates nothing, and the displaced-standalone correction
    increases it in every sample, in the bulk of events and not only in a tail (median 30 -> 35 GeV
    in the two-lepton-jet control region, 36 -> 43 GeV for signal at m_Zd = 0.25 GeV), where a
-   signal pair should make it shrink.  The formula is the intended one, MET minus the vector sum
-   of the DSA constituents of the two leading lepton jets, so the premise fails rather than the
-   code: either those muons' momentum already enters PF MET through their tracker tracks, or the
-   DSA momentum resolution adds more than the subtraction removes.  Histograms cannot separate the
-   two; neither MET version is usable until a per-event check is made.
+   signal pair should make it shrink.  The formula is the intended one, the missing-momentum vector
+   minus the vector sum of the displaced-standalone constituents of the two leading lepton jets, so
+   the premise fails rather than the code: either those muons' momentum already enters particle-flow
+   missing momentum through their tracker tracks, or the displaced-standalone momentum resolution
+   adds more than the subtraction removes.  Histograms cannot separate the two; neither version of
+   the missing momentum is usable until a per-event check is made.
 
 6. The two lepton jets of a fake event are correlated in their signed helicity angles
    (r = -0.062 +- 0.011 with χ² = 309/16 in the two-lepton-jet control region) while four-muon
@@ -1342,7 +1381,7 @@ no larger for signal than for the control region at any threshold."""))
 Net: nothing here changes the search selection.  What the section establishes is the fake-pair
 dependence (angular or compositional, which the stored histograms cannot separate), the CP-even
 sign of the reconstructed plane correlation with its suppression at low m_Zd, where
-A = [β*²/(3 − β*²)]² falls to 0.011, and the instrumented histograms."""))
+A = [β*²/(3 − β*²)]² falls to 0.011, and the histograms that now record these quantities."""))
 
     # ---------------------------------------------------------------- run record
     cells.append(new_markdown_cell("""## Run record
