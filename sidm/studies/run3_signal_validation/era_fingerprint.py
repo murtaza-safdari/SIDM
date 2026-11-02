@@ -21,7 +21,7 @@ Writes era_fingerprint.csv (one row per era), era_fingerprint.npz (histograms, s
 the figures without EOS) and the figures (vector PDF via an_style.save). Run from the worktree root
 with the notebook venv:  python sidm/studies/run3_signal_validation/era_fingerprint.py --eras ...
 """
-import argparse, csv, hashlib, os, re, sys
+import argparse, csv, hashlib, json, os, re, sys
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 from scipy import ndimage
@@ -354,7 +354,7 @@ def fig_ecal_ee(H):
 def fig_bpix(H):
     fig, axes = plt.subplots(1, 3, figsize=(22, 7.5), layout="constrained", sharey=True)
     _eff_maps(fig, axes, H["bp_lay_2023"], H["bp_ntrk_2023"], H["bp_lay_2023BPix"], H["bp_ntrk_2023BPix"],
-              BP_ETA, ("2023", "2023BPix"), r"mean $\mu$ nTrackerLayers", None,
+              BP_ETA, ("2023", "2023BPix"), "mean number of tracker layers with hits", None,
               "2023BPix $-$ 2023", 3.0, (8, 16))
     return _finish(fig, axes, "era_bpix")
 
@@ -374,25 +374,50 @@ def _restyle(fig, minfs):
                 t.set_fontsize(max(t.get_fontsize(), minfs))
 
 
+def geometry_diffs(era, chan):
+    """Per grid point, (Run 3 - 2018) LJ clustering efficiency in acceptance [%] and its binomial
+    error, from the committed lj_eff_geom_<era>.json (run3_lj_eff.py geometry mode)."""
+    rows = json.load(open(os.path.join(_DIR, f"lj_eff_geom_{era}.json")))
+    d, e = [], []
+    for r in rows:
+        if r["chan"] != chan or not (r["run3"] and r["v10"]):
+            continue
+        a, b = r["run3"]["incl_acc"], r["v10"]["incl_acc"]
+        d.append(100 * (a["p"] - b["p"]))
+        e.append(100 * np.sqrt(a["p"] * (1 - a["p"]) / a["n"] + b["p"] * (1 - b["p"]) / b["n"]))
+    return np.array(d), np.array(e)
+
+
 def fig_reco_eff():
-    """run3_study_plots.fig_geometry_eras: per era and channel, mean over the 18 grid points of
-    (Run 3 - 2018) lepton-jet clustering efficiency in acceptance, whiskers = max |difference|."""
-    import run3_study_plots as P
-    fig = P.fig_geometry_eras()
-    ax = fig.axes[0]
-    fig.set_size_inches(10, 7.5)
+    """Per era and channel: mean over the grid points of (Run 3 - 2018) LJ clustering efficiency in
+    acceptance, with its statistical error (per-point binomial errors propagated); whiskers span
+    the smallest to the largest per-point difference."""
+    fig, ax = plt.subplots(figsize=(10, 7.5), layout="constrained")
+    xs = np.arange(len(ERAS))
+    for off, chan, col, mk, lab in ((-0.12, "4Mu", "#1f77b4", "D", r"4$\mu$"),
+                                    (0.12, "2Mu2E", "#ff7f0e", "o", r"2$\mu$2e")):
+        for i, era in enumerate(ERAS):
+            d, e = geometry_diffs(era, chan)
+            ax.plot([i + off] * 2, [d.min(), d.max()], color=col, lw=1.5, alpha=0.6,
+                    marker="_", ms=14, mew=1.5, label=f"{lab}: range over {len(d)} points" if i == 0 else None)
+            ax.errorbar(i + off, d.mean(), yerr=np.sqrt((e ** 2).sum()) / len(d), fmt=mk, ms=10, color=col,
+                        capsize=5, elinewidth=2.5, zorder=3, label=rf"{lab}: mean $\pm$ stat." if i == 0 else None)
+    ax.axhline(0, color="gray", lw=1)
+    ax.set_xticks(xs); ax.set_xticklabels(ERAS); ax.set_xlim(-0.5, len(ERAS) - 0.5)
     ax.set_ylabel("LJ clustering efficiency in acceptance\nRun 3 $-$ 2018  [%]", labelpad=8, fontsize=21)
-    for t in ax.texts:
-        if t.get_text().startswith("whiskers"):
-            t.set_text("whiskers: max |difference| over the 18 grid points")
-    _restyle(fig, 13)
-    h, l = ax.get_legend_handles_labels()
-    names = {"4Mu": r"4$\mu$", "2Mu2E": r"2$\mu$2e"}
-    ax.legend(h, [names.get(x, x) for x in l], loc="upper right", fontsize=15, frameon=True,
-              facecolor="white", edgecolor="none", framealpha=0.92)
-    fig.tight_layout()
-    path = an_style.save(fig, "era_reco_eff_vs2018"); plt.close(fig)
-    return path
+    ax.set_ylim(-2, 2.6); ax.grid(alpha=0.25, axis="y")
+    ax.legend(loc="upper center", ncol=2, fontsize=14, frameon=True, facecolor="white", edgecolor="none",
+              framealpha=0.92)
+    an_style.cms_sim_labels([ax], com="13 / 13.6 TeV")
+    return an_style.save(fig, "era_reco_eff_vs2018")
+
+
+def geometry_table():
+    for era in ERAS:
+        for chan in ("4Mu", "2Mu2E"):
+            d, e = geometry_diffs(era, chan)
+            print(f"geometry {era:8s} {chan:5s}: mean {d.mean():+.3f} +- {np.sqrt((e ** 2).sum()) / len(d):.3f} %, "
+                  f"min {d.min():+.3f}, max {d.max():+.3f}, negative {int((d < 0).sum())}/{len(d)}")
 
 
 def fig_kinematics():
@@ -546,7 +571,7 @@ def main():
         fig_ecal_ee(H)
     if {"2023", "2023BPix"} <= have and "bp_ntrk_2023" in H:
         fig_bpix(H)
-    fig_reco_eff(); fig_kinematics()
+    geometry_table(); fig_reco_eff(); fig_kinematics()
 
 
 if __name__ == "__main__":

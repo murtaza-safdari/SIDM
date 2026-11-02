@@ -19,13 +19,16 @@
 #       2Mu2E (n_mu==1 & n_egm==1 & the egm_lj gen-matched dR<0.4 to a gen electron from a dark
 #       photon -- rejects soft/pileup photons the real SR would not accept).
 #   LJ multiplicity distributions (n_mu, n_egm) per point -> extra-LJ migration is visible.
-# Denominators: raw (all gen events) and acc (BOTH dark-photon lepton pairs in |eta|<2.4 & pT>1;
-#   a RECONSTRUCTION of the v10 gen acceptance, re-imposed identically on both eras).
+# Denominators: raw (all gen events) and acc (all four dark-photon leptons |eta|<2.4 & pT>5, decay
+#   vertex V_xy<740 cm & |V_z|<960 cm: the 2018 v10 generator-level requirement, re-imposed
+#   identically on both eras). The jsons made before 2026-11 used pT>1 and no vertex cut, which let
+#   about a fifth of the Run 3 events with a lepton the 2018 sample would have dropped into "acc".
 import sys, subprocess, os, re, json, numpy as np, awkward as ak, uproot, vector, fastjet
 from collections import Counter
 vector.register_awkward()
 
-MU_PT, EG_PT, ETA, EL_ETA, GEN_PT, DR_MATCH = 3.0, 1.0, 2.4, 2.5, 1.0, 0.4
+MU_PT, EG_PT, ETA, EL_ETA, GEN_PT, DR_MATCH = 3.0, 1.0, 2.4, 2.5, 5.0, 0.4
+GEN_VXY, GEN_VZ = 740.0, 960.0     # cm, decay vertex of the dark photon (= its leptons' production vertex)
 # LOOSE = clustering-GEOMETRY mode (muon/dsa pT>3, e/gamma pT>1, no object ID, no DSA cross-clean):
 # isolates whether the GENERATED final-state leptons cluster into the expected lepton jets the same
 # way in Run3 and Run2 (a sample property, driven by collimation/kinematics, not detector ID).
@@ -34,15 +37,19 @@ LOOSE = "loose" in sys.argv
 ERA = os.environ.get("RUN3_ERA", "2022")   # era of the Run 3 samples to scan
 JETDEF = fastjet.JetDefinition(fastjet.antikt_algorithm, 0.4)
 MU_M, EL_M = 0.10566, 0.000511
-GBR = ["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_genPartIdxMother"]
+GBR = ["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_genPartIdxMother",
+       "GenPart_vx", "GenPart_vy", "GenPart_vz"]
 
 def gen_acc_mask(a):
-    """per-event: BOTH dark-photon lepton pairs in |eta|<2.4 & pT>1 (>=2 dark photons with >=2
-    in-acceptance daughters). Channel-symmetric (4Mu: both mu pairs; 2Mu2E: mu pair AND ee pair)."""
+    """per-event: ALL FOUR dark-photon leptons in |eta|<2.4 & pT>5 with decay vertex V_xy<740 cm,
+    |V_z|<960 cm (>=2 dark photons with >=2 accepted daughters each; a dark photon has exactly two
+    lepton daughters, so this is all four). Channel-symmetric (4Mu: both mu pairs; 2Mu2E: mu pair
+    AND ee pair)."""
     pid, gpt, geta, mom = a["GenPart_pdgId"], a["GenPart_pt"], a["GenPart_eta"], a["GenPart_genPartIdxMother"]
     mom_pid = pid[ak.where(mom >= 0, mom, 0)]
     is_lep = (abs(pid) == 11) | (abs(pid) == 13)
-    sel = is_lep & (mom >= 0) & (abs(mom_pid) == 32) & (gpt > GEN_PT) & (abs(geta) < ETA)
+    sel = is_lep & (mom >= 0) & (abs(mom_pid) == 32) & (gpt > GEN_PT) & (abs(geta) < ETA) \
+        & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < GEN_VXY) & (abs(a["GenPart_vz"]) < GEN_VZ)
     out = np.zeros(len(pid), dtype=bool)
     for i, moms in enumerate(ak.to_list(mom[sel])):
         if len(moms) < 4:
@@ -198,10 +205,20 @@ if __name__ == "__main__":
         m = re.match(r"SIDM_BsTo2DpTo(\w+?)_MBs-(\d+)_MDp-([\dp]+)_ctau-([\dp]+)", name)
         mbs = int(m.group(2)); mdp = float(m.group(3).replace("p", ".")); ctau = float(m.group(4).replace("p", "."))
         r3 = lj_counts(run3_files(name, R3_N), is2e)
-        try:
-            v10 = lj_counts(v10_files(key, cl, V10_N), is2e)
-        except Exception as e:
-            v10 = None; print(f"  v10 fail {key}: {e}")
+        # the 2018 reference is the same for every era: RUN3_V10_CACHE (a json) reuses it across runs
+        cache = os.environ.get("RUN3_V10_CACHE")
+        vc = json.load(open(cache)) if cache and os.path.exists(cache) else {}
+        tag = f"{key}|{V10_N}|{'geom' if LOOSE else 'real'}"
+        if tag in vc:
+            v10 = vc[tag]
+        else:
+            try:
+                v10 = lj_counts(v10_files(key, cl, V10_N), is2e)
+            except Exception as e:
+                v10 = None; print(f"  v10 fail {key}: {e}")
+            if cache and v10 is not None:
+                vc = json.load(open(cache)) if os.path.exists(cache) else {}
+                vc[tag] = v10; json.dump(vc, open(cache, "w"))
         out.append(dict(chan=chan, mbs=mbs, mdp=mdp, ctau=ctau, key=key, run3=r3, v10=v10))
         v = f"v10 excl_acc={v10['excl_acc']['p']*100:5.1f}%" if v10 else "v10 --"
         print(f"{key:28s} R3 incl_acc={r3['incl_acc']['p']*100:5.1f}% excl_acc={r3['excl_acc']['p']*100:5.1f}% "
