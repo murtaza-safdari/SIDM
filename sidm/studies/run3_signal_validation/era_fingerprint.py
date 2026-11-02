@@ -252,12 +252,13 @@ def fig_sqrt_s(H):
     edges = H["sqrts_edges"]
     for era in [e for e in ERAS if f"sqrts_{e}" in H] + ["2018"]:
         h = H[f"sqrts_{era}"]
-        lab = f"{era} (Run 3)" if era != "2018" else "2018 v10 (Run 2 reference)"
+        lab = era if era != "2018" else "2018 (13 TeV)"
         ax.stairs(h / h.sum(), edges / 1e3, color=ECOL[era], ls=ELS[era], lw=2.5, label=lab)
-    ax.set_xlabel(r"$\sqrt{s} = m(B_s) / \sqrt{x_1 x_2}$  [TeV]")
-    ax.set_ylabel("Fraction of events")
-    ax.set_yscale("log"); ax.set_ylim(1e-4, 3e2)   # headroom: legend above the spikes
-    ax.legend(loc="upper left", fontsize=15, ncol=2)
+    ax.set_xlabel(r"$\sqrt{s} = m_{\chi\bar{\chi}} / \sqrt{x_1 x_2}$  [TeV]")
+    ax.set_ylabel(f"Fraction of events / {np.diff(edges)[0]:.0f} GeV")
+    ax.set_yscale("log"); ax.set_ylim(1e-4, 2)
+    ax.legend(loc="upper center", fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+              framealpha=0.92)
     an_style.cms_sim_labels([ax], com="13 / 13.6 TeV")
     return an_style.save(fig, "era_sqrt_s")
 
@@ -269,7 +270,7 @@ def fig_pileup(H):
         h = H[f"pu_{era}"]
         ax.stairs(h / h.sum(), edges, color=ECOL[era], ls=ELS[era], lw=2.5,
                   label=f"{era}: mean {H[f'pu_mean_{era}']:.1f}")
-    ax.set_xlabel("Pileup_nTrueInt (true pileup interactions)"); ax.set_ylabel("Fraction of events")
+    ax.set_xlabel("number of true pileup interactions"); ax.set_ylabel("Fraction of events")
     ax.set_xlim(edges[0], edges[-1]); ax.set_ylim(0, None)
     ax.legend(loc="upper right", fontsize=14)
     return _finish(fig, [ax], "era_pileup")
@@ -333,30 +334,51 @@ def fig_bpix(H):
     return _finish(fig, axes, "era_bpix")
 
 
+def _restyle(fig, minfs):
+    """Committed run3_study_plots figures, made AN-ready without editing that module: suptitle
+    dropped (the AN caption carries it), in-figure text and legends raised to >= minfs."""
+    if fig._suptitle is not None:
+        fig._suptitle.set_visible(False)
+    for ax in fig.axes:
+        for t in ax.texts:
+            if t.get_fontsize() < minfs and "CMS" not in t.get_text():
+                t.set_fontsize(minfs)
+        leg = ax.get_legend()
+        if leg is not None:
+            for t in leg.get_texts() + [leg.get_title()]:
+                t.set_fontsize(max(t.get_fontsize(), minfs))
+
+
 def fig_reco_eff():
-    """The two committed per-era figures of run3_study_plots, rendered to one two-page PDF. Their
-    suptitles are dropped (the AN caption carries them) and in-figure text raised to >= 7 pt at
-    7.5 in print width."""
+    """run3_study_plots.fig_geometry_eras: per era and channel, mean over the 18 grid points of
+    (Run 3 - 2018) lepton-jet clustering efficiency in acceptance, whiskers = max |difference|."""
     import run3_study_plots as P
-    path = os.path.join(an_style.FIG_DIR, "era_reco_eff.pdf")
-    os.makedirs(an_style.FIG_DIR, exist_ok=True)
-    with PdfPages(path) as pdf:
-        for fig in (P.fig_geometry_eras(), P.fig_kinematics_eras()):
-            minfs = 8 / (7.5 / fig.get_figwidth())
-            if fig._suptitle is not None:
-                fig._suptitle.set_visible(False)
-            for ax in fig.axes:
-                for t in ax.texts:
-                    if t.get_fontsize() < minfs and "CMS" not in t.get_text():
-                        t.set_fontsize(minfs)
-                leg = ax.get_legend()
-                if leg is not None:
-                    for t in leg.get_texts() + [leg.get_title()]:
-                        t.set_fontsize(max(t.get_fontsize(), minfs))
-            fig.tight_layout()
-            pdf.savefig(fig)
-            plt.close(fig)
-    print(f"saved {path}")
+    fig = P.fig_geometry_eras()
+    ax = fig.axes[0]
+    fig.set_size_inches(10, 7.5)
+    ax.set_ylabel("LJ clustering efficiency in acceptance\nRun 3 $-$ 2018  [%]", labelpad=8, fontsize=21)
+    for t in ax.texts:
+        if t.get_text().startswith("whiskers"):
+            t.set_text("whiskers: max |difference| over the 18 grid points")
+    _restyle(fig, 13)
+    h, l = ax.get_legend_handles_labels()
+    names = {"4Mu": r"4$\mu$", "2Mu2E": r"2$\mu$2e"}
+    ax.legend(h, [names.get(x, x) for x in l], loc="upper right", fontsize=15, frameon=True,
+              facecolor="white", edgecolor="none", framealpha=0.92)
+    fig.tight_layout()
+    path = an_style.save(fig, "era_reco_eff_vs2018"); plt.close(fig)
+    return path
+
+
+def fig_kinematics():
+    """run3_study_plots.fig_kinematics_eras: gen kinematics of one point overlaid across the eras."""
+    import run3_study_plots as P
+    fig = P.fig_kinematics_eras()
+    leg = fig.axes[0].get_legend()
+    leg.set_title(r"4$\mu$, $m_{\chi\bar{\chi}}$ = 200 GeV")
+    _restyle(fig, 8 / (7.5 / fig.get_figwidth()))
+    fig.tight_layout()
+    path = an_style.save(fig, "era_kinematics"); plt.close(fig)
     return path
 
 
@@ -391,11 +413,12 @@ def hole(H, kind, a, b, thr):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--eras", default=",".join(ERAS))
+    ap.add_argument("--eras", default=",".join(ERAS + ["2018"]),
+                    help="Run 3 eras and/or 2018 (the v10 4Mu reference, 13 TeV)")
     ap.add_argument("--channels", default=",".join(CHANS))
     ap.add_argument("--nfiles", type=int, default=0, help="files per sample (0 = all 120)")
     ap.add_argument("--map-nfiles", type=int, default=0, help="files per sample for the maps (0 = all)")
-    ap.add_argument("--ref-nfiles", type=int, default=10, help="files of the 2018 v10 reference")
+    ap.add_argument("--ref-nfiles", type=int, default=0, help="files of the 2018 v10 reference (0 = all 47)")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--csv", default=os.path.join(_DIR, "era_fingerprint.csv"))
     ap.add_argument("--npz", default=os.path.join(_DIR, "era_fingerprint.npz"))
@@ -415,11 +438,15 @@ def main():
         rows = []
         for era in eras:
             evs, prov = [], {}
-            for chan in chans:
-                urls = V._fileset_files(POINT.format(chan=chan), era, f"signal_{chan.lower()}_run3.yaml",
-                                        args.nfiles)
+            echans = ["4Mu"] if era == "2018" else chans
+            for chan in echans:
+                if era == "2018":
+                    urls = V._fileset_files(REF[0], REF[1], REF[2], args.ref_nfiles)
+                else:
+                    urls = V._fileset_files(POINT.format(chan=chan), era, f"signal_{chan.lower()}_run3.yaml",
+                                            args.nfiles)
                 maps = None
-                if not args.no_maps:
+                if not args.no_maps and era != "2018":
                     maps = "ee" if (chan == "2Mu2E" and era in ("2022", "2022EE")) else \
                            "bpix" if era in ("2023", "2023BPix") else None
                 evs.append(collect(urls, maps, args.workers, args.map_nfiles))
@@ -438,14 +465,15 @@ def main():
             H[f"pu_{era}"] = np.histogram(pu, H["pu_edges"])[0]; H[f"pu_mean_{era}"] = pu.mean()
             for k in "xyz":
                 H[f"vtx{k}_{era}"] = np.histogram(c[f"GenVtx_{k}"], H[f"vtx{k}_edges"])[0]
-            p0 = prov[chans[0]]
-            same = all(prov[ch]["steps"] == p0["steps"] for ch in chans)
+            p0 = prov[echans[0]]
+            same = all(prov[ch]["steps"] == p0["steps"] for ch in echans)
             nhlt = sorted({n for e in evs for n in e["nhlt"]})
             q16, q50, q84 = np.percentile(s, [16, 50, 84])
-            row = dict(era=era, channels="+".join(chans), files_per_sample=len(urls),
+            row = dict(era=era, channels="+".join(echans), files_per_sample=len(urls),
                        events=sum(e["n"] for e in evs),
                        sqrt_s_median_GeV=round(q50, 2), sqrt_s_68pct_halfwidth_GeV=round((q84 - q16) / 2, 3),
-                       sqrt_s_frac_below_13p5TeV=round(float((s < 13500).mean()), 4),
+                       # tail of the m/sqrt(x1 x2) estimator; not applicable to the 13 TeV reference
+                       sqrt_s_frac_below_13p5TeV=round(float((s < 13500).mean()), 4) if p0["com"] > 13500 else "",
                        sqrt_s_lhe_median_GeV=round(float(np.nanmedian(c["sqrts_lhe"])), 2),
                        gen_comEnergy_GeV=p0["com"],
                        pileup_nTrueInt_mean=round(pu.mean(), 2), pileup_nTrueInt_std=round(pu.std(), 2),
@@ -462,18 +490,19 @@ def main():
                        provenance_same_both_channels=same)
             rows.append(row)
             print(row, flush=True)
-        # 2018 v10 reference (13 TeV)
-        ref = V._fileset_files(REF[0], REF[1], REF[2], args.ref_nfiles)
-        r = collect(ref, None, args.workers)
-        H["sqrts_2018"] = np.histogram(_stats(r["sqrts"]), H["sqrts_edges"])[0]
-        pr = provenance(ref[0])
-        print(f"2018 v10 reference: {len(ref)} files, {r['n']} events, sqrt(s) median "
-              f"{np.median(_stats(r['sqrts'])):.1f} GeV (LHE: {np.nanmedian(r['sqrts_lhe']):.1f}), comEnergy {pr['com']}, steps {pr['steps']}")
-        H["ref_info"] = np.array(repr(dict(files=len(ref), events=r["n"], median=float(np.median(_stats(r["sqrts"]))),
-                                           com=pr["com"], steps=pr["steps"])))
+        # merge with the existing table/histograms, so a run over a subset of eras (e.g. --eras 2018)
+        # updates those rows only; Run 3 eras first, the 2018 reference last
+        old = []
+        if os.path.exists(args.csv):
+            with open(args.csv) as fh:
+                old = [r for r in csv.DictReader(fh) if r["era"] not in {row["era"] for row in rows}]
+        if os.path.exists(args.npz):
+            H = {**dict(np.load(args.npz, allow_pickle=True)), **H}
+        order = {e: i for i, e in enumerate(ERAS + ["2018"])}
+        rows = sorted(old + rows, key=lambda r: order.get(r["era"], 99))
         keys = list(dict.fromkeys(k for row in rows for k in row))
         with open(args.csv, "w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=keys); w.writeheader(); w.writerows(rows)
+            w = csv.DictWriter(fh, fieldnames=keys, restval=""); w.writeheader(); w.writerows(rows)
         print(f"wrote {args.csv}")
         np.savez_compressed(args.npz, **H)
         print(f"wrote {args.npz}")
@@ -492,7 +521,7 @@ def main():
         fig_ecal_ee(H)
     if {"2023", "2023BPix"} <= have and "bp_ntrk_2023" in H:
         fig_bpix(H)
-    fig_reco_eff()
+    fig_reco_eff(); fig_kinematics()
 
 
 if __name__ == "__main__":
