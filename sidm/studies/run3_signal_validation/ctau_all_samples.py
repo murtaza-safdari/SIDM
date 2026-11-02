@@ -52,12 +52,15 @@ def run(nfiles, workers):
             for s in utilities.load_yaml(f"{utilities.BASE_DIR}/configs/ntuples/{cfg}")[era]["samples"]:
                 jobs.append((era, s, V._fileset_files(s, era, cfg, nfiles)))
 
+    commit = V.code_commit()
+
     def one(j):
         era, s, urls = j
         x = np.concatenate([proper_ctau(u) for u in urls])
         nom = V.nominal_mm(s)
         return dict(era=era, sample=s, n_files=len(urls), n_decays=len(x), measured_mm=round(x.mean(), 5),
-                    stat_err_mm=round(x.std() / np.sqrt(len(x)), 5), nominal_mm=nom, ratio=round(x.mean() / nom, 5))
+                    stat_err_mm=round(x.std() / np.sqrt(len(x)), 5), nominal_mm=nom, ratio=round(x.mean() / nom, 5),
+                    code_commit=commit)
     with ThreadPoolExecutor(workers) as ex:
         rows = list(ex.map(one, jobs))
     with open(CSV, "w", newline="") as fh:

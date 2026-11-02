@@ -18,6 +18,15 @@ BR = ["GenPart_pdgId", "GenPart_vx", "GenPart_vy", "GenPart_vz",
       "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_mass", "GenPart_genPartIdxMother"]
 
 
+def code_commit():
+    """Short hash of the checkout that produced an output, '-dirty' if this study directory has
+    uncommitted changes; stored with every result file."""
+    d = os.path.dirname(os.path.abspath(__file__))
+    h = subprocess.run(["git", "-C", d, "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+    dirty = subprocess.run(["git", "-C", d, "status", "--porcelain", "--", "."], capture_output=True, text=True).stdout.strip()
+    return (h or "unknown") + ("-dirty" if dirty else "")
+
+
 def nominal_mm(sample):
     """Nominal proper cτ in mm parsed from the sample name (e.g. '..._0p48mm' -> 0.48)."""
     return float(sample.split("_")[-1].replace("mm", "").replace("p", "."))

@@ -42,19 +42,7 @@ import an_style
 an_style.FIG_DIR = os.path.join(_DIR, "figures")
 
 
-def _commit():
-    import subprocess
-    try:
-        h = subprocess.run(["git", "-C", _DIR, "rev-parse", "--short", "HEAD"], capture_output=True,
-                           text=True).stdout.strip()
-        dirty = subprocess.run(["git", "-C", _DIR, "status", "--porcelain", "--", "."], capture_output=True,
-                               text=True).stdout.strip()
-        return h + ("-dirty" if dirty else "")
-    except OSError:
-        return "unknown"
-
-
-COMMIT = _commit()
+COMMIT = V.code_commit()
 ERAS = ["2022", "2022EE", "2023", "2023BPix"]
 CHANS = ["4Mu", "2Mu2E"]
 POINT = "{chan}_200GeV_1p2GeV_4p8mm"
@@ -275,6 +263,31 @@ def read_file(url, maps):
         out["ee_den"] = np.histogram2d(e, p, [EE_ETA, PHI])[0]
         out["ee_num"] = np.histogram2d(e[ok], p[ok], [EE_ETA, PHI])[0]
         out["ee_num_nx"] = np.histogram2d(e[ok_nx], p[ok_nx], [EE_ETA, PHI])[0]
+        # per dark photon (the quantity of the note): a dark photon to e+e- with both electrons
+        # pT > 5 GeV and 1.5 < |eta| < 3.0 (decay vertex before the ECAL face) is reconstructed when at
+        # least one e/gamma object of the pool lies within Delta R < DR_E of either electron; filled at
+        # the dark photon's (eta, phi)
+        G = ak.to_list(ak.zip({"pid": a["GenPart_pdgId"], "mom": a["GenPart_genPartIdxMother"],
+                               "pt": a["GenPart_pt"], "eta": a["GenPart_eta"], "phi": a["GenPart_phi"],
+                               "rho": np.hypot(a["GenPart_vx"], a["GenPart_vy"]), "vz": a["GenPart_vz"]}))
+        P = ak.to_list(pool)
+        dpe, dpp, dpok = [], [], []
+        for gen, rc in zip(G, P):
+            daus = {}
+            for i, g in enumerate(gen):
+                if abs(g["pid"]) == 11 and g["mom"] >= 0 and abs(gen[g["mom"]]["pid"]) == 32:
+                    daus.setdefault(g["mom"], []).append(g)
+            for m, d in daus.items():
+                if len(d) != 2 or not all(x["pt"] > 5 and 1.5 < abs(x["eta"]) < 3.0 and x["rho"] < EE_RHO
+                                          and abs(x["vz"]) < EE_Z for x in d):
+                    continue
+                hit = any(np.hypot(x["eta"] - r["eta"], (x["phi"] - r["phi"] + np.pi) % (2 * np.pi) - np.pi) < DR_E
+                          for x in d for r in rc)
+                dpe.append(gen[m]["eta"]); dpp.append(gen[m]["phi"]); dpok.append(hit)
+        dpe, dpp, dpok = np.array(dpe), np.array(dpp), np.array(dpok, dtype=bool)
+        out["ee_dp_den"] = np.histogram2d(dpe, dpp, [EE_ETA, PHI])[0]
+        out["ee_dp_num"] = np.histogram2d(dpe[dpok], dpp[dpok], [EE_ETA, PHI])[0] if dpok.any() else \
+            np.zeros_like(out["ee_dp_den"])
     if maps == "bpix":
         s = _gen_from_zd(a, 13) & (a["GenPart_pt"] > 5) & (abs(a["GenPart_eta"]) < 2.4) \
             & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < BP_RHO)
@@ -397,13 +410,13 @@ def fig_beamspot(H):
     return _finish(fig, axes, "era_beamspot")
 
 
-def _map_panel(ax, z, xedges, cmap, vmin, vmax, mask_eta=None):
+def _map_panel(ax, z, xedges, cmap, vmin, vmax, mask_eta=None, obj="gen"):
     zz = np.ma.masked_invalid(z.T)
     m = ax.pcolormesh(xedges, PHI, zz, cmap=cmap, vmin=vmin, vmax=vmax, edgecolors="face", linewidth=0)
     if mask_eta is not None:
         ax.axvspan(-mask_eta, mask_eta, color="0.85", hatch="//", ec="0.6", lw=0)
         ax.text(0, 0, "barrel\n(not shown)", ha="center", va="center", fontsize=FS_WIDE, color="0.3")
-    ax.set_xlabel(r"gen $\eta$"); ax.set_xlim(xedges[0], xedges[-1]); ax.set_ylim(-np.pi, np.pi)
+    ax.set_xlabel(rf"{obj} $\eta$"); ax.set_xlim(xedges[0], xedges[-1]); ax.set_ylim(-np.pi, np.pi)
     return m
 
 
@@ -412,24 +425,24 @@ def _tag(ax, text):
             bbox=dict(facecolor="white", edgecolor="none", alpha=0.92, pad=3))
 
 
-def _eff_maps(fig, axes, num_a, den_a, num_b, den_b, xedges, eras, zlab, mask_eta, dlab, dlim, vlim):
+def _eff_maps(fig, axes, num_a, den_a, num_b, den_b, xedges, eras, zlab, mask_eta, dlab, dlim, vlim, obj="gen"):
     with np.errstate(invalid="ignore", divide="ignore"):
         ea, eb = num_a / den_a, num_b / den_b
     for ax, z, era in zip(axes[:2], (ea, eb), eras):
-        m = _map_panel(ax, z, xedges, "viridis", *vlim, mask_eta)
+        m = _map_panel(ax, z, xedges, "viridis", *vlim, mask_eta, obj)
         _tag(ax, era)
     fig.colorbar(m, ax=axes[:2], label=zlab, pad=0.01)
-    md = _map_panel(axes[2], eb - ea, xedges, "RdBu", -dlim, dlim, mask_eta)
+    md = _map_panel(axes[2], eb - ea, xedges, "RdBu", -dlim, dlim, mask_eta, obj)
     _tag(axes[2], dlab)
     fig.colorbar(md, ax=axes[2], label="difference", pad=0.01)
-    axes[0].set_ylabel(r"gen $\phi$")
+    axes[0].set_ylabel(rf"{obj} $\phi$")
 
 
 def fig_ecal_ee(H):
     fig, axes = plt.subplots(1, 3, figsize=(22, 7.5), layout="constrained", sharey=True)
-    _eff_maps(fig, axes, H["ee_num_2022"], H["ee_den_2022"], H["ee_num_2022EE"], H["ee_den_2022EE"],
-              EE_ETA, ("2022", "2022EE"), r"e/$\gamma$ reco efficiency (exclusive)", 1.5, "2022EE $-$ 2022",
-              0.6, (0.0, 1.0))
+    _eff_maps(fig, axes, H["ee_dp_num_2022"], H["ee_dp_den_2022"], H["ee_dp_num_2022EE"], H["ee_dp_den_2022EE"],
+              EE_ETA, ("2022", "2022EE"), r"e/$\gamma$ efficiency per dark photon", 1.5, "2022EE $-$ 2022",
+              0.6, (0.4, 1.0), obj="dark-photon")
     return _finish(fig, axes, "era_ecal_ee")
 
 
@@ -521,10 +534,12 @@ def _stats(x):
 
 
 REGIONS_JSON = os.path.join(_DIR, "era_fingerprint_regions.json")
-THR = {"ee": 0.3, "bp": 1.0}          # quoted thresholds: efficiency drop (EE), mean-layer drop (BPix)
+THR = {"eedp": 0.3, "ee": 0.3, "bp": 1.0}          # quoted thresholds: efficiency drop (EE), mean-layer drop (BPix)
 
 
 def _maps(H, kind, a, b, sfx):
+    if kind == "eedp":
+        return H[f"ee_dp_num_{a}"], H[f"ee_dp_den_{a}"], H[f"ee_dp_num_{b}"], H[f"ee_dp_den_{b}"], EE_ETA
     if kind == "ee":
         return H[f"ee_num{sfx}_{a}"], H[f"ee_den_{a}"], H[f"ee_num{sfx}_{b}"], H[f"ee_den_{b}"], EE_ETA
     return H[f"bp_lay{sfx}_{a}"], H[f"bp_ntrk{sfx}_{a}"], H[f"bp_lay{sfx}_{b}"], H[f"bp_ntrk{sfx}_{b}"], BP_ETA
@@ -548,11 +563,13 @@ def regions(H):
     non-exclusive closest-object matching: threshold, flagged-bin and bounding-rectangle averages,
     bin counts, and for BPix the PF-muon efficiency and the extent at several thresholds."""
     R = {}
-    for kind, a, b in (("ee", "2022", "2022EE"), ("bp", "2023", "2023BPix")):
-        if f"{kind}_den_{a}" not in H or f"{kind}_den_{b}" not in H:
+    for kind, a, b in (("eedp", "2022", "2022EE"), ("ee", "2022", "2022EE"), ("bp", "2023", "2023BPix")):
+        dk = "ee_dp" if kind == "eedp" else kind
+        if f"{dk}_den_{a}" not in H or f"{dk}_den_{b}" not in H:
             continue
-        for sfx, mlab in (("", "exclusive"), ("_nx", "non-exclusive")):
-            if (f"ee_num{sfx}_{a}" if kind == "ee" else f"bp_lay{sfx}_{a}") not in H:
+        for sfx, mlab in ((("", "per-dark-photon"),) if kind == "eedp" else
+                          (("", "exclusive"), ("_nx", "non-exclusive"))):
+            if kind != "eedp" and (f"ee_num{sfx}_{a}" if kind == "ee" else f"bp_lay{sfx}_{a}") not in H:
                 continue
             na, da, nb, db, xe = _maps(H, kind, a, b, sfx)
             thr = THR[kind]
@@ -562,8 +579,13 @@ def regions(H):
             ie, ip = np.where(sel)
             rect = np.zeros_like(sel); rect[ie.min():ie.max() + 1, ip.min():ip.max() + 1] = True
             av = lambda num, den, m: round(float(num[m].sum() / den[m].sum()), 4)
-            r = dict(quantity=("e/gamma reconstruction efficiency of gen electrons" if kind == "ee" else
-                               "mean number of tracker layers with hits of matched muons"),
+            r = dict(quantity={"eedp": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's "
+                                       "quantity): >= 1 e/gamma object within the cone of either electron, "
+                                       "both electrons pT > 5 GeV, 1.5 < |eta| < 3.0; map at the dark photon's eta, phi",
+                               "ee": "e/gamma reconstruction efficiency per gen electron, each object matched once "
+                                     "(collimated pairs mostly resolve into a single object, hence a plateau near "
+                                     "0.6); kept for reference",
+                               "bp": "mean number of tracker layers with hits of matched muons"}[kind],
                      matching=mlab, threshold=thr, cone_dR=DR_E if kind == "ee" else DR_MU,
                      eta=[float(xe[ie.min()]), float(xe[ie.max() + 1])],
                      phi=[round(float(PHI[ip.min()]), 4), round(float(PHI[ip.max() + 1]), 4)],
@@ -574,7 +596,7 @@ def regions(H):
                      outside_rectangle_avg={a: av(na, da, ~rect), b: av(nb, db, ~rect)},
                      denominators_flagged={a: int(da[sel].sum()), b: int(db[sel].sum())},
                      denominators_rectangle={a: int(da[rect].sum()), b: int(db[rect].sum())})
-            if kind == "ee":
+            if kind in ("ee", "eedp"):
                 r["note"] = "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
             else:
                 pf, den = (H[f"bp_pf{sfx}_{a}"], H[f"bp_den_{a}"]), (H[f"bp_pf{sfx}_{b}"], H[f"bp_den_{b}"])
@@ -700,6 +722,11 @@ def main():
                                                           f"{genproc}: MISMATCH {bad}")
             if bad:
                 print(f"VERTEX CHECK FAILED {era}: {genproc} VtxSmeared {v} vs GenVtx pulls {bad}")
+            if bad and era == "2018":
+                # no VtxSmeared scenario of the GEN (10_6_27) or SIM (10_6_17_patch1) release matches the
+                # stored vertex (closest SigmaZ 3.4 cm, Z0 0.0357 cm for all candidates; readDB = false)
+                row["vtx_note"] = ("the GEN PSet's VtxSmeared parameters are not those of the stored vertex; "
+                                   "the smearing step's configuration is not in the file")
             row["provenance_first_last_file_match"] = all(provsame[ch] for ch in echans)
             row["provenance_same_all_channels"] = all(prov[ch]["steps"] == p0["steps"] for ch in echans)
             row["code_commit"] = COMMIT
@@ -734,18 +761,20 @@ def main():
         json.dump(R, fh, indent=1)
     print(f"wrote {REGIONS_JSON}")
     # the quoted region numbers also go into the table rows of the eras they describe
-    if os.path.exists(args.csv) and not isinstance(R.get("ee_exclusive"), str):
+    if os.path.exists(args.csv):
         with open(args.csv) as fh:
             rows = list(csv.DictReader(fh))
         for row in rows:
-            for kind, eras_ in (("ee", ("2022", "2022EE")), ("bp", ("2023", "2023BPix"))):
-                r = R.get(f"{kind}_exclusive")
+            for col, rk, eras_ in (("ee", "eedp_per-dark-photon", ("2022", "2022EE")),
+                                   ("ee_obj_excl", "ee_exclusive", ("2022", "2022EE")),
+                                   ("bp", "bp_exclusive", ("2023", "2023BPix"))):
+                r = R.get(rk); kind = col
                 if row["era"] in eras_ and isinstance(r, dict):
                     e = row["era"]
-                    row[f"{kind}_region_eta_phi"] = f"{r['eta']}/{r['phi']}"
-                    row[f"{kind}_region_flagged_avg"] = r["flagged_avg"][e]
-                    row[f"{kind}_region_rectangle_avg"] = r["rectangle_avg"][e]
-                    row[f"{kind}_outside_rectangle_avg"] = r["outside_rectangle_avg"][e]
+                    row[f"{col}_region_eta_phi"] = f"{r['eta']}/{r['phi']}"
+                    row[f"{col}_region_flagged_avg"] = r["flagged_avg"][e]
+                    row[f"{col}_region_rectangle_avg"] = r["rectangle_avg"][e]
+                    row[f"{col}_outside_rectangle_avg"] = r["outside_rectangle_avg"][e]
                     if kind == "bp":
                         row["bp_region_pf_eff_rectangle"] = r["pf_eff_rectangle"][e]
                         row["bp_region_pf_eff_flagged"] = r["pf_eff_flagged"][e]
@@ -755,7 +784,7 @@ def main():
     if args.no_figures:
         return
     fig_sqrt_s(H); fig_pileup(H); fig_sqrts_pileup(H); fig_beamspot(H)
-    if {"2022", "2022EE"} <= have and "ee_den_2022" in H:
+    if {"2022", "2022EE"} <= have and "ee_dp_den_2022" in H:
         fig_ecal_ee(H)
     if {"2023", "2023BPix"} <= have and "bp_ntrk_2023" in H:
         fig_bpix(H)

@@ -101,6 +101,7 @@ def compute():
         for k, v in gen_events(CMP, era, cfg, nf).items():
             D[f"{tag}_{k}"] = v
         print(f"{tag}: {D[f'{tag}_nev']} events, {D[f'{tag}_npass']} pass the 2018 requirement")
+    D["code_commit"] = np.array(V.code_commit())
     np.savez_compressed(NPZ, **D)
     print(f"wrote {NPZ}")
     return D
