@@ -247,8 +247,10 @@ def _finish(fig, axes, name, com=13.6):
     return an_style.save(fig, name)
 
 
-def fig_sqrt_s(H):
-    fig, ax = plt.subplots(figsize=(10, 7.5), layout="constrained")
+FS_WIDE = 24     # in-figure text of the 21-22 in figures: prints at >= 8 pt at 7.5/21 scaling
+
+
+def _draw_sqrt_s(ax, H, fs):
     edges = H["sqrts_edges"]
     for era in [e for e in ERAS if f"sqrts_{e}" in H] + ["2018"]:
         h = H[f"sqrts_{era}"]
@@ -257,14 +259,11 @@ def fig_sqrt_s(H):
     ax.set_xlabel(r"$\sqrt{s} = m_{\chi\bar{\chi}} / \sqrt{x_1 x_2}$  [TeV]")
     ax.set_ylabel(f"Fraction of events / {np.diff(edges)[0]:.0f} GeV")
     ax.set_yscale("log"); ax.set_ylim(1e-4, 2)
-    ax.legend(loc="upper center", fontsize=15, frameon=True, facecolor="white", edgecolor="none",
+    ax.legend(loc="upper center", fontsize=fs, frameon=True, facecolor="white", edgecolor="none",
               framealpha=0.92)
-    an_style.cms_sim_labels([ax], com="13 / 13.6 TeV")
-    return an_style.save(fig, "era_sqrt_s")
 
 
-def fig_pileup(H):
-    fig, ax = plt.subplots(figsize=(10, 7.5), layout="constrained")
+def _draw_pileup(ax, H, fs):
     edges = H["pu_edges"]
     for era in [e for e in ERAS if f"pu_{e}" in H]:
         h = H[f"pu_{era}"]
@@ -272,8 +271,34 @@ def fig_pileup(H):
                   label=f"{era}: mean {H[f'pu_mean_{era}']:.1f}")
     ax.set_xlabel("number of true pileup interactions"); ax.set_ylabel("Fraction of events")
     ax.set_xlim(edges[0], edges[-1]); ax.set_ylim(0, None)
-    ax.legend(loc="upper right", fontsize=14)
+    ax.legend(loc="upper right", fontsize=fs)
+
+
+def fig_sqrt_s(H):
+    fig, ax = plt.subplots(figsize=(10, 7.5), layout="constrained")
+    _draw_sqrt_s(ax, H, 15)
+    an_style.cms_sim_labels([ax], com="13 / 13.6 TeV")
+    return an_style.save(fig, "era_sqrt_s")
+
+
+def fig_pileup(H):
+    fig, ax = plt.subplots(figsize=(10, 7.5), layout="constrained")
+    _draw_pileup(ax, H, 14)
     return _finish(fig, [ax], "era_pileup")
+
+
+def fig_sqrts_pileup(H):
+    """sqrt(s) (left, Run 3 eras + 2018) and pileup (right, Run 3) for full text width."""
+    fig, axes = plt.subplots(1, 2, figsize=(21, 8), layout="constrained")
+    _draw_sqrt_s(axes[0], H, FS_WIDE)
+    axes[0].set_ylim(1e-4, 20)          # legend headroom at the larger font
+    _draw_pileup(axes[1], H, FS_WIDE)
+    axes[1].set_ylim(0, axes[1].get_ylim()[1] * 1.3)
+    fig.canvas.draw()
+    fig.set_layout_engine("none")
+    hep.cms.label(ax=axes[0], data=False, com="13 / 13.6 TeV")
+    hep.cms.label(ax=axes[1], data=False, com=13.6)
+    return an_style.save(fig, "era_sqrts_pileup")
 
 
 def fig_beamspot(H):
@@ -286,7 +311,7 @@ def fig_beamspot(H):
             ax.stairs(h / h.sum(), edges, color=ECOL[era], ls=ELS[era], lw=2.5, label=era)
         ax.set_xlabel(xl); ax.set_xlim(edges[0], edges[-1]); ax.set_ylim(0, None)
     axes[0].set_ylabel("Fraction of events")
-    axes[0].legend(loc="upper left", fontsize=20)
+    axes[0].legend(loc="upper left", fontsize=FS_WIDE)
     return _finish(fig, axes, "era_beamspot")
 
 
@@ -295,13 +320,13 @@ def _map_panel(ax, z, xedges, cmap, vmin, vmax, mask_eta=None):
     m = ax.pcolormesh(xedges, PHI, zz, cmap=cmap, vmin=vmin, vmax=vmax, edgecolors="face", linewidth=0)
     if mask_eta is not None:
         ax.axvspan(-mask_eta, mask_eta, color="0.85", hatch="//", ec="0.6", lw=0)
-        ax.text(0, 0, "barrel\n(not shown)", ha="center", va="center", fontsize=18, color="0.3")
+        ax.text(0, 0, "barrel\n(not shown)", ha="center", va="center", fontsize=FS_WIDE, color="0.3")
     ax.set_xlabel(r"gen $\eta$"); ax.set_xlim(xedges[0], xedges[-1]); ax.set_ylim(-np.pi, np.pi)
     return m
 
 
 def _tag(ax, text):
-    ax.text(0.03, 0.96, text, transform=ax.transAxes, ha="left", va="top", fontsize=22,
+    ax.text(0.03, 0.96, text, transform=ax.transAxes, ha="left", va="top", fontsize=FS_WIDE,
             bbox=dict(facecolor="white", edgecolor="none", alpha=0.92, pad=3))
 
 
@@ -516,7 +541,7 @@ def main():
                       h if h else "NONE FOUND")
     if args.no_figures:
         return
-    fig_sqrt_s(H); fig_pileup(H); fig_beamspot(H)
+    fig_sqrt_s(H); fig_pileup(H); fig_sqrts_pileup(H); fig_beamspot(H)
     if {"2022", "2022EE"} <= have and "ee_den_2022" in H:
         fig_ecal_ee(H)
     if {"2023", "2023BPix"} <= have and "bp_ntrk_2023" in H:
