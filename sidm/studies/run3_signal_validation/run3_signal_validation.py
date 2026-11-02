@@ -104,14 +104,17 @@ def load_grid_scan(eos_dir="/store/group/lpcmetx/SIDM/run3_samplegen/validation"
         root = os.path.join(tmp, os.path.basename(eos_dir))
         rows = []
         for fn in sorted(os.listdir(root)) if os.path.isdir(root) else []:
-            m = re.search(r"RESULT (\S+) .*dpMass=([\d.-]+) psMass=([\d.-]+) .*meas/nom=([\d.-]+)",
+            m = re.search(r"RESULT (\S+) .*dpMass=([\d.-]+) psMass=([\d.-]+) .*nDP=(\d+) .*meas/nom=([\d.-]+)",
                           open(os.path.join(root, fn)).read())
             if not m:
                 continue
             name = m.group(1); p = name.split("_")
             rows.append(dict(chan=p[1].replace("BsTo2DpTo", ""), mbs=int(float(p[2][4:])),
                              mdp=float(p[3][4:].replace("p", ".")), ctau=float(p[4][5:].replace("p", ".")),
-                             dpmass=float(m.group(2)), psmass=float(m.group(3)), meas_over_nom=float(m.group(4))))
+                             dpmass=float(m.group(2)), psmass=float(m.group(3)), n_decays=int(m.group(4)),
+                             meas_over_nom=float(m.group(5)), name=name))
+    if len({r["name"] for r in rows}) != len(rows):
+        raise RuntimeError("grid scan: duplicate point names")
     if len(rows) < expected:
         raise RuntimeError(f"grid scan returned {len(rows)} points, expected {expected} "
                            f"-- partial copy or missing validation/ files on EOS")

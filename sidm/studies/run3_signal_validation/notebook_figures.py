@@ -36,7 +36,6 @@ POINTS = [("4Mu_100GeV_0p25GeV_2p0mm", "signal_4mu_run3.yaml"),     # notebook s
           ("2Mu2E_500GeV_5p0GeV_8p0mm", "signal_2mu2e_run3.yaml"),
           ("2Mu2E_1000GeV_1p2GeV_0p96mm", "signal_2mu2e_run3.yaml")]
 CMP = "4Mu_200GeV_1p2GeV_4p8mm"
-NDP_SCAN = 1000                      # dark photons per scan point (500 events x 2), all 180 RESULT lines
 LEG = dict(frameon=True, facecolor="white", edgecolor="none", framealpha=0.92)
 # 2018 v10 generator-level requirement, per event: all four dark-photon leptons pass
 REQ_PT, REQ_ETA, REQ_VXY, REQ_VZ = 5.0, 2.4, 740.0, 960.0      # GeV, -, cm, cm
@@ -95,6 +94,8 @@ def compute():
     rows = V.load_grid_scan()
     D["grid"] = np.array([x["meas_over_nom"] for x in rows])
     D["grid_chan"] = np.array([x["chan"] for x in rows])
+    D["grid_ndecays"] = np.array([x["n_decays"] for x in rows])
+    assert len({x["name"] for x in rows}) == 180, "expected 180 unique scan points"
     for tag, era, cfg, nf in (("r18", "llpNanoAOD_v2", "signal_4mu_v10.yaml", N18),
                               ("r22", "2022", "signal_4mu_run3.yaml", N22)):
         for k, v in gen_events(CMP, era, cfg, nf).items():
@@ -125,10 +126,11 @@ def fig_ctau_grid(D):
     edges = np.linspace(0.85, 1.15, 31)
     ax.hist(g, bins=edges, histtype="stepfilled", color="C0", alpha=0.35)
     ax.hist(g, bins=edges, histtype="step", color="C0", lw=2,
-            label=f"{len(g)} grid points (mean {g.mean():.3f}, std {g.std():.3f})")
-    x = np.linspace(edges[0], edges[-1], 300); sig = 1 / np.sqrt(NDP_SCAN)
+            label=rf"{len(g)} grid points: mean {g.mean():.3f} $\pm$ {g.std() / np.sqrt(len(g)):.3f}, std {g.std():.3f}")
+    ndp = int(np.median(D["grid_ndecays"]))          # decays per point, from the RESULT lines
+    x = np.linspace(edges[0], edges[-1], 300); sig = 1 / np.sqrt(ndp)
     ax.plot(x, len(g) * np.diff(edges)[0] * np.exp(-0.5 * ((x - 1) / sig) ** 2) / (sig * np.sqrt(2 * np.pi)),
-            "k--", lw=1.8, label=rf"statistical expectation ($\sigma$ = 1/$\sqrt{{{NDP_SCAN}}}$)")
+            "k--", lw=1.8, label=rf"statistical expectation ($\sigma$ = 1/$\sqrt{{{ndp}}}$)")
     ax.set_xlabel(r"measured / nominal proper $c\tau$"); ax.set_ylabel("grid points / 0.01")
     ax.set_xlim(edges[0], edges[-1]); ax.set_ylim(0, ax.get_ylim()[1] * 1.45)
     ax.legend(loc="upper left", fontsize=15, title=r"GEN, 500 events per point, 2022 conditions",

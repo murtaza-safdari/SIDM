@@ -40,6 +40,21 @@ import run3_signal_validation as V
 import an_style
 
 an_style.FIG_DIR = os.path.join(_DIR, "figures")
+
+
+def _commit():
+    import subprocess
+    try:
+        h = subprocess.run(["git", "-C", _DIR, "rev-parse", "--short", "HEAD"], capture_output=True,
+                           text=True).stdout.strip()
+        dirty = subprocess.run(["git", "-C", _DIR, "status", "--porcelain", "--", "."], capture_output=True,
+                               text=True).stdout.strip()
+        return h + ("-dirty" if dirty else "")
+    except OSError:
+        return "unknown"
+
+
+COMMIT = _commit()
 ERAS = ["2022", "2022EE", "2023", "2023BPix"]
 CHANS = ["4Mu", "2Mu2E"]
 POINT = "{chan}_200GeV_1p2GeV_4p8mm"
@@ -67,7 +82,8 @@ def _raw(branch):
 def _blobs(branch):
     """Every PSet blob of the ParameterSets tree, keyed by its ParameterSetID (= MD5 of the blob).
     Each entry is a pair<Hash, ParameterSetBlob>; the blob is the entry's trailing ROOT std::string
-    (1-byte length, or 0xff + 4-byte length, then '<...>'), located with the basket entry offsets."""
+    (1-byte length, or 0xff + 4-byte length, then '<...>'), located with the basket entry offsets and
+    accepted only if its MD5 equals the ParameterSetID stored in the same entry."""
     out = {}
     for i in range(branch.num_baskets):
         bk = branch.basket(i)
@@ -78,7 +94,13 @@ def _blobs(branch):
                 j = m.start()
                 if (j >= 1 and e[j - 1] != 255 and e[j - 1] == len(e) - j) or \
                    (j >= 5 and e[j - 5] == 255 and int.from_bytes(e[j - 4:j], "big") == len(e) - j):
-                    out[hashlib.md5(e[j:]).hexdigest()] = e[j:]
+                    # the entry's stored ParameterSetID (16 raw bytes before the blob) must be the
+                    # blob's MD5; this also rejects a '<' inside the stored hash whose preceding byte
+                    # happens to equal the remaining length (2 entries per Run 3 file)
+                    dig = hashlib.md5(e[j:]).digest()
+                    if dig not in e[:j]:
+                        continue
+                    out[dig.hex()] = e[j:]
                     break
             else:
                 raise RuntimeError("ParameterSets entry without a recognisable blob")
@@ -102,8 +124,8 @@ def _get(blob, key):
 
 
 def provenance(url):
-    """Process history of one nano file: [(process, release, global tag)], plus the HLT menu,
-    generator comEnergy and vertex-smearing parameters. (The premix library is not recoverable:
+    """Process history of one nano file: [(process, release, global tag)], plus, per process, the
+    HLT menu, generator comEnergy and vertex-smearing parameters it carries. (The premix library is not recoverable:
     the input fileNames of the PreMixingModule are untracked, so absent from the stored PSet.)"""
     f = uproot.open(url)
     blobs = _blobs(f["ParameterSets"]["IdToParameterSetsBlobs"])
@@ -124,27 +146,35 @@ def provenance(url):
     if not procs or len(rels) % len(procs):
         raise RuntimeError(f"{url}: {len(procs)} processes but {len(rels)} release strings")
     rels = rels[:len(procs)]
-    out = dict(steps=[], hlt_menu=None, com=None, vtx=None)
+    out = dict(steps=[], per_process={})
     for (_, name, h), rel in zip(procs, rels):
         p = blobs[h]
         gt = _get(blobs[_get(p, "GlobalTag")], "globaltag") if _get(p, "GlobalTag") else None
+        if gt:    # each global-tag series must match its release series (CMSSW_12_4_x <-> 124X_...)
+            maj, mnr = re.match(r"CMSSW_(\d+)_(\d+)_", rel).groups()
+            if not gt.startswith(f"{maj}{mnr}X_"):
+                raise RuntimeError(f"{url}: {name} global tag {gt} does not match release {rel}")
         out["steps"].append((name, rel, gt))
+        info = {}
         if _get(p, "HLTConfigVersion"):
-            out["hlt_menu"] = _get(blobs[_get(p, "HLTConfigVersion")], "tableName")
+            info["hlt_menu"] = _get(blobs[_get(p, "HLTConfigVersion")], "tableName")
         if _get(p, "generator"):
-            out["com"] = float(_get(blobs[_get(p, "generator")], "comEnergy"))
+            info["com"] = float(_get(blobs[_get(p, "generator")], "comEnergy"))
         if _get(p, "VtxSmeared"):
             v = blobs[_get(p, "VtxSmeared")]
-            out["vtx"] = {k: float(_get(v, k)) for k in ("X0", "Y0", "Z0", "SigmaZ", "BetaStar")
-                          if _get(v, k) is not None}
+            info["vtx"] = {k: float(_get(v, k)) for k in ("X0", "Y0", "Z0", "SigmaZ") if _get(v, k) is not None}
+        if info:
+            out["per_process"][name] = info
     return out
 
 
 # ---------------------------------------------------------------- event content
 SCAL = ["Generator_x1", "Generator_x2", "Pileup_nTrueInt", "GenVtx_x", "GenVtx_y", "GenVtx_z", "PV_z",
-        "GenPart_pdgId", "GenPart_mass", "LHEPart_incomingpz", "LHEPart_status"]
-GEN = ["GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_vx", "GenPart_vy", "GenPart_vz",
-       "GenPart_genPartIdxMother"]
+        "GenPart_pdgId", "GenPart_mass", "LHEPart_incomingpz", "LHEPart_status", "LHEPart_pdgId",
+        "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_vx", "GenPart_vy", "GenPart_vz",
+        "GenPart_genPartIdxMother"]
+# 2018 v10 generator-level requirement, per event: all four dark-photon leptons pass
+REQ_PT, REQ_ETA, REQ_VXY, REQ_VZ = 5.0, 2.4, 740.0, 960.0      # GeV, -, cm, cm
 
 
 def _gen_from_zd(a, pdg):
@@ -154,8 +184,9 @@ def _gen_from_zd(a, pdg):
 
 
 def _match(eta, phi, reco):
-    """For each gen particle, the closest reco object of the event (a record of the fields of
-    `reco`, None if the event has none) and its Delta R (inf if none)."""
+    """Non-exclusive: for each gen particle, the closest reco object of the event (a record of the
+    fields of `reco`, None if none) and its Delta R (inf if none). One reco object can serve several
+    gen particles. Kept to quote the maps before the switch to exclusive matching."""
     pair = ak.cartesian({"g": ak.zip({"eta": eta, "phi": phi}), "r": reco}, nested=True)
     dphi = (pair.g.phi - pair.r.phi + np.pi) % (2 * np.pi) - np.pi
     dr = np.sqrt((pair.g.eta - pair.r.eta) ** 2 + dphi ** 2)
@@ -163,62 +194,113 @@ def _match(eta, phi, reco):
     return ak.firsts(pair.r[im], axis=-1), ak.fill_none(ak.firsts(dr[im], axis=-1), np.inf)
 
 
+def _match_excl(geta, gphi, reco, cone):
+    """Exclusive greedy matching per event: all (gen, reco) pairs with Delta R < cone, closest first,
+    each gen particle and each reco object used at most once. Returns, flattened over gen particles,
+    the index of the matched reco object (-1 if none) and the reco records as lists per event."""
+    fields = reco.fields
+    out = []
+    for ge, gp, rc in zip(ak.to_list(geta), ak.to_list(gphi), ak.to_list(reco)):
+        res = [-1] * len(ge)
+        if ge and rc:
+            re_ = np.array([r["eta"] for r in rc]); rp = np.array([r["phi"] for r in rc])
+            d = np.hypot(np.subtract.outer(ge, re_),
+                         (np.subtract.outer(gp, rp) + np.pi) % (2 * np.pi) - np.pi)
+            used_g, used_r = set(), set()
+            for k in np.argsort(d, axis=None):
+                i, j = divmod(int(k), len(rc))
+                if d[i, j] >= cone:
+                    break
+                if i in used_g or j in used_r:
+                    continue
+                res[i] = j; used_g.add(i); used_r.add(j)
+        out.append([(rc[j] if j >= 0 else None) for j in res])
+    return out, fields
+
+
 def read_file(url, maps):
-    """Per-event scalars and, if asked, the map histograms of one file."""
+    """Per-event scalars and, if asked, the map histograms of one file (exclusive matching; the
+    non-exclusive closest-object version is kept under *_nx keys)."""
     f = uproot.open(url)
     t = f["Events"]
     keys = t.keys()
-    br = SCAL + (GEN if maps else [])
+    br = list(SCAL)
     if maps == "ee":
-        br += ["Electron_eta", "Electron_phi", "Photon_eta", "Photon_phi"]
+        br += ["Electron_eta", "Electron_phi", "Photon_eta", "Photon_phi", "Photon_electronIdx"]
     if maps == "bpix":
         br += ["Muon_eta", "Muon_phi", "Muon_nTrackerLayers", "Muon_isPFcand", "Muon_isTracker"]
     a = t.arrays([b for b in br if b in keys])
-    m35 = ak.firsts(a["GenPart_mass"][a["GenPart_pdgId"] == 35])
-    sqrts = ak.to_numpy(ak.fill_none(m35, np.nan)) / np.sqrt(ak.to_numpy(a["Generator_x1"] * a["Generator_x2"]))
+    m35 = ak.to_numpy(ak.fill_none(ak.firsts(a["GenPart_mass"][a["GenPart_pdgId"] == 35]), np.nan))
+    x1, x2 = ak.to_numpy(a["Generator_x1"]), ak.to_numpy(a["Generator_x2"])
+    sqrts = m35 / np.sqrt(x1 * x2)
     # independent estimate: 2 E_beam, E_beam = p_z / x of the higher-x incoming LHE parton (x1 <-> +z).
-    # m/sqrt(x1 x2) is exact only for massless partons; for c/b-initiated events with x ~ 1e-3 the
-    # parton mass is not negligible against its momentum and that estimator falls below sqrt(s).
+    # m/sqrt(x1 x2) is exact only for massless partons; the LHE record carries massive charm
+    # (m_c = 1.27 GeV, from E = x E_beam vs p_z), so for c-initiated events at x ~ 1e-3 that estimator
+    # falls below sqrt(s).
+    n = len(a)
     if "LHEPart_incomingpz" in a.fields:
-        pz = a["LHEPart_incomingpz"][a["LHEPart_status"] == -1]
-        x1, x2 = ak.to_numpy(a["Generator_x1"]), ak.to_numpy(a["Generator_x2"])
+        inc = a["LHEPart_status"] == -1
+        pz = a["LHEPart_incomingpz"][inc]
         pp, pm = ak.to_numpy(ak.max(pz, axis=1)), -ak.to_numpy(ak.min(pz, axis=1))
         sqrts_lhe = 2 * np.where(x1 >= x2, pp / x1, pm / x2)
+        shat_lhe = 2 * np.sqrt(pp * pm)              # massless sqrt(s_hat) of the incoming LHE partons
+        apid = abs(a["LHEPart_pdgId"])
+        n_part = ak.to_numpy(ak.sum((a["LHEPart_status"] == 1) & ((apid <= 6) | (apid == 21)), axis=1))
     else:
-        sqrts_lhe = np.full(len(a), np.nan)
-    out = dict(n=len(a), sqrts=sqrts, sqrts_lhe=sqrts_lhe, hlt={k for k in keys if k.startswith("HLT_")})
+        sqrts_lhe = shat_lhe = np.full(n, np.nan); n_part = np.full(n, -1)
+    lep = (_gen_from_zd(a, 11) | _gen_from_zd(a, 13))
+    good = (a["GenPart_pt"] > REQ_PT) & (abs(a["GenPart_eta"]) < REQ_ETA) \
+        & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < REQ_VXY) & (abs(a["GenPart_vz"]) < REQ_VZ)
+    req = ak.to_numpy((ak.sum(lep, axis=1) == 4) & ak.all(~lep | good, axis=1))
+    out = dict(n=n, sqrts=sqrts, sqrts_lhe=sqrts_lhe, shat_lhe=shat_lhe, m35=m35, n_lhe_partons=n_part,
+               req2018=req, hlt={k for k in keys if k.startswith("HLT_")})
     for k in ("Pileup_nTrueInt", "GenVtx_x", "GenVtx_y", "GenVtx_z", "PV_z"):
-        out[k] = ak.to_numpy(a[k]) if k in a.fields else np.full(len(a), np.nan)
+        out[k] = ak.to_numpy(a[k]) if k in a.fields else np.full(n, np.nan)
     if maps == "ee":
         s = _gen_from_zd(a, 11) & (a["GenPart_pt"] > 10) & (abs(a["GenPart_eta"]) > 1.5) \
             & (abs(a["GenPart_eta"]) < 3.0) & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < EE_RHO) \
             & (abs(a["GenPart_vz"]) < EE_Z)
         eta, phi = a["GenPart_eta"][s], a["GenPart_phi"][s]
+        e, p = ak.to_numpy(ak.flatten(eta)), ak.to_numpy(ak.flatten(phi))
         _, de = _match(eta, phi, ak.zip({"eta": a["Electron_eta"], "phi": a["Electron_phi"]}))
         _, dg = _match(eta, phi, ak.zip({"eta": a["Photon_eta"], "phi": a["Photon_phi"]}))
-        ok = ak.flatten((de < DR_E) | (dg < DR_E))
-        e, p = ak.to_numpy(ak.flatten(eta)), ak.to_numpy(ak.flatten(phi))
+        ok_nx = ak.to_numpy(ak.flatten((de < DR_E) | (dg < DR_E)))
+        # exclusive: one pool of electrons and of the photons not linked to an electron (a linked
+        # photon is the same supercluster), each object used once
+        free = a["Photon_electronIdx"] < 0
+        pool = ak.concatenate([ak.zip({"eta": a["Electron_eta"], "phi": a["Electron_phi"]}),
+                               ak.zip({"eta": a["Photon_eta"][free], "phi": a["Photon_phi"][free]})], axis=1)
+        m, _ = _match_excl(eta, phi, pool, DR_E)
+        ok = np.array([r is not None for ev in m for r in ev], dtype=bool)
         out["ee_den"] = np.histogram2d(e, p, [EE_ETA, PHI])[0]
-        out["ee_num"] = np.histogram2d(e[ak.to_numpy(ok)], p[ak.to_numpy(ok)], [EE_ETA, PHI])[0]
+        out["ee_num"] = np.histogram2d(e[ok], p[ok], [EE_ETA, PHI])[0]
+        out["ee_num_nx"] = np.histogram2d(e[ok_nx], p[ok_nx], [EE_ETA, PHI])[0]
     if maps == "bpix":
         s = _gen_from_zd(a, 13) & (a["GenPart_pt"] > 5) & (abs(a["GenPart_eta"]) < 2.4) \
             & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < BP_RHO)
         eta, phi = a["GenPart_eta"][s], a["GenPart_phi"][s]
-        mu, dr = _match(eta, phi, ak.zip({"eta": a["Muon_eta"], "phi": a["Muon_phi"],
-                                          "lay": a["Muon_nTrackerLayers"], "trk": a["Muon_isTracker"],
-                                          "pf": a["Muon_isPFcand"]}))
-        has = dr < DR_MU
-        lay = ak.fill_none(mu.lay, 0)
-        trk = ak.fill_none(mu.trk, False)
-        pf = ak.fill_none(mu.pf, False)
         e, p = ak.to_numpy(ak.flatten(eta)), ak.to_numpy(ak.flatten(phi))
-        has, trk, pf = (ak.to_numpy(ak.flatten(x)) for x in (has, has & trk, has & pf))
-        lay = ak.to_numpy(ak.flatten(lay)).astype(float)
+        reco = ak.zip({"eta": a["Muon_eta"], "phi": a["Muon_phi"], "lay": a["Muon_nTrackerLayers"],
+                       "trk": a["Muon_isTracker"], "pf": a["Muon_isPFcand"]})
+        mu, dr = _match(eta, phi, reco)
+        has = ak.to_numpy(ak.flatten(dr < DR_MU))
+        trk_nx = has & ak.to_numpy(ak.flatten(ak.fill_none(mu.trk, False)))
+        pf_nx = has & ak.to_numpy(ak.flatten(ak.fill_none(mu.pf, False)))
+        lay_nx = ak.to_numpy(ak.flatten(ak.fill_none(mu.lay, 0))).astype(float)
+        m, _ = _match_excl(eta, phi, reco, DR_MU)
+        flat = [r for ev in m for r in ev]
+        trk = np.array([bool(r and r["trk"]) for r in flat], dtype=bool)
+        pf = np.array([bool(r and r["pf"]) for r in flat], dtype=bool)
+        lay = np.array([float(r["lay"]) if r else 0.0 for r in flat])
+        h = lambda sel, w=None: np.histogram2d(e[sel], p[sel], [BP_ETA, PHI], weights=w)[0]
         out["bp_den"] = np.histogram2d(e, p, [BP_ETA, PHI])[0]
-        out["bp_pf"] = np.histogram2d(e[pf], p[pf], [BP_ETA, PHI])[0]
-        out["bp_ntrk"] = np.histogram2d(e[trk], p[trk], [BP_ETA, PHI])[0]
-        out["bp_lay"] = np.histogram2d(e[trk], p[trk], [BP_ETA, PHI], weights=lay[trk])[0]
+        out["bp_pf"], out["bp_ntrk"], out["bp_lay"] = h(pf), h(trk), h(trk, lay[trk])
+        out["bp_pf_nx"], out["bp_ntrk_nx"], out["bp_lay_nx"] = h(pf_nx), h(trk_nx), h(trk_nx, lay_nx[trk_nx])
     return out
+
+
+EVK = ("sqrts", "sqrts_lhe", "shat_lhe", "m35", "n_lhe_partons", "req2018", "Pileup_nTrueInt",
+       "GenVtx_x", "GenVtx_y", "GenVtx_z", "PV_z")
 
 
 def collect(urls, maps, workers, map_nfiles=0):
@@ -228,7 +310,7 @@ def collect(urls, maps, workers, map_nfiles=0):
         parts = list(ex.map(lambda iu: read_file(iu[1], maps if iu[0] < nm else None), enumerate(urls)))
     out = dict(n=sum(p["n"] for p in parts), nhlt=sorted({len(p["hlt"]) for p in parts}),
                paths={q: sorted({q in p["hlt"] for p in parts}) for q in PATHS})
-    for k in ("sqrts", "sqrts_lhe", "Pileup_nTrueInt", "GenVtx_x", "GenVtx_y", "GenVtx_z", "PV_z"):
+    for k in EVK:
         out[k] = np.concatenate([p[k] for p in parts])
     out["map_files"] = sum(1 for p in parts if any(k.startswith(("ee_", "bp_")) for k in p))
     for k in parts[0]:
@@ -346,8 +428,8 @@ def _eff_maps(fig, axes, num_a, den_a, num_b, den_b, xedges, eras, zlab, mask_et
 def fig_ecal_ee(H):
     fig, axes = plt.subplots(1, 3, figsize=(22, 7.5), layout="constrained", sharey=True)
     _eff_maps(fig, axes, H["ee_num_2022"], H["ee_den_2022"], H["ee_num_2022EE"], H["ee_den_2022EE"],
-              EE_ETA, ("2022", "2022EE"), r"e/$\gamma$ reco efficiency", 1.5, "2022EE $-$ 2022",
-              0.6, (0.4, 1.0))
+              EE_ETA, ("2022", "2022EE"), r"e/$\gamma$ reco efficiency (exclusive)", 1.5, "2022EE $-$ 2022",
+              0.6, (0.0, 1.0))
     return _finish(fig, axes, "era_ecal_ee")
 
 
@@ -438,27 +520,82 @@ def _stats(x):
     return x
 
 
-def hole(H, kind, a, b, thr):
-    """Bins where era b falls below era a by more than thr (efficiency or mean layers), with
-    their eta/phi extent and the integrated values inside that region."""
+REGIONS_JSON = os.path.join(_DIR, "era_fingerprint_regions.json")
+THR = {"ee": 0.3, "bp": 1.0}          # quoted thresholds: efficiency drop (EE), mean-layer drop (BPix)
+
+
+def _maps(H, kind, a, b, sfx):
     if kind == "ee":
-        na, da, nb, db, xe = H[f"ee_num_{a}"], H[f"ee_den_{a}"], H[f"ee_num_{b}"], H[f"ee_den_{b}"], EE_ETA
-    else:
-        na, da, nb, db, xe = H[f"bp_lay_{a}"], H[f"bp_ntrk_{a}"], H[f"bp_lay_{b}"], H[f"bp_ntrk_{b}"], BP_ETA
+        return H[f"ee_num{sfx}_{a}"], H[f"ee_den_{a}"], H[f"ee_num{sfx}_{b}"], H[f"ee_den_{b}"], EE_ETA
+    return H[f"bp_lay{sfx}_{a}"], H[f"bp_ntrk{sfx}_{a}"], H[f"bp_lay{sfx}_{b}"], H[f"bp_ntrk{sfx}_{b}"], BP_ETA
+
+
+def flagged(H, kind, a, b, thr, sfx=""):
+    """Largest 8-connected cluster of bins where era b falls below era a by more than thr (both
+    eras >= 20 entries in the bin), so isolated fluctuations do not stretch the region."""
+    na, da, nb, db, xe = _maps(H, kind, a, b, sfx)
     with np.errstate(invalid="ignore", divide="ignore"):
         d = nb / db - na / da
     sel = (d < -thr) & (da >= 20) & (db >= 20)
     if not sel.any():
         return None
-    # keep the largest 8-connected cluster of such bins (phi wraps; not needed for these holes),
-    # so isolated statistical fluctuations do not stretch the quoted region
     lab, n = ndimage.label(sel, structure=np.ones((3, 3)))
-    sel = lab == 1 + np.argmax(ndimage.sum(sel, lab, range(1, n + 1)))
-    ie, ip = np.where(sel)
-    return dict(nbins=int(sel.sum()), eta=(xe[ie.min()], xe[ie.max() + 1]), phi=(PHI[ip.min()], PHI[ip.max() + 1]),
-                a=na[sel].sum() / da[sel].sum(), b=nb[sel].sum() / db[sel].sum(),
-                a_out=na[~sel].sum() / da[~sel].sum(), b_out=nb[~sel].sum() / db[~sel].sum(),
-                den_a=int(da[sel].sum()), den_b=int(db[sel].sum()))
+    return lab == 1 + np.argmax(ndimage.sum(sel, lab, range(1, n + 1)))
+
+
+def regions(H):
+    """Every number quoted for the two dead regions, exclusive matching and (as 'before') the
+    non-exclusive closest-object matching: threshold, flagged-bin and bounding-rectangle averages,
+    bin counts, and for BPix the PF-muon efficiency and the extent at several thresholds."""
+    R = {}
+    for kind, a, b in (("ee", "2022", "2022EE"), ("bp", "2023", "2023BPix")):
+        if f"{kind}_den_{a}" not in H or f"{kind}_den_{b}" not in H:
+            continue
+        for sfx, mlab in (("", "exclusive"), ("_nx", "non-exclusive")):
+            if (f"ee_num{sfx}_{a}" if kind == "ee" else f"bp_lay{sfx}_{a}") not in H:
+                continue
+            na, da, nb, db, xe = _maps(H, kind, a, b, sfx)
+            thr = THR[kind]
+            sel = flagged(H, kind, a, b, thr, sfx)
+            if sel is None:
+                R[f"{kind}_{mlab}"] = "NO REGION FOUND"; continue
+            ie, ip = np.where(sel)
+            rect = np.zeros_like(sel); rect[ie.min():ie.max() + 1, ip.min():ip.max() + 1] = True
+            av = lambda num, den, m: round(float(num[m].sum() / den[m].sum()), 4)
+            r = dict(quantity=("e/gamma reconstruction efficiency of gen electrons" if kind == "ee" else
+                               "mean number of tracker layers with hits of matched muons"),
+                     matching=mlab, threshold=thr, cone_dR=DR_E if kind == "ee" else DR_MU,
+                     eta=[float(xe[ie.min()]), float(xe[ie.max() + 1])],
+                     phi=[round(float(PHI[ip.min()]), 4), round(float(PHI[ip.max() + 1]), 4)],
+                     n_flagged_bins=int(sel.sum()), n_rectangle_bins=int(rect.sum()),
+                     n_rectangle_unflagged_bins=int((rect & ~sel).sum()),
+                     flagged_avg={a: av(na, da, sel), b: av(nb, db, sel)},
+                     rectangle_avg={a: av(na, da, rect), b: av(nb, db, rect)},
+                     outside_rectangle_avg={a: av(na, da, ~rect), b: av(nb, db, ~rect)},
+                     denominators_flagged={a: int(da[sel].sum()), b: int(db[sel].sum())},
+                     denominators_rectangle={a: int(da[rect].sum()), b: int(db[rect].sum())})
+            if kind == "ee":
+                r["note"] = "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
+            else:
+                pf, den = (H[f"bp_pf{sfx}_{a}"], H[f"bp_den_{a}"]), (H[f"bp_pf{sfx}_{b}"], H[f"bp_den_{b}"])
+                band = np.zeros_like(sel); band[:, ip.min():ip.max() + 1] = True
+                r["pf_definition"] = ("fraction of gen muons from a dark photon (pT > 5 GeV, |eta| < 2.4, "
+                                      f"production radius < {BP_RHO:g} cm) whose matched reco Muon (Delta R < "
+                                      f"{DR_MU}, {mlab}) is a PF candidate")
+                for lab, m in (("flagged", sel), ("rectangle", rect), ("phi_band_all_eta", band),
+                               ("outside_phi_band", ~band)):
+                    r[f"pf_eff_{lab}"] = {a: av(*pf, m), b: av(*den, m)}
+                ext = {}
+                for t in (0.5, 0.75, 1.0):
+                    f2 = flagged(H, kind, a, b, t, sfx)
+                    if f2 is not None:
+                        je, jp = np.where(f2)
+                        ext[str(t)] = dict(eta=[float(xe[je.min()]), float(xe[je.max() + 1])],
+                                           phi=[round(float(PHI[jp.min()]), 4), round(float(PHI[jp.max() + 1]), 4)],
+                                           n_bins=int(f2.sum()))
+                r["extent_by_threshold"] = ext
+            R[f"{kind}_{mlab}"] = r
+    return R
 
 
 def main():
@@ -487,7 +624,7 @@ def main():
                  vtxz_edges=np.linspace(-15, 15, 61))
         rows = []
         for era in eras:
-            evs, prov = [], {}
+            evs, prov, provsame = [], {}, {}
             echans = ["4Mu"] if era == "2018" else chans
             for chan in echans:
                 if era == "2018":
@@ -501,43 +638,71 @@ def main():
                            "bpix" if era in ("2023", "2023BPix") else None
                 evs.append(collect(urls, maps, args.workers, args.map_nfiles))
                 pa, pb = provenance(urls[0]), provenance(urls[-1])
-                if pa != pb:
-                    print(f"WARNING {era} {chan}: provenance differs between {urls[0]} and {urls[-1]}")
-                prov[chan] = pa
+                prov[chan], provsame[chan] = pa, pa == pb
                 print(f"{era} {chan}: {len(urls)} files, {evs[-1]['n']} events, maps from "
                       f"{evs[-1]['map_files']} files", flush=True)
-            c = {k: np.concatenate([e[k] for e in evs]) for k in ("sqrts", "sqrts_lhe", "Pileup_nTrueInt",
-                                                                 "GenVtx_x", "GenVtx_y", "GenVtx_z", "PV_z")}
+            c = {k: np.concatenate([e[k] for e in evs]) for k in EVK}
             for k in {k for e in evs for k in e if k.startswith(("ee_", "bp_"))}:
                 H[f"{k}_{era}"] = np.sum([e[k] for e in evs if k in e], axis=0)
-            s = _stats(c["sqrts"]); pu = c["Pileup_nTrueInt"]
+            fin = np.isfinite(c["sqrts"]); s = c["sqrts"][fin]; pu = c["Pileup_nTrueInt"]
             H[f"sqrts_{era}"] = np.histogram(s, H["sqrts_edges"])[0]
             H[f"pu_{era}"] = np.histogram(pu, H["pu_edges"])[0]; H[f"pu_mean_{era}"] = pu.mean()
             for k in "xyz":
                 H[f"vtx{k}_{era}"] = np.histogram(c[f"GenVtx_{k}"], H[f"vtx{k}_edges"])[0]
             p0 = prov[echans[0]]
-            same = all(prov[ch]["steps"] == p0["steps"] for ch in echans)
+            gen = [(n, i) for n, i in p0["per_process"].items() if "com" in i]
+            if len(gen) != 1:
+                raise RuntimeError(f"{era}: {len(gen)} processes carry a generator")
+            genproc, geninfo = gen[0]; com = geninfo["com"]
             nhlt = sorted({n for e in evs for n in e["nhlt"]})
-            q16, q50, q84 = np.percentile(s, [16, 50, 84])
+            cut = 13500.0 / 13600.0 * com                       # 13.5 TeV at 13.6, 12.9 TeV at 13 TeV
+            tail = c["sqrts"] < cut; core = fin & ~tail; req = c["req2018"].astype(bool)
+            npart = c["n_lhe_partons"]; rat = c["m35"] / c["shat_lhe"]
             row = dict(era=era, channels="+".join(echans), files_per_sample=len(urls),
                        events=sum(e["n"] for e in evs),
-                       sqrt_s_median_GeV=round(q50, 2), sqrt_s_68pct_halfwidth_GeV=round((q84 - q16) / 2, 3),
-                       # tail of the m/sqrt(x1 x2) estimator; not applicable to the 13 TeV reference
-                       sqrt_s_frac_below_13p5TeV=round(float((s < 13500).mean()), 4) if p0["com"] > 13500 else "",
+                       sqrt_s_median_GeV=round(float(np.median(s)), 2),
                        sqrt_s_lhe_median_GeV=round(float(np.nanmedian(c["sqrts_lhe"])), 2),
-                       gen_comEnergy_GeV=p0["com"],
+                       sqrt_s_tail_cut_GeV=round(cut, 1),
+                       sqrt_s_frac_below_tail_cut=round(float(tail.mean()), 5),
+                       frac_events_pass_2018_req=round(float(req.mean()), 4),
+                       sqrt_s_frac_below_tail_cut_after_2018_req=round(float(tail[req].mean()), 5) if req.any() else "",
+                       lhe_frac_with_outgoing_parton_tail=round(float((npart[tail] > 0).mean()), 4) if tail.any() else "",
+                       lhe_frac_with_outgoing_parton_core=round(float((npart[core] > 0).mean()), 4),
+                       m35_over_lhe_sqrt_shat_median_tail=round(float(np.nanmedian(rat[tail])), 5) if tail.any() else "",
+                       m35_over_lhe_sqrt_shat_median_core=round(float(np.nanmedian(rat[core])), 5),
                        pileup_nTrueInt_mean=round(pu.mean(), 2), pileup_nTrueInt_std=round(pu.std(), 2),
-                       genvtx_x_mean_cm=round(c["GenVtx_x"].mean(), 4), genvtx_y_mean_cm=round(c["GenVtx_y"].mean(), 4),
-                       genvtx_z_std_cm=round(c["GenVtx_z"].std(), 3), pv_z_std_cm=round(c["PV_z"].std(), 3),
-                       n_hlt_branches="/".join(map(str, nhlt)))
+                       genvtx_x_mean_cm=round(c["GenVtx_x"].mean(), 5), genvtx_y_mean_cm=round(c["GenVtx_y"].mean(), 5),
+                       genvtx_z_mean_cm=round(c["GenVtx_z"].mean(), 4), genvtx_z_std_cm=round(c["GenVtx_z"].std(), 4),
+                       pv_z_std_cm=round(c["PV_z"].std(), 3), n_hlt_branches="/".join(map(str, nhlt)))
             for q in PATHS:
                 v = sorted({x for e in evs for x in e["paths"][q]})
                 row[q] = "yes" if v == [True] else "no" if v == [False] else "mixed"
             for name, rel, gt in p0["steps"]:
                 row[f"{name}_release"] = rel; row[f"{name}_globaltag"] = gt
-            row.update(hlt_menu=p0["hlt_menu"], vtxsmear_X0_Y0_SigmaZ_cm=
-                       f"{p0['vtx']['X0']:.6g}/{p0['vtx']['Y0']:.6g}/{p0['vtx']['SigmaZ']:.4g}" if p0["vtx"] else "",
-                       provenance_same_both_channels=same)
+            for name, info in p0["per_process"].items():
+                if "com" in info:
+                    row[f"{name}_comEnergy_GeV"] = info["com"]
+                if "hlt_menu" in info:
+                    row[f"{name}_hlt_menu"] = info["hlt_menu"]
+                if "vtx" in info:
+                    v = info["vtx"]
+                    row[f"{name}_vtxsmear_X0_Y0_Z0_SigmaZ_cm"] = "/".join(f"{v[k]:.6g}" for k in ("X0", "Y0", "Z0", "SigmaZ"))
+            # the generator process's VtxSmeared must reproduce the stored generated vertex
+            v = geninfo.get("vtx")
+            N = len(c["GenVtx_z"])
+            pulls = dict(x=(c["GenVtx_x"].mean() - v["X0"]) / (c["GenVtx_x"].std() / np.sqrt(N)),
+                         y=(c["GenVtx_y"].mean() - v["Y0"]) / (c["GenVtx_y"].std() / np.sqrt(N)),
+                         z0=(c["GenVtx_z"].mean() - v["Z0"]) / (c["GenVtx_z"].std() / np.sqrt(N)),
+                         sigmaz=(c["GenVtx_z"].std() - v["SigmaZ"]) / (c["GenVtx_z"].std() / np.sqrt(2 * N)))
+            bad = {k: round(float(x), 1) for k, x in pulls.items() if abs(x) > 5}
+            row.update({f"vtx_pull_{k}": round(float(x), 2) for k, x in pulls.items()})
+            row["vtx_check_vs_" + "generator_process"] = (f"{genproc}: ok" if not bad else
+                                                          f"{genproc}: MISMATCH {bad}")
+            if bad:
+                print(f"VERTEX CHECK FAILED {era}: {genproc} VtxSmeared {v} vs GenVtx pulls {bad}")
+            row["provenance_first_last_file_match"] = all(provsame[ch] for ch in echans)
+            row["provenance_same_all_channels"] = all(prov[ch]["steps"] == p0["steps"] for ch in echans)
+            row["code_commit"] = COMMIT
             rows.append(row)
             print(row, flush=True)
         # merge with the existing table/histograms, so a run over a subset of eras (e.g. --eras 2018)
@@ -547,7 +712,12 @@ def main():
             with open(args.csv) as fh:
                 old = [r for r in csv.DictReader(fh) if r["era"] not in {row["era"] for row in rows}]
         if os.path.exists(args.npz):
-            H = {**dict(np.load(args.npz, allow_pickle=True)), **H}
+            prev = dict(np.load(args.npz, allow_pickle=True))
+            # drop the re-run eras' keys (and the retired ref_info) before merging
+            prev = {k: v for k, v in prev.items() if k != "ref_info"
+                    and not any(k.endswith(f"_{e}") for e in eras)}
+            H = {**prev, **H}
+        H["code_commit"] = np.array(COMMIT)
         order = {e: i for i, e in enumerate(ERAS + ["2018"])}
         rows = sorted(old + rows, key=lambda r: order.get(r["era"], 99))
         keys = list(dict.fromkeys(k for row in rows for k in row))
@@ -558,12 +728,30 @@ def main():
         print(f"wrote {args.npz}")
 
     have = {e for e in ERAS if f"sqrts_{e}" in H}
-    for kind, a, b, thr in (("ee", "2022", "2022EE", 0.3), ("bp", "2023", "2023BPix", 1.0)):
-        if f"{kind}_den_{a}" in H or f"{kind}_ntrk_{a}" in H:
-            if {a, b} <= have:
-                h = hole(H, kind, a, b, thr)
-                print(f"hole {kind} {b} vs {a} (drop > {thr}):",
-                      h if h else "NONE FOUND")
+    R = regions(H)
+    R["code_commit"] = str(H.get("code_commit", COMMIT))
+    with open(REGIONS_JSON, "w") as fh:
+        json.dump(R, fh, indent=1)
+    print(f"wrote {REGIONS_JSON}")
+    # the quoted region numbers also go into the table rows of the eras they describe
+    if os.path.exists(args.csv) and not isinstance(R.get("ee_exclusive"), str):
+        with open(args.csv) as fh:
+            rows = list(csv.DictReader(fh))
+        for row in rows:
+            for kind, eras_ in (("ee", ("2022", "2022EE")), ("bp", ("2023", "2023BPix"))):
+                r = R.get(f"{kind}_exclusive")
+                if row["era"] in eras_ and isinstance(r, dict):
+                    e = row["era"]
+                    row[f"{kind}_region_eta_phi"] = f"{r['eta']}/{r['phi']}"
+                    row[f"{kind}_region_flagged_avg"] = r["flagged_avg"][e]
+                    row[f"{kind}_region_rectangle_avg"] = r["rectangle_avg"][e]
+                    row[f"{kind}_outside_rectangle_avg"] = r["outside_rectangle_avg"][e]
+                    if kind == "bp":
+                        row["bp_region_pf_eff_rectangle"] = r["pf_eff_rectangle"][e]
+                        row["bp_region_pf_eff_flagged"] = r["pf_eff_flagged"][e]
+        keys = list(dict.fromkeys(k for row in rows for k in row))
+        with open(args.csv, "w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=keys, restval=""); w.writeheader(); w.writerows(rows)
     if args.no_figures:
         return
     fig_sqrt_s(H); fig_pileup(H); fig_sqrts_pileup(H); fig_beamspot(H)
