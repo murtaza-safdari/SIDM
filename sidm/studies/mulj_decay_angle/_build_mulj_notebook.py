@@ -60,14 +60,17 @@ configuration cell.
 Each section states what its figures show and what follows from them.  Section g collects the
 caveats that apply to every figure, and section h states the verdict.
 
-**The stored outputs predate the outer-track distance fix.** Every merged output read here was
-produced before `dR_outer` in `sidm/tools/utilities.py` was corrected (PR #65, merged 2026-11-02):
-the outer-track phi difference is now wrapped across +-pi, and the (-5, -5) coordinates the
-producer writes for a missing outer track count as missing rather than as a direction. `dR_outer`
-enters the DSA cross-cleaning cut `all`, which every channel of the three campaigns applies, so a
-rerun on the current code would change which DSA muons survive where an outer-track phi difference
-crosses +-pi or an outer track is missing. Nothing here has been rerun, and the size of that
-change has not been measured."""))
+**The stored outputs predate the outer-track distance fix; a probe found no effect.** Every merged
+output read here was produced before `dR_outer` in `sidm/tools/utilities.py` was corrected (PR #65,
+merged 2026-11-02): the outer-track phi difference is now wrapped across +-pi, and the (-5, -5)
+coordinates the producer writes for a missing outer track count as missing rather than as a
+direction. `dR_outer` enters the DSA cross-cleaning cut `all`, which every channel of the three
+campaigns applies. A probe on the vertexChi2 study's inputs (one 2018 data skim and one 2Mu2E signal
+sample rerun on the corrected code with that study's as-run selections, which apply the same cut)
+reproduced every histogram and cutflow exactly: the few DSA-PF pairs whose wrapped outer-track
+distance crosses the 0.1 threshold are below the DSA pT cut, matched to a PF muon that fails the
+loose ID, or removed anyway. The campaigns here have not been rerun; the wrap acts on a few per
+mille of the matched pairs, so a rerun could move individual DSA muons, not the shapes compared here."""))
 
     cells.append(new_code_cell("""import os
 import sys

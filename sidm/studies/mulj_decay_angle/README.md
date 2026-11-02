@@ -24,6 +24,15 @@ The inputs were produced with the channel definitions kept in
 `sidm/configs/selections_mulj_decay_angle_as_run.yaml`, which are not main's; "Selections used
 in this study" below gives the differences and how the file is tied to the inputs.
 
+The inputs also predate the correction of `dR_outer` in `sidm/tools/utilities.py` (PR #65, merged
+2026-11-02: the outer-track phi difference is wrapped across +-pi, and the (-5, -5) coordinates of
+a missing outer track count as missing). It enters the DSA cross-cleaning cut `all` of every channel
+here. A probe on the vertexChi2 study's inputs (one 2018 data skim and one 2Mu2E signal sample rerun
+on the corrected code with that study's as-run selections, which apply the same cut) reproduced
+every histogram and cutflow exactly; the few pairs the wrap moves across the 0.1 threshold fail the
+DSA pT cut or the loose ID of the matched PF muon, or are removed anyway. The campaigns here have
+not been rerun.
+
 ## Contents
 
 | file | what it is |
