@@ -58,7 +58,16 @@ and j were added after the first campaign, and each reads its own merged files, 
 configuration cell.
 
 Each section states what its figures show and what follows from them.  Section g collects the
-caveats that apply to every figure, and section h states the verdict."""))
+caveats that apply to every figure, and section h states the verdict.
+
+**The stored outputs predate the outer-track distance fix.** Every merged output read here was
+produced before `dR_outer` in `sidm/tools/utilities.py` was corrected (PR #65, merged 2026-11-02):
+the outer-track phi difference is now wrapped across +-pi, and the (-5, -5) coordinates the
+producer writes for a missing outer track count as missing rather than as a direction. `dR_outer`
+enters the DSA cross-cleaning cut `all`, which every channel of the three campaigns applies, so a
+rerun on the current code would change which DSA muons survive where an outer-track phi difference
+crosses +-pi or an outer track is missing. Nothing here has been rerun, and the size of that
+change has not been measured."""))
 
     cells.append(new_code_cell("""import os
 import sys
