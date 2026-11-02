@@ -1,6 +1,44 @@
 {
+ "eedp_per-dark-photon": {
+  "quantity": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): >= 1 e/gamma object within the cone of either electron, both electrons pT > 5 GeV, 1.5 < |eta| < 3.0; map at the dark photon's eta, phi",
+  "matching": "per-dark-photon",
+  "threshold": 0.3,
+  "cone_dR": 0.05,
+  "eta": [
+   1.5,
+   2.1
+  ],
+  "phi": [
+   1.7453,
+   2.618
+  ],
+  "n_flagged_bins": 18,
+  "n_rectangle_bins": 30,
+  "n_rectangle_unflagged_bins": 12,
+  "flagged_avg": {
+   "2022": 0.9212,
+   "2022EE": 0.1693
+  },
+  "rectangle_avg": {
+   "2022": 0.9393,
+   "2022EE": 0.4364
+  },
+  "outside_rectangle_avg": {
+   "2022": 0.9179,
+   "2022EE": 0.9174
+  },
+  "denominators_flagged": {
+   "2022": 546,
+   "2022EE": 502
+  },
+  "denominators_rectangle": {
+   "2022": 840,
+   "2022EE": 786
+  },
+  "note": "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
+ },
  "ee_exclusive": {
-  "quantity": "e/gamma reconstruction efficiency of gen electrons",
+  "quantity": "e/gamma reconstruction efficiency per gen electron, each object matched once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); kept for reference",
   "matching": "exclusive",
   "threshold": 0.3,
   "cone_dR": 0.1,
@@ -38,7 +76,7 @@
   "note": "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
  },
  "ee_non-exclusive": {
-  "quantity": "e/gamma reconstruction efficiency of gen electrons",
+  "quantity": "e/gamma reconstruction efficiency per gen electron, each object matched once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); kept for reference",
   "matching": "non-exclusive",
   "threshold": 0.3,
   "cone_dR": 0.1,
@@ -253,5 +291,5 @@
    }
   }
  },
- "code_commit": "365aec29-dirty"
+ "code_commit": "931cf770"
 }
