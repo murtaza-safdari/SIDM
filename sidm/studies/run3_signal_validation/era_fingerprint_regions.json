@@ -1,9 +1,9 @@
 {
  "eedp_per-dark-photon": {
-  "quantity": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): >= 1 e/gamma object within the cone of either electron, both electrons pT > 5 GeV, 1.5 < |eta| < 3.0; map at the dark photon's eta, phi",
+  "quantity": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): >= 1 electron or photon (all objects) within the cone of either electron, both electrons pT > 5 GeV, 1.5 < |eta| < 3.0; map at the dark photon's eta, phi",
   "matching": "per-dark-photon",
   "threshold": 0.3,
-  "cone_dR": 0.05,
+  "cone_dR": 0.1,
   "eta": [
    1.5,
    2.1
@@ -16,16 +16,16 @@
   "n_rectangle_bins": 30,
   "n_rectangle_unflagged_bins": 12,
   "flagged_avg": {
-   "2022": 0.9212,
+   "2022": 0.9432,
    "2022EE": 0.1693
   },
   "rectangle_avg": {
-   "2022": 0.9393,
-   "2022EE": 0.4364
+   "2022": 0.9619,
+   "2022EE": 0.4415
   },
   "outside_rectangle_avg": {
-   "2022": 0.9179,
-   "2022EE": 0.9174
+   "2022": 0.9519,
+   "2022EE": 0.9484
   },
   "denominators_flagged": {
    "2022": 546,
@@ -291,5 +291,5 @@
    }
   }
  },
- "code_commit": "931cf770"
+ "code_commit": "d579fe16"
 }
