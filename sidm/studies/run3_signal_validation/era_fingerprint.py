@@ -107,12 +107,26 @@ def _get(blob, key):
     typ, val = m.group(1).decode(), m.group(2).decode()
     if typ in ("S", "s"):
         return bytes.fromhex(val).decode()
+    if typ in ("Z", "z"):          # newer releases (the v2 CMSSW_16_0_10 steps): literal, NUL-terminated
+        return val.rstrip("\x00")
     if typ == "vS":
         return [bytes.fromhex(x).decode() for x in val.strip("{}").split(",") if x]
     return val
 
 
-def provenance(url):
+# (release, global tag) pairs accepted although the GT series differs from the release series: the
+# v2 production (outputs_v2/, EXONanoAOD) runs its NANO step (PAT,NANO:@EXO) in CMSSW_16_0_10 on the
+# eras' nano GTs. Every other step must match its release series (CMSSW_12_4_x <-> 124X_...).
+ACCEPTED_GT = {
+    "2022": {("CMSSW_16_0_10", "130X_mcRun3_2022_realistic_v5")},
+    "2022EE": {("CMSSW_16_0_10", "130X_mcRun3_2022_realistic_postEE_v6")},
+    "2023": {("CMSSW_16_0_10", "130X_mcRun3_2023_realistic_v15")},
+    "2023BPix": {("CMSSW_16_0_10", "130X_mcRun3_2023_realistic_postBPix_v6")},
+    "2024": {("CMSSW_16_0_10", "150X_mcRun3_2024_realistic_v2")},
+}
+
+
+def provenance(url, era=None):
     """Process history of one nano file: [(process, release, global tag)], plus, per process, the
     HLT menu, generator comEnergy and vertex-smearing parameters it carries. (The premix library is not recoverable:
     the input fileNames of the PreMixingModule are untracked, so absent from the stored PSet.)"""
@@ -141,7 +155,8 @@ def provenance(url):
         gt = _get(blobs[_get(p, "GlobalTag")], "globaltag") if _get(p, "GlobalTag") else None
         if gt:    # each global-tag series must match its release series (CMSSW_12_4_x <-> 124X_...)
             maj, mnr = re.match(r"CMSSW_(\d+)_(\d+)_", rel).groups()
-            if not gt.startswith(f"{maj}{mnr}X_"):
+            ok = ACCEPTED_GT.get(era, set()) if era else set().union(*ACCEPTED_GT.values())
+            if not gt.startswith(f"{maj}{mnr}X_") and (rel, gt) not in ok:
                 raise RuntimeError(f"{url}: {name} global tag {gt} does not match release {rel}")
         out["steps"].append((name, rel, gt))
         info = {}
@@ -657,7 +672,7 @@ def main():
                     maps = "ee" if (chan == "2Mu2E" and era in ("2022", "2022EE")) else \
                            "bpix" if era in ("2023", "2023BPix") else None
                 evs.append(collect(urls, maps, args.workers, args.map_nfiles))
-                pa, pb = provenance(urls[0]), provenance(urls[-1])
+                pa, pb = provenance(urls[0], era), provenance(urls[-1], era)
                 prov[chan], provsame[chan] = pa, pa == pb
                 print(f"{era} {chan}: {len(urls)} files, {evs[-1]['n']} events, maps from "
                       f"{evs[-1]['map_files']} files", flush=True)
