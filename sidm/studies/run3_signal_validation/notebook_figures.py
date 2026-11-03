@@ -13,7 +13,7 @@ The 180-point scan is a standalone LHE+GEN job (500 events per point) with 2022 
 read of the produced samples (SampleFactory sidm_run3_production/gen_validate_job.sh).
 Run from the worktree root with the notebook venv.
 """
-import argparse, os, sys
+import argparse, json, os, sys
 import numpy as np
 import awkward as ak
 import uproot
@@ -173,23 +173,45 @@ def fig_vs_2018(D):
     return an_style.save(fig, "run3_vs_2018_gen")
 
 
+GEN_JSON = os.path.join(_DIR, "gen_comparison_summary.json")
+
+
 def summary(D):
-    """Medians/means of the compared quantities for 2018, Run 3 raw and Run 3 with the requirement."""
-    rows = [("2018", "r18", False), ("2022 raw", "r22", False), ("2022 + 2018 req.", "r22", True)]
-    print(f"2022 events passing the 2018 requirement: {D['r22_npass']}/{D['r22_nev']} = "
-          f"{D['r22_npass'] / D['r22_nev']:.4f}; 2018 events passing it: {D['r18_npass']}/{D['r18_nev']} = "
-          f"{D['r18_npass'] / D['r18_nev']:.4f}")
-    for kind, k in (("lep", "pt"), ("lep", "abseta"), ("dp", "dR"), ("dp", "pt"), ("dp", "mass")):
-        print(f"{kind}_{k:8s}", "  ".join(
-            f"{lab}: median {np.nanmedian(_sel(D, t, kind, k, r)):.4g} mean {np.nanmean(_sel(D, t, kind, k, r)):.4g}"
-            for lab, t, r in rows))
-    for lab, t, r in rows:
-        x = _sel(D, t, "dp", "proper_mm", r); x = x[np.isfinite(x)]
-        print(f"proper ctau {lab}: mean {x.mean():.4f} +- {x.std() / np.sqrt(len(x)):.4f} mm (N={len(x)})")
-    for kind, k in (("dp", "pt"), ("lep", "pt")):
-        m18 = np.nanmean(_sel(D, "r18", kind, k))
-        print(f"{kind} pT mean, 2022 / 2018 - 1: raw {np.nanmean(_sel(D, 'r22', kind, k)) / m18 - 1:+.4f}, "
-              f"with requirement {np.nanmean(_sel(D, 'r22', kind, k, True)) / m18 - 1:+.4f}")
+    """2022 vs 2018 gen comparison at 4mu 200 GeV / 1.2 GeV / 4.8 mm, with and without the 2018 filter
+    applied to each sample: per quantity mean +- stat (std/sqrt(N)), median, N and the relative
+    differences. Printed and written to gen_comparison_summary.json (every number the note cites)."""
+    samples = {"2018_raw": ("r18", False), "2018_filter": ("r18", True),
+               "2022_raw": ("r22", False), "2022_filter": ("r22", True)}
+    out = dict(point=CMP, files=dict(run3_2022_chunks=N22, v10_2018_files=N18),
+               filter=gen_requirement.TEXT.replace("$", "").replace("\\", ""),
+               data_commit=str(D.get("code_commit", "unknown")), code_commit=V.code_commit(),
+               pass_fraction={"2022": dict(num=int(D["r22_npass"]), den=int(D["r22_nev"]),
+                                           frac=round(float(D["r22_npass"] / D["r22_nev"]), 5)),
+                              "2018": dict(num=int(D["r18_npass"]), den=int(D["r18_nev"]),
+                                           frac=round(float(D["r18_npass"] / D["r18_nev"]), 5))},
+               quantities={})
+    for kind, k in (("lep", "pt"), ("lep", "abseta"), ("dp", "dR"), ("dp", "pt"), ("dp", "mass"), ("dp", "proper_mm")):
+        q = {}
+        for lab, (t, r) in samples.items():
+            x = _sel(D, t, kind, k, r); x = x[np.isfinite(x)]
+            q[lab] = dict(mean=round(float(x.mean()), 5), stat=round(float(x.std() / np.sqrt(len(x))), 5),
+                          median=round(float(np.median(x)), 5), n=int(len(x)))
+        rel = lambda a, b: round(q[a]["mean"] / q[b]["mean"] - 1, 5)
+        q["reldiff_raw"] = rel("2022_raw", "2018_raw")                 # 2022 / 2018 - 1, no filter
+        q["reldiff_filter"] = rel("2022_filter", "2018_filter")        # both samples filtered
+        q["reldiff_filter_err"] = round(float(np.hypot(q["2022_filter"]["stat"] / q["2022_filter"]["mean"],
+                                                       q["2018_filter"]["stat"] / q["2018_filter"]["mean"])), 5)
+        out["quantities"][f"{kind}_{k}"] = q
+    json.dump(out, open(GEN_JSON, "w"), indent=1)
+    print(f"wrote {GEN_JSON}")
+    pf = out["pass_fraction"]
+    print(f"filter pass: 2022 {pf['2022']['num']}/{pf['2022']['den']} = {pf['2022']['frac']}, "
+          f"2018 {pf['2018']['num']}/{pf['2018']['den']} = {pf['2018']['frac']}")
+    for name, q in out["quantities"].items():
+        print(f"{name:13s}" + "  ".join(f"{lab}: {q[lab]['mean']:.5g}+-{q[lab]['stat']:.2g} (med {q[lab]['median']:.4g})"
+                                         for lab in samples) +
+              f"  rel raw {q['reldiff_raw']:+.4f} filter {q['reldiff_filter']:+.4f}+-{q['reldiff_filter_err']:.4f}")
+    return out
 
 
 def main():

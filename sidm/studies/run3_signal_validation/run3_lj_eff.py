@@ -65,12 +65,14 @@ def lj_counts(files, is2e, egm_variant=None):
     committed selection and output."""
     var = egm_variant or "V0"
     NMU = []; NEGM = []; ACC = []; MATCH = []; egm_e = []; egm_g = []; COMP = []; NSEL = []
-    n = 0
+    n = 0; n_read = 0                       # n_read: files actually opened (unreadable ones are skipped)
     for f in files:
         try:
             ev = uproot.open(f)["Events"]
         except Exception:
+            print(f"  lj_counts: skipped unreadable {f}", flush=True)
             continue
+        n_read += 1
         keys = set(ev.keys())
         br = ["Muon_pt","Muon_eta","Muon_phi","Muon_looseId","DSAMuon_pt","DSAMuon_eta","DSAMuon_phi",
               "DSAMuon_displacedID","DSAMuon_muonMatch1","DSAMuon_nSegments",
@@ -166,7 +168,7 @@ def lj_counts(files, is2e, egm_variant=None):
     def hist(arr, mask):
         a = arr[mask]
         return [int((a == k).sum()) for k in range(4)] + [int((a >= 4).sum())]
-    d = dict(n=int(n), n_acc=int(acc.sum()),
+    d = dict(n=int(n), n_acc=int(acc.sum()), n_files_read=n_read, n_files_requested=len(files),
              incl_raw=eff(incl, allm), incl_acc=eff(incl, acc),
              excl_raw=eff(excl, allm), excl_acc=eff(excl, acc),
              nmu_hist=hist(nmu, allm), negm_hist=hist(negm, allm),

@@ -14,8 +14,10 @@ Per era, over the 200 GeV / 1.2 GeV / 4.8 mm point of both channels (4Mu, 2Mu2E)
     memberwise-streamed ProcessHistory, so its raw basket bytes are scanned; the PSet ids are
     matched there to the process PSets, which fixes the order of the release strings.
 Two detector maps expose the era-specific dead regions: the 2022EE ECAL endcap (e/gamma
-reconstruction efficiency of gen electrons, 2Mu2E) and the 2023BPix pixel sector (mean
-nTrackerLayers of reco muons matched to gen muons).
+reconstruction efficiency per dark photon to e+e-, 2Mu2E: at least one electron or photon within
+Delta R < 0.1 of either electron, both electrons pT > 5 GeV, 1.5 < |eta| < 3.0, decay vertex before
+the ECAL face; per-object maps kept for reference) and the 2023BPix pixel sector (mean number of
+tracker layers with hits of reco muons exclusively matched to gen muons).
 
 Writes era_fingerprint.csv (one row per era), era_fingerprint.npz (histograms, so --replot redraws
 the figures without EOS) and the figures (vector PDF via an_style.save). Run from the worktree root
@@ -592,13 +594,18 @@ def regions(H):
             ie, ip = np.where(sel)
             rect = np.zeros_like(sel); rect[ie.min():ie.max() + 1, ip.min():ip.max() + 1] = True
             av = lambda num, den, m: round(float(num[m].sum() / den[m].sum()), 4)
-            r = dict(quantity={"eedp": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's "
-                                       "quantity): >= 1 electron or photon (all objects) within the cone of either electron, "
-                                       "both electrons pT > 5 GeV, 1.5 < |eta| < 3.0; map at the dark photon's eta, phi",
-                               "ee": "e/gamma reconstruction efficiency per gen electron, each object matched once "
-                                     "(collimated pairs mostly resolve into a single object, hence a plateau near "
-                                     "0.6); kept for reference",
-                               "bp": "mean number of tracker layers with hits of matched muons"}[kind],
+            qty = {"eedp": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): "
+                           ">= 1 electron or photon (all objects) within the cone of either electron; both electrons "
+                           f"pT > 5 GeV, 1.5 < |eta| < 3.0, production vertex rho < {EE_RHO:g} cm and |z| < {EE_Z:g} cm "
+                           "(before the ECAL face); map at the dark photon's eta, phi",
+                   ("ee", "_nx"): "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), closest "
+                                  "electron or photon within the cone, one object may serve both electrons of a pair; "
+                                  f"production vertex rho < {EE_RHO:g} cm, |z| < {EE_Z:g} cm; kept for reference",
+                   ("ee", ""): "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), each object matched "
+                               "once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); "
+                               f"production vertex rho < {EE_RHO:g} cm, |z| < {EE_Z:g} cm; kept for reference",
+                   "bp": "mean number of tracker layers with hits of matched muons"}
+            r = dict(quantity=qty[(kind, sfx)] if kind == "ee" else qty[kind],
                      matching=mlab, threshold=thr, cone_dR=DR_E if kind in ("ee", "eedp") else DR_MU,
                      eta=[float(xe[ie.min()]), float(xe[ie.max() + 1])],
                      phi=[round(float(PHI[ip.min()]), 4), round(float(PHI[ip.max() + 1]), 4)],
