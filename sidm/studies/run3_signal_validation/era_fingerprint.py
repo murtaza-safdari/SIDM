@@ -440,7 +440,7 @@ def fig_ecal_ee(H):
     fig, axes = plt.subplots(1, 3, figsize=(22, 7.5), layout="constrained", sharey=True)
     _eff_maps(fig, axes, H["ee_dp_num_2022"], H["ee_dp_den_2022"], H["ee_dp_num_2022EE"], H["ee_dp_den_2022EE"],
               EE_ETA, ("2022", "2022EE"), r"e/$\gamma$ efficiency per dark photon", 1.5, "2022EE $-$ 2022",
-              0.8, (0.0, 1.0), obj="dark-photon")
+              1.0, (0.0, 1.0), obj="dark-photon")   # the hole reaches a drop of 1.0
     return _finish(fig, axes, "era_ecal_ee")
 
 
