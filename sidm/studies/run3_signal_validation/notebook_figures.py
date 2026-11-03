@@ -208,7 +208,7 @@ def summary(D):
     print(f"filter pass: 2022 {pf['2022']['num']}/{pf['2022']['den']} = {pf['2022']['frac']}, "
           f"2018 {pf['2018']['num']}/{pf['2018']['den']} = {pf['2018']['frac']}")
     for name, q in out["quantities"].items():
-        print(f"{name:13s}" + "  ".join(f"{lab}: {q[lab]['mean']:.5g}+-{q[lab]['stat']:.2g} (med {q[lab]['median']:.4g})"
+        print(f"{name:13s}" + "  ".join(f"{lab}: {q[lab]['mean']:.4g}+-{q[lab]['stat']:.2g} (med {q[lab]['median']:.4g})"
                                          for lab in samples) +
               f"  rel raw {q['reldiff_raw']:+.4f} filter {q['reldiff_filter']:+.4f}+-{q['reldiff_filter_err']:.4f}")
     return out
