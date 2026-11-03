@@ -25,6 +25,7 @@ _DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _DIR)
 sys.path.insert(0, os.path.join(_DIR, "..", "truth_kinematics_forAN"))
 import run3_signal_validation as V
+import gen_requirement
 import an_style
 
 an_style.FIG_DIR = os.path.join(_DIR, "figures")
@@ -37,23 +38,22 @@ POINTS = [("4Mu_100GeV_0p25GeV_2p0mm", "signal_4mu_run3.yaml"),     # notebook s
           ("2Mu2E_1000GeV_1p2GeV_0p96mm", "signal_2mu2e_run3.yaml")]
 CMP = "4Mu_200GeV_1p2GeV_4p8mm"
 LEG = dict(frameon=True, facecolor="white", edgecolor="none", framealpha=0.92)
-# 2018 v10 generator-level requirement, per event: all four dark-photon leptons pass
-REQ_PT, REQ_ETA, REQ_VXY, REQ_VZ = 5.0, 2.4, 740.0, 960.0      # GeV, -, cm, cm
 N22, N18 = 24, 10                                               # files read for the comparison
-GBR = ["GenPart_pdgId", "GenPart_genPartIdxMother", "GenPart_pt", "GenPart_eta", "GenPart_phi",
-       "GenPart_mass", "GenPart_vx", "GenPart_vy", "GenPart_vz"]
+GBR = sorted(set(["GenPart_pdgId", "GenPart_genPartIdxMother", "GenPart_pt", "GenPart_eta", "GenPart_phi",
+                  "GenPart_mass", "GenPart_vx", "GenPart_vy", "GenPart_vz"] + gen_requirement.BRANCHES))
 
 
 def gen_events(sample, era, cfg, nfiles):
     """Per dark photon (mass, pT, proper ctau, dilepton dR) and per lepton (pT, |eta|) from the
-    GenPart table, each tagged with whether its event passes the 2018 requirement (all four
-    dark-photon leptons pT > 5 GeV, |eta| < 2.4, decay vertex V_xy < 740 cm, |V_z| < 960 cm)."""
+    GenPart table, each tagged with whether its event passes the 2018 v10 generator filter
+    (gen_requirement.passes: >= 4 prompt final-state e/mu, pT > 4 GeV, |eta| < 2.4, vertex cuts)."""
     dp = {k: [] for k in ("mass", "pt", "proper_mm", "dR", "req")}
     lp = {k: [] for k in ("pt", "abseta", "req")}
     nev = npass = 0
     for u in V._fileset_files(sample, era, cfg, nfiles):
         a = uproot.open(u)["Events"].arrays(GBR)
-        for ev in ak.to_list(a):
+        for ev, ok in zip(ak.to_list(a), gen_requirement.passes(a)):
+            ok = bool(ok)
             pid, mom = ev["GenPart_pdgId"], ev["GenPart_genPartIdxMother"]
             pt, eta, phi = ev["GenPart_pt"], ev["GenPart_eta"], ev["GenPart_phi"]
             vx, vy, vz = ev["GenPart_vx"], ev["GenPart_vy"], ev["GenPart_vz"]
@@ -62,9 +62,6 @@ def gen_events(sample, era, cfg, nfiles):
                 if abs(q) in (11, 13) and m >= 0 and abs(pid[m]) == 32:
                     daus.setdefault(m, []).append(i)
             leps = [i for d in daus.values() for i in d]
-            ok = (len(daus) == 2 and len(leps) == 4 and all(
-                pt[i] > REQ_PT and abs(eta[i]) < REQ_ETA and np.hypot(vx[i], vy[i]) < REQ_VXY
-                and abs(vz[i]) < REQ_VZ for i in leps))
             nev += 1; npass += ok
             for i in leps:
                 lp["pt"].append(pt[i]); lp["abseta"].append(abs(eta[i])); lp["req"].append(ok)
@@ -170,8 +167,7 @@ def fig_vs_2018(D):
     axs[5].legend(h, l, loc="center", fontsize=19,
                   title=r"4$\mu$, $m_{\chi\bar{\chi}}$ = 200 GeV" "\n"
                         r"$m_{Z_d}$ = 1.2 GeV, $c\tau$ = 4.8 mm" "\n"
-                        "2018 requirement: all four leptons\n"
-                        r"$|\eta|$ < 2.4, $p_{T}$ > 5 GeV",
+                        "2018 requirement:\n" + gen_requirement.TEXT,
                   title_fontsize=19, **LEG)
     an_style.cms_sim_labels(list(axs[:5]), com="13 / 13.6 TeV")
     return an_style.save(fig, "run3_vs_2018_gen")

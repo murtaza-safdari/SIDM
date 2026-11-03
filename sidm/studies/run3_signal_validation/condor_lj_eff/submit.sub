@@ -1,8 +1,9 @@
-# submit from a work directory:  condor_submit CODEDIR=<this dir> ARGS=<job_args file> submit.sub
+# submit from a work directory:
+#   condor_submit CODEDIR=<this dir> ARGS=<job_args file> R3N=<chunks, 0 = all> V10N=<files> COMMIT=<hash> submit.sub
 # (make_tarball.sh <work dir> first; logs/ and the output jsons land in the work directory)
 universe = vanilla
 executable = $(CODEDIR)/run_lj_eff.sh
-arguments = $(mode) $(era) $(names) 12 25 lj_$(mode)_$(era)_$(part).json
+arguments = $(mode) $(era) $(names) $(R3N) $(V10N) lj_$(mode)_$(era)_$(part).json $(COMMIT)
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 transfer_input_files = lj_eff_code.tar.gz, $(CODEDIR)/../../../../condor/requirements.txt

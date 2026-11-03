@@ -19,11 +19,13 @@ BR = ["GenPart_pdgId", "GenPart_vx", "GenPart_vy", "GenPart_vz",
 
 
 def code_commit():
-    """Short hash of the checkout that produced an output, '-dirty' if this study directory has
-    uncommitted changes; stored with every result file."""
+    """Short hash of the checkout that produced an output, '-dirty' if the study directory's code
+    (*.py, *.sh, *.sub) has uncommitted changes; stored with every result file."""
     d = os.path.dirname(os.path.abspath(__file__))
     h = subprocess.run(["git", "-C", d, "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
-    dirty = subprocess.run(["git", "-C", d, "status", "--porcelain", "--", "."], capture_output=True, text=True).stdout.strip()
+    # only code counts: result files rewritten earlier in the same pass must not mark later outputs dirty
+    dirty = subprocess.run(["git", "-C", d, "status", "--porcelain", "--", "*.py", "*.sh", "*.sub"],
+                           capture_output=True, text=True).stdout.strip()
     return (h or "unknown") + ("-dirty" if dirty else "")
 
 

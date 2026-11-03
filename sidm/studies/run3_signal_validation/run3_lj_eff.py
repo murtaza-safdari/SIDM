@@ -19,16 +19,16 @@
 #       2Mu2E (n_mu==1 & n_egm==1 & the egm_lj gen-matched dR<0.4 to a gen electron from a dark
 #       photon -- rejects soft/pileup photons the real SR would not accept).
 #   LJ multiplicity distributions (n_mu, n_egm) per point -> extra-LJ migration is visible.
-# Denominators: raw (all gen events) and acc (all four dark-photon leptons |eta|<2.4 & pT>5, decay
-#   vertex V_xy<740 cm & |V_z|<960 cm: the 2018 v10 generator-level requirement, re-imposed
-#   identically on both eras). The jsons made before 2026-11 used pT>1 and no vertex cut, which let
-#   about a fifth of the Run 3 events with a lepton the 2018 sample would have dropped into "acc".
+# Denominators: raw (all gen events) and acc (the 2018 v10 generator filter, re-imposed identically
+#   on both eras: >= 4 prompt final-state e/mu, last copies, |eta|<2.4, pT>4, vertex rho<740 cm,
+#   |z|<960 cm; read from the v10 GEN PSet, see gen_requirement.py). The jsons made before 2026-11
+#   used pT>1 on the first copies; an intermediate version used pT>5 on the first copies.
 import sys, subprocess, os, re, json, numpy as np, awkward as ak, uproot, vector, fastjet
-from collections import Counter
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gen_requirement
 vector.register_awkward()
 
-MU_PT, EG_PT, ETA, EL_ETA, GEN_PT, DR_MATCH = 3.0, 1.0, 2.4, 2.5, 5.0, 0.4
-GEN_VXY, GEN_VZ = 740.0, 960.0     # cm, decay vertex of the dark photon (= its leptons' production vertex)
+MU_PT, EG_PT, ETA, EL_ETA, DR_MATCH = 3.0, 1.0, 2.4, 2.5, 0.4
 # LOOSE = clustering-GEOMETRY mode (muon/dsa pT>3, e/gamma pT>1, no object ID, no DSA cross-clean):
 # isolates whether the GENERATED final-state leptons cluster into the expected lepton jets the same
 # way in Run3 and Run2 (a sample property, driven by collimation/kinematics, not detector ID).
@@ -37,25 +37,12 @@ LOOSE = "loose" in sys.argv
 ERA = os.environ.get("RUN3_ERA", "2022")   # era of the Run 3 samples to scan
 JETDEF = fastjet.JetDefinition(fastjet.antikt_algorithm, 0.4)
 MU_M, EL_M = 0.10566, 0.000511
-GBR = ["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_genPartIdxMother",
-       "GenPart_vx", "GenPart_vy", "GenPart_vz"]
+GBR = sorted(set(["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_genPartIdxMother"]
+                 + gen_requirement.BRANCHES))
 
 def gen_acc_mask(a):
-    """per-event: ALL FOUR dark-photon leptons in |eta|<2.4 & pT>5 with decay vertex V_xy<740 cm,
-    |V_z|<960 cm (>=2 dark photons with >=2 accepted daughters each; a dark photon has exactly two
-    lepton daughters, so this is all four). Channel-symmetric (4Mu: both mu pairs; 2Mu2E: mu pair
-    AND ee pair)."""
-    pid, gpt, geta, mom = a["GenPart_pdgId"], a["GenPart_pt"], a["GenPart_eta"], a["GenPart_genPartIdxMother"]
-    mom_pid = pid[ak.where(mom >= 0, mom, 0)]
-    is_lep = (abs(pid) == 11) | (abs(pid) == 13)
-    sel = is_lep & (mom >= 0) & (abs(mom_pid) == 32) & (gpt > GEN_PT) & (abs(geta) < ETA) \
-        & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < GEN_VXY) & (abs(a["GenPart_vz"]) < GEN_VZ)
-    out = np.zeros(len(pid), dtype=bool)
-    for i, moms in enumerate(ak.to_list(mom[sel])):
-        if len(moms) < 4:
-            continue
-        out[i] = sum(1 for v in Counter(moms).values() if v >= 2) >= 2
-    return out
+    """per-event: the 2018 v10 generator filter (gen_requirement.passes), applied to both eras."""
+    return gen_requirement.passes(a)
 
 def jet_etaphi(jets):
     px, py, pz = jets.px, jets.py, jets.pz

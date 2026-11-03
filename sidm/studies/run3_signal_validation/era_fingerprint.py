@@ -37,6 +37,7 @@ _DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _DIR)
 sys.path.insert(0, os.path.join(_DIR, "..", "truth_kinematics_forAN"))
 import run3_signal_validation as V
+import gen_requirement
 import an_style
 
 an_style.FIG_DIR = os.path.join(_DIR, "figures")
@@ -160,9 +161,7 @@ def provenance(url):
 SCAL = ["Generator_x1", "Generator_x2", "Pileup_nTrueInt", "GenVtx_x", "GenVtx_y", "GenVtx_z", "PV_z",
         "GenPart_pdgId", "GenPart_mass", "LHEPart_incomingpz", "LHEPart_status", "LHEPart_pdgId",
         "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_vx", "GenPart_vy", "GenPart_vz",
-        "GenPart_genPartIdxMother"]
-# 2018 v10 generator-level requirement, per event: all four dark-photon leptons pass
-REQ_PT, REQ_ETA, REQ_VXY, REQ_VZ = 5.0, 2.4, 740.0, 960.0      # GeV, -, cm, cm
+        "GenPart_genPartIdxMother", "GenPart_status", "GenPart_statusFlags"]
 
 
 def _gen_from_zd(a, pdg):
@@ -236,10 +235,7 @@ def read_file(url, maps):
         n_part = ak.to_numpy(ak.sum((a["LHEPart_status"] == 1) & ((apid <= 6) | (apid == 21)), axis=1))
     else:
         sqrts_lhe = shat_lhe = np.full(n, np.nan); n_part = np.full(n, -1)
-    lep = (_gen_from_zd(a, 11) | _gen_from_zd(a, 13))
-    good = (a["GenPart_pt"] > REQ_PT) & (abs(a["GenPart_eta"]) < REQ_ETA) \
-        & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < REQ_VXY) & (abs(a["GenPart_vz"]) < REQ_VZ)
-    req = ak.to_numpy((ak.sum(lep, axis=1) == 4) & ak.all(~lep | good, axis=1))
+    req = gen_requirement.passes(a)                  # the 2018 v10 generator filter
     out = dict(n=n, sqrts=sqrts, sqrts_lhe=sqrts_lhe, shat_lhe=shat_lhe, m35=m35, n_lhe_partons=n_part,
                req2018=req, hlt={k for k in keys if k.startswith("HLT_")})
     for k in ("Pileup_nTrueInt", "GenVtx_x", "GenVtx_y", "GenVtx_z", "PV_z"):
@@ -265,12 +261,14 @@ def read_file(url, maps):
         out["ee_num_nx"] = np.histogram2d(e[ok_nx], p[ok_nx], [EE_ETA, PHI])[0]
         # per dark photon (the quantity of the note): a dark photon to e+e- with both electrons
         # pT > 5 GeV and 1.5 < |eta| < 3.0 (decay vertex before the ECAL face) is reconstructed when at
-        # least one e/gamma object of the pool lies within Delta R < DR_E of either electron; filled at
+        # least one electron or photon lies within Delta R < DR_E of either electron; filled at
         # the dark photon's (eta, phi)
         G = ak.to_list(ak.zip({"pid": a["GenPart_pdgId"], "mom": a["GenPart_genPartIdxMother"],
                                "pt": a["GenPart_pt"], "eta": a["GenPart_eta"], "phi": a["GenPart_phi"],
                                "rho": np.hypot(a["GenPart_vx"], a["GenPart_vy"]), "vz": a["GenPart_vz"]}))
-        P = ak.to_list(pool)
+        # the "at least one object" test uses every electron and photon (exclusivity only lowers it)
+        P = ak.to_list(ak.concatenate([ak.zip({"eta": a["Electron_eta"], "phi": a["Electron_phi"]}),
+                                       ak.zip({"eta": a["Photon_eta"], "phi": a["Photon_phi"]})], axis=1))
         dpe, dpp, dpok = [], [], []
         for gen, rc in zip(G, P):
             daus = {}
@@ -442,7 +440,7 @@ def fig_ecal_ee(H):
     fig, axes = plt.subplots(1, 3, figsize=(22, 7.5), layout="constrained", sharey=True)
     _eff_maps(fig, axes, H["ee_dp_num_2022"], H["ee_dp_den_2022"], H["ee_dp_num_2022EE"], H["ee_dp_den_2022EE"],
               EE_ETA, ("2022", "2022EE"), r"e/$\gamma$ efficiency per dark photon", 1.5, "2022EE $-$ 2022",
-              0.6, (0.4, 1.0), obj="dark-photon")
+              0.8, (0.0, 1.0), obj="dark-photon")
     return _finish(fig, axes, "era_ecal_ee")
 
 
@@ -580,13 +578,13 @@ def regions(H):
             rect = np.zeros_like(sel); rect[ie.min():ie.max() + 1, ip.min():ip.max() + 1] = True
             av = lambda num, den, m: round(float(num[m].sum() / den[m].sum()), 4)
             r = dict(quantity={"eedp": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's "
-                                       "quantity): >= 1 e/gamma object within the cone of either electron, "
+                                       "quantity): >= 1 electron or photon (all objects) within the cone of either electron, "
                                        "both electrons pT > 5 GeV, 1.5 < |eta| < 3.0; map at the dark photon's eta, phi",
                                "ee": "e/gamma reconstruction efficiency per gen electron, each object matched once "
                                      "(collimated pairs mostly resolve into a single object, hence a plateau near "
                                      "0.6); kept for reference",
                                "bp": "mean number of tracker layers with hits of matched muons"}[kind],
-                     matching=mlab, threshold=thr, cone_dR=DR_E if kind == "ee" else DR_MU,
+                     matching=mlab, threshold=thr, cone_dR=DR_E if kind in ("ee", "eedp") else DR_MU,
                      eta=[float(xe[ie.min()]), float(xe[ie.max() + 1])],
                      phi=[round(float(PHI[ip.min()]), 4), round(float(PHI[ip.max() + 1]), 4)],
                      n_flagged_bins=int(sel.sum()), n_rectangle_bins=int(rect.sum()),
@@ -720,8 +718,9 @@ def main():
             row.update({f"vtx_pull_{k}": round(float(x), 2) for k, x in pulls.items()})
             row["vtx_check_vs_" + "generator_process"] = (f"{genproc}: ok" if not bad else
                                                           f"{genproc}: MISMATCH {bad}")
+            row["vtx_match"] = not bad                       # a mismatch never stops the run
             if bad:
-                print(f"VERTEX CHECK FAILED {era}: {genproc} VtxSmeared {v} vs GenVtx pulls {bad}")
+                print(f"WARNING vertex mismatch {era}: {genproc} VtxSmeared {v} vs GenVtx pulls {bad}")
             if bad and era == "2018":
                 # no VtxSmeared scenario of the GEN (10_6_27) or SIM (10_6_17_patch1) release matches the
                 # stored vertex (closest SigmaZ 3.4 cm, Z0 0.0357 cm for all candidates; readDB = false)
