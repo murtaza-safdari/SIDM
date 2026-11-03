@@ -113,7 +113,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -229,7 +233,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -345,7 +353,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -461,7 +473,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -577,7 +593,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -693,7 +713,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -809,7 +833,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -925,7 +953,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1041,7 +1073,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1157,7 +1193,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1273,7 +1313,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1389,7 +1433,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1505,7 +1553,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1621,7 +1673,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1737,7 +1793,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1853,7 +1913,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1969,7 +2033,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -2085,7 +2153,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2199,7 +2271,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2313,7 +2389,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2427,7 +2507,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2541,7 +2625,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2655,7 +2743,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2769,7 +2861,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2883,7 +2979,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2997,7 +3097,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3111,7 +3215,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3225,7 +3333,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3339,7 +3451,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3453,7 +3569,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3567,7 +3687,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3681,7 +3805,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3795,7 +3923,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3909,7 +4041,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -4023,7 +4159,11 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -4137,6 +4277,10 @@
   },
   "r3_chunks": 0,
   "v10_files": 25,
-  "code_commit": "d579fe16"
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  }
 ]

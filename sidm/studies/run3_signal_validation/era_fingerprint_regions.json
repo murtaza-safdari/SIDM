@@ -1,6 +1,6 @@
 {
  "eedp_per-dark-photon": {
-  "quantity": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): >= 1 electron or photon (all objects) within the cone of either electron, both electrons pT > 5 GeV, 1.5 < |eta| < 3.0; map at the dark photon's eta, phi",
+  "quantity": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): >= 1 electron or photon (all objects) within the cone of either electron; both electrons pT > 5 GeV, 1.5 < |eta| < 3.0, production vertex rho < 110 cm and |z| < 290 cm (before the ECAL face); map at the dark photon's eta, phi",
   "matching": "per-dark-photon",
   "threshold": 0.3,
   "cone_dR": 0.1,
@@ -38,7 +38,7 @@
   "note": "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
  },
  "ee_exclusive": {
-  "quantity": "e/gamma reconstruction efficiency per gen electron, each object matched once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); kept for reference",
+  "quantity": "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), each object matched once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); production vertex rho < 110 cm, |z| < 290 cm; kept for reference",
   "matching": "exclusive",
   "threshold": 0.3,
   "cone_dR": 0.1,
@@ -76,7 +76,7 @@
   "note": "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
  },
  "ee_non-exclusive": {
-  "quantity": "e/gamma reconstruction efficiency per gen electron, each object matched once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); kept for reference",
+  "quantity": "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), closest electron or photon within the cone, one object may serve both electrons of a pair; production vertex rho < 110 cm, |z| < 290 cm; kept for reference",
   "matching": "non-exclusive",
   "threshold": 0.3,
   "cone_dR": 0.1,
