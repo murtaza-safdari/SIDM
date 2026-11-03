@@ -51,8 +51,20 @@ def jet_etaphi(jets):
     phi = np.arctan2(py, px)
     return eta, phi
 
-def lj_counts(files, is2e):
-    NMU = []; NEGM = []; ACC = []; MATCH = []; egm_e = []; egm_g = []
+EGM_VARIANTS = {   # diagnostic variants of the e/gamma LJ sources (real mode); None = as committed
+    "V0": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+    "V1": "photon ID dropped",
+    "V2a": "photon cutBased>=2", "V2b": "photon cutBased>=3",
+    "V3": "electrons cutBased>=1 (each era's own ID)",
+    "V4": "photons removed from the e/gamma leg"}
+
+
+def lj_counts(files, is2e, egm_variant=None):
+    """egm_variant (one of EGM_VARIANTS, real mode only) changes the e/gamma LJ sources and adds a
+    'diag' block (e/gamma-leg composition and per-leg pass fractions in acceptance); None is the
+    committed selection and output."""
+    var = egm_variant or "V0"
+    NMU = []; NEGM = []; ACC = []; MATCH = []; egm_e = []; egm_g = []; COMP = []; NSEL = []
     n = 0
     for f in files:
         try:
@@ -63,7 +75,7 @@ def lj_counts(files, is2e):
         br = ["Muon_pt","Muon_eta","Muon_phi","Muon_looseId","DSAMuon_pt","DSAMuon_eta","DSAMuon_phi",
               "DSAMuon_displacedID","DSAMuon_muonMatch1","DSAMuon_nSegments",
               "Electron_pt","Electron_eta","Electron_phi","Photon_pt","Photon_eta","Photon_phi",
-              "Photon_cutBased"] + GBR
+              "Photon_cutBased", "Electron_cutBased"] + GBR
         a = ev.arrays([b for b in br if b in keys])
         ne = len(a)
         if ne == 0:
@@ -85,8 +97,13 @@ def lj_counts(files, is2e):
                 keep = keep & (frac < 0.34)         # remove DSA that share >=34% segments with a PF muon (SR "all" veto term)
             elif coll == "Electron":                # e: pT>10, |eta|<2.4 (SR adds MVANonIsoWPL; egm leg is gen-matched)
                 keep = (pt > 10) & (abs(eta) < ETA)
+                if var == "V3":
+                    keep = keep & (a["Electron_cutBased"] >= 1)
             else:                                    # Photon: pT>20, |eta|<2.5, cutBased loose (SR uses a custom cutbased ID)
-                keep = (pt > 20) & (abs(eta) < EL_ETA) & (a["Photon_cutBased"] >= 1)
+                pid_min = {"V1": 0, "V2a": 2, "V2b": 3}.get(var, 1)
+                keep = (pt > 20) & (abs(eta) < EL_ETA) & (a["Photon_cutBased"] >= pid_min)
+                if var == "V4":
+                    keep = keep & False
             pt, eta, phi = pt[keep], eta[keep], phi[keep]
             return ak.zip({"pt": pt, "eta": eta, "phi": phi,
                            "mass": ak.zeros_like(pt) + m, "tid": ak.zeros_like(pt) + tid}, with_name="Momentum4D")
@@ -115,6 +132,19 @@ def lj_counts(files, is2e):
             dphi = (pair.j.phi - pair.g.phi + np.pi) % (2 * np.pi) - np.pi
             dR = np.sqrt((pair.j.eta - pair.g.eta) ** 2 + dphi ** 2)
             MATCH.append(ak.to_numpy(ak.fill_none(ak.any(dR < DR_MATCH, axis=1), False)))
+            if egm_variant is not None:
+                # per egm LJ: gen-matched?  then the event's matched egm LJs by constituent content
+                pn = ak.cartesian({"j": ak.zip({"eta": egm_eta, "phi": egm_phi}),
+                                   "g": ak.zip({"eta": geta[ge], "phi": gphi[ge]})}, axis=1, nested=True)
+                dpn = (pn.j.phi - pn.g.phi + np.pi) % (2 * np.pi) - np.pi
+                jm = ak.fill_none(ak.any(np.sqrt((pn.j.eta - pn.g.eta) ** 2 + dpn ** 2) < DR_MATCH, axis=-1), False)
+                ne_, ng_ = ele_n[is_egm], pho_n[is_egm]
+                eo = ak.to_numpy(ak.any(jm & (ne_ > 0) & (ng_ == 0), axis=-1))
+                go = ak.to_numpy(ak.any(jm & (ne_ == 0) & (ng_ > 0), axis=-1))
+                bo = ak.to_numpy(ak.any(jm & (ne_ > 0) & (ng_ > 0), axis=-1))
+                COMP.append(np.stack([eo, go, bo], axis=1))
+                NSEL.append(np.stack([ak.to_numpy(ak.sum(inp.tid == 2, axis=-1)),
+                                      ak.to_numpy(ak.sum(inp.tid == 4, axis=-1))], axis=1))
         else:
             MATCH.append(np.zeros(ne, dtype=bool))
     if n == 0:
@@ -144,6 +174,18 @@ def lj_counts(files, is2e):
     ee = np.concatenate(egm_e) if egm_e else np.array([]); gg = np.concatenate(egm_g) if egm_g else np.array([])
     if is2e and len(ee):
         d["egm_photon_only_frac"] = float(((ee == 0) & (gg > 0)).mean())
+    if egm_variant is not None and is2e:
+        comp = np.concatenate(COMP); nsel = np.concatenate(NSEL)
+        eo, go, bo = comp[:, 0], comp[:, 1], comp[:, 2]
+        anym = acc & (eo | go | bo)
+        k = int(anym.sum())
+        d["diag"] = dict(variant=var, definition=EGM_VARIANTS[var],
+                         n_acc_with_matched_egm_lj=k,
+                         frac_electron_only=float((anym & eo & ~go & ~bo).sum() / k) if k else 0.0,
+                         frac_photon_only=float((anym & go & ~eo & ~bo).sum() / k) if k else 0.0,
+                         frac_mixed=float((anym & (bo | (eo & go))).sum() / k) if k else 0.0,
+                         mean_selected_electrons=float(nsel[acc, 0].mean()), mean_selected_photons=float(nsel[acc, 1].mean()),
+                         mu_leg_pass=eff(nmu >= 1, acc), egm_leg_pass=eff((negm >= 1) & match, acc))
     return d
 
 def run3_files(name, nchunks):
