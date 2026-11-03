@@ -1,0 +1,1358 @@
+{
+ "V0": {
+  "worst": {
+   "point": "2Mu2E_100GeV_5p0GeV_40p0mm",
+   "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+   "2022": {
+    "num": 1195,
+    "den": 1768,
+    "eff": 0.6759049773755657,
+    "ref2018": {
+     "num": 9109,
+     "den": 20973,
+     "eff": 0.4343203165975302
+    },
+    "diff_pct": 24.15846607780355,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V0",
+     "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+     "n_acc_with_matched_egm_lj": 1353,
+     "frac_electron_only": 0.09386548410938655,
+     "frac_photon_only": 0.5728011825572801,
+     "frac_mixed": 0.3333333333333333,
+     "mean_selected_electrons": 0.4298642533936652,
+     "mean_selected_photons": 0.708710407239819,
+     "mu_leg_pass": {
+      "k": 1565,
+      "n": 1768,
+      "p": 0.8851809954751131
+     },
+     "egm_leg_pass": {
+      "k": 1353,
+      "n": 1768,
+      "p": 0.7652714932126696
+     }
+    },
+    "diag2018": {
+     "variant": "V0",
+     "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+     "n_acc_with_matched_egm_lj": 10459,
+     "frac_electron_only": 0.29534372310928386,
+     "frac_photon_only": 0.30433119801128217,
+     "frac_mixed": 0.40032507887943397,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.36666189863157395,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 10459,
+      "n": 20973,
+      "p": 0.498688790349497
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 1228,
+    "den": 1762,
+    "eff": 0.6969353007945517,
+    "ref2018": {
+     "num": 9109,
+     "den": 20973,
+     "eff": 0.4343203165975302
+    },
+    "diff_pct": 26.26149841970215,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V0",
+     "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+     "n_acc_with_matched_egm_lj": 1377,
+     "frac_electron_only": 0.09368191721132897,
+     "frac_photon_only": 0.5773420479302832,
+     "frac_mixed": 0.3289760348583878,
+     "mean_selected_electrons": 0.4103291713961407,
+     "mean_selected_photons": 0.7219069239500567,
+     "mu_leg_pass": {
+      "k": 1573,
+      "n": 1762,
+      "p": 0.8927355278093076
+     },
+     "egm_leg_pass": {
+      "k": 1377,
+      "n": 1762,
+      "p": 0.7814982973893303
+     }
+    },
+    "diag2018": {
+     "variant": "V0",
+     "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+     "n_acc_with_matched_egm_lj": 10459,
+     "frac_electron_only": 0.29534372310928386,
+     "frac_photon_only": 0.30433119801128217,
+     "frac_mixed": 0.40032507887943397,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.36666189863157395,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 10459,
+      "n": 20973,
+      "p": 0.498688790349497
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  },
+  "mid": {
+   "point": "2Mu2E_200GeV_1p2GeV_4p8mm",
+   "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+   "2022": {
+    "num": 1901,
+    "den": 2866,
+    "eff": 0.6632937892533147,
+    "ref2018": {
+     "num": 9268,
+     "den": 15796,
+     "eff": 0.5867308179285895
+    },
+    "diff_pct": 7.656297132472522,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V0",
+     "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+     "n_acc_with_matched_egm_lj": 2146,
+     "frac_electron_only": 0.21388630009319665,
+     "frac_photon_only": 0.49440820130475305,
+     "frac_mixed": 0.2917054986020503,
+     "mean_selected_electrons": 0.44836008374040476,
+     "mean_selected_photons": 0.5949057920446615,
+     "mu_leg_pass": {
+      "k": 2528,
+      "n": 2866,
+      "p": 0.8820655966503839
+     },
+     "egm_leg_pass": {
+      "k": 2146,
+      "n": 2866,
+      "p": 0.7487787857641311
+     }
+    },
+    "diag2018": {
+     "variant": "V0",
+     "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+     "n_acc_with_matched_egm_lj": 10613,
+     "frac_electron_only": 0.28691227739564684,
+     "frac_photon_only": 0.44728163572976537,
+     "frac_mixed": 0.2658060868745878,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 0.48657888072929856,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 10613,
+      "n": 15796,
+      "p": 0.6718789566978982
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 1858,
+    "den": 2801,
+    "eff": 0.6633345233845055,
+    "ref2018": {
+     "num": 9268,
+     "den": 15796,
+     "eff": 0.5867308179285895
+    },
+    "diff_pct": 7.660370545591599,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V0",
+     "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+     "n_acc_with_matched_egm_lj": 2101,
+     "frac_electron_only": 0.19752498810090433,
+     "frac_photon_only": 0.5226082817705854,
+     "frac_mixed": 0.2798667301285102,
+     "mean_selected_electrons": 0.4309175294537665,
+     "mean_selected_photons": 0.6101392359871475,
+     "mu_leg_pass": {
+      "k": 2495,
+      "n": 2801,
+      "p": 0.8907533023920029
+     },
+     "egm_leg_pass": {
+      "k": 2101,
+      "n": 2801,
+      "p": 0.750089253837915
+     }
+    },
+    "diag2018": {
+     "variant": "V0",
+     "definition": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+     "n_acc_with_matched_egm_lj": 10613,
+     "frac_electron_only": 0.28691227739564684,
+     "frac_photon_only": 0.44728163572976537,
+     "frac_mixed": 0.2658060868745878,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 0.48657888072929856,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 10613,
+      "n": 15796,
+      "p": 0.6718789566978982
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  }
+ },
+ "V1": {
+  "worst": {
+   "point": "2Mu2E_100GeV_5p0GeV_40p0mm",
+   "definition": "photon ID dropped",
+   "2022": {
+    "num": 1382,
+    "den": 1768,
+    "eff": 0.7816742081447964,
+    "ref2018": {
+     "num": 16237,
+     "den": 20973,
+     "eff": 0.774185858007915
+    },
+    "diff_pct": 0.7488350136881428,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V1",
+     "definition": "photon ID dropped",
+     "n_acc_with_matched_egm_lj": 1560,
+     "frac_electron_only": 0.04358974358974359,
+     "frac_photon_only": 0.6294871794871795,
+     "frac_mixed": 0.3269230769230769,
+     "mean_selected_electrons": 0.4298642533936652,
+     "mean_selected_photons": 0.9626696832579186,
+     "mu_leg_pass": {
+      "k": 1565,
+      "n": 1768,
+      "p": 0.8851809954751131
+     },
+     "egm_leg_pass": {
+      "k": 1560,
+      "n": 1768,
+      "p": 0.8823529411764706
+     }
+    },
+    "diag2018": {
+     "variant": "V1",
+     "definition": "photon ID dropped",
+     "n_acc_with_matched_egm_lj": 18687,
+     "frac_electron_only": 0.0461818376411409,
+     "frac_photon_only": 0.6106384117300797,
+     "frac_mixed": 0.34317975062877937,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.9701044199685309,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 18687,
+      "n": 20973,
+      "p": 0.8910027177800028
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 1387,
+    "den": 1762,
+    "eff": 0.7871736662883088,
+    "ref2018": {
+     "num": 16237,
+     "den": 20973,
+     "eff": 0.774185858007915
+    },
+    "diff_pct": 1.2987808280393809,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V1",
+     "definition": "photon ID dropped",
+     "n_acc_with_matched_egm_lj": 1555,
+     "frac_electron_only": 0.04051446945337621,
+     "frac_photon_only": 0.6257234726688103,
+     "frac_mixed": 0.3337620578778135,
+     "mean_selected_electrons": 0.4103291713961407,
+     "mean_selected_photons": 0.9676503972758229,
+     "mu_leg_pass": {
+      "k": 1573,
+      "n": 1762,
+      "p": 0.8927355278093076
+     },
+     "egm_leg_pass": {
+      "k": 1555,
+      "n": 1762,
+      "p": 0.8825198637911464
+     }
+    },
+    "diag2018": {
+     "variant": "V1",
+     "definition": "photon ID dropped",
+     "n_acc_with_matched_egm_lj": 18687,
+     "frac_electron_only": 0.0461818376411409,
+     "frac_photon_only": 0.6106384117300797,
+     "frac_mixed": 0.34317975062877937,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.9701044199685309,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 18687,
+      "n": 20973,
+      "p": 0.8910027177800028
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  },
+  "mid": {
+   "point": "2Mu2E_200GeV_1p2GeV_4p8mm",
+   "definition": "photon ID dropped",
+   "2022": {
+    "num": 2384,
+    "den": 2866,
+    "eff": 0.8318213538032101,
+    "ref2018": {
+     "num": 13057,
+     "den": 15796,
+     "eff": 0.8266016713091922
+    },
+    "diff_pct": 0.5219682494017941,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V1",
+     "definition": "photon ID dropped",
+     "n_acc_with_matched_egm_lj": 2696,
+     "frac_electron_only": 0.004451038575667656,
+     "frac_photon_only": 0.5975519287833828,
+     "frac_mixed": 0.39799703264094954,
+     "mean_selected_electrons": 0.44836008374040476,
+     "mean_selected_photons": 1.0806001395673412,
+     "mu_leg_pass": {
+      "k": 2528,
+      "n": 2866,
+      "p": 0.8820655966503839
+     },
+     "egm_leg_pass": {
+      "k": 2696,
+      "n": 2866,
+      "p": 0.9406838799720866
+     }
+    },
+    "diag2018": {
+     "variant": "V1",
+     "definition": "photon ID dropped",
+     "n_acc_with_matched_egm_lj": 14968,
+     "frac_electron_only": 0.004676643506146445,
+     "frac_photon_only": 0.6081640833778728,
+     "frac_mixed": 0.38715927311598075,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 1.0794504937958977,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 14968,
+      "n": 15796,
+      "p": 0.9475816662446189
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 2359,
+    "den": 2801,
+    "eff": 0.8421992145662264,
+    "ref2018": {
+     "num": 13057,
+     "den": 15796,
+     "eff": 0.8266016713091922
+    },
+    "diff_pct": 1.5597543257034219,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V1",
+     "definition": "photon ID dropped",
+     "n_acc_with_matched_egm_lj": 2655,
+     "frac_electron_only": 0.005273069679849341,
+     "frac_photon_only": 0.6222222222222222,
+     "frac_mixed": 0.37250470809792846,
+     "mean_selected_electrons": 0.4309175294537665,
+     "mean_selected_photons": 1.0842556229917886,
+     "mu_leg_pass": {
+      "k": 2495,
+      "n": 2801,
+      "p": 0.8907533023920029
+     },
+     "egm_leg_pass": {
+      "k": 2655,
+      "n": 2801,
+      "p": 0.9478757586576223
+     }
+    },
+    "diag2018": {
+     "variant": "V1",
+     "definition": "photon ID dropped",
+     "n_acc_with_matched_egm_lj": 14968,
+     "frac_electron_only": 0.004676643506146445,
+     "frac_photon_only": 0.6081640833778728,
+     "frac_mixed": 0.38715927311598075,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 1.0794504937958977,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 14968,
+      "n": 15796,
+      "p": 0.9475816662446189
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  }
+ },
+ "V2a": {
+  "worst": {
+   "point": "2Mu2E_100GeV_5p0GeV_40p0mm",
+   "definition": "photon cutBased>=2",
+   "2022": {
+    "num": 888,
+    "den": 1768,
+    "eff": 0.502262443438914,
+    "ref2018": {
+     "num": 8400,
+     "den": 20973,
+     "eff": 0.40051494779001573
+    },
+    "diff_pct": 10.17474956488983,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V2a",
+     "definition": "photon cutBased>=2",
+     "n_acc_with_matched_egm_lj": 1011,
+     "frac_electron_only": 0.32146389713155293,
+     "frac_photon_only": 0.42828882294757664,
+     "frac_mixed": 0.2502472799208704,
+     "mean_selected_electrons": 0.4298642533936652,
+     "mean_selected_photons": 0.3947963800904977,
+     "mu_leg_pass": {
+      "k": 1565,
+      "n": 1768,
+      "p": 0.8851809954751131
+     },
+     "egm_leg_pass": {
+      "k": 1011,
+      "n": 1768,
+      "p": 0.5718325791855203
+     }
+    },
+    "diag2018": {
+     "variant": "V2a",
+     "definition": "photon cutBased>=2",
+     "n_acc_with_matched_egm_lj": 9647,
+     "frac_electron_only": 0.3926609308593345,
+     "frac_photon_only": 0.2457758888773712,
+     "frac_mixed": 0.3615631802632943,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.29113622276259954,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 9647,
+      "n": 20973,
+      "p": 0.45997234539646215
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 880,
+    "den": 1762,
+    "eff": 0.49943246311010214,
+    "ref2018": {
+     "num": 8400,
+     "den": 20973,
+     "eff": 0.40051494779001573
+    },
+    "diff_pct": 9.89175153200864,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V2a",
+     "definition": "photon cutBased>=2",
+     "n_acc_with_matched_egm_lj": 991,
+     "frac_electron_only": 0.33097880928355194,
+     "frac_photon_only": 0.4127144298688194,
+     "frac_mixed": 0.25630676084762866,
+     "mean_selected_electrons": 0.4103291713961407,
+     "mean_selected_photons": 0.3813847900113507,
+     "mu_leg_pass": {
+      "k": 1573,
+      "n": 1762,
+      "p": 0.8927355278093076
+     },
+     "egm_leg_pass": {
+      "k": 991,
+      "n": 1762,
+      "p": 0.5624290578887627
+     }
+    },
+    "diag2018": {
+     "variant": "V2a",
+     "definition": "photon cutBased>=2",
+     "n_acc_with_matched_egm_lj": 9647,
+     "frac_electron_only": 0.3926609308593345,
+     "frac_photon_only": 0.2457758888773712,
+     "frac_mixed": 0.3615631802632943,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.29113622276259954,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 9647,
+      "n": 20973,
+      "p": 0.45997234539646215
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  },
+  "mid": {
+   "point": "2Mu2E_200GeV_1p2GeV_4p8mm",
+   "definition": "photon cutBased>=2",
+   "2022": {
+    "num": 1600,
+    "den": 2866,
+    "eff": 0.5582693649685974,
+    "ref2018": {
+     "num": 8425,
+     "den": 15796,
+     "eff": 0.5333628766776399
+    },
+    "diff_pct": 2.490648829095743,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V2a",
+     "definition": "photon cutBased>=2",
+     "n_acc_with_matched_egm_lj": 1811,
+     "frac_electron_only": 0.36112644947542794,
+     "frac_photon_only": 0.4008834897846494,
+     "frac_mixed": 0.23799006073992268,
+     "mean_selected_electrons": 0.44836008374040476,
+     "mean_selected_photons": 0.4061409630146546,
+     "mu_leg_pass": {
+      "k": 2528,
+      "n": 2866,
+      "p": 0.8820655966503839
+     },
+     "egm_leg_pass": {
+      "k": 1811,
+      "n": 2866,
+      "p": 0.6318911374738311
+     }
+    },
+    "diag2018": {
+     "variant": "V2a",
+     "definition": "photon cutBased>=2",
+     "n_acc_with_matched_egm_lj": 9645,
+     "frac_electron_only": 0.36951788491446347,
+     "frac_photon_only": 0.3918092275790565,
+     "frac_mixed": 0.23867288750648005,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 0.39041529501139527,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 9645,
+      "n": 15796,
+      "p": 0.6105976196505445
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 1548,
+    "den": 2801,
+    "eff": 0.5526597643698679,
+    "ref2018": {
+     "num": 8425,
+     "den": 15796,
+     "eff": 0.5333628766776399
+    },
+    "diff_pct": 1.9296887692227926,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V2a",
+     "definition": "photon cutBased>=2",
+     "n_acc_with_matched_egm_lj": 1748,
+     "frac_electron_only": 0.33123569794050345,
+     "frac_photon_only": 0.42620137299771166,
+     "frac_mixed": 0.2425629290617849,
+     "mean_selected_electrons": 0.4309175294537665,
+     "mean_selected_photons": 0.42199214566226345,
+     "mu_leg_pass": {
+      "k": 2495,
+      "n": 2801,
+      "p": 0.8907533023920029
+     },
+     "egm_leg_pass": {
+      "k": 1748,
+      "n": 2801,
+      "p": 0.6240628347018922
+     }
+    },
+    "diag2018": {
+     "variant": "V2a",
+     "definition": "photon cutBased>=2",
+     "n_acc_with_matched_egm_lj": 9645,
+     "frac_electron_only": 0.36951788491446347,
+     "frac_photon_only": 0.3918092275790565,
+     "frac_mixed": 0.23867288750648005,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 0.39041529501139527,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 9645,
+      "n": 15796,
+      "p": 0.6105976196505445
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  }
+ },
+ "V2b": {
+  "worst": {
+   "point": "2Mu2E_100GeV_5p0GeV_40p0mm",
+   "definition": "photon cutBased>=3",
+   "2022": {
+    "num": 769,
+    "den": 1768,
+    "eff": 0.43495475113122173,
+    "ref2018": {
+     "num": 8002,
+     "den": 20973,
+     "eff": 0.38153816812091734
+    },
+    "diff_pct": 5.341658301030439,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V2b",
+     "definition": "photon cutBased>=3",
+     "n_acc_with_matched_egm_lj": 876,
+     "frac_electron_only": 0.432648401826484,
+     "frac_photon_only": 0.3401826484018265,
+     "frac_mixed": 0.2271689497716895,
+     "mean_selected_electrons": 0.4298642533936652,
+     "mean_selected_photons": 0.2861990950226244,
+     "mu_leg_pass": {
+      "k": 1565,
+      "n": 1768,
+      "p": 0.8851809954751131
+     },
+     "egm_leg_pass": {
+      "k": 876,
+      "n": 1768,
+      "p": 0.49547511312217196
+     }
+    },
+    "diag2018": {
+     "variant": "V2b",
+     "definition": "photon cutBased>=3",
+     "n_acc_with_matched_egm_lj": 9201,
+     "frac_electron_only": 0.46788392566025433,
+     "frac_photon_only": 0.20921638952287794,
+     "frac_mixed": 0.3228996848168677,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.24283602727316073,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 9201,
+      "n": 20973,
+      "p": 0.43870690888284936
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 768,
+    "den": 1762,
+    "eff": 0.4358683314415437,
+    "ref2018": {
+     "num": 8002,
+     "den": 20973,
+     "eff": 0.38153816812091734
+    },
+    "diff_pct": 5.433016332062635,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V2b",
+     "definition": "photon cutBased>=3",
+     "n_acc_with_matched_egm_lj": 865,
+     "frac_electron_only": 0.44508670520231214,
+     "frac_photon_only": 0.32716763005780347,
+     "frac_mixed": 0.2277456647398844,
+     "mean_selected_electrons": 0.4103291713961407,
+     "mean_selected_photons": 0.2758229284903519,
+     "mu_leg_pass": {
+      "k": 1573,
+      "n": 1762,
+      "p": 0.8927355278093076
+     },
+     "egm_leg_pass": {
+      "k": 865,
+      "n": 1762,
+      "p": 0.4909194097616345
+     }
+    },
+    "diag2018": {
+     "variant": "V2b",
+     "definition": "photon cutBased>=3",
+     "n_acc_with_matched_egm_lj": 9201,
+     "frac_electron_only": 0.46788392566025433,
+     "frac_photon_only": 0.20921638952287794,
+     "frac_mixed": 0.3228996848168677,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.24283602727316073,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 9201,
+      "n": 20973,
+      "p": 0.43870690888284936
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  },
+  "mid": {
+   "point": "2Mu2E_200GeV_1p2GeV_4p8mm",
+   "definition": "photon cutBased>=3",
+   "2022": {
+    "num": 1499,
+    "den": 2866,
+    "eff": 0.5230286113049546,
+    "ref2018": {
+     "num": 7881,
+     "den": 15796,
+     "eff": 0.49892377817168904
+    },
+    "diff_pct": 2.410483313326556,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V2b",
+     "definition": "photon cutBased>=3",
+     "n_acc_with_matched_egm_lj": 1702,
+     "frac_electron_only": 0.4218566392479436,
+     "frac_photon_only": 0.3625146886016451,
+     "frac_mixed": 0.2156286721504113,
+     "mean_selected_electrons": 0.44836008374040476,
+     "mean_selected_photons": 0.3450802512212142,
+     "mu_leg_pass": {
+      "k": 2528,
+      "n": 2866,
+      "p": 0.8820655966503839
+     },
+     "egm_leg_pass": {
+      "k": 1702,
+      "n": 2866,
+      "p": 0.5938590369853455
+     }
+    },
+    "diag2018": {
+     "variant": "V2b",
+     "definition": "photon cutBased>=3",
+     "n_acc_with_matched_egm_lj": 9014,
+     "frac_electron_only": 0.4348790769913468,
+     "frac_photon_only": 0.3492345240736632,
+     "frac_mixed": 0.21588639893499,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 0.3270448214737908,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 9014,
+      "n": 15796,
+      "p": 0.5706507976702963
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 1455,
+    "den": 2801,
+    "eff": 0.5194573366654767,
+    "ref2018": {
+     "num": 7881,
+     "den": 15796,
+     "eff": 0.49892377817168904
+    },
+    "diff_pct": 2.0533558493787627,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V2b",
+     "definition": "photon cutBased>=3",
+     "n_acc_with_matched_egm_lj": 1640,
+     "frac_electron_only": 0.3926829268292683,
+     "frac_photon_only": 0.3884146341463415,
+     "frac_mixed": 0.21890243902439024,
+     "mean_selected_electrons": 0.4309175294537665,
+     "mean_selected_photons": 0.35915744377008213,
+     "mu_leg_pass": {
+      "k": 2495,
+      "n": 2801,
+      "p": 0.8907533023920029
+     },
+     "egm_leg_pass": {
+      "k": 1640,
+      "n": 2801,
+      "p": 0.585505176722599
+     }
+    },
+    "diag2018": {
+     "variant": "V2b",
+     "definition": "photon cutBased>=3",
+     "n_acc_with_matched_egm_lj": 9014,
+     "frac_electron_only": 0.4348790769913468,
+     "frac_photon_only": 0.3492345240736632,
+     "frac_mixed": 0.21588639893499,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 0.3270448214737908,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 9014,
+      "n": 15796,
+      "p": 0.5706507976702963
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  }
+ },
+ "V3": {
+  "worst": {
+   "point": "2Mu2E_100GeV_5p0GeV_40p0mm",
+   "definition": "electrons cutBased>=1 (each era's own ID)",
+   "2022": {
+    "num": 1129,
+    "den": 1768,
+    "eff": 0.6385746606334841,
+    "ref2018": {
+     "num": 7320,
+     "den": 20973,
+     "eff": 0.3490201687884423
+    },
+    "diff_pct": 28.955449184504182,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V3",
+     "definition": "electrons cutBased>=1 (each era's own ID)",
+     "n_acc_with_matched_egm_lj": 1280,
+     "frac_electron_only": 0.0421875,
+     "frac_photon_only": 0.7765625,
+     "frac_mixed": 0.18125,
+     "mean_selected_electrons": 0.20135746606334842,
+     "mean_selected_photons": 0.708710407239819,
+     "mu_leg_pass": {
+      "k": 1565,
+      "n": 1768,
+      "p": 0.8851809954751131
+     },
+     "egm_leg_pass": {
+      "k": 1280,
+      "n": 1768,
+      "p": 0.7239819004524887
+     }
+    },
+    "diag2018": {
+     "variant": "V3",
+     "definition": "electrons cutBased>=1 (each era's own ID)",
+     "n_acc_with_matched_egm_lj": 8401,
+     "frac_electron_only": 0.12272348529936912,
+     "frac_photon_only": 0.5951672419950006,
+     "frac_mixed": 0.2821092727056303,
+     "mean_selected_electrons": 0.20535927144423782,
+     "mean_selected_photons": 0.36666189863157395,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 8401,
+      "n": 20973,
+      "p": 0.4005626281409431
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 1167,
+    "den": 1762,
+    "eff": 0.6623155505107832,
+    "ref2018": {
+     "num": 7320,
+     "den": 20973,
+     "eff": 0.3490201687884423
+    },
+    "diff_pct": 31.329538172234088,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V3",
+     "definition": "electrons cutBased>=1 (each era's own ID)",
+     "n_acc_with_matched_egm_lj": 1304,
+     "frac_electron_only": 0.04294478527607362,
+     "frac_photon_only": 0.7845092024539877,
+     "frac_mixed": 0.17254601226993865,
+     "mean_selected_electrons": 0.1952326901248581,
+     "mean_selected_photons": 0.7219069239500567,
+     "mu_leg_pass": {
+      "k": 1573,
+      "n": 1762,
+      "p": 0.8927355278093076
+     },
+     "egm_leg_pass": {
+      "k": 1304,
+      "n": 1762,
+      "p": 0.7400681044267877
+     }
+    },
+    "diag2018": {
+     "variant": "V3",
+     "definition": "electrons cutBased>=1 (each era's own ID)",
+     "n_acc_with_matched_egm_lj": 8401,
+     "frac_electron_only": 0.12272348529936912,
+     "frac_photon_only": 0.5951672419950006,
+     "frac_mixed": 0.2821092727056303,
+     "mean_selected_electrons": 0.20535927144423782,
+     "mean_selected_photons": 0.36666189863157395,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 8401,
+      "n": 20973,
+      "p": 0.4005626281409431
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  },
+  "mid": {
+   "point": "2Mu2E_200GeV_1p2GeV_4p8mm",
+   "definition": "electrons cutBased>=1 (each era's own ID)",
+   "2022": {
+    "num": 1589,
+    "den": 2866,
+    "eff": 0.5544312630844382,
+    "ref2018": {
+     "num": 7272,
+     "den": 15796,
+     "eff": 0.460369713851608
+    },
+    "diff_pct": 9.406154923283022,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V3",
+     "definition": "electrons cutBased>=1 (each era's own ID)",
+     "n_acc_with_matched_egm_lj": 1789,
+     "frac_electron_only": 0.05701509223029626,
+     "frac_photon_only": 0.7629960871995528,
+     "frac_mixed": 0.17998882057015092,
+     "mean_selected_electrons": 0.15771109560362875,
+     "mean_selected_photons": 0.5949057920446615,
+     "mu_leg_pass": {
+      "k": 2528,
+      "n": 2866,
+      "p": 0.8820655966503839
+     },
+     "egm_leg_pass": {
+      "k": 1789,
+      "n": 2866,
+      "p": 0.624214933705513
+     }
+    },
+    "diag2018": {
+     "variant": "V3",
+     "definition": "electrons cutBased>=1 (each era's own ID)",
+     "n_acc_with_matched_egm_lj": 8306,
+     "frac_electron_only": 0.08885143269925355,
+     "frac_photon_only": 0.7261016132915964,
+     "frac_mixed": 0.18504695400915,
+     "mean_selected_electrons": 0.15592555077234743,
+     "mean_selected_photons": 0.48657888072929856,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 8306,
+      "n": 15796,
+      "p": 0.5258293238794631
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 1563,
+    "den": 2801,
+    "eff": 0.5580149946447698,
+    "ref2018": {
+     "num": 7272,
+     "den": 15796,
+     "eff": 0.460369713851608
+    },
+    "diff_pct": 9.764528079316175,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V3",
+     "definition": "electrons cutBased>=1 (each era's own ID)",
+     "n_acc_with_matched_egm_lj": 1770,
+     "frac_electron_only": 0.04745762711864407,
+     "frac_photon_only": 0.7587570621468926,
+     "frac_mixed": 0.19378531073446328,
+     "mean_selected_electrons": 0.1685112459835773,
+     "mean_selected_photons": 0.6101392359871475,
+     "mu_leg_pass": {
+      "k": 2495,
+      "n": 2801,
+      "p": 0.8907533023920029
+     },
+     "egm_leg_pass": {
+      "k": 1770,
+      "n": 2801,
+      "p": 0.6319171724384148
+     }
+    },
+    "diag2018": {
+     "variant": "V3",
+     "definition": "electrons cutBased>=1 (each era's own ID)",
+     "n_acc_with_matched_egm_lj": 8306,
+     "frac_electron_only": 0.08885143269925355,
+     "frac_photon_only": 0.7261016132915964,
+     "frac_mixed": 0.18504695400915,
+     "mean_selected_electrons": 0.15592555077234743,
+     "mean_selected_photons": 0.48657888072929856,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 8306,
+      "n": 15796,
+      "p": 0.5258293238794631
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  }
+ },
+ "V4": {
+  "worst": {
+   "point": "2Mu2E_100GeV_5p0GeV_40p0mm",
+   "definition": "photons removed from the e/gamma leg",
+   "2022": {
+    "num": 511,
+    "den": 1768,
+    "eff": 0.28902714932126694,
+    "ref2018": {
+     "num": 6342,
+     "den": 20973,
+     "eff": 0.30238878558146187
+    },
+    "diff_pct": -1.3361636260194931,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V4",
+     "definition": "photons removed from the e/gamma leg",
+     "n_acc_with_matched_egm_lj": 578,
+     "frac_electron_only": 1.0,
+     "frac_photon_only": 0.0,
+     "frac_mixed": 0.0,
+     "mean_selected_electrons": 0.4298642533936652,
+     "mean_selected_photons": 0.0,
+     "mu_leg_pass": {
+      "k": 1565,
+      "n": 1768,
+      "p": 0.8851809954751131
+     },
+     "egm_leg_pass": {
+      "k": 578,
+      "n": 1768,
+      "p": 0.3269230769230769
+     }
+    },
+    "diag2018": {
+     "variant": "V4",
+     "definition": "photons removed from the e/gamma leg",
+     "n_acc_with_matched_egm_lj": 7275,
+     "frac_electron_only": 1.0,
+     "frac_photon_only": 0.0,
+     "frac_mixed": 0.0,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.0,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 7275,
+      "n": 20973,
+      "p": 0.34687455299671005
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 521,
+    "den": 1762,
+    "eff": 0.2956867196367764,
+    "ref2018": {
+     "num": 6342,
+     "den": 20973,
+     "eff": 0.30238878558146187
+    },
+    "diff_pct": -0.6702065944685476,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V4",
+     "definition": "photons removed from the e/gamma leg",
+     "n_acc_with_matched_egm_lj": 582,
+     "frac_electron_only": 1.0,
+     "frac_photon_only": 0.0,
+     "frac_mixed": 0.0,
+     "mean_selected_electrons": 0.4103291713961407,
+     "mean_selected_photons": 0.0,
+     "mu_leg_pass": {
+      "k": 1573,
+      "n": 1762,
+      "p": 0.8927355278093076
+     },
+     "egm_leg_pass": {
+      "k": 582,
+      "n": 1762,
+      "p": 0.33030646992054485
+     }
+    },
+    "diag2018": {
+     "variant": "V4",
+     "definition": "photons removed from the e/gamma leg",
+     "n_acc_with_matched_egm_lj": 7275,
+     "frac_electron_only": 1.0,
+     "frac_photon_only": 0.0,
+     "frac_mixed": 0.0,
+     "mean_selected_electrons": 0.4572545653936013,
+     "mean_selected_photons": 0.0,
+     "mu_leg_pass": {
+      "k": 18264,
+      "n": 20973,
+      "p": 0.87083392933772
+     },
+     "egm_leg_pass": {
+      "k": 7275,
+      "n": 20973,
+      "p": 0.34687455299671005
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  },
+  "mid": {
+   "point": "2Mu2E_200GeV_1p2GeV_4p8mm",
+   "definition": "photons removed from the e/gamma leg",
+   "2022": {
+    "num": 960,
+    "den": 2866,
+    "eff": 0.3349616189811584,
+    "ref2018": {
+     "num": 5102,
+     "den": 15796,
+     "eff": 0.3229931628260319
+    },
+    "diff_pct": 1.1968456155126483,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V4",
+     "definition": "photons removed from the e/gamma leg",
+     "n_acc_with_matched_egm_lj": 1085,
+     "frac_electron_only": 1.0,
+     "frac_photon_only": 0.0,
+     "frac_mixed": 0.0,
+     "mean_selected_electrons": 0.44836008374040476,
+     "mean_selected_photons": 0.0,
+     "mu_leg_pass": {
+      "k": 2528,
+      "n": 2866,
+      "p": 0.8820655966503839
+     },
+     "egm_leg_pass": {
+      "k": 1085,
+      "n": 2866,
+      "p": 0.3785764131193301
+     }
+    },
+    "diag2018": {
+     "variant": "V4",
+     "definition": "photons removed from the e/gamma leg",
+     "n_acc_with_matched_egm_lj": 5866,
+     "frac_electron_only": 1.0,
+     "frac_photon_only": 0.0,
+     "frac_mixed": 0.0,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 0.0,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 5866,
+      "n": 15796,
+      "p": 0.37135983793365407
+     }
+    },
+    "code_commit": "d2d179f2"
+   },
+   "2023BPix": {
+    "num": 889,
+    "den": 2801,
+    "eff": 0.3173866476258479,
+    "ref2018": {
+     "num": 5102,
+     "den": 15796,
+     "eff": 0.3229931628260319
+    },
+    "diff_pct": -0.5606515200184015,
+    "r3_chunks": 10,
+    "v10_files": 10,
+    "diag": {
+     "variant": "V4",
+     "definition": "photons removed from the e/gamma leg",
+     "n_acc_with_matched_egm_lj": 1003,
+     "frac_electron_only": 1.0,
+     "frac_photon_only": 0.0,
+     "frac_mixed": 0.0,
+     "mean_selected_electrons": 0.4309175294537665,
+     "mean_selected_photons": 0.0,
+     "mu_leg_pass": {
+      "k": 2495,
+      "n": 2801,
+      "p": 0.8907533023920029
+     },
+     "egm_leg_pass": {
+      "k": 1003,
+      "n": 2801,
+      "p": 0.35808639771510176
+     }
+    },
+    "diag2018": {
+     "variant": "V4",
+     "definition": "photons removed from the e/gamma leg",
+     "n_acc_with_matched_egm_lj": 5866,
+     "frac_electron_only": 1.0,
+     "frac_photon_only": 0.0,
+     "frac_mixed": 0.0,
+     "mean_selected_electrons": 0.44251709293492025,
+     "mean_selected_photons": 0.0,
+     "mu_leg_pass": {
+      "k": 13798,
+      "n": 15796,
+      "p": 0.873512281590276
+     },
+     "egm_leg_pass": {
+      "k": 5866,
+      "n": 15796,
+      "p": 0.37135983793365407
+     }
+    },
+    "code_commit": "d2d179f2"
+   }
+  }
+ }
+}
