@@ -28,8 +28,17 @@ import run3_signal_validation as V
 import gen_requirement
 import an_style
 
-an_style.FIG_DIR = os.path.join(_DIR, "figures")
-NPZ = os.path.join(_DIR, "notebook_figures.npz")
+
+
+def _here(*parts):
+    """Path under the study directory: relative when the process runs from that directory (the notebook),
+    so printed paths carry no machine-specific prefix; absolute otherwise."""
+    path = os.path.join(_DIR, *parts)
+    return os.path.relpath(path) if os.path.samefile(os.getcwd(), _DIR) else path
+
+
+an_style.FIG_DIR = _here("figures")
+NPZ = _here("notebook_figures.npz")
 POINTS = [("4Mu_100GeV_0p25GeV_2p0mm", "signal_4mu_run3.yaml"),     # notebook section 2
           ("4Mu_200GeV_1p2GeV_4p8mm", "signal_4mu_run3.yaml"),
           ("4Mu_1000GeV_5p0GeV_4p0mm", "signal_4mu_run3.yaml"),
@@ -173,7 +182,7 @@ def fig_vs_2018(D):
     return an_style.save(fig, "run3_vs_2018_gen")
 
 
-GEN_JSON = os.path.join(_DIR, "gen_comparison_summary.json")
+GEN_JSON = _here("gen_comparison_summary.json")
 
 
 def summary(D):
