@@ -7,16 +7,16 @@
   "key": "2Mu2E_1000GeV_0p25GeV_0p2mm",
   "run3": {
    "n": 100000,
-   "n_acc": 87711,
+   "n_acc": 85562,
    "incl_raw": {
     "k": 66022,
     "n": 100000,
     "p": 0.66022
    },
    "incl_acc": {
-    "k": 64599,
-    "n": 87711,
-    "p": 0.7364982727366008
+    "k": 63010,
+    "n": 85562,
+    "p": 0.7364250485028401
    },
    "excl_raw": {
     "k": 57657,
@@ -24,9 +24,9 @@
     "p": 0.57657
    },
    "excl_acc": {
-    "k": 56410,
-    "n": 87711,
-    "p": 0.6431348405559166
+    "k": 55014,
+    "n": 85562,
+    "p": 0.6429723475374582
    },
    "nmu_hist": [
     21211,
@@ -43,17 +43,17 @@
     22
    ],
    "nmu_hist_acc": [
-    15041,
-    69553,
-    3060,
-    54,
+    14691,
+    67834,
+    2981,
+    53,
     3
    ],
    "negm_hist_acc": [
-    8997,
-    71769,
-    6577,
-    347,
+    8764,
+    70021,
+    6418,
+    338,
     21
    ],
    "egm_photon_only_frac": 0.5243174562499333
@@ -67,9 +67,9 @@
     "p": 0.7305633883869482
    },
    "incl_acc": {
-    "k": 76165,
+    "k": 76164,
     "n": 104254,
-    "p": 0.7305714888637367
+    "p": 0.7305618969056343
    },
    "excl_raw": {
     "k": 66526,
@@ -96,21 +96,28 @@
     16
    ],
    "nmu_hist_acc": [
-    17982,
-    82648,
+    17983,
+    82647,
     3556,
     67,
     1
    ],
    "negm_hist_acc": [
     11206,
-    84655,
+    84656,
     7970,
-    407,
+    406,
     16
    ],
    "egm_photon_only_frac": 0.5317165094663696
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -120,16 +127,16 @@
   "key": "2Mu2E_1000GeV_1p2GeV_0p96mm",
   "run3": {
    "n": 100000,
-   "n_acc": 87566,
+   "n_acc": 84777,
    "incl_raw": {
     "k": 67205,
     "n": 100000,
     "p": 0.67205
    },
    "incl_acc": {
-    "k": 65796,
-    "n": 87566,
-    "p": 0.7513875248384076
+    "k": 63660,
+    "n": 84777,
+    "p": 0.750911214126473
    },
    "excl_raw": {
     "k": 58771,
@@ -137,9 +144,9 @@
     "p": 0.58771
    },
    "excl_acc": {
-    "k": 57547,
-    "n": 87566,
-    "p": 0.6571842952744216
+    "k": 55654,
+    "n": 84777,
+    "p": 0.6564752232327165
    },
    "nmu_hist": [
     19571,
@@ -156,33 +163,33 @@
     21
    ],
    "nmu_hist_acc": [
-    13276,
-    71153,
-    3064,
-    73,
+    12875,
+    68863,
+    2967,
+    72,
     0
    ],
    "negm_hist_acc": [
-    9188,
-    71302,
-    6719,
-    339,
-    18
+    8908,
+    69001,
+    6524,
+    327,
+    17
    ],
    "egm_photon_only_frac": 0.5093560873377387
   },
   "v10": {
    "n": 81952,
-   "n_acc": 81943,
+   "n_acc": 81939,
    "incl_raw": {
     "k": 60719,
     "n": 81952,
     "p": 0.7409093127684498
    },
    "incl_acc": {
-    "k": 60713,
-    "n": 81943,
-    "p": 0.7409174670197577
+    "k": 60709,
+    "n": 81939,
+    "p": 0.7409048194388509
    },
    "excl_raw": {
     "k": 52922,
@@ -190,9 +197,9 @@
     "p": 0.6457682545880515
    },
    "excl_acc": {
-    "k": 52917,
-    "n": 81943,
-    "p": 0.6457781628693116
+    "k": 52914,
+    "n": 81939,
+    "p": 0.6457730750924469
    },
    "nmu_hist": [
     12799,
@@ -210,20 +217,27 @@
    ],
    "nmu_hist_acc": [
     12797,
-    66142,
-    2937,
+    66140,
+    2935,
     66,
     1
    ],
    "negm_hist_acc": [
     9225,
-    66065,
+    66061,
     6320,
     321,
     12
    ],
    "egm_photon_only_frac": 0.515697710881154
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -233,16 +247,16 @@
   "key": "2Mu2E_1000GeV_5p0GeV_4p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 86946,
+   "n_acc": 82796,
    "incl_raw": {
     "k": 58408,
     "n": 100000,
     "p": 0.58408
    },
    "incl_acc": {
-    "k": 56461,
-    "n": 86946,
-    "p": 0.6493800749890737
+    "k": 53560,
+    "n": 82796,
+    "p": 0.6468911541620368
    },
    "excl_raw": {
     "k": 50994,
@@ -250,9 +264,9 @@
     "p": 0.50994
    },
    "excl_acc": {
-    "k": 49271,
-    "n": 86946,
-    "p": 0.5666850688933361
+    "k": 46745,
+    "n": 82796,
+    "p": 0.5645804145127784
    },
    "nmu_hist": [
     18435,
@@ -269,33 +283,33 @@
     13
    ],
    "nmu_hist_acc": [
-    12436,
-    71334,
-    3094,
-    79,
+    11824,
+    67944,
+    2949,
+    76,
     3
    ],
    "negm_hist_acc": [
-    19142,
-    61526,
-    5956,
-    311,
+    18468,
+    58410,
+    5619,
+    288,
     11
    ],
    "egm_photon_only_frac": 0.42280560437414566
   },
   "v10": {
    "n": 101774,
-   "n_acc": 101764,
+   "n_acc": 101766,
    "incl_raw": {
     "k": 59459,
     "n": 101774,
     "p": 0.5842258337099848
    },
    "incl_acc": {
-    "k": 59452,
-    "n": 101764,
-    "p": 0.5842144569788923
+    "k": 59453,
+    "n": 101766,
+    "p": 0.5842128019181259
    },
    "excl_raw": {
     "k": 51792,
@@ -303,9 +317,9 @@
     "p": 0.5088922514591153
    },
    "excl_acc": {
-    "k": 51785,
-    "n": 101764,
-    "p": 0.5088734719547188
+    "k": 51786,
+    "n": 101766,
+    "p": 0.5088732975650021
    },
    "nmu_hist": [
     14720,
@@ -322,21 +336,28 @@
     11
    ],
    "nmu_hist_acc": [
-    14719,
-    83308,
+    14720,
+    83309,
     3654,
     81,
     2
    ],
    "negm_hist_acc": [
     29383,
-    65734,
+    65736,
     6297,
     339,
     11
    ],
    "egm_photon_only_frac": 0.37289822033578096
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -346,16 +367,16 @@
   "key": "2Mu2E_100GeV_0p25GeV_2p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 64907,
+   "n_acc": 50080,
    "incl_raw": {
     "k": 55189,
     "n": 100000,
     "p": 0.55189
    },
    "incl_acc": {
-    "k": 50275,
-    "n": 64907,
-    "p": 0.7745697690541852
+    "k": 39178,
+    "n": 50080,
+    "p": 0.7823083067092652
    },
    "excl_raw": {
     "k": 52706,
@@ -363,9 +384,9 @@
     "p": 0.52706
    },
    "excl_acc": {
-    "k": 48008,
-    "n": 64907,
-    "p": 0.7396428736499915
+    "k": 37386,
+    "n": 50080,
+    "p": 0.7465255591054313
    },
    "nmu_hist": [
     25417,
@@ -382,33 +403,33 @@
     1
    ],
    "nmu_hist_acc": [
-    6352,
-    57080,
-    1455,
-    20,
+    4844,
+    44101,
+    1120,
+    15,
     0
    ],
    "negm_hist_acc": [
-    8924,
-    54727,
-    1237,
-    19,
+    6520,
+    42588,
+    957,
+    15,
     0
    ],
    "egm_photon_only_frac": 0.5611152704988492
   },
   "v10": {
    "n": 63514,
-   "n_acc": 63506,
+   "n_acc": 63466,
    "incl_raw": {
     "k": 47500,
     "n": 63514,
     "p": 0.7478666120855244
    },
    "incl_acc": {
-    "k": 47494,
-    "n": 63506,
-    "p": 0.7478663433376374
+    "k": 47467,
+    "n": 63466,
+    "p": 0.7479122679860083
    },
    "excl_raw": {
     "k": 45382,
@@ -416,9 +437,9 @@
     "p": 0.7145196334666373
    },
    "excl_acc": {
-    "k": 45376,
-    "n": 63506,
-    "p": 0.7145151639215193
+    "k": 45353,
+    "n": 63466,
+    "p": 0.7146030945703211
    },
    "nmu_hist": [
     6510,
@@ -435,21 +456,28 @@
     0
    ],
    "nmu_hist_acc": [
-    6509,
-    55637,
-    1341,
+    6507,
+    55601,
+    1339,
     19,
     0
    ],
    "negm_hist_acc": [
-    10344,
-    51961,
-    1182,
+    10335,
+    51932,
+    1180,
     19,
     0
    ],
    "egm_photon_only_frac": 0.5483829450808068
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -459,16 +487,16 @@
   "key": "2Mu2E_100GeV_1p2GeV_9p6mm",
   "run3": {
    "n": 100000,
-   "n_acc": 60527,
+   "n_acc": 36995,
    "incl_raw": {
     "k": 43233,
     "n": 100000,
     "p": 0.43233
    },
    "incl_acc": {
-    "k": 36323,
-    "n": 60527,
-    "p": 0.6001123465560824
+    "k": 21547,
+    "n": 36995,
+    "p": 0.5824300581159616
    },
    "excl_raw": {
     "k": 41402,
@@ -476,9 +504,9 @@
     "p": 0.41402
    },
    "excl_acc": {
-    "k": 34777,
-    "n": 60527,
-    "p": 0.5745700265996994
+    "k": 20616,
+    "n": 36995,
+    "p": 0.5572644952020543
    },
    "nmu_hist": [
     27640,
@@ -495,33 +523,33 @@
     0
    ],
    "nmu_hist_acc": [
-    7594,
-    51713,
-    1204,
-    15,
-    1
+    4338,
+    31873,
+    772,
+    12,
+    0
    ],
    "negm_hist_acc": [
-    18526,
-    41078,
-    904,
-    19,
+    12289,
+    24185,
+    511,
+    10,
     0
    ],
    "egm_photon_only_frac": 0.4789495058887234
   },
   "v10": {
    "n": 51746,
-   "n_acc": 51733,
+   "n_acc": 51691,
    "incl_raw": {
     "k": 25319,
     "n": 51746,
     "p": 0.48929385846248985
    },
    "incl_acc": {
-    "k": 25310,
-    "n": 51733,
-    "p": 0.4892428430595558
+    "k": 25297,
+    "n": 51691,
+    "p": 0.48938886846839874
    },
    "excl_raw": {
     "k": 24243,
@@ -529,9 +557,9 @@
     "p": 0.4684999806748348
    },
    "excl_acc": {
-    "k": 24234,
-    "n": 51733,
-    "p": 0.46844373997255134
+    "k": 24222,
+    "n": 51691,
+    "p": 0.4685922114101101
    },
    "nmu_hist": [
     6242,
@@ -548,21 +576,28 @@
     0
    ],
    "nmu_hist_acc": [
-    6240,
-    44412,
+    6234,
+    44376,
     1064,
     17,
     0
    ],
    "negm_hist_acc": [
-    22443,
-    28619,
-    659,
+    22418,
+    28603,
+    658,
     12,
     0
    ],
    "egm_photon_only_frac": 0.35769076840981856
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -572,16 +607,16 @@
   "key": "2Mu2E_100GeV_5p0GeV_40p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 57548,
+   "n_acc": 35405,
    "incl_raw": {
     "k": 48824,
     "n": 100000,
     "p": 0.48824
    },
    "incl_acc": {
-    "k": 39406,
-    "n": 57548,
-    "p": 0.6847501216375895
+    "k": 24258,
+    "n": 35405,
+    "p": 0.6851574636350798
    },
    "excl_raw": {
     "k": 45250,
@@ -589,9 +624,9 @@
     "p": 0.4525
    },
    "excl_acc": {
-    "k": 36477,
-    "n": 57548,
-    "p": 0.6338534788350594
+    "k": 22374,
+    "n": 35405,
+    "p": 0.6319446405874877
    },
    "nmu_hist": [
     27240,
@@ -608,33 +643,33 @@
     0
    ],
    "nmu_hist_acc": [
-    7338,
-    47217,
-    2934,
-    58,
+    4229,
+    29181,
+    1961,
+    33,
     1
    ],
    "negm_hist_acc": [
-    11927,
-    44553,
-    1054,
-    14,
+    7567,
+    27174,
+    654,
+    10,
     0
    ],
    "egm_photon_only_frac": 0.5408021919476368
   },
   "v10": {
    "n": 52065,
-   "n_acc": 52042,
+   "n_acc": 51994,
    "incl_raw": {
     "k": 22615,
     "n": 52065,
     "p": 0.4343608950350523
    },
    "incl_acc": {
-    "k": 22605,
-    "n": 52042,
-    "p": 0.4343607086583913
+    "k": 22581,
+    "n": 51994,
+    "p": 0.43430011155133286
    },
    "excl_raw": {
     "k": 20696,
@@ -642,9 +677,9 @@
     "p": 0.39750312109862673
    },
    "excl_acc": {
-    "k": 20686,
-    "n": 52042,
-    "p": 0.39748664540179085
+    "k": 20663,
+    "n": 51994,
+    "p": 0.3974112397584337
    },
    "nmu_hist": [
     6789,
@@ -661,21 +696,28 @@
     0
    ],
    "nmu_hist_acc": [
-    6785,
-    42281,
+    6778,
+    42240,
     2912,
     60,
     4
    ],
    "negm_hist_acc": [
-    25381,
-    25966,
-    680,
+    25361,
+    25939,
+    679,
     15,
     0
    ],
    "egm_photon_only_frac": 0.29264195727588094
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -685,16 +727,16 @@
   "key": "2Mu2E_150GeV_0p25GeV_1p3mm",
   "run3": {
    "n": 100000,
-   "n_acc": 70329,
+   "n_acc": 59604,
    "incl_raw": {
     "k": 59621,
     "n": 100000,
     "p": 0.59621
    },
    "incl_acc": {
-    "k": 55714,
-    "n": 70329,
-    "p": 0.792190988070355
+    "k": 47271,
+    "n": 59604,
+    "p": 0.7930843567545802
    },
    "excl_raw": {
     "k": 56323,
@@ -702,9 +744,9 @@
     "p": 0.56323
    },
    "excl_acc": {
-    "k": 52634,
-    "n": 70329,
-    "p": 0.7483968206571969
+    "k": 44642,
+    "n": 59604,
+    "p": 0.7489765787531039
    },
    "nmu_hist": [
     23425,
@@ -721,33 +763,33 @@
     2
    ],
    "nmu_hist_acc": [
-    7570,
-    61057,
-    1672,
-    30,
+    6442,
+    51723,
+    1416,
+    23,
     0
    ],
    "negm_hist_acc": [
-    7681,
-    60737,
-    1876,
-    34,
+    6438,
+    51529,
+    1606,
+    30,
     1
    ],
    "egm_photon_only_frac": 0.5539131431190558
   },
   "v10": {
    "n": 81920,
-   "n_acc": 81910,
+   "n_acc": 81879,
    "incl_raw": {
     "k": 63354,
     "n": 81920,
     "p": 0.7733642578125
    },
    "incl_acc": {
-    "k": 63345,
-    "n": 81910,
-    "p": 0.7733487974606276
+    "k": 63323,
+    "n": 81879,
+    "p": 0.7733729039191979
    },
    "excl_raw": {
     "k": 59723,
@@ -755,9 +797,9 @@
     "p": 0.72904052734375
    },
    "excl_acc": {
-    "k": 59714,
-    "n": 81910,
-    "p": 0.7290196557196923
+    "k": 59694,
+    "n": 81879,
+    "p": 0.7290514051221925
    },
    "nmu_hist": [
     9361,
@@ -774,21 +816,28 @@
     3
    ],
    "nmu_hist_acc": [
-    9360,
-    70458,
+    9358,
+    70429,
     2062,
     30,
     0
    ],
    "negm_hist_acc": [
-    10140,
-    69526,
-    2191,
+    10133,
+    69504,
+    2189,
     50,
     3
    ],
    "egm_photon_only_frac": 0.548488120950324
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -798,16 +847,16 @@
   "key": "2Mu2E_150GeV_1p2GeV_6p4mm",
   "run3": {
    "n": 100000,
-   "n_acc": 67890,
+   "n_acc": 49397,
    "incl_raw": {
     "k": 48449,
     "n": 100000,
     "p": 0.48449
    },
    "incl_acc": {
-    "k": 43093,
-    "n": 67890,
-    "p": 0.6347473854765061
+    "k": 30573,
+    "n": 49397,
+    "p": 0.618924226167581
    },
    "excl_raw": {
     "k": 45815,
@@ -815,9 +864,9 @@
     "p": 0.45815
    },
    "excl_acc": {
-    "k": 40757,
-    "n": 67890,
-    "p": 0.6003387833259685
+    "k": 28877,
+    "n": 49397,
+    "p": 0.5845901572970018
    },
    "nmu_hist": [
     24529,
@@ -834,33 +883,33 @@
     0
    ],
    "nmu_hist_acc": [
-    8320,
-    57945,
-    1599,
-    26,
+    5830,
+    42375,
+    1174,
+    18,
     0
    ],
    "negm_hist_acc": [
-    18300,
-    48101,
-    1463,
-    26,
+    14349,
+    33961,
+    1070,
+    17,
     0
    ],
    "egm_photon_only_frac": 0.48109237290720014
   },
   "v10": {
    "n": 67038,
-   "n_acc": 67029,
+   "n_acc": 66974,
    "incl_raw": {
     "k": 36510,
     "n": 67038,
     "p": 0.5446164861720219
    },
    "incl_acc": {
-    "k": 36506,
-    "n": 67029,
-    "p": 0.54462993629623
+    "k": 36471,
+    "n": 66974,
+    "p": 0.5445546032788844
    },
    "excl_raw": {
     "k": 34475,
@@ -868,9 +917,9 @@
     "p": 0.5142605686327157
    },
    "excl_acc": {
-    "k": 34472,
-    "n": 67029,
-    "p": 0.5142848617762461
+    "k": 34437,
+    "n": 66974,
+    "p": 0.5141846089527279
    },
    "nmu_hist": [
     8198,
@@ -887,21 +936,28 @@
     1
    ],
    "nmu_hist_acc": [
-    8198,
-    57226,
-    1584,
+    8187,
+    57183,
+    1583,
     20,
     1
    ],
    "negm_hist_acc": [
-    24732,
-    41031,
-    1240,
+    24718,
+    40989,
+    1241,
     25,
     1
    ],
    "egm_photon_only_frac": 0.3937517203413157
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -911,16 +967,16 @@
   "key": "2Mu2E_150GeV_5p0GeV_27p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 64802,
+   "n_acc": 47180,
    "incl_raw": {
     "k": 53067,
     "n": 100000,
     "p": 0.53067
    },
    "incl_acc": {
-    "k": 45556,
-    "n": 64802,
-    "p": 0.7030029937347613
+    "k": 33038,
+    "n": 47180,
+    "p": 0.7002543450614668
    },
    "excl_raw": {
     "k": 49734,
@@ -928,9 +984,9 @@
     "p": 0.49734
    },
    "excl_acc": {
-    "k": 42714,
-    "n": 64802,
-    "p": 0.6591463226443628
+    "k": 30948,
+    "n": 47180,
+    "p": 0.6559559135226791
    },
    "nmu_hist": [
     24888,
@@ -947,33 +1003,33 @@
     1
    ],
    "nmu_hist_acc": [
-    8296,
-    54388,
-    2074,
-    43,
-    1
+    5800,
+    39808,
+    1541,
+    31,
+    0
    ],
    "negm_hist_acc": [
-    12133,
-    51119,
-    1514,
-    36,
+    9201,
+    36865,
+    1082,
+    32,
     0
    ],
    "egm_photon_only_frac": 0.5189991636465012
   },
   "v10": {
    "n": 68222,
-   "n_acc": 68200,
+   "n_acc": 68175,
    "incl_raw": {
     "k": 30807,
     "n": 68222,
     "p": 0.45156987482043914
    },
    "incl_acc": {
-    "k": 30796,
-    "n": 68200,
-    "p": 0.4515542521994135
+    "k": 30780,
+    "n": 68175,
+    "p": 0.4514851485148515
    },
    "excl_raw": {
     "k": 28704,
@@ -981,9 +1037,9 @@
     "p": 0.4207440415115359
    },
    "excl_acc": {
-    "k": 28693,
-    "n": 68200,
-    "p": 0.4207184750733138
+    "k": 28677,
+    "n": 68175,
+    "p": 0.42063806380638064
    },
    "nmu_hist": [
     8762,
@@ -1000,21 +1056,28 @@
     1
    ],
    "nmu_hist_acc": [
-    8760,
-    57201,
+    8756,
+    57180,
     2197,
     42,
     0
    ],
    "negm_hist_acc": [
-    31858,
-    35141,
+    31854,
+    35120,
     1167,
     33,
     1
    ],
    "egm_photon_only_frac": 0.2547684286132319
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1024,16 +1087,16 @@
   "key": "2Mu2E_200GeV_0p25GeV_1p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 73354,
+   "n_acc": 64850,
    "incl_raw": {
     "k": 60999,
     "n": 100000,
     "p": 0.60999
    },
    "incl_acc": {
-    "k": 57586,
-    "n": 73354,
-    "p": 0.7850423971426235
+    "k": 50860,
+    "n": 64850,
+    "p": 0.7842713955281418
    },
    "excl_raw": {
     "k": 57093,
@@ -1041,9 +1104,9 @@
     "p": 0.57093
    },
    "excl_acc": {
-    "k": 53888,
-    "n": 73354,
-    "p": 0.7346293317337841
+    "k": 47595,
+    "n": 64850,
+    "p": 0.7339244410177332
    },
    "nmu_hist": [
     22954,
@@ -1060,33 +1123,33 @@
     0
    ],
    "nmu_hist_acc": [
-    8893,
-    62477,
-    1954,
-    30,
+    7934,
+    55160,
+    1731,
+    25,
     0
    ],
    "negm_hist_acc": [
-    7587,
-    63384,
-    2329,
-    54,
+    6679,
+    56063,
+    2061,
+    47,
     0
    ],
    "egm_photon_only_frac": 0.553501874035423
   },
   "v10": {
    "n": 45057,
-   "n_acc": 45054,
+   "n_acc": 45042,
    "incl_raw": {
     "k": 34654,
     "n": 45057,
     "p": 0.7691146769647336
    },
    "incl_acc": {
-    "k": 34652,
-    "n": 45054,
-    "p": 0.7691214986460692
+    "k": 34642,
+    "n": 45042,
+    "p": 0.7691043914568625
    },
    "excl_raw": {
     "k": 32370,
@@ -1094,9 +1157,9 @@
     "p": 0.718423330448099
    },
    "excl_acc": {
-    "k": 32368,
-    "n": 45054,
-    "p": 0.7184267767567808
+    "k": 32359,
+    "n": 45042,
+    "p": 0.7184183650814795
    },
    "nmu_hist": [
     5735,
@@ -1113,21 +1176,28 @@
     0
    ],
    "nmu_hist_acc": [
-    5734,
-    38083,
+    5735,
+    38070,
     1219,
     17,
     1
    ],
    "negm_hist_acc": [
-    5172,
-    38374,
-    1468,
+    5170,
+    38365,
+    1467,
     40,
     0
    ],
    "egm_photon_only_frac": 0.5530615692805252
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1137,16 +1207,16 @@
   "key": "2Mu2E_200GeV_1p2GeV_4p8mm",
   "run3": {
    "n": 100000,
-   "n_acc": 72262,
+   "n_acc": 56920,
    "incl_raw": {
     "k": 52480,
     "n": 100000,
     "p": 0.5248
    },
    "incl_acc": {
-    "k": 48310,
-    "n": 72262,
-    "p": 0.6685394813318203
+    "k": 37521,
+    "n": 56920,
+    "p": 0.6591883345045678
    },
    "excl_raw": {
     "k": 49156,
@@ -1154,9 +1224,9 @@
     "p": 0.49156
    },
    "excl_acc": {
-    "k": 45264,
-    "n": 72262,
-    "p": 0.6263873128338546
+    "k": 35140,
+    "n": 56920,
+    "p": 0.6173576950105412
    },
    "nmu_hist": [
     23188,
@@ -1173,33 +1243,33 @@
     1
    ],
    "nmu_hist_acc": [
-    8936,
-    61471,
-    1828,
-    26,
-    1
+    6865,
+    48552,
+    1484,
+    19,
+    0
    ],
    "negm_hist_acc": [
-    16606,
-    53589,
-    2015,
-    51,
+    13815,
+    41511,
+    1557,
+    36,
     1
    ],
    "egm_photon_only_frac": 0.4913966543326252
   },
   "v10": {
    "n": 41455,
-   "n_acc": 41452,
+   "n_acc": 41431,
    "incl_raw": {
     "k": 24334,
     "n": 41455,
     "p": 0.5869979495838862
    },
    "incl_acc": {
-    "k": 24334,
-    "n": 41452,
-    "p": 0.5870404323072469
+    "k": 24319,
+    "n": 41431,
+    "p": 0.5869759358934131
    },
    "excl_raw": {
     "k": 22799,
@@ -1207,9 +1277,9 @@
     "p": 0.549969846821855
    },
    "excl_acc": {
-    "k": 22799,
-    "n": 41452,
-    "p": 0.5500096497153334
+    "k": 22784,
+    "n": 41431,
+    "p": 0.5499263836257875
    },
    "nmu_hist": [
     5169,
@@ -1226,21 +1296,28 @@
     0
    ],
    "nmu_hist_acc": [
-    5168,
-    35241,
+    5166,
+    35222,
     1020,
     22,
     1
    ],
    "negm_hist_acc": [
-    13177,
-    27235,
-    1019,
+    13173,
+    27219,
+    1018,
     21,
     0
    ],
    "egm_photon_only_frac": 0.42448103078024335
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1250,16 +1327,16 @@
   "key": "2Mu2E_200GeV_5p0GeV_20p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 69281,
+   "n_acc": 54489,
    "incl_raw": {
     "k": 54664,
     "n": 100000,
     "p": 0.54664
    },
    "incl_acc": {
-    "k": 48314,
-    "n": 69281,
-    "p": 0.6973629133528673
+    "k": 37590,
+    "n": 54489,
+    "p": 0.6898640092495734
    },
    "excl_raw": {
     "k": 50979,
@@ -1267,9 +1344,9 @@
     "p": 0.50979
    },
    "excl_acc": {
-    "k": 45068,
-    "n": 69281,
-    "p": 0.6505102409029893
+    "k": 35076,
+    "n": 54489,
+    "p": 0.6437262566756593
    },
    "nmu_hist": [
     22861,
@@ -1286,33 +1363,33 @@
     2
    ],
    "nmu_hist_acc": [
-    8572,
-    58670,
-    1980,
-    59,
+    6589,
+    46257,
+    1600,
+    43,
     0
    ],
    "negm_hist_acc": [
-    13591,
-    53593,
-    2052,
-    43,
-    2
+    11226,
+    41673,
+    1553,
+    36,
+    1
    ],
    "egm_photon_only_frac": 0.49227531903339666
   },
   "v10": {
    "n": 35252,
-   "n_acc": 35242,
+   "n_acc": 35231,
    "incl_raw": {
     "k": 16444,
     "n": 35252,
     "p": 0.46646998751843866
    },
    "incl_acc": {
-    "k": 16439,
-    "n": 35242,
-    "p": 0.4664604732989047
+    "k": 16432,
+    "n": 35231,
+    "p": 0.46640742527887374
    },
    "excl_raw": {
     "k": 15322,
@@ -1320,9 +1397,9 @@
     "p": 0.4346420061273119
    },
    "excl_acc": {
-    "k": 15318,
-    "n": 35242,
-    "p": 0.434651835877646
+    "k": 15310,
+    "n": 35231,
+    "p": 0.4345604723113167
    },
    "nmu_hist": [
     4384,
@@ -1339,21 +1416,28 @@
     2
    ],
    "nmu_hist_acc": [
-    4382,
-    29807,
-    1028,
+    4378,
+    29799,
+    1029,
     25,
     0
    ],
    "negm_hist_acc": [
     15845,
-    18673,
-    705,
+    18663,
+    704,
     17,
     2
    ],
    "egm_photon_only_frac": 0.24364701211038317
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1363,16 +1447,16 @@
   "key": "2Mu2E_500GeV_0p25GeV_0p4mm",
   "run3": {
    "n": 100000,
-   "n_acc": 82252,
+   "n_acc": 78211,
    "incl_raw": {
     "k": 64696,
     "n": 100000,
     "p": 0.64696
    },
    "incl_acc": {
-    "k": 62623,
-    "n": 82252,
-    "p": 0.7613553469824442
+    "k": 59551,
+    "n": 78211,
+    "p": 0.7614146347700451
    },
    "excl_raw": {
     "k": 58362,
@@ -1380,9 +1464,9 @@
     "p": 0.58362
    },
    "excl_acc": {
-    "k": 56507,
-    "n": 82252,
-    "p": 0.6869984924378738
+    "k": 53753,
+    "n": 78211,
+    "p": 0.6872818401503625
    },
    "nmu_hist": [
     21050,
@@ -1399,33 +1483,33 @@
     3
    ],
    "nmu_hist_acc": [
-    12076,
-    67475,
-    2642,
-    57,
+    11514,
+    64137,
+    2502,
+    56,
     2
    ],
    "negm_hist_acc": [
-    8485,
-    69087,
-    4486,
-    191,
-    3
+    8042,
+    65729,
+    4258,
+    180,
+    2
    ],
    "egm_photon_only_frac": 0.5358286606811772
   },
   "v10": {
    "n": 110340,
-   "n_acc": 110337,
+   "n_acc": 110331,
    "incl_raw": {
     "k": 82965,
     "n": 110340,
     "p": 0.7519032082653616
    },
    "incl_acc": {
-    "k": 82962,
-    "n": 110337,
-    "p": 0.7518964626553196
+    "k": 82959,
+    "n": 110331,
+    "p": 0.7519101612420807
    },
    "excl_raw": {
     "k": 74430,
@@ -1433,9 +1517,9 @@
     "p": 0.6745513866231647
    },
    "excl_acc": {
-    "k": 74428,
-    "n": 110337,
-    "p": 0.6745516010041962
+    "k": 74427,
+    "n": 110331,
+    "p": 0.674579220708595
    },
    "nmu_hist": [
     16686,
@@ -1452,21 +1536,28 @@
     14
    ],
    "nmu_hist_acc": [
-    16686,
-    89984,
-    3581,
+    16683,
+    89980,
+    3582,
     84,
     2
    ],
    "negm_hist_acc": [
     11928,
-    91750,
-    6368,
-    277,
+    91748,
+    6365,
+    276,
     14
    ],
    "egm_photon_only_frac": 0.5440561033242548
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1476,16 +1567,16 @@
   "key": "2Mu2E_500GeV_1p2GeV_1p9mm",
   "run3": {
    "n": 100000,
-   "n_acc": 82064,
+   "n_acc": 75116,
    "incl_raw": {
     "k": 64791,
     "n": 100000,
     "p": 0.64791
    },
    "incl_acc": {
-    "k": 62637,
-    "n": 82064,
-    "p": 0.7632701306297524
+    "k": 57297,
+    "n": 75116,
+    "p": 0.7627802332392566
    },
    "excl_raw": {
     "k": 58487,
@@ -1493,9 +1584,9 @@
     "p": 0.58487
    },
    "excl_acc": {
-    "k": 56538,
-    "n": 82064,
-    "p": 0.6889500877364009
+    "k": 51757,
+    "n": 75116,
+    "p": 0.6890276372543799
    },
    "nmu_hist": [
     20010,
@@ -1512,33 +1603,33 @@
     17
    ],
    "nmu_hist_acc": [
-    10912,
-    68503,
-    2596,
-    53,
+    9984,
+    62732,
+    2351,
+    49,
     0
    ],
    "negm_hist_acc": [
-    9295,
-    68066,
-    4495,
-    192,
-    16
+    8574,
+    62270,
+    4088,
+    170,
+    14
    ],
    "egm_photon_only_frac": 0.5131632885447506
   },
   "v10": {
    "n": 109018,
-   "n_acc": 109011,
+   "n_acc": 108991,
    "incl_raw": {
     "k": 79045,
     "n": 109018,
     "p": 0.7250637509402117
    },
    "incl_acc": {
-    "k": 79042,
-    "n": 109011,
-    "p": 0.7250827898102027
+    "k": 79024,
+    "n": 108991,
+    "p": 0.7250506922589939
    },
    "excl_raw": {
     "k": 71062,
@@ -1546,9 +1637,9 @@
     "p": 0.6518373112696986
    },
    "excl_acc": {
-    "k": 71059,
-    "n": 109011,
-    "p": 0.6518516479988258
+    "k": 71042,
+    "n": 108991,
+    "p": 0.6518152875008029
    },
    "nmu_hist": [
     15110,
@@ -1566,20 +1657,27 @@
    ],
    "nmu_hist_acc": [
     15108,
-    90400,
+    90380,
     3444,
     58,
     1
    ],
    "negm_hist_acc": [
     16220,
-    86502,
-    6047,
+    86483,
+    6046,
     233,
     9
    ],
    "egm_photon_only_frac": 0.5046308414037489
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1589,16 +1687,16 @@
   "key": "2Mu2E_500GeV_5p0GeV_8p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 80288,
+   "n_acc": 72909,
    "incl_raw": {
     "k": 52069,
     "n": 100000,
     "p": 0.52069
    },
    "incl_acc": {
-    "k": 49020,
-    "n": 80288,
-    "p": 0.6105520127540853
+    "k": 43912,
+    "n": 72909,
+    "p": 0.6022850402556612
    },
    "excl_raw": {
     "k": 46853,
@@ -1606,9 +1704,9 @@
     "p": 0.46853
    },
    "excl_acc": {
-    "k": 44079,
-    "n": 80288,
-    "p": 0.54901106018334
+    "k": 39497,
+    "n": 72909,
+    "p": 0.5417301019078578
    },
    "nmu_hist": [
     19794,
@@ -1625,33 +1723,33 @@
     3
    ],
    "nmu_hist_acc": [
-    10474,
-    67106,
-    2640,
-    66,
+    9432,
+    61012,
+    2404,
+    59,
     2
    ],
    "negm_hist_acc": [
-    22490,
-    53926,
-    3723,
-    147,
-    2
+    21100,
+    48357,
+    3325,
+    127,
+    0
    ],
    "egm_photon_only_frac": 0.3901517233796933
   },
   "v10": {
    "n": 109972,
-   "n_acc": 109960,
+   "n_acc": 109941,
    "incl_raw": {
     "k": 55773,
     "n": 109972,
     "p": 0.5071563670752555
    },
    "incl_acc": {
-    "k": 55766,
-    "n": 109960,
-    "p": 0.5071480538377592
+    "k": 55755,
+    "n": 109941,
+    "p": 0.5071356454825771
    },
    "excl_raw": {
     "k": 50272,
@@ -1659,9 +1757,9 @@
     "p": 0.4571345433383043
    },
    "excl_acc": {
-    "k": 50265,
-    "n": 109960,
-    "p": 0.4571207711895235
+    "k": 50256,
+    "n": 109941,
+    "p": 0.45711790869648267
    },
    "nmu_hist": [
     14722,
@@ -1678,21 +1776,28 @@
     9
    ],
    "nmu_hist_acc": [
-    14722,
-    91632,
+    14717,
+    91618,
     3531,
     70,
     5
    ],
    "negm_hist_acc": [
-    42725,
-    62861,
-    4193,
+    42722,
+    62846,
+    4192,
     172,
     9
    ],
    "egm_photon_only_frac": 0.2792802829847088
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1702,16 +1807,16 @@
   "key": "2Mu2E_800GeV_0p25GeV_0p25mm",
   "run3": {
    "n": 100000,
-   "n_acc": 86011,
+   "n_acc": 83284,
    "incl_raw": {
     "k": 65531,
     "n": 100000,
     "p": 0.65531
    },
    "incl_acc": {
-    "k": 63966,
-    "n": 86011,
-    "p": 0.7436955738219531
+    "k": 61883,
+    "n": 83284,
+    "p": 0.7430358772393256
    },
    "excl_raw": {
     "k": 57703,
@@ -1719,9 +1824,9 @@
     "p": 0.57703
    },
    "excl_acc": {
-    "k": 56296,
-    "n": 86011,
-    "p": 0.6545209333689876
+    "k": 54480,
+    "n": 83284,
+    "p": 0.6541472551750637
    },
    "nmu_hist": [
     21088,
@@ -1738,33 +1843,33 @@
     10
    ],
    "nmu_hist_acc": [
-    13976,
-    68876,
-    3108,
-    50,
+    13586,
+    66651,
+    2999,
+    47,
     1
    ],
    "negm_hist_acc": [
-    8955,
-    70845,
-    5905,
-    297,
+    8672,
+    68604,
+    5711,
+    288,
     9
    ],
    "egm_photon_only_frac": 0.525764912814054
   },
   "v10": {
    "n": 97889,
-   "n_acc": 97885,
+   "n_acc": 97879,
    "incl_raw": {
     "k": 72375,
     "n": 97889,
     "p": 0.7393578440887127
    },
    "incl_acc": {
-    "k": 72372,
-    "n": 97885,
-    "p": 0.739357409204679
+    "k": 72369,
+    "n": 97879,
+    "p": 0.7393720818561693
    },
    "excl_raw": {
     "k": 63703,
@@ -1772,9 +1877,9 @@
     "p": 0.6507677062795616
    },
    "excl_acc": {
-    "k": 63701,
-    "n": 97885,
-    "p": 0.6507738672932523
+    "k": 63697,
+    "n": 97879,
+    "p": 0.6507728930618416
    },
    "nmu_hist": [
     16124,
@@ -1791,21 +1896,28 @@
     17
    ],
    "nmu_hist_acc": [
-    16124,
-    78321,
+    16120,
+    78319,
     3361,
     76,
     3
    ],
    "negm_hist_acc": [
-    10450,
-    80251,
+    10451,
+    80244,
     6849,
     318,
     17
    ],
    "egm_photon_only_frac": 0.5305606738615425
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1815,16 +1927,16 @@
   "key": "2Mu2E_800GeV_1p2GeV_1p2mm",
   "run3": {
    "n": 100000,
-   "n_acc": 86002,
+   "n_acc": 82070,
    "incl_raw": {
     "k": 66650,
     "n": 100000,
     "p": 0.6665
    },
    "incl_acc": {
-    "k": 65031,
-    "n": 86002,
-    "p": 0.7561568335620101
+    "k": 62001,
+    "n": 82070,
+    "p": 0.7554648470817594
    },
    "excl_raw": {
     "k": 58580,
@@ -1832,9 +1944,9 @@
     "p": 0.5858
    },
    "excl_acc": {
-    "k": 57139,
-    "n": 86002,
-    "p": 0.6643915257784703
+    "k": 54468,
+    "n": 82070,
+    "p": 0.6636773486048495
    },
    "nmu_hist": [
     19609,
@@ -1851,33 +1963,33 @@
     15
    ],
    "nmu_hist_acc": [
-    12619,
-    70180,
-    3123,
-    78,
+    12085,
+    66927,
+    2984,
+    72,
     2
    ],
    "negm_hist_acc": [
-    9066,
-    70536,
-    6105,
-    281,
-    14
+    8653,
+    67307,
+    5830,
+    267,
+    13
    ],
    "egm_photon_only_frac": 0.5125521648408973
   },
   "v10": {
    "n": 98768,
-   "n_acc": 98762,
+   "n_acc": 98757,
    "incl_raw": {
     "k": 73250,
     "n": 98768,
     "p": 0.7416369674388466
    },
    "incl_acc": {
-    "k": 73245,
-    "n": 98762,
-    "p": 0.7416313966910351
+    "k": 73242,
+    "n": 98757,
+    "p": 0.7416385673926912
    },
    "excl_raw": {
     "k": 64428,
@@ -1885,9 +1997,9 @@
     "p": 0.652316539769966
    },
    "excl_acc": {
-    "k": 64423,
-    "n": 98762,
-    "p": 0.652305542617606
+    "k": 64422,
+    "n": 98757,
+    "p": 0.6523284425407819
    },
    "nmu_hist": [
     14794,
@@ -1904,21 +2016,28 @@
     13
    ],
    "nmu_hist_acc": [
-    14794,
-    80462,
-    3426,
+    14792,
+    80460,
+    3425,
     78,
     2
    ],
    "negm_hist_acc": [
     11683,
-    79778,
-    6927,
+    79774,
+    6926,
     361,
     13
    ],
    "egm_photon_only_frac": 0.515188925115803
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "2Mu2E",
@@ -1928,16 +2047,16 @@
   "key": "2Mu2E_800GeV_5p0GeV_5p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 84938,
+   "n_acc": 79907,
    "incl_raw": {
     "k": 55125,
     "n": 100000,
     "p": 0.55125
    },
    "incl_acc": {
-    "k": 52865,
-    "n": 84938,
-    "p": 0.6223951588217288
+    "k": 49361,
+    "n": 79907,
+    "p": 0.6177306118362597
    },
    "excl_raw": {
     "k": 48584,
@@ -1945,9 +2064,9 @@
     "p": 0.48584
    },
    "excl_acc": {
-    "k": 46565,
-    "n": 84938,
-    "p": 0.548223410016718
+    "k": 43523,
+    "n": 79907,
+    "p": 0.5446706796651107
    },
    "nmu_hist": [
     18816,
@@ -1964,33 +2083,33 @@
     8
    ],
    "nmu_hist_acc": [
-    11835,
-    70029,
-    2992,
-    80,
+    11129,
+    65887,
+    2814,
+    75,
     2
    ],
    "negm_hist_acc": [
-    21659,
-    58019,
-    5020,
-    233,
+    20759,
+    54265,
+    4666,
+    210,
     7
    ],
    "egm_photon_only_frac": 0.40490123887403273
   },
   "v10": {
    "n": 106387,
-   "n_acc": 106374,
+   "n_acc": 106371,
    "incl_raw": {
     "k": 58874,
     "n": 106387,
     "p": 0.5533946816810325
    },
    "incl_acc": {
-    "k": 58865,
-    "n": 106374,
-    "p": 0.5533777050783086
+    "k": 58867,
+    "n": 106371,
+    "p": 0.5534121142040593
    },
    "excl_raw": {
     "k": 51759,
@@ -1998,9 +2117,9 @@
     "p": 0.4865162096872738
    },
    "excl_acc": {
-    "k": 51750,
-    "n": 106374,
-    "p": 0.48649105984545093
+    "k": 51753,
+    "n": 106371,
+    "p": 0.4865329836139549
    },
    "nmu_hist": [
     14863,
@@ -2017,21 +2136,28 @@
     10
    ],
    "nmu_hist_acc": [
-    14861,
-    87764,
+    14862,
+    87760,
     3643,
     105,
     1
    ],
    "negm_hist_acc": [
-    35012,
-    65390,
-    5688,
+    35007,
+    65393,
+    5687,
     274,
     10
    ],
    "egm_photon_only_frac": 0.3417524246210121
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2041,7 +2167,7 @@
   "key": "4Mu_1000GeV_0p25GeV_0p2mm",
   "run3": {
    "n": 100000,
-   "n_acc": 88465,
+   "n_acc": 88455,
    "incl_raw": {
     "k": 61729,
     "n": 100000,
@@ -2049,8 +2175,8 @@
    },
    "incl_acc": {
     "k": 61324,
-    "n": 88465,
-    "p": 0.6932007008421409
+    "n": 88455,
+    "p": 0.6932790684528857
    },
    "excl_raw": {
     "k": 53787,
@@ -2059,8 +2185,8 @@
    },
    "excl_acc": {
     "k": 53430,
-    "n": 88465,
-    "p": 0.6039676708302718
+    "n": 88455,
+    "p": 0.6040359504832966
    },
    "nmu_hist": [
     4379,
@@ -2077,14 +2203,14 @@
     0
    ],
    "nmu_hist_acc": [
-    3235,
-    23906,
+    3233,
+    23898,
     58623,
     2649,
     52
    ],
    "negm_hist_acc": [
-    80562,
+    80552,
     7530,
     358,
     15,
@@ -2142,7 +2268,14 @@
     19,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2152,16 +2285,16 @@
   "key": "4Mu_1000GeV_1p2GeV_0p96mm",
   "run3": {
    "n": 100000,
-   "n_acc": 88421,
+   "n_acc": 87073,
    "incl_raw": {
     "k": 63703,
     "n": 100000,
     "p": 0.63703
    },
    "incl_acc": {
-    "k": 63218,
-    "n": 88421,
-    "p": 0.7149659017654177
+    "k": 62136,
+    "n": 87073,
+    "p": 0.7136081219206872
    },
    "excl_raw": {
     "k": 55646,
@@ -2169,9 +2302,9 @@
     "p": 0.55646
    },
    "excl_acc": {
-    "k": 55198,
-    "n": 88421,
-    "p": 0.6242634668234922
+    "k": 54246,
+    "n": 87073,
+    "p": 0.6229944988687652
    },
    "nmu_hist": [
     3612,
@@ -2188,32 +2321,32 @@
     0
    ],
    "nmu_hist_acc": [
-    2547,
-    22656,
-    60493,
-    2664,
+    2523,
+    22414,
+    59462,
+    2613,
     61
    ],
    "negm_hist_acc": [
-    80387,
-    7626,
-    392,
+    79153,
+    7521,
+    383,
     16,
     0
    ]
   },
   "v10": {
    "n": 103016,
-   "n_acc": 103016,
+   "n_acc": 103004,
    "incl_raw": {
     "k": 73243,
     "n": 103016,
     "p": 0.7109866428515959
    },
    "incl_acc": {
-    "k": 73243,
-    "n": 103016,
-    "p": 0.7109866428515959
+    "k": 73235,
+    "n": 103004,
+    "p": 0.7109918061434507
    },
    "excl_raw": {
     "k": 63634,
@@ -2221,9 +2354,9 @@
     "p": 0.6177098703114079
    },
    "excl_acc": {
-    "k": 63634,
-    "n": 103016,
-    "p": 0.6177098703114079
+    "k": 63627,
+    "n": 103004,
+    "p": 0.6177138751893131
    },
    "nmu_hist": [
     3076,
@@ -2241,19 +2374,26 @@
    ],
    "nmu_hist_acc": [
     3076,
-    26697,
-    69918,
+    26693,
+    69910,
     3246,
     79
    ],
    "negm_hist_acc": [
-    93497,
-    8986,
+    93486,
+    8985,
     510,
     22,
     1
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2263,16 +2403,16 @@
   "key": "4Mu_1000GeV_5p0GeV_4p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 87053,
+   "n_acc": 83008,
    "incl_raw": {
     "k": 65427,
     "n": 100000,
     "p": 0.65427
    },
    "incl_acc": {
-    "k": 63699,
-    "n": 87053,
-    "p": 0.7317266492826209
+    "k": 60744,
+    "n": 83008,
+    "p": 0.7317848882035466
    },
    "excl_raw": {
     "k": 57000,
@@ -2280,9 +2420,9 @@
     "p": 0.57
    },
    "excl_acc": {
-    "k": 55472,
-    "n": 87053,
-    "p": 0.6372210032968422
+    "k": 52881,
+    "n": 83008,
+    "p": 0.6370590786430224
    },
    "nmu_hist": [
     3278,
@@ -2299,32 +2439,32 @@
     1
    ],
    "nmu_hist_acc": [
-    2278,
-    21076,
-    60889,
-    2746,
-    64
+    2175,
+    20089,
+    58077,
+    2605,
+    62
    ],
    "negm_hist_acc": [
-    78874,
-    7731,
-    429,
-    18,
+    75193,
+    7388,
+    410,
+    16,
     1
    ]
   },
   "v10": {
    "n": 102649,
-   "n_acc": 102636,
+   "n_acc": 102641,
    "incl_raw": {
     "k": 75087,
     "n": 102649,
     "p": 0.7314927568705004
    },
    "incl_acc": {
-    "k": 75078,
-    "n": 102636,
-    "p": 0.7314977200982111
+    "k": 75080,
+    "n": 102641,
+    "p": 0.7314815716916242
    },
    "excl_raw": {
     "k": 65293,
@@ -2332,9 +2472,9 @@
     "p": 0.6360802345858216
    },
    "excl_acc": {
-    "k": 65284,
-    "n": 102636,
-    "p": 0.6360731127479636
+    "k": 65286,
+    "n": 102641,
+    "p": 0.6360616128057989
    },
    "nmu_hist": [
     2640,
@@ -2352,19 +2492,26 @@
    ],
    "nmu_hist_acc": [
     2640,
-    24918,
-    71822,
+    24921,
+    71824,
     3182,
     74
    ],
    "negm_hist_acc": [
-    92828,
+    92833,
     9252,
     524,
     30,
     2
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2374,16 +2521,16 @@
   "key": "4Mu_100GeV_0p25GeV_2p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 69779,
+   "n_acc": 68717,
    "incl_raw": {
     "k": 57322,
     "n": 100000,
     "p": 0.57322
    },
    "incl_acc": {
-    "k": 56814,
-    "n": 69779,
-    "p": 0.8141991143467232
+    "k": 56067,
+    "n": 68717,
+    "p": 0.8159116375860413
    },
    "excl_raw": {
     "k": 54689,
@@ -2391,9 +2538,9 @@
     "p": 0.54689
    },
    "excl_acc": {
-    "k": 54203,
-    "n": 69779,
-    "p": 0.7767809799509882
+    "k": 53484,
+    "n": 68717,
+    "p": 0.7783226857982741
    },
    "nmu_hist": [
     8688,
@@ -2410,32 +2557,32 @@
     0
    ],
    "nmu_hist_acc": [
-    678,
-    12287,
-    55351,
-    1438,
+    651,
+    11999,
+    54618,
+    1424,
     25
    ],
    "negm_hist_acc": [
-    68262,
-    1488,
-    28,
+    67231,
+    1458,
+    27,
     1,
     0
    ]
   },
   "v10": {
    "n": 82470,
-   "n_acc": 82470,
+   "n_acc": 82463,
    "incl_raw": {
     "k": 66257,
     "n": 82470,
     "p": 0.8034072996241057
    },
    "incl_acc": {
-    "k": 66257,
-    "n": 82470,
-    "p": 0.8034072996241057
+    "k": 66254,
+    "n": 82463,
+    "p": 0.8034391181499582
    },
    "excl_raw": {
     "k": 63221,
@@ -2443,9 +2590,9 @@
     "p": 0.766593912938038
    },
    "excl_acc": {
-    "k": 63221,
-    "n": 82470,
-    "p": 0.766593912938038
+    "k": 63219,
+    "n": 82463,
+    "p": 0.7666347331530504
    },
    "nmu_hist": [
     922,
@@ -2463,19 +2610,26 @@
    ],
    "nmu_hist_acc": [
     922,
-    15291,
-    64509,
-    1720,
+    15287,
+    64507,
+    1719,
     28
    ],
    "negm_hist_acc": [
-    80756,
+    80749,
     1684,
     27,
     3,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2485,16 +2639,16 @@
   "key": "4Mu_100GeV_1p2GeV_9p6mm",
   "run3": {
    "n": 100000,
-   "n_acc": 61925,
+   "n_acc": 38455,
    "incl_raw": {
     "k": 54212,
     "n": 100000,
     "p": 0.54212
    },
    "incl_acc": {
-    "k": 47711,
-    "n": 61925,
-    "p": 0.7704642712959224
+    "k": 30173,
+    "n": 38455,
+    "p": 0.7846313873358471
    },
    "excl_raw": {
     "k": 51704,
@@ -2502,9 +2656,9 @@
     "p": 0.51704
    },
    "excl_acc": {
-    "k": 45471,
-    "n": 61925,
-    "p": 0.7342914816310052
+    "k": 28758,
+    "n": 38455,
+    "p": 0.7478351319724353
    },
    "nmu_hist": [
     9333,
@@ -2521,32 +2675,32 @@
     0
    ],
    "nmu_hist_acc": [
-    958,
-    13256,
-    46431,
-    1262,
-    18
+    503,
+    7779,
+    29353,
+    808,
+    12
    ],
    "negm_hist_acc": [
-    60556,
-    1330,
-    36,
+    37636,
+    800,
+    16,
     3,
     0
    ]
   },
   "v10": {
    "n": 41542,
-   "n_acc": 41534,
+   "n_acc": 41487,
    "incl_raw": {
     "k": 32067,
     "n": 41542,
     "p": 0.7719175773915555
    },
    "incl_acc": {
-    "k": 32062,
-    "n": 41534,
-    "p": 0.7719458756681273
+    "k": 32029,
+    "n": 41487,
+    "p": 0.772024971677875
    },
    "excl_raw": {
     "k": 30589,
@@ -2554,9 +2708,9 @@
     "p": 0.7363391266669876
    },
    "excl_acc": {
-    "k": 30586,
-    "n": 41534,
-    "p": 0.7364087253816151
+    "k": 30553,
+    "n": 41487,
+    "p": 0.7364475618868561
    },
    "nmu_hist": [
     623,
@@ -2573,20 +2727,27 @@
     0
    ],
    "nmu_hist_acc": [
-    623,
-    8849,
-    31225,
+    622,
+    8836,
+    31192,
     819,
     18
    ],
    "negm_hist_acc": [
-    40642,
+    40596,
     872,
-    19,
+    18,
     1,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2596,16 +2757,16 @@
   "key": "4Mu_100GeV_5p0GeV_40p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 57394,
+   "n_acc": 35799,
    "incl_raw": {
     "k": 56494,
     "n": 100000,
     "p": 0.56494
    },
    "incl_acc": {
-    "k": 43849,
-    "n": 57394,
-    "p": 0.7639997212252152
+    "k": 27872,
+    "n": 35799,
+    "p": 0.7785692337774798
    },
    "excl_raw": {
     "k": 50379,
@@ -2613,9 +2774,9 @@
     "p": 0.50379
    },
    "excl_acc": {
-    "k": 38870,
-    "n": 57394,
-    "p": 0.6772484928738196
+    "k": 24467,
+    "n": 35799,
+    "p": 0.6834548451074053
    },
    "nmu_hist": [
     9327,
@@ -2632,32 +2793,32 @@
     0
    ],
    "nmu_hist_acc": [
-    992,
-    12553,
-    39719,
-    3868,
-    262
+    544,
+    7383,
+    24984,
+    2653,
+    235
    ],
    "negm_hist_acc": [
-    56065,
-    1312,
-    16,
-    1,
+    34985,
+    804,
+    10,
+    0,
     0
    ]
   },
   "v10": {
    "n": 26464,
-   "n_acc": 26451,
+   "n_acc": 26423,
    "incl_raw": {
     "k": 20324,
     "n": 26464,
     "p": 0.7679866989117291
    },
    "incl_acc": {
-    "k": 20315,
-    "n": 26451,
-    "p": 0.7680238932365506
+    "k": 20295,
+    "n": 26423,
+    "p": 0.7680808386632858
    },
    "excl_raw": {
     "k": 17870,
@@ -2665,9 +2826,9 @@
     "p": 0.6752569528415961
    },
    "excl_acc": {
-    "k": 17862,
-    "n": 26451,
-    "p": 0.675286378586821
+    "k": 17843,
+    "n": 26423,
+    "p": 0.675282897475684
    },
    "nmu_hist": [
     464,
@@ -2684,20 +2845,27 @@
     0
    ],
    "nmu_hist_acc": [
-    464,
-    5672,
-    18221,
+    462,
+    5666,
+    18201,
     1907,
     187
    ],
    "negm_hist_acc": [
-    25875,
-    567,
+    25849,
+    565,
     9,
     0,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2707,16 +2875,16 @@
   "key": "4Mu_150GeV_0p25GeV_1p3mm",
   "run3": {
    "n": 100000,
-   "n_acc": 74087,
+   "n_acc": 73793,
    "incl_raw": {
     "k": 59541,
     "n": 100000,
     "p": 0.59541
    },
    "incl_acc": {
-    "k": 58999,
-    "n": 74087,
-    "p": 0.7963475373547316
+    "k": 58803,
+    "n": 73793,
+    "p": 0.796864201211497
    },
    "excl_raw": {
     "k": 56186,
@@ -2724,9 +2892,9 @@
     "p": 0.56186
    },
    "excl_acc": {
-    "k": 55677,
-    "n": 74087,
-    "p": 0.7515083617908674
+    "k": 55488,
+    "n": 73793,
+    "p": 0.751941241039123
    },
    "nmu_hist": [
     6358,
@@ -2743,15 +2911,15 @@
     0
    ],
    "nmu_hist_acc": [
-    929,
-    14159,
-    57286,
-    1680,
+    921,
+    14069,
+    57093,
+    1677,
     33
    ],
    "negm_hist_acc": [
-    71898,
-    2128,
+    71615,
+    2117,
     61,
     0,
     0
@@ -2759,16 +2927,16 @@
   },
   "v10": {
    "n": 89088,
-   "n_acc": 89088,
+   "n_acc": 89087,
    "incl_raw": {
     "k": 69892,
     "n": 89088,
     "p": 0.784527658045977
    },
    "incl_acc": {
-    "k": 69892,
-    "n": 89088,
-    "p": 0.784527658045977
+    "k": 69891,
+    "n": 89087,
+    "p": 0.784525239372748
    },
    "excl_raw": {
     "k": 65909,
@@ -2776,9 +2944,9 @@
     "p": 0.7398190553160919
    },
    "excl_acc": {
-    "k": 65909,
-    "n": 89088,
-    "p": 0.7398190553160919
+    "k": 65908,
+    "n": 89087,
+    "p": 0.7398161347895877
    },
    "nmu_hist": [
     1338,
@@ -2797,18 +2965,25 @@
    "nmu_hist_acc": [
     1338,
     17858,
-    67825,
+    67824,
     2030,
     37
    ],
    "negm_hist_acc": [
-    86424,
+    86423,
     2583,
     77,
     4,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2818,16 +2993,16 @@
   "key": "4Mu_150GeV_1p2GeV_6p4mm",
   "run3": {
    "n": 100000,
-   "n_acc": 69292,
+   "n_acc": 50749,
    "incl_raw": {
     "k": 57386,
     "n": 100000,
     "p": 0.57386
    },
    "incl_acc": {
-    "k": 53374,
-    "n": 69292,
-    "p": 0.7702765109969405
+    "k": 39567,
+    "n": 50749,
+    "p": 0.7796606829691225
    },
    "excl_raw": {
     "k": 54080,
@@ -2835,9 +3010,9 @@
     "p": 0.5408
    },
    "excl_acc": {
-    "k": 50287,
-    "n": 69292,
-    "p": 0.7257259135253709
+    "k": 37283,
+    "n": 50749,
+    "p": 0.7346548700467004
    },
    "nmu_hist": [
     7007,
@@ -2854,32 +3029,32 @@
     0
    ],
    "nmu_hist_acc": [
-    1115,
-    14803,
-    51764,
-    1575,
-    35
+    754,
+    10428,
+    38368,
+    1172,
+    27
    ],
    "negm_hist_acc": [
-    67197,
-    2039,
-    55,
+    49206,
+    1506,
+    36,
     1,
     0
    ]
   },
   "v10": {
    "n": 63555,
-   "n_acc": 63551,
+   "n_acc": 63499,
    "incl_raw": {
     "k": 48879,
     "n": 63555,
     "p": 0.7690818975690347
    },
    "incl_acc": {
-    "k": 48875,
-    "n": 63551,
-    "p": 0.769067363220091
+    "k": 48836,
+    "n": 63499,
+    "p": 0.7690829776846879
    },
    "excl_raw": {
     "k": 46108,
@@ -2887,9 +3062,9 @@
     "p": 0.7254818661002281
    },
    "excl_acc": {
-    "k": 46104,
-    "n": 63551,
-    "p": 0.7254645874966562
+    "k": 46067,
+    "n": 63499,
+    "p": 0.7254759917479016
    },
    "nmu_hist": [
     984,
@@ -2907,19 +3082,26 @@
    ],
    "nmu_hist_acc": [
     984,
-    13692,
-    47450,
-    1394,
+    13679,
+    47412,
+    1393,
     31
    ],
    "negm_hist_acc": [
-    61671,
-    1836,
+    61621,
+    1834,
     44,
     0,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -2929,16 +3111,16 @@
   "key": "4Mu_150GeV_5p0GeV_27p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 64702,
+   "n_acc": 47392,
    "incl_raw": {
     "k": 58565,
     "n": 100000,
     "p": 0.58565
    },
    "incl_acc": {
-    "k": 49378,
-    "n": 64702,
-    "p": 0.76316033507465
+    "k": 36561,
+    "n": 47392,
+    "p": 0.7714593180283592
    },
    "excl_raw": {
     "k": 54262,
@@ -2946,9 +3128,9 @@
     "p": 0.54262
    },
    "excl_acc": {
-    "k": 45754,
-    "n": 64702,
-    "p": 0.7071497017093753
+    "k": 33837,
+    "n": 47392,
+    "p": 0.7139812626603647
    },
    "nmu_hist": [
     6963,
@@ -2965,32 +3147,32 @@
     0
    ],
    "nmu_hist_acc": [
-    1148,
-    14176,
-    47093,
-    2187,
-    98
+    779,
+    10052,
+    34842,
+    1635,
+    84
    ],
    "negm_hist_acc": [
-    62684,
-    1963,
-    54,
+    45934,
+    1418,
+    39,
     1,
     0
    ]
   },
   "v10": {
    "n": 57582,
-   "n_acc": 57575,
+   "n_acc": 57532,
    "incl_raw": {
     "k": 43992,
     "n": 57582,
     "p": 0.763988746483276
    },
    "incl_acc": {
-    "k": 43987,
-    "n": 57575,
-    "p": 0.7639947894051238
+    "k": 43960,
+    "n": 57532,
+    "p": 0.7640965028158242
    },
    "excl_raw": {
     "k": 40681,
@@ -2998,9 +3180,9 @@
     "p": 0.7064881386544406
    },
    "excl_acc": {
-    "k": 40676,
-    "n": 57575,
-    "p": 0.7064871906209292
+    "k": 40650,
+    "n": 57532,
+    "p": 0.706563303900438
    },
    "nmu_hist": [
     992,
@@ -3018,19 +3200,26 @@
    ],
    "nmu_hist_acc": [
     992,
-    12596,
-    41852,
-    2016,
+    12580,
+    41826,
+    2015,
     119
    ],
    "negm_hist_acc": [
-    55844,
-    1689,
+    55803,
+    1687,
     41,
     1,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3040,16 +3229,16 @@
   "key": "4Mu_200GeV_0p25GeV_1p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 76422,
+   "n_acc": 76320,
    "incl_raw": {
     "k": 59743,
     "n": 100000,
     "p": 0.59743
    },
    "incl_acc": {
-    "k": 59199,
-    "n": 76422,
-    "p": 0.7746329590955484
+    "k": 59137,
+    "n": 76320,
+    "p": 0.7748558700209643
    },
    "excl_raw": {
     "k": 55925,
@@ -3057,9 +3246,9 @@
     "p": 0.55925
    },
    "excl_acc": {
-    "k": 55407,
-    "n": 76422,
-    "p": 0.7250137394990971
+    "k": 55355,
+    "n": 76320,
+    "p": 0.7253013626834381
    },
    "nmu_hist": [
     5655,
@@ -3076,15 +3265,15 @@
     0
    ],
    "nmu_hist_acc": [
-    1281,
-    15942,
-    57338,
-    1825,
+    1276,
+    15907,
+    57283,
+    1818,
     36
    ],
    "negm_hist_acc": [
-    73730,
-    2605,
+    73635,
+    2598,
     84,
     3,
     0
@@ -3092,16 +3281,16 @@
   },
   "v10": {
    "n": 94490,
-   "n_acc": 94490,
+   "n_acc": 94489,
    "incl_raw": {
     "k": 71866,
     "n": 94490,
     "p": 0.760567255794264
    },
    "incl_acc": {
-    "k": 71866,
-    "n": 94490,
-    "p": 0.760567255794264
+    "k": 71865,
+    "n": 94489,
+    "p": 0.7605647218194711
    },
    "excl_raw": {
     "k": 67174,
@@ -3109,9 +3298,9 @@
     "p": 0.7109112075351889
    },
    "excl_acc": {
-    "k": 67174,
-    "n": 94490,
-    "p": 0.7109112075351889
+    "k": 67173,
+    "n": 94489,
+    "p": 0.710908148038396
    },
    "nmu_hist": [
     1733,
@@ -3130,18 +3319,25 @@
    "nmu_hist_acc": [
     1733,
     20891,
-    69562,
+    69561,
     2257,
     47
    ],
    "negm_hist_acc": [
-    91090,
+    91089,
     3314,
     85,
     1,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3151,16 +3347,16 @@
   "key": "4Mu_200GeV_1p2GeV_4p8mm",
   "run3": {
    "n": 100000,
-   "n_acc": 73669,
+   "n_acc": 58340,
    "incl_raw": {
     "k": 59005,
     "n": 100000,
     "p": 0.59005
    },
    "incl_acc": {
-    "k": 56349,
-    "n": 73669,
-    "p": 0.7648943246141525
+    "k": 44969,
+    "n": 58340,
+    "p": 0.7708090503942406
    },
    "excl_raw": {
     "k": 55153,
@@ -3168,9 +3364,9 @@
     "p": 0.55153
    },
    "excl_acc": {
-    "k": 52652,
-    "n": 73669,
-    "p": 0.714710393788432
+    "k": 41985,
+    "n": 58340,
+    "p": 0.7196606102159753
    },
    "nmu_hist": [
     5899,
@@ -3187,32 +3383,32 @@
     0
    ],
    "nmu_hist_acc": [
-    1210,
-    16110,
-    54576,
-    1732,
-    41
+    901,
+    12470,
+    43515,
+    1421,
+    33
    ],
    "negm_hist_acc": [
-    70931,
-    2671,
-    67,
+    56170,
+    2116,
+    54,
     0,
     0
    ]
   },
   "v10": {
    "n": 70475,
-   "n_acc": 70471,
+   "n_acc": 70432,
    "incl_raw": {
     "k": 53983,
     "n": 70475,
     "p": 0.7659879389854558
    },
    "incl_acc": {
-    "k": 53980,
-    "n": 70471,
-    "p": 0.7659888464758553
+    "k": 53953,
+    "n": 70432,
+    "p": 0.7660296456156293
    },
    "excl_raw": {
     "k": 50341,
@@ -3220,9 +3416,9 @@
     "p": 0.7143100390209294
    },
    "excl_acc": {
-    "k": 50338,
-    "n": 70471,
-    "p": 0.7143080132252984
+    "k": 50312,
+    "n": 70432,
+    "p": 0.7143343934575193
    },
    "nmu_hist": [
     1171,
@@ -3240,19 +3436,26 @@
    ],
    "nmu_hist_acc": [
     1171,
-    15320,
-    52233,
-    1721,
+    15308,
+    52207,
+    1720,
     26
    ],
    "negm_hist_acc": [
-    67830,
-    2559,
+    67792,
+    2558,
     80,
     2,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3262,16 +3465,16 @@
   "key": "4Mu_200GeV_5p0GeV_20p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 69133,
+   "n_acc": 54880,
    "incl_raw": {
     "k": 60472,
     "n": 100000,
     "p": 0.60472
    },
    "incl_acc": {
-    "k": 53157,
-    "n": 69133,
-    "p": 0.7689092039980906
+    "k": 42485,
+    "n": 54880,
+    "p": 0.7741435860058309
    },
    "excl_raw": {
     "k": 56214,
@@ -3279,9 +3482,9 @@
     "p": 0.56214
    },
    "excl_acc": {
-    "k": 49462,
-    "n": 69133,
-    "p": 0.715461501743017
+    "k": 39517,
+    "n": 54880,
+    "p": 0.7200619533527697
    },
    "nmu_hist": [
     5722,
@@ -3298,32 +3501,32 @@
     0
    ],
    "nmu_hist_acc": [
-    1183,
-    14793,
-    51265,
-    1845,
-    47
+    920,
+    11475,
+    40928,
+    1515,
+    42
    ],
    "negm_hist_acc": [
-    66491,
-    2567,
-    74,
+    52817,
+    2005,
+    57,
     1,
     0
    ]
   },
   "v10": {
    "n": 58573,
-   "n_acc": 58563,
+   "n_acc": 58537,
    "incl_raw": {
     "k": 44902,
     "n": 58573,
     "p": 0.7665989449063562
    },
    "incl_acc": {
-    "k": 44894,
-    "n": 58563,
-    "p": 0.7665932414664549
+    "k": 44878,
+    "n": 58537,
+    "p": 0.7666604028221466
    },
    "excl_raw": {
     "k": 41717,
@@ -3331,9 +3534,9 @@
     "p": 0.7122223550099875
    },
    "excl_acc": {
-    "k": 41710,
-    "n": 58563,
-    "p": 0.7122244420538565
+    "k": 41695,
+    "n": 58537,
+    "p": 0.7122845379845226
    },
    "nmu_hist": [
     1059,
@@ -3350,20 +3553,27 @@
     0
    ],
    "nmu_hist_acc": [
-    1059,
-    12610,
-    43209,
+    1057,
+    12602,
+    43193,
     1643,
     42
    ],
    "negm_hist_acc": [
-    56374,
-    2140,
+    56349,
+    2139,
     48,
     1,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3373,7 +3583,7 @@
   "key": "4Mu_500GeV_0p25GeV_0p4mm",
   "run3": {
    "n": 100000,
-   "n_acc": 83447,
+   "n_acc": 83425,
    "incl_raw": {
     "k": 61303,
     "n": 100000,
@@ -3381,8 +3591,8 @@
    },
    "incl_acc": {
     "k": 60780,
-    "n": 83447,
-    "p": 0.7283665080829749
+    "n": 83425,
+    "p": 0.7285585855558885
    },
    "excl_raw": {
     "k": 55111,
@@ -3391,8 +3601,8 @@
    },
    "excl_acc": {
     "k": 54630,
-    "n": 83447,
-    "p": 0.6546670341653984
+    "n": 83425,
+    "p": 0.6548396763560084
    },
    "nmu_hist": [
     4014,
@@ -3409,15 +3619,15 @@
     0
    ],
    "nmu_hist_acc": [
-    2059,
-    20608,
+    2054,
+    20591,
     58256,
     2469,
     55
    ],
    "negm_hist_acc": [
-    78143,
-    5091,
+    78124,
+    5088,
     208,
     5,
     0
@@ -3425,7 +3635,7 @@
   },
   "v10": {
    "n": 100752,
-   "n_acc": 100752,
+   "n_acc": 100751,
    "incl_raw": {
     "k": 73060,
     "n": 100752,
@@ -3433,8 +3643,8 @@
    },
    "incl_acc": {
     "k": 73060,
-    "n": 100752,
-    "p": 0.7251468953469906
+    "n": 100751,
+    "p": 0.7251540927633473
    },
    "excl_raw": {
     "k": 65659,
@@ -3443,8 +3653,8 @@
    },
    "excl_acc": {
     "k": 65659,
-    "n": 100752,
-    "p": 0.6516892964903922
+    "n": 100751,
+    "p": 0.6516957648063046
    },
    "nmu_hist": [
     2560,
@@ -3462,19 +3672,26 @@
    ],
    "nmu_hist_acc": [
     2560,
-    25132,
+    25131,
     70152,
     2851,
     57
    ],
    "negm_hist_acc": [
-    94198,
+    94197,
     6310,
     241,
     3,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3484,16 +3701,16 @@
   "key": "4Mu_500GeV_1p2GeV_1p9mm",
   "run3": {
    "n": 100000,
-   "n_acc": 83328,
+   "n_acc": 77230,
    "incl_raw": {
     "k": 63456,
     "n": 100000,
     "p": 0.63456
    },
    "incl_acc": {
-    "k": 62741,
-    "n": 83328,
-    "p": 0.752940188172043
+    "k": 58228,
+    "n": 77230,
+    "p": 0.7539557166904053
    },
    "excl_raw": {
     "k": 57188,
@@ -3501,9 +3718,9 @@
     "p": 0.57188
    },
    "excl_acc": {
-    "k": 56542,
-    "n": 83328,
-    "p": 0.6785474270353302
+    "k": 52461,
+    "n": 77230,
+    "p": 0.6792826621779101
    },
    "nmu_hist": [
     3728,
@@ -3520,32 +3737,32 @@
     0
    ],
    "nmu_hist_acc": [
-    1808,
-    18779,
-    60289,
-    2400,
-    52
+    1671,
+    17331,
+    55940,
+    2242,
+    46
    ],
    "negm_hist_acc": [
-    77937,
-    5165,
-    220,
+    72222,
+    4796,
+    206,
     6,
     0
    ]
   },
   "v10": {
    "n": 96588,
-   "n_acc": 96588,
+   "n_acc": 96557,
    "incl_raw": {
     "k": 71799,
     "n": 96588,
     "p": 0.7433532115790782
    },
    "incl_acc": {
-    "k": 71799,
-    "n": 96588,
-    "p": 0.7433532115790782
+    "k": 71775,
+    "n": 96557,
+    "p": 0.7433433101691229
    },
    "excl_raw": {
     "k": 64494,
@@ -3553,9 +3770,9 @@
     "p": 0.6677226984718598
    },
    "excl_acc": {
-    "k": 64494,
-    "n": 96588,
-    "p": 0.6677226984718598
+    "k": 64473,
+    "n": 96557,
+    "p": 0.6677195853226592
    },
    "nmu_hist": [
     2195,
@@ -3572,20 +3789,27 @@
     0
    ],
    "nmu_hist_acc": [
-    2195,
-    22594,
-    69027,
-    2697,
+    2194,
+    22588,
+    69004,
+    2696,
     75
    ],
    "negm_hist_acc": [
-    90072,
-    6274,
+    90045,
+    6270,
     234,
     8,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3595,16 +3819,16 @@
   "key": "4Mu_500GeV_5p0GeV_8p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 80582,
+   "n_acc": 73471,
    "incl_raw": {
     "k": 63793,
     "n": 100000,
     "p": 0.63793
    },
    "incl_acc": {
-    "k": 60671,
-    "n": 80582,
-    "p": 0.7529100791740091
+    "k": 55445,
+    "n": 73471,
+    "p": 0.7546514951477453
    },
    "excl_raw": {
     "k": 57373,
@@ -3612,9 +3836,9 @@
     "p": 0.57373
    },
    "excl_acc": {
-    "k": 54568,
-    "n": 80582,
-    "p": 0.67717356233402
+    "k": 49862,
+    "n": 73471,
+    "p": 0.6786623293544392
    },
    "nmu_hist": [
     3528,
@@ -3631,32 +3855,32 @@
     0
    ],
    "nmu_hist_acc": [
-    1654,
-    18257,
-    58305,
-    2313,
-    53
+    1454,
+    16572,
+    53279,
+    2115,
+    51
    ],
    "negm_hist_acc": [
-    75052,
-    5309,
-    210,
+    68450,
+    4824,
+    186,
     11,
     0
    ]
   },
   "v10": {
    "n": 91442,
-   "n_acc": 91429,
+   "n_acc": 91414,
    "incl_raw": {
     "k": 68578,
     "n": 91442,
     "p": 0.7499617243717329
    },
    "incl_acc": {
-    "k": 68565,
-    "n": 91429,
-    "p": 0.7499261722210677
+    "k": 68559,
+    "n": 91414,
+    "p": 0.7499835911348371
    },
    "excl_raw": {
     "k": 61534,
@@ -3664,9 +3888,9 @@
     "p": 0.67292928851075
    },
    "excl_acc": {
-    "k": 61522,
-    "n": 91429,
-    "p": 0.6728937208106837
+    "k": 61515,
+    "n": 91414,
+    "p": 0.6729275603299276
    },
    "nmu_hist": [
     1925,
@@ -3684,19 +3908,26 @@
    ],
    "nmu_hist_acc": [
     1925,
-    20939,
-    65834,
+    20930,
+    65828,
     2672,
     59
    ],
    "negm_hist_acc": [
-    85220,
-    5955,
+    85204,
+    5956,
     243,
     11,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3706,7 +3937,7 @@
   "key": "4Mu_800GeV_0p25GeV_0p25mm",
   "run3": {
    "n": 100000,
-   "n_acc": 86940,
+   "n_acc": 86931,
    "incl_raw": {
     "k": 61354,
     "n": 100000,
@@ -3714,8 +3945,8 @@
    },
    "incl_acc": {
     "k": 60882,
-    "n": 86940,
-    "p": 0.7002760524499655
+    "n": 86931,
+    "p": 0.7003485523001001
    },
    "excl_raw": {
     "k": 54016,
@@ -3724,8 +3955,8 @@
    },
    "excl_acc": {
     "k": 53595,
-    "n": 86940,
-    "p": 0.6164596273291926
+    "n": 86931,
+    "p": 0.6165234496324671
    },
    "nmu_hist": [
     4121,
@@ -3742,15 +3973,15 @@
     0
    ],
    "nmu_hist_acc": [
-    2773,
-    23285,
+    2770,
+    23279,
     58173,
     2651,
     58
    ],
    "negm_hist_acc": [
-    79921,
-    6688,
+    79913,
+    6687,
     322,
     9,
     0
@@ -3807,7 +4038,14 @@
     21,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3817,16 +4055,16 @@
   "key": "4Mu_800GeV_1p2GeV_1p2mm",
   "run3": {
    "n": 100000,
-   "n_acc": 86801,
+   "n_acc": 84228,
    "incl_raw": {
     "k": 63844,
     "n": 100000,
     "p": 0.63844
    },
    "incl_acc": {
-    "k": 63308,
-    "n": 86801,
-    "p": 0.7293464361009666
+    "k": 61387,
+    "n": 84228,
+    "p": 0.7288193949755426
    },
    "excl_raw": {
     "k": 56331,
@@ -3834,9 +4072,9 @@
     "p": 0.56331
    },
    "excl_acc": {
-    "k": 55841,
-    "n": 86801,
-    "p": 0.6433220815428393
+    "k": 54178,
+    "n": 84228,
+    "p": 0.6432302797169588
    },
    "nmu_hist": [
     3441,
@@ -3853,32 +4091,32 @@
     0
    ],
    "nmu_hist_acc": [
-    2199,
-    21294,
-    60607,
-    2640,
+    2135,
+    20706,
+    58773,
+    2553,
     61
    ],
    "negm_hist_acc": [
-    79699,
-    6774,
-    322,
+    77371,
+    6538,
+    313,
     6,
     0
    ]
   },
   "v10": {
    "n": 80069,
-   "n_acc": 80067,
+   "n_acc": 80061,
    "incl_raw": {
     "k": 57772,
     "n": 80069,
     "p": 0.7215276823739525
    },
    "incl_acc": {
-    "k": 57771,
-    "n": 80067,
-    "p": 0.7215332159316572
+    "k": 57765,
+    "n": 80061,
+    "p": 0.7215123468355379
    },
    "excl_raw": {
     "k": 50912,
@@ -3886,9 +4124,9 @@
     "p": 0.635851578013963
    },
    "excl_acc": {
-    "k": 50911,
-    "n": 80067,
-    "p": 0.6358549714614011
+    "k": 50905,
+    "n": 80061,
+    "p": 0.6358276813929379
    },
    "nmu_hist": [
     2155,
@@ -3907,18 +4145,25 @@
    "nmu_hist_acc": [
     2155,
     20141,
-    55356,
+    55350,
     2366,
     49
    ],
    "negm_hist_acc": [
-    73393,
+    73387,
     6330,
     335,
     9,
     0
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  },
  {
   "chan": "4Mu",
@@ -3928,16 +4173,16 @@
   "key": "4Mu_800GeV_5p0GeV_5p0mm",
   "run3": {
    "n": 100000,
-   "n_acc": 85223,
+   "n_acc": 80274,
    "incl_raw": {
     "k": 65325,
     "n": 100000,
     "p": 0.65325
    },
    "incl_acc": {
-    "k": 63253,
-    "n": 85223,
-    "p": 0.7422057425812281
+    "k": 59663,
+    "n": 80274,
+    "p": 0.7432418965044721
    },
    "excl_raw": {
     "k": 57621,
@@ -3945,9 +4190,9 @@
     "p": 0.57621
    },
    "excl_acc": {
-    "k": 55776,
-    "n": 85223,
-    "p": 0.6544712108233692
+    "k": 52600,
+    "n": 80274,
+    "p": 0.6552557490594713
    },
    "nmu_hist": [
     3137,
@@ -3964,32 +4209,32 @@
     1
    ],
    "nmu_hist_acc": [
-    1991,
-    19979,
-    60569,
-    2628,
-    56
+    1874,
+    18737,
+    57119,
+    2497,
+    47
    ],
    "negm_hist_acc": [
-    78010,
-    6882,
-    323,
+    73496,
+    6473,
+    297,
     7,
     1
    ]
   },
   "v10": {
    "n": 86989,
-   "n_acc": 86982,
+   "n_acc": 86980,
    "incl_raw": {
     "k": 64242,
     "n": 86989,
     "p": 0.7385071675729116
    },
    "incl_acc": {
-    "k": 64236,
-    "n": 86982,
-    "p": 0.7384976201972822
+    "k": 64237,
+    "n": 86980,
+    "p": 0.7385260979535525
    },
    "excl_raw": {
     "k": 56386,
@@ -3997,9 +4242,9 @@
     "p": 0.6481968984584258
    },
    "excl_acc": {
-    "k": 56381,
-    "n": 86982,
-    "p": 0.648191579867099
+    "k": 56383,
+    "n": 86980,
+    "p": 0.6482294780409289
    },
    "nmu_hist": [
     2091,
@@ -4016,19 +4261,26 @@
     2
    ],
    "nmu_hist_acc": [
-    2091,
-    20655,
+    2090,
+    20653,
     61515,
-    2667,
+    2668,
     54
    ],
    "negm_hist_acc": [
     79381,
-    7228,
+    7226,
     353,
     18,
     2
    ]
-  }
+  },
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "d579fe16",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "tarball_commit": null,
+  "provenance_note": "added after the run (round 9): v10_files_read = 25 because all 25 requested files open and their entries sum to v10.n; r3_chunks_read = the number of chunks listed on EOS, confirmed because run3.n equals that sample's total (100000 for 120 chunks, 100050 for the one 121-chunk sample; checked by opening all chunks of two samples); tarball_commit is null because these jobs predate the tarball stamp"
  }
 ]

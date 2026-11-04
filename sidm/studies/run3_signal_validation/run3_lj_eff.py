@@ -19,13 +19,16 @@
 #       2Mu2E (n_mu==1 & n_egm==1 & the egm_lj gen-matched dR<0.4 to a gen electron from a dark
 #       photon -- rejects soft/pileup photons the real SR would not accept).
 #   LJ multiplicity distributions (n_mu, n_egm) per point -> extra-LJ migration is visible.
-# Denominators: raw (all gen events) and acc (BOTH dark-photon lepton pairs in |eta|<2.4 & pT>1;
-#   a RECONSTRUCTION of the v10 gen acceptance, re-imposed identically on both eras).
+# Denominators: raw (all gen events) and acc (the 2018 v10 generator filter, re-imposed identically
+#   on both eras: >= 4 prompt final-state e/mu, last copies, |eta|<2.4, pT>4, vertex rho<740 cm,
+#   |z|<960 cm; read from the v10 GEN PSet, see gen_requirement.py). The jsons made before 2026-11
+#   used pT>1 on the first copies; an intermediate version used pT>5 on the first copies.
 import sys, subprocess, os, re, json, numpy as np, awkward as ak, uproot, vector, fastjet
-from collections import Counter
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gen_requirement
 vector.register_awkward()
 
-MU_PT, EG_PT, ETA, EL_ETA, GEN_PT, DR_MATCH = 3.0, 1.0, 2.4, 2.5, 1.0, 0.4
+MU_PT, EG_PT, ETA, EL_ETA, DR_MATCH = 3.0, 1.0, 2.4, 2.5, 0.4
 # LOOSE = clustering-GEOMETRY mode (muon/dsa pT>3, e/gamma pT>1, no object ID, no DSA cross-clean):
 # isolates whether the GENERATED final-state leptons cluster into the expected lepton jets the same
 # way in Run3 and Run2 (a sample property, driven by collimation/kinematics, not detector ID).
@@ -34,21 +37,12 @@ LOOSE = "loose" in sys.argv
 ERA = os.environ.get("RUN3_ERA", "2022")   # era of the Run 3 samples to scan
 JETDEF = fastjet.JetDefinition(fastjet.antikt_algorithm, 0.4)
 MU_M, EL_M = 0.10566, 0.000511
-GBR = ["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_genPartIdxMother"]
+GBR = sorted(set(["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_genPartIdxMother"]
+                 + gen_requirement.BRANCHES))
 
 def gen_acc_mask(a):
-    """per-event: BOTH dark-photon lepton pairs in |eta|<2.4 & pT>1 (>=2 dark photons with >=2
-    in-acceptance daughters). Channel-symmetric (4Mu: both mu pairs; 2Mu2E: mu pair AND ee pair)."""
-    pid, gpt, geta, mom = a["GenPart_pdgId"], a["GenPart_pt"], a["GenPart_eta"], a["GenPart_genPartIdxMother"]
-    mom_pid = pid[ak.where(mom >= 0, mom, 0)]
-    is_lep = (abs(pid) == 11) | (abs(pid) == 13)
-    sel = is_lep & (mom >= 0) & (abs(mom_pid) == 32) & (gpt > GEN_PT) & (abs(geta) < ETA)
-    out = np.zeros(len(pid), dtype=bool)
-    for i, moms in enumerate(ak.to_list(mom[sel])):
-        if len(moms) < 4:
-            continue
-        out[i] = sum(1 for v in Counter(moms).values() if v >= 2) >= 2
-    return out
+    """per-event: the 2018 v10 generator filter (gen_requirement.passes), applied to both eras."""
+    return gen_requirement.passes(a)
 
 def jet_etaphi(jets):
     px, py, pz = jets.px, jets.py, jets.pz
@@ -57,19 +51,33 @@ def jet_etaphi(jets):
     phi = np.arctan2(py, px)
     return eta, phi
 
-def lj_counts(files, is2e):
-    NMU = []; NEGM = []; ACC = []; MATCH = []; egm_e = []; egm_g = []
-    n = 0
+EGM_VARIANTS = {   # diagnostic variants of the e/gamma LJ sources (real mode); None = as committed
+    "V0": "as committed: e pT>10 |eta|<2.4 no ID; photon pT>20 |eta|<2.5 cutBased>=1",
+    "V1": "photon ID dropped",
+    "V2a": "photon cutBased>=2", "V2b": "photon cutBased>=3",
+    "V3": "electrons cutBased>=1 (each era's own ID)",
+    "V4": "photons removed from the e/gamma leg"}
+
+
+def lj_counts(files, is2e, egm_variant=None):
+    """egm_variant (one of EGM_VARIANTS, real mode only) changes the e/gamma LJ sources and adds a
+    'diag' block (e/gamma-leg composition and per-leg pass fractions in acceptance); None is the
+    committed selection and output."""
+    var = egm_variant or "V0"
+    NMU = []; NEGM = []; ACC = []; MATCH = []; egm_e = []; egm_g = []; COMP = []; NSEL = []
+    n = 0; n_read = 0                       # n_read: files actually opened (unreadable ones are skipped)
     for f in files:
         try:
             ev = uproot.open(f)["Events"]
         except Exception:
+            print(f"  lj_counts: skipped unreadable {f}", flush=True)
             continue
+        n_read += 1
         keys = set(ev.keys())
         br = ["Muon_pt","Muon_eta","Muon_phi","Muon_looseId","DSAMuon_pt","DSAMuon_eta","DSAMuon_phi",
               "DSAMuon_displacedID","DSAMuon_muonMatch1","DSAMuon_nSegments",
               "Electron_pt","Electron_eta","Electron_phi","Photon_pt","Photon_eta","Photon_phi",
-              "Photon_cutBased"] + GBR
+              "Photon_cutBased", "Electron_cutBased"] + GBR
         a = ev.arrays([b for b in br if b in keys])
         ne = len(a)
         if ne == 0:
@@ -91,8 +99,13 @@ def lj_counts(files, is2e):
                 keep = keep & (frac < 0.34)         # remove DSA that share >=34% segments with a PF muon (SR "all" veto term)
             elif coll == "Electron":                # e: pT>10, |eta|<2.4 (SR adds MVANonIsoWPL; egm leg is gen-matched)
                 keep = (pt > 10) & (abs(eta) < ETA)
+                if var == "V3":
+                    keep = keep & (a["Electron_cutBased"] >= 1)
             else:                                    # Photon: pT>20, |eta|<2.5, cutBased loose (SR uses a custom cutbased ID)
-                keep = (pt > 20) & (abs(eta) < EL_ETA) & (a["Photon_cutBased"] >= 1)
+                pid_min = {"V1": 0, "V2a": 2, "V2b": 3}.get(var, 1)
+                keep = (pt > 20) & (abs(eta) < EL_ETA) & (a["Photon_cutBased"] >= pid_min)
+                if var == "V4":
+                    keep = keep & False
             pt, eta, phi = pt[keep], eta[keep], phi[keep]
             return ak.zip({"pt": pt, "eta": eta, "phi": phi,
                            "mass": ak.zeros_like(pt) + m, "tid": ak.zeros_like(pt) + tid}, with_name="Momentum4D")
@@ -121,6 +134,19 @@ def lj_counts(files, is2e):
             dphi = (pair.j.phi - pair.g.phi + np.pi) % (2 * np.pi) - np.pi
             dR = np.sqrt((pair.j.eta - pair.g.eta) ** 2 + dphi ** 2)
             MATCH.append(ak.to_numpy(ak.fill_none(ak.any(dR < DR_MATCH, axis=1), False)))
+            if egm_variant is not None:
+                # per egm LJ: gen-matched?  then the event's matched egm LJs by constituent content
+                pn = ak.cartesian({"j": ak.zip({"eta": egm_eta, "phi": egm_phi}),
+                                   "g": ak.zip({"eta": geta[ge], "phi": gphi[ge]})}, axis=1, nested=True)
+                dpn = (pn.j.phi - pn.g.phi + np.pi) % (2 * np.pi) - np.pi
+                jm = ak.fill_none(ak.any(np.sqrt((pn.j.eta - pn.g.eta) ** 2 + dpn ** 2) < DR_MATCH, axis=-1), False)
+                ne_, ng_ = ele_n[is_egm], pho_n[is_egm]
+                eo = ak.to_numpy(ak.any(jm & (ne_ > 0) & (ng_ == 0), axis=-1))
+                go = ak.to_numpy(ak.any(jm & (ne_ == 0) & (ng_ > 0), axis=-1))
+                bo = ak.to_numpy(ak.any(jm & (ne_ > 0) & (ng_ > 0), axis=-1))
+                COMP.append(np.stack([eo, go, bo], axis=1))
+                NSEL.append(np.stack([ak.to_numpy(ak.sum(inp.tid == 2, axis=-1)),
+                                      ak.to_numpy(ak.sum(inp.tid == 4, axis=-1))], axis=1))
         else:
             MATCH.append(np.zeros(ne, dtype=bool))
     if n == 0:
@@ -142,7 +168,7 @@ def lj_counts(files, is2e):
     def hist(arr, mask):
         a = arr[mask]
         return [int((a == k).sum()) for k in range(4)] + [int((a >= 4).sum())]
-    d = dict(n=int(n), n_acc=int(acc.sum()),
+    d = dict(n=int(n), n_acc=int(acc.sum()), n_files_read=n_read, n_files_requested=len(files),
              incl_raw=eff(incl, allm), incl_acc=eff(incl, acc),
              excl_raw=eff(excl, allm), excl_acc=eff(excl, acc),
              nmu_hist=hist(nmu, allm), negm_hist=hist(negm, allm),
@@ -150,6 +176,18 @@ def lj_counts(files, is2e):
     ee = np.concatenate(egm_e) if egm_e else np.array([]); gg = np.concatenate(egm_g) if egm_g else np.array([])
     if is2e and len(ee):
         d["egm_photon_only_frac"] = float(((ee == 0) & (gg > 0)).mean())
+    if egm_variant is not None and is2e:
+        comp = np.concatenate(COMP); nsel = np.concatenate(NSEL)
+        eo, go, bo = comp[:, 0], comp[:, 1], comp[:, 2]
+        anym = acc & (eo | go | bo)
+        k = int(anym.sum())
+        d["diag"] = dict(variant=var, definition=EGM_VARIANTS[var],
+                         n_acc_with_matched_egm_lj=k,
+                         frac_electron_only=float((anym & eo & ~go & ~bo).sum() / k) if k else 0.0,
+                         frac_photon_only=float((anym & go & ~eo & ~bo).sum() / k) if k else 0.0,
+                         frac_mixed=float((anym & (bo | (eo & go))).sum() / k) if k else 0.0,
+                         mean_selected_electrons=float(nsel[acc, 0].mean()), mean_selected_photons=float(nsel[acc, 1].mean()),
+                         mu_leg_pass=eff(nmu >= 1, acc), egm_leg_pass=eff((negm >= 1) & match, acc))
     return d
 
 def run3_files(name, nchunks):
@@ -198,10 +236,20 @@ if __name__ == "__main__":
         m = re.match(r"SIDM_BsTo2DpTo(\w+?)_MBs-(\d+)_MDp-([\dp]+)_ctau-([\dp]+)", name)
         mbs = int(m.group(2)); mdp = float(m.group(3).replace("p", ".")); ctau = float(m.group(4).replace("p", "."))
         r3 = lj_counts(run3_files(name, R3_N), is2e)
-        try:
-            v10 = lj_counts(v10_files(key, cl, V10_N), is2e)
-        except Exception as e:
-            v10 = None; print(f"  v10 fail {key}: {e}")
+        # the 2018 reference is the same for every era: RUN3_V10_CACHE (a json) reuses it across runs
+        cache = os.environ.get("RUN3_V10_CACHE")
+        vc = json.load(open(cache)) if cache and os.path.exists(cache) else {}
+        tag = f"{key}|{V10_N}|{'geom' if LOOSE else 'real'}"
+        if tag in vc:
+            v10 = vc[tag]
+        else:
+            try:
+                v10 = lj_counts(v10_files(key, cl, V10_N), is2e)
+            except Exception as e:
+                v10 = None; print(f"  v10 fail {key}: {e}")
+            if cache and v10 is not None:
+                vc = json.load(open(cache)) if os.path.exists(cache) else {}
+                vc[tag] = v10; json.dump(vc, open(cache, "w"))
         out.append(dict(chan=chan, mbs=mbs, mdp=mdp, ctau=ctau, key=key, run3=r3, v10=v10))
         v = f"v10 excl_acc={v10['excl_acc']['p']*100:5.1f}%" if v10 else "v10 --"
         print(f"{key:28s} R3 incl_acc={r3['incl_acc']['p']*100:5.1f}% excl_acc={r3['excl_acc']['p']*100:5.1f}% "
