@@ -153,7 +153,8 @@ def _sel(D, tag, kind, k, req=False):
 
 def fig_vs_2018(D):
     fig, axs = plt.subplots(3, 2, figsize=(15, 17), layout="constrained")
-    fig.get_layout_engine().set(hspace=0.1)   # room for the CMS labels, placed after the layout freezes
+    # room for the CMS labels, placed after the layout freezes: between the rows (hspace) and above the top row (rect)
+    fig.get_layout_engine().set(hspace=0.1, rect=(0, 0, 1, 0.965))
     axs = axs.ravel()
     panels = [("dp", "mass", np.linspace(1.0, 1.4, 50), "gen dark-photon mass  [GeV]", False),
               ("dp", "proper_mm", np.logspace(np.log10(0.05), 2, 40), r"proper $c\tau$  [mm]", True),
