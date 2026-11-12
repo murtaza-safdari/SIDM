@@ -1,0 +1,18 @@
+# Submit from a run directory holding setup_env.sh, run_identity.sh, identity_files.py, ../ctau_all_samples.py and condor/requirements.txt (the last from the repository root),
+# with the job lists in ../joblists/ (expected.py) and empty out/ and logs/ directories; see ../README.md.
+universe = vanilla
+executable = run_identity.sh
+arguments = $(job)
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = setup_env.sh, identity_files.py, ctau_all_samples.py, requirements.txt, ../joblists/job_$(job).txt
+transfer_output_files = identity_$(job).csv
+transfer_output_remaps = "identity_$(job).csv = out/identity_$(job).csv"
+output = logs/identity_$(job).$(Cluster).out
+error  = logs/identity_$(job).$(Cluster).err
+log    = logs/identity.$(Cluster).log
+request_cpus = 1
+request_memory = 2GB
+request_disk = 2GB
+x509userproxy = $ENV(X509_USER_PROXY)
+queue job from jobs.txt
