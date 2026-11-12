@@ -39,10 +39,10 @@ folder, `test/`, is the test-chunk submission (outputs under `outputs_v2/test/`,
 no upload records to the census.
 
 Files the copies cite and the repository does not hold: `PROVENANCE.md` (section "v2"), `chain_job.sh` (the v1
-chain) and `campaign.sub` (the v1 submit description). In the SampleFactory fork (github murtaza-safdari/SampleFactory),
-branch `sidm-run3-lpc` holds `sidm_run3/PROVENANCE.md` without the v2 section, and `sidm_run3_production/chain_job.sh`
-and `campaign.sub`; the v2 files (`sidm_run3_production/chain_job_v2.sh`, `make_dag_v2.py`, `prod_v2.sub` template,
-`reduced_points.txt`, and the PROVENANCE v2 section) are on a later local branch of that clone that is not on the fork.
+chain) and `campaign.sub` (the v1 submit description). They are in the SampleFactory fork (github
+murtaza-safdari/SampleFactory), branch `sidm-run3-lpc` (commit eb5bcd5): `sidm_run3/PROVENANCE.md` with its section
+"v2 production", and under `sidm_run3_production/` the v1 files `chain_job.sh` and `campaign.sub` and the v2 files
+`chain_job_v2.sh`, `make_dag_v2.py`, the `prod_v2.sub` template, `reduced_points.txt` and `points_all.txt`.
 The DAG files and the two sites' upload records are not in the repository: `render` needs only committed files,
 while `expected.py` and `join` need those records, which the sample producer keeps.
 
