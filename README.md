@@ -2,6 +2,8 @@
 SIDM analysis at coffea-casa.  
 Inspired by github.com/phylsix/Firefighter and/or github.com/phylsix/FireROOT
 
+For printing and comparing selection cuts, see the [script documentation](sidm/scripts/README.md).
+
 ## Getting started
 - Fork this repository ([here's a nice guide to follow](https://gist.github.com/Chaser324/ce0505fbed06b947d962))
 - Log in to coffea.casa as described [here](https://coffea-casa.readthedocs.io/en/latest/cc_user.html#cms-authz-authentication-instance)
@@ -90,22 +92,36 @@ python -m pip install --upgrade pip setuptools wheel
 
 After creation the venv's `bin/python` is a symlink to the cvmfs binary, so you don't need to re-source LCG_107 to run it later.
 
-### 3. Install requirements (skipping the xrootd PyPI build)
-
-The `xrootd` PyPI wheel tries to compile the xrootd C library from source and fails on LPC. We get the same functionality by symlinking LCG's prebuilt `XRootD` and `pyxrootd` packages into the venv:
+### 3. Install requirements
 
 ```bash
-grep -v "^xrootd" requirements.txt | python -m pip install -r /dev/stdin
-python -m pip install "distributed==2025.3.0"   # required by sidm/tools/scaleout.py
-python -m pip install "htcondor<25" "git+https://github.com/CoffeaTeam/lpcjobqueue.git"  # needed by step 7
+python -m pip install -c constraints.txt -r requirements.txt
+python -m pip install -c constraints.txt "distributed==2025.3.0"   # required by sidm/tools/scaleout.py
+python -m pip install "htcondor<25" "git+https://github.com/CoffeaTeam/lpcjobqueue.git@4c6dae0b85838be0c42f7fa7d7dad0527920d56b"  # needed by step 7
 python -m pip install -e .
 python -m pip install jupyter ipykernel pyarrow
-
-cd sidm_venv/lib/python3.11/site-packages
-ln -sfn /cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc13-opt/lib/python3.11/site-packages/XRootD   XRootD
-ln -sfn /cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc13-opt/lib/python3.11/site-packages/pyxrootd pyxrootd
-cd -
 ```
+
+`xrootd` installs as an ordinary wheel and needs no special handling. It used to:
+version 5.7.0 was published as a source distribution only, so pip tried to compile
+the XRootD C library and failed on LPC, and the recipe worked around that by
+stripping the line out of `requirements.txt` and symlinking LCG's prebuilt
+`XRootD` and `pyxrootd` into the venv. Upstream has shipped manylinux wheels since
+6.x, so both workarounds are gone. `fsspec-xrootd` pulls `xrootd` in anyway, which
+is why the pinned version is the one that was already being installed.
+
+The `-c constraints.txt` flag pins every transitive dependency as well as the
+direct ones, so you get the same environment the CI tests against rather than
+whatever PyPI happens to serve today. `requirements.txt` remains the file to
+edit when the analysis needs a new package; `constraints.txt` is generated, and
+its header documents how to regenerate it after a deliberate bump. Condor
+workers use their own `condor/constraints.txt`, because they run CMSSW's Python
+3.9 and resolve to a different set.
+
+This matters more than it looks. Before these files existed, roughly 68 of the
+84 packages in this venv were unpinned, and on 2026-08-11 a numba release began
+miscompiling one of coffea's kernels and broke every CI run until it was pinned
+by hand.
 
 Verify the scale-out dependencies used by step 7 are all installed (no `MISSING:` list = success):
 
@@ -226,13 +242,13 @@ output = runner.run(fileset, treename="Events", processor_instance=p)
 cluster.close()
 ```
 
-Under the hood: workers are HTCondor jobs that run inside the `coffea-dask-almalinux9:2025.5.0.rc2-py3.11` apptainer image on the LPC pool; the notebook itself stays in `sidm_venv` outside the apptainer. The key convenience over coffea-casa: your local `sidm/` tree (including uncommitted edits) is shipped to each worker via `UploadDirectory`, so there is no commit/push-to-GitHub roundtrip (and no branch to pin) during iteration — re-run `make_lpc_client()` after editing anything under `sidm/` to refresh the workers.
+Under the hood: workers are HTCondor jobs that run inside the `coffea-dask-almalinux9:2025.5.0.rc2-py3.11` apptainer image on the LPC pool; the notebook itself stays in `sidm_venv` outside the apptainer. The key convenience over coffea-casa: your local `sidm/` code (including uncommitted edits) is shipped to each worker via `UploadDirectory`, so there is no commit/push-to-GitHub roundtrip (and no branch to pin) during iteration — re-run `make_lpc_client()` after editing anything under `sidm/` to refresh the workers. Only the importable tree travels: `sidm/tools`, `sidm/definitions`, `sidm/scripts`, `sidm/configs` and `sidm/data`. Notebooks and their committed outputs (`sidm/studies`, `sidm/test_notebooks`) are excluded, because the scheduler runs inside the notebook process and re-sends the payload to every worker: shipping `sidm/studies` has OOM-killed kernels on shared interactive nodes. **Code that runs inside a dask task must live in one of the uploaded directories, not next to a notebook in `sidm/studies/`.**
 
 The required Python packages (`htcondor<25`, `lpcjobqueue`) were installed as part of step 3, so no extra setup is needed. A runnable end-to-end example lives at [sidm/test_notebooks/lpc_dask_example.ipynb](sidm/test_notebooks/lpc_dask_example.ipynb).
 
 `scaleout.check_voms_proxy()` (called at the top of the example, and again inside `make_lpc_client`) needs `X509_USER_PROXY` visible to the **kernel** — see the proxy note in step 5. The same exported file is spooled to the Condor workers via `use_x509userproxy`, so one export covers both.
 
-To watch the Dask dashboard from your laptop browser, forward its port too: the 5a launch already includes `-L 8787:localhost:8787` (if you started from 5b or dropped it, add it to the `ssh` launch), then open `http://localhost:8787/status`. `make_lpc_client()` pins the dashboard link to `localhost` so the URL shown by the cluster (and printed by the example notebook's `print('dashboard:', cluster.dashboard_link)` cell) matches this tunnel — otherwise `lpcjobqueue` advertises a relative `/proxy/8787/status` link that only resolves under a JupyterHub, not over a plain SSH forward. The repr shows the actual port if 8787 was already taken. The dashboard needs the `bokeh` package (pinned in `requirements.txt`); without it `localhost:8787` still loads but shows a *"Dask needs bokeh>=3.1.0 for the dashboard"* notice instead of the live charts. One caveat: the **Groups** tab (Task Group Graph) can log a harmless `KeyError: 'automatic_retries'` — a bug in distributed's dashboard layout, triggered by coffea's retry wrapper rather than by your run; the main **Status**, task-stream, and worker panels are unaffected, as is the computation itself. The dashboard is optional — the run completes without it.
+To watch the Dask dashboard from your laptop browser, forward its port too: the 5a launch already includes `-L 8787:localhost:8787` (if you started from 5b or dropped it, add it to the `ssh` launch), then open `http://localhost:8787/status`. `make_lpc_client()` pins the dashboard link to `localhost` so the URL shown by the cluster (and printed by the example notebook's `print('dashboard:', cluster.dashboard_link)` cell) matches this tunnel — otherwise `lpcjobqueue` advertises a relative `/proxy/8787/status` link that only resolves under a JupyterHub, not over a plain SSH forward. The repr shows the actual port if 8787 was already taken. To move the dashboard off 8787 deliberately — e.g. when a coffea-casa Dask dashboard is already on that port — pass `make_lpc_client(dashboard_port=8790)` (any free port) and forward that **same** port in your launch (`-L 8790:localhost:8790`). The two sides of the tunnel must use the same number: the printed link uses the scheduler's port, so remapping only the `ssh -L` local port leaves the link pointing at the old one. A pinned port is still only a request — if it too is busy on the node, distributed warns and rebinds to a random free port, so forward whatever port `cluster.dashboard_link` prints. The dashboard needs the `bokeh` package (pinned in `requirements.txt`); without it `localhost:8787` still loads but shows a *"Dask needs bokeh>=3.1.0 for the dashboard"* notice instead of the live charts. One caveat: the **Groups** tab (Task Group Graph) can log a harmless `KeyError: 'automatic_retries'` — a bug in distributed's dashboard layout, triggered by coffea's retry wrapper rather than by your run; the main **Status**, task-stream, and worker panels are unaffected, as is the computation itself. The dashboard is optional — the run completes without it.
 
 **Saving the output.** Write the `.coffea` (and a `.meta.yaml` metadata sidecar via `sidm.tools.metadata`) to the group-writable lpcmetx EOS area so it persists and other CMS users can re-read it:
 
@@ -263,7 +279,7 @@ The working redirector **flips between facilities**: on LPC use `root://cmseos.f
 
 Most notebooks in `sidm/studies/` were written for coffea-casa. Three swaps move them to LPC:
 
-1. **Drop the `importlib.reload(scaleout)` line.** That was a workaround for editing `sidm/tools/scaleout.py` between runs. With `make_lpc_client()` your local `sidm/` tree is uploaded to workers automatically, so there is no source to edit.
+1. **Drop the `importlib.reload(scaleout)` line.** That was a workaround for editing `sidm/tools/scaleout.py` between runs. With `make_lpc_client()` your local `sidm/` code is uploaded to workers automatically, so there is no source to edit. Note that helper modules sitting beside a notebook in `sidm/studies/` are **not** uploaded; if a dask task needs one, move it under `sidm/tools/` or `sidm/definitions/` first.
 
 2. **Replace the client constructor.** Where the notebook has:
    ```python
@@ -290,6 +306,8 @@ Everything else (the `processor.Runner` setup, `DaskExecutor(client=client)`, th
 
 For unattended runs without an open notebook, use the Condor scripts path: [condor/README.md](condor/README.md) is the reference, and [`sidm/test_notebooks/lpc_condor_example.ipynb`](sidm/test_notebooks/lpc_condor_example.ipynb) is the runnable walkthrough (sample list → tarball → submit → merge → load and plot).
 
+The merge step is also where per-sample **normalization** is made correct: each Condor job normalizes only its own files (`lumi*xs/sumw_chunk`), and `merge_coffea_chunks_eos.py` re-stitches them into the full-sample normalization rather than inflating yields by the number of jobs — see [condor/README.md](condor/README.md) §17. (The dask path in §7 runs a single pass and normalizes once, so it needs no separate merge.)
+
 ## Code structure
 All the interesting code in this repository is in `SIDM/sidm/`, which is organized into the following subdirectories:
 - `tools` contains the classes and methods that form the backbone of SIDM. In particular, `sidm_processor.py` defines how events are analyzed. We use the NanoAODSchema for the data in our files, as defined within Coffea [here](https://coffea-hep.readthedocs.io/en/latest/api/coffea.nanoevents.NanoAODSchema.html)
@@ -297,6 +315,8 @@ All the interesting code in this repository is in `SIDM/sidm/`, which is organiz
 - `configs` contains yaml configuration files that define how histograms are grouped together into collections and cuts are grouped together into selections. When running `sidm_processor`, one provides names of selections and names of histogram collections to choose which cuts to apply and which histograms to make.
 - `test_notebooks` contains notebooks to test new classes or functionalities as they are added. These notebooks can also serve as a form  of unit test: if you edit some code in a way that you think shouldn't affect the behavior, you can run these notebooks to confirm the output is unchanged.
 - `studies` is where the physics happens. The notebooks in this directory are meant to serve effectively as pages in a lab notebook. The intention is to create a new notebook for each unique physics study and to include markdown comments to describe the intentions and observations of the person performing the study. These notebooks can also serve as unit tests in the same way as those in `test_notebooks`.
+
+Outside `sidm/`, the repository-level `tests/` directory holds the per-PR chain-report CI harness and its committed fixture — see [`tests/README.md`](tests/README.md).
 
 ## Analysis how-tos
 
@@ -306,7 +326,7 @@ I suggest the following workflow for performing a physics study:
 2. Create a new notebook in `studies` with a descriptive name (e.g. `study_lepton_isolation.ipynb`)
 3. Following the examples of the existing notebooks in `studies`, use `sidm_processor` to apply cuts and make histograms starting from an Firefighter ntuple of your choosing. Make sure to describe your reasoning and observations in text as you go.
 4. If you find you need to define new selections, new cuts, or new histograms, follow the guides below.
-5. Commit your changes as you go and submit a Pull Request once you have a reasonable standalone study or have added new selections, cuts, histograms, objects, classes, or features.
+5. Commit your changes as you go and submit a Pull Request once you have a reasonable standalone study or have added new selections, cuts, histograms, objects, classes, or features. Every PR automatically gets an advisory chain report comparing your branch to `main` (cutflows, hist collections, warnings); see [`tests/README.md`](tests/README.md).
 
 ### How to define a new histogram and add it to a collection
 1. Add an entry to the `hist_defs` dictionary inside [hists.py](https://github.com/btcardwell/SIDM/blob/440069c11e78814da88c86e67fe635d4b655ef6d/analysis/definitions/hists.py). One can potentially do this by mimicking the structure of the existing histograms, but here are some details for those who are interested:
@@ -323,6 +343,21 @@ I suggest the following workflow for performing a physics study:
 2. After defining your new cut in `cuts.py`, add it's name to an existing selection in [selections.yaml](https://github.com/btcardwell/SIDM/blob/4e6685669067429e8492d4dcfc87f463c86b96d7/analysis/configs/selections.yaml). Alternatively, you can also create an entirely new selection. Note that object-level and event-level cuts must be listed separately within a selection, and object-level cuts are further organized by object type. As with histogram collections, any selections that include the selection to which you added your cut will also include your cut.
 3. That's it! Running `sidm_processor` while specifying the proper selection will now apply your new cut.
 
+### How to apply the standard corrections (correctionlib)
+
+`SidmProcessor` applies the standard CMS corrections to simulation by default (`corrections=True`), read with [correctionlib](https://cms-nanoaod.github.io/correctionlib/) from dated CVMFS snapshots pinned in [`sidm/configs/corrections.yaml`](sidm/configs/corrections.yaml): pileup reweighting, the L1 prefiring weight, the PF-muon ID SF, the electron reconstruction SF and the photon pixel-veto SF. A list of names selects a subset or adds others, e.g. `corrections=["pileup", "muon_id"]`, and `corrections=None` keeps the plain genWeight. Data is never corrected, and the lumi*xs normalization still uses the plain genWeight sum.
+
+```python
+p = sidm_processor.SidmProcessor(["2mu2e_sr"], ["lj_lj_base"], syst_hists=True)
+...
+output[sample]["cutflow"]["2mu2e_sr"].variation_yields()   # {"nominal": ..., "pileupUp": ..., ...}
+output[sample]["hists"]["lj_lj_absdphi"][{"syst": "muon_idDown"}]
+```
+
+Every cutflow row then also carries the weighted count of each weight category: `nominal`, `uncorrected` (genWeight only), `only_<name>` (genWeight times one correction), and the up/down variations; `monitor_corrections=[...]` adds `with_<name>` categories for corrections that are evaluated but not applied. `syst_hists=True` adds a `syst` axis with the same categories to every histogram (17 with the default list, so 17 times the memory: use it with small collections). A channel's event weight carries the SFs of the objects its event cuts use: the selected objects of a collection the cuts read (the muons, in most selections), otherwise the lepton-jet constituents if the cuts read lepton jets, otherwise none; the processor finds what the cuts read by running them on zero events. On Condor the jobs apply the default list too; pass a comma-separated list or `none` as the optional 7th argument of `condor/run_job.sh`, and `syst` as the 8th to get weighted histograms with the `syst` axis (see [`condor/README.md`](condor/README.md)). What each correction does, where the standard corrections stop describing lepton-jet objects, and how much they move the signal yields is in [`sidm/studies/corrections/README.md`](sidm/studies/corrections/README.md), with a tutorial notebook and notebooks that read the merged outputs of a Condor campaign over every signal point and background.
+
+Under `cmsenv` the PyPI correctionlib wheel does not import (`undefined symbol: __cxa_call_terminate`, CMSSW's own `libcorrectionlib.so` shadows the wheel's). `sidm/tools/corrections.py` works around it, so the processor runs anyway; for a plain `import correctionlib` in a CMSSW-based kernel, build it once with `bash sidm/scripts/install_correctionlib_cmssw.sh`. The LCG_107 venv above is not affected.
+
 ### Error bars on plots
 
 `utilities.plot` follows one convention for error bars:
@@ -332,16 +367,121 @@ I suggest the following workflow for performing a physics study:
 
 One runtime guard to know: `plot_MC_sig_vs_bkg_panels` warns *"background '<name>' has integer variances (looks unweighted) ... check that it is lumi*xsec-weighted"* when a background's per-bin variances are integers -- the hist looks like raw counts rather than lumi*xsec-weighted MC. If you meant to show normalized MC, confirm the weights were applied. It is a guard, not an error; the plot still renders.
 
+## Continuous integration
+
+Three checks run on pull requests and one runs on a schedule. They are split so
+that each answers exactly one question.
+
+* **The pull-request checks ask "did this change break something?"** They
+  install from the frozen `constraints.txt`, so a dependency released overnight
+  cannot colour the result. A red check is about the diff.
+* **The weekly check asks "has anything upstream moved?"** It deliberately
+  installs *without* the constraints. It is about whether a future upgrade is
+  safe, not about anything being broken now.
+
+The two used to be a single signal, which is why the separation exists: in
+August 2026 a numba release broke the chain report on every open pull request,
+and it took a full reproduction to show that the failing PR was not at fault.
+
+### On a pull request
+
+| check | runs on | red means |
+|---|---|---|
+| `report` | every PR | the diff introduces a new error in the processing chain |
+| `pylint` | every PR | score below 8, new errors in changed files, or the coffea versions disagree |
+| `resolve` | PRs touching `condor/requirements.txt` | the Condor pins no longer install on CMSSW's Python 3.9 |
+
+**`report`** runs the processor over a small committed fixture twice, once with
+`main` and once with the PR, and writes a current-vs-PR diff to the run's **job
+summary** (Actions tab, then the run). Open that summary first: it names what
+moved — a hist collection that lost a definition, a cut that stopped evaluating,
+a channel whose cutflow changed. It is advisory and does not block a merge.
+
+If the summary reports that the chain crashed on **both** sides, the PR is not
+at fault: either the environment broke or `main` is broken. The constraints
+files make that rare.
+
+**`pylint`** also runs `tests/check_worker_image.py`, which fails when
+`requirements.txt`, `constraints.txt` and the apptainer image tag in
+`sidm/tools/scaleout.py` disagree about the coffea version. See the upgrade
+how-to below.
+
+**`resolve`** appears only on pull requests that touch `condor/requirements.txt`;
+its absence elsewhere is normal rather than a skipped check. Condor workers
+build their venv from CMSSW, whose Python is 3.9, while everything else here is
+3.11 — so a pin that needs Python 3.10 or newer installs cleanly everywhere it
+gets tested and then fails on every worker.
+
+### The weekly check
+
+`scheduled-env-check` runs on Tuesdays and can also be triggered by hand from
+the Actions tab. It installs the stack **unfrozen** and runs the same chain on
+`main`.
+
+**Green** means a fresh, unpinned resolve still works, so regenerating
+`constraints.txt` would be safe right now. There is nothing to do, but this is
+the signal to consult *before* upgrading anything.
+
+**Red** means something released upstream that breaks the stack. Nothing is
+broken for you: the CI, your venv and Condor jobs all install from the frozen
+files and are unaffected. It is a warning about the future, not an incident.
+
+1. Do not regenerate `constraints.txt` for now.
+2. To find the culprit, open the failing run's `pip freeze` step, which records
+   exactly what PyPI served that day, and compare it against the last green run.
+3. If the upgrade is needed anyway, pin around the offending package in
+   `requirements.txt`, as was done for `numba` and `llvmlite`.
+
+A permanently red weekly check is worse than no check, because it stops being
+read. If it stays red, either pin past the problem or decide consciously to live
+with it.
+
+Failures show up as a red run in the Actions tab and an email from GitHub to
+whoever last committed to the workflow file. No issue is opened, because Issues
+are disabled on this repository.
+
+### What the checks do not cover
+
+* **Physics correctness.** `report` verifies that the chain executes and that
+  nothing regressed against `main`. A wrong cut or a mis-scaled histogram runs
+  cleanly and passes.
+* **Dask workers.** No job starts an apptainer worker. `check_worker_image.py`
+  verifies that the versions agree, not that workers run.
+* **coffea-casa**, where `make_dask_client` installs SIDM from an unpinned git
+  branch.
+
 ## Miscellaneous how-tos
 
-### How to update requirements.txt
-```
-cd SIDM/
-pip install pipreqs
-pipreqs . --force # overwrites current requirements.txt
-```
+### How to change or upgrade a dependency
 
-`pipreqs` derives requirements from `import` statements, so import-less runtime dependencies are silently dropped on regeneration and must be re-added by hand: `bokeh` (loaded by `distributed` for the Dask dashboard — see step 7), plus the scale-out packages installed manually in step 3 (`lpcjobqueue`, `htcondor`, `distributed`).
+`requirements.txt` says what the analysis needs. `constraints.txt` pins every
+package, transitive ones included, and is generated. Condor workers have their
+own pair under `condor/`, because they run CMSSW's Python 3.9 and resolve to a
+different set. Edit the requirements file; never hand-edit a constraints file.
+
+1. Check that the last weekly `scheduled-env-check` run was green. Red means a
+   fresh resolve is currently broken, so this is not the moment to upgrade.
+2. Edit `requirements.txt`.
+3. Regenerate `constraints.txt` using the recipe in its own header.
+4. If coffea moved, update `_DEFAULT_LPC_IMAGE` in `sidm/tools/scaleout.py` to
+   the matching tag, and confirm that tag exists under
+   `/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/`. Dask workers
+   take coffea from that image rather than from these files, so otherwise the
+   client and the workers end up on different versions and fail at runtime. The
+   `pylint` check fails if you forget this step.
+5. Rebuild the venv (step 3 above) and run the chain locally, or let the pull
+   request's `report` check do it for you.
+6. Condor needs nothing extra: every job builds its venv fresh from the files it
+   is sent.
+
+`pipreqs` is useful for spotting a package you forgot to declare —
+`pipreqs . --force` derives requirements from `import` statements — but do not
+use it to regenerate `requirements.txt` wholesale. It drops runtime
+dependencies that are never imported directly (`bokeh`, loaded by `distributed`
+for the Dask dashboard) along with the scale-out packages installed by hand in
+step 3 (`lpcjobqueue`, `htcondor`, `distributed`) and the pins added to work
+around upstream breakage (`numba`, `llvmlite`), and it leaves `constraints.txt`
+stale.
 
 ### How to use DASK
 
@@ -357,4 +497,4 @@ pipreqs . --force # overwrites current requirements.txt
    ```
 4. Pass it to the Runner: `executor=processor.DaskExecutor(client=client)`.
 
-**On LPC** (spinning up an HTCondor-backed cluster from the notebook itself), see [section 7 above](#7-scaling-jobs-from-a-notebook-with-dask--htcondor) — `scaleout.make_lpc_client(...)` returns a ready `(cluster, client)` pair and uploads your local `sidm/` tree to workers automatically, so no edit-the-source step is needed.
+**On LPC** (spinning up an HTCondor-backed cluster from the notebook itself), see [section 7 above](#7-scaling-jobs-from-a-notebook-with-dask--htcondor) — `scaleout.make_lpc_client(...)` returns a ready `(cluster, client)` pair and uploads your local `sidm/` code to workers automatically, so no edit-the-source step is needed. What travels is the importable tree only (`tools`, `definitions`, `scripts`, `configs`, `data`); see [section 7](#7-scaling-jobs-from-a-notebook-with-dask--htcondor).

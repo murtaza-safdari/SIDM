@@ -217,6 +217,15 @@ This creates multiple Condor jobs per signal point. The chunks are merged afterw
 
 ---
 
+### Even job lengths
+
+Events per file vary a lot between samples (from a few in the low-pT QCD skims to ~18k in
+`DYJetsToMuMu_M50`). `--files-per-job-map` takes a YAML of `{sample: files per job}` that
+overrides `--files-per-job` for the samples it lists; `condor/files_per_job_corrections.yaml`
+is the one the corrections campaign uses (about 100k events per job).
+
+---
+
 ## 7. Path fixes (no longer needed)
 
 Earlier revisions of this guide had two manual `sed` workarounds in this section: one to strip a `condor/filelists/` double-prefix from `job_args.txt`, and one to rewrite `root://xcache//` to `root://cmseos.fnal.gov//` in every filelist. Both are now fixed at source:
@@ -311,7 +320,7 @@ arguments = $(sample) $(chunk) $(filelist) root://cmseos.fnal.gov//store/user/$E
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 
-transfer_input_files = sidm_code.tar.gz, requirements.txt, $(filelist)
+transfer_input_files = sidm_code.tar.gz, requirements.txt, constraints.txt, $(filelist)
 transfer_output_files = ""
 
 output = logs/$(sample)_$(chunk)_$(Cluster)_$(Process).out
@@ -326,6 +335,20 @@ x509userproxy = $ENV(X509_USER_PROXY)
 
 queue sample, chunk, filelist from job_args.txt
 ```
+
+`run_job.sh` takes optional arguments after the output directory, in this order:
+
+| # | argument | default | meaning |
+|---|---|---|---|
+| 5 | channels | `base` | comma-separated selections from `selections.yaml` |
+| 6 | hist collections | `muon_base` | comma-separated collections from `hist_collections.yaml` |
+| 7 | corrections | `default` | standard corrections for simulation: `default`, names from `sidm/configs/corrections.yaml`, or `none` |
+| 8 | hist mode | `unweighted` | `unweighted` (unit weights, as before), `weighted`, or `syst` (weighted, plus a `syst` axis with every weight category; needs corrections) |
+| 9 | monitored corrections | empty | corrections evaluated but not applied, e.g. `electron_id` |
+
+With the defaults the job applies the default corrections, which reach the cutflows only (the histograms stay unweighted); `none` as the 7th argument runs it as before the corrections existed. See [`sidm/studies/corrections/README.md`](../sidm/studies/corrections/README.md) for the corrections and the weight categories.
+
+`run_sidm_chunk.py` reads each sample's `skim_factor`, `is_data` and `year` from the location YAML its files come from (it matches the files against every YAML in `sidm/configs/ntuples/`), so the skimmed backgrounds are normalized with their skim factor. Earlier versions set `skim_factor = 1` for every sample, which overestimates a skimmed sample's yields by 1/skim_factor. The analysis is blinded, so a chunk whose files are collision data (an `is_data` sample, a `data*.yaml` location or a `/SIDM/Data/` path) stops before reading anything unless `--allow-data` is passed; `run_job.sh` never passes it.
 
 `$ENV(USER)` is expanded at submit time, so the same file works for any LPC user. The only thing to edit between runs is the trailing "run tag" — for signals use:
 
@@ -582,6 +605,40 @@ cd /uscms_data/d3/$USER/SIDM
 source sidm_venv/bin/activate
 ```
 
+> **Fixed 2026-10-01:** `combine_normalized_chunks` looked for each sample's metadata at the top
+> level of a chunk file, but `run_sidm_chunk.py` saves what `Runner.run` returns,
+> `{"out": {sample: ...}, "processed": ..., "exception": ...}`. The re-weighting below was
+> therefore skipped, and every merged weighted cutflow (and weighted histogram) came out
+> multiplied by the number of chunks of its sample. Raw counts and unweighted histograms were
+> right. Re-merge earlier outputs (the chunks are enough, nothing needs reprocessing). The
+> merge also accumulates one chunk at a time now, so samples with thousands of chunks fit in
+> memory, and it copies every chunk fresh from EOS unless `--keep-local` is given (a local
+> copy left by an earlier run would otherwise be merged in place of a resubmitted chunk).
+
+### How the merge normalizes — important
+
+`merge_coffea_chunks_eos.py` does more than concatenate: it **corrects the per-chunk
+normalization**. Each Condor job is its own `Runner.run`, so `SidmProcessor.postprocess()` scales
+that job's outputs by `lumi*xs / sumw` using only **that job's** sum of weights — as if its files
+were the whole sample. A naive add of those pieces inflates yields by ~the number of jobs (and more
+files-per-job → more inflation). The merge instead re-weights each chunk by its own `sumw`,
+accumulates, and divides by the **total** `sumw`, recovering the correct
+`lumi*xs/sumw_full × Σ_chunks(raw)`. **Always go through this script — never hand-add chunk
+`.coffea` files.**
+
+The correction mirrors `postprocess` and is conditional: **data** is never scaled; the **cutflow**
+(simulation) is always corrected; **hists** are corrected only for *weighted* runs — with
+`--unweighted-hist` the hists were never per-chunk-scaled, so they are left as a plain sum.
+So **`--unweighted-hist` must match how the chunks were produced** (the same flag also records this
+in the sidecar). Chunks produced after this change carry `unweighted_hist` in their metadata, so the
+merge is self-describing; the flag is then only needed to re-merge **older** outputs.
+
+> Running a full sample over **dask** (a single `Runner.run` over the whole fileset, as in the dask
+> example notebook) does *not* need this: `postprocess` runs once there with the full `sumw`, so the
+> output is already correctly normalized and there is no separate merge step. This correction is
+> specific to the **Condor** path, where each job normalizes its own slice and the merge stitches
+> them back together.
+
 ### Merge backgrounds
 
 ```bash
@@ -728,7 +785,7 @@ Cause: Condor worker Python does not have Coffea.
 Fix: ensure `run_job.sh` creates the venv and installs:
 
 ```bash
-python -m pip install --no-cache-dir -r requirements.txt
+python -m pip install --no-cache-dir -r requirements.txt -c constraints.txt
 ```
 
 ### `KeyError: is_data` (or `skim_factor`, `year`)

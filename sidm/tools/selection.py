@@ -7,6 +7,25 @@ from sidm.definitions.cuts import evt_cut_defs, obj_cut_defs
 from sidm.tools.cutflow import SimpleCutflow
 import traceback
 
+class CollectionRecorder(dict):
+    """A copy of a dict of collections that records which entries are looked up
+
+    Used to find which collections a cut or an object definition reads.
+    """
+
+    def __init__(self, objs):
+        super().__init__(objs)
+        self.looked_up = set()
+
+    def __getitem__(self, name):
+        self.looked_up.add(name)
+        return super().__getitem__(name)
+
+    def get(self, name, default=None):
+        self.looked_up.add(name)
+        return super().get(name, default)
+
+
 class Selection:
     """Class to represent the collection of cuts that define a Selection
 
@@ -21,9 +40,50 @@ class Selection:
         self.cutflow = SimpleCutflow() # will be filled later when cuts are evaluated
         self.verbose = verbose
 
+    @staticmethod
+    def variation_sums(objs):
+        """Weighted count for each weight variation, if the processor made any"""
+        variations = objs.get("evt_weight_variations")
+        if variations is None:
+            return None
+        return {name: ak.sum(variations[name]) for name in variations.fields}
+
+    def collections_read(self, objs, built_from=None):
+        """Names of the collections in objs that the event cuts read
+
+        Every cut runs on zero events of each collection, which costs next to
+        nothing, with a dict that records what it looks up. built_from,
+        {collection: names of the collections it was built from} (e.g.
+        allMuons from muons and dsaMuons), adds the sources of each collection
+        read, recursively. A cut that fails on zero events still records what
+        it read before failing; apply_evt_cuts reports the failure if it also
+        fails on the events.
+        """
+        empty = {}
+        for name, obj in objs.items():
+            try:
+                empty[name] = obj[:0]
+            except Exception:  # pylint: disable=broad-exception-caught
+                empty[name] = obj  # not an array
+        recorder = CollectionRecorder(empty)
+        for cut in self.evt_cuts:
+            try:
+                evt_cut_defs[cut](recorder)
+            except Exception:  # pylint: disable=broad-exception-caught
+                pass
+        built_from = built_from or {}
+        read, todo = set(), list(recorder.looked_up)
+        while todo:
+            name = todo.pop()
+            if name not in read:
+                read.add(name)
+                todo.extend(built_from.get(name, ()))
+        return read
+
     def apply_evt_cuts(self, objs):
         """Evaluate all event cuts and apply results to object collections"""
-        self.cutflow.add_row("None", ak.count(objs["evt_weights"]), ak.sum(objs["evt_weights"]))
+        self.cutflow.add_row("None", ak.count(objs["evt_weights"]), ak.sum(objs["evt_weights"]),
+                             self.variation_sums(objs))
         sel_objs = objs.copy()
         for cut in self.evt_cuts:
             # evaluate cuts
@@ -32,16 +92,52 @@ class Selection:
             try:
                 mask = evt_cut_defs[cut](sel_objs)
             except Exception as e:
+                # An I/O failure means an unreadable chunk, not an unevaluable cut.
+                if isinstance(e, OSError) or "I/O operation" in str(e):
+                    raise
+                # A collection absent from this sample (a gen-level cut on data)
+                # means the cut does not apply here, not that it is broken;
+                # report it the way JaggedSelection.apply_obj_cuts already does
+                # for object cuts on a missing collection.
+                if (isinstance(e, KeyError) and e.args and isinstance(e.args[0], str)
+                        and e.args[0] != cut and e.args[0] not in sel_objs):
+                    print(f"Warning: {e.args[0]} not found in sample. "
+                          f"The following cuts will not be applied: ['{cut}']")
+                    continue
                 print(f"Warning: Unable to evaluate {cut} Skipping.",e)
+                # Skip this cut entirely. Event cuts were once collected and
+                # applied together as a single AND after the loop, where falling
+                # through here was harmless. They are now evaluated and applied
+                # one at a time against the progressively slimmed collections,
+                # so without this the loop below would re-apply the PREVIOUS
+                # cut's mask and log a cutflow row under this cut's name.
+                continue
 
             # apply to all object collections
+            weights_masked = False
             for name, obj in sel_objs.items():
                 try:
                     sel_objs[name] = obj[mask]
                     if name == "evt_weights":
-                        self.cutflow.add_row(cut, ak.count(sel_objs[name]), ak.sum(sel_objs[name]))
-                except:
-                    print(f"Warning: Unable to apply event cuts to {name}. Skipping.")
+                        weights_masked = True
+                except Exception as e:
+                    if isinstance(e, OSError) or "I/O operation" in str(e):
+                        raise
+                    print(f"Warning: Unable to apply event cuts to {name}. Skipping. "
+                          f"({type(e).__name__}: {e})")
+            # Added after the loop so the variations, a separate entry of
+            # sel_objs, have been masked too. A cut listed twice in a selection
+            # fails here; it is reported and skipped as it always has been.
+            if weights_masked:
+                try:
+                    self.cutflow.add_row(cut, ak.count(sel_objs["evt_weights"]),
+                                         ak.sum(sel_objs["evt_weights"]),
+                                         self.variation_sums(sel_objs))
+                except Exception as e:
+                    if isinstance(e, OSError) or "I/O operation" in str(e):
+                        raise
+                    print(f"Warning: Unable to apply event cuts to evt_weights. Skipping. "
+                          f"({type(e).__name__}: {e})")
 
         return sel_objs
 
@@ -80,6 +176,8 @@ class JaggedSelection:
                     else:
                         sel_objs[obj] = sel_objs[obj][obj_cut_defs[obj][cut](sel_objs)]
                 except Exception as e:
+                    if isinstance(e, OSError) or "I/O operation" in str(e):
+                        raise
                     print(f"Warning: Unable to apply {cut} for {obj}. Skipping. Error message: {e}")
                     traceback.print_exc()
         return sel_objs

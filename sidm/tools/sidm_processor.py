@@ -5,17 +5,19 @@ import copy
 import numpy as np
 # columnar analysis
 from coffea import processor
+from coffea import lumi_tools
 from coffea.nanoevents.methods import nanoaod
 from coffea.nanoevents.methods import vector as cvec
+import coffea.nanoevents.transforms as tr
 import awkward as ak
 import fastjet
 import vector
 #local
 from sidm import BASE_DIR
 from sidm.tools import selection, cutflow, utilities
+from sidm.tools.corrections import Corrections, resolve_names, weight_categories
 from sidm.definitions.hists import hist_defs, counter_defs
 from sidm.definitions.objects import preLj_objs, postLj_objs, postLj_objs_MC
-import coffea.nanoevents.transforms as tr
 
 def _patched_local2global(stack):
     """
@@ -76,18 +78,23 @@ class SidmProcessor(processor.ProcessorABC):
         lj_reco_choices=["0.4"],
         selections_cfg="configs/selections.yaml",
         histograms_cfg="configs/hist_collections.yaml",
+        run_periods_cfg="configs/run_periods.yaml",
         unweighted_hist=False,
         verbose=False,
         debug=False,
         debug_branches=None,
         include_default_debug_branches=True,
         debug_suppress_failures=True,
+        corrections=True,
+        syst_hists=False,
+        monitor_corrections=None,
     ):
         self.channel_names = channel_names
         self.hist_collection_names = hist_collection_names
         self.lj_reco_choices = lj_reco_choices
         self.selections_cfg = selections_cfg
         self.histograms_cfg = histograms_cfg
+        self.run_periods_cfg = run_periods_cfg
         self.unweighted_hist = unweighted_hist
         self.obj_defs = preLj_objs
         self.postLj_objs = postLj_objs
@@ -116,9 +123,45 @@ class SidmProcessor(processor.ProcessorABC):
         if debug_branches is not None:
             self.debug_branches.update(debug_branches)
 
+        # Standard CMS corrections from configs/corrections.yaml, applied to
+        # simulation only. True (the default) applies the config's default
+        # list; a list names the corrections to apply; None keeps the plain
+        # genWeight. Each
+        # channel's cutflow then also holds the weighted count of every weight
+        # category (corrections.weight_categories: the uncorrected and
+        # one-correction references and the up/down variations), and
+        # syst_hists=True adds a "syst" axis with the same categories to every
+        # histogram. monitor_corrections are evaluated but not applied; they
+        # add with_<name> categories showing what applying them would do.
+        self.corrections = resolve_names(corrections)
+        self.monitored = resolve_names(monitor_corrections)
+        self.weight_categories = weight_categories(self.corrections, self.monitored)
+        self.syst_hists = syst_hists
+        if syst_hists and not self.corrections:
+            raise ValueError("syst_hists=True needs corrections to vary")
+        if syst_hists and unweighted_hist:
+            raise ValueError("syst_hists=True needs weighted histograms")
+        if self.monitored and not self.corrections:
+            raise ValueError("monitor_corrections needs corrections to compare with")
+        if set(self.monitored) & set(self.corrections):
+            raise ValueError(f"{sorted(set(self.monitored) & set(self.corrections))} "
+                             "cannot be both applied and monitored")
+
     def process(self, events):
         """Apply selections, make histograms and cutflow"""
         is_data = events.metadata["is_data"]
+        year = str(events.metadata["year"])
+
+        # apply golden json
+        n_removed = 0
+        if is_data:
+            run_periods_cfg = utilities.load_yaml(f"{BASE_DIR}/{self.run_periods_cfg}")
+            golden_mask = lumi_tools.LumiMask(f"{BASE_DIR}/data/{run_periods_cfg[year]['golden_json']}")
+            n_original = len(events)
+            events = events[golden_mask(events.run, events.luminosityBlock)]
+            n_removed = n_original - len(events)
+            print(f"Applying {year} Golden JSON: {n_removed} events removed")
+
         # create object collections
         # fixme: only include objs used in cuts or hists
         objs = {}
@@ -159,11 +202,21 @@ class SidmProcessor(processor.ProcessorABC):
         # define pre-lj object, lj, post-lj obj, and event cuts per channel
         ch_cuts = self.build_cuts()
 
-        # define event weights
+        # define event weights. evt_weights stays the plain genWeight: it sets
+        # the lumi*xs normalization, which must not include the corrections.
+        weights, corrector, object_corrections = None, None, {}
         if not is_data:
             evt_weights = self.obj_defs["weight"](events)
+            if self.corrections:
+                corrector = Corrections(year, self.corrections + self.monitored)
+                weights = corrector.event_weights(events)
         else:
             evt_weights = ak.broadcast_arrays(1.0, self.obj_defs["met"](events))[0]
+
+        # The lepton jets depend only on the pre-LJ object cuts and lj_reco, so
+        # channels that share both (e.g. base, 2mu2e and 4mu) reuse one
+        # clustering, which is most of the processing time.
+        lj_cache = {}
 
         # loop through lj reco choices and channels, treating each lj+channel pair as a unique Selection
         for channel, cuts in ch_cuts.items():
@@ -171,36 +224,76 @@ class SidmProcessor(processor.ProcessorABC):
             nested_selection = selection.NestedSelection(cuts["obj"], self.verbose)
 
             for lj_reco in self.lj_reco_choices:
-                sel_objs = objs.copy()
+                cache_key = (repr(cuts["obj"]), lj_reco)
+                if cache_key in lj_cache:
+                    sel_objs = lj_cache[cache_key].copy()
+                else:
+                    sel_objs = objs.copy()
 
-                # apply selections on matched_muons within the DSA muons and matched_dsa_muons within the PF muons
-                # remove None entries from matched PF or DSA muons before applying cuts
-                sel_objs["dsaMuons"]["good_matched_muons"] = nested_selection.apply_obj_cuts(sel_objs, ak.drop_none(sel_objs["dsaMuons"].matched_muons), "muons")
-                sel_objs["muons"]["good_matched_dsa_muons"] = nested_selection.apply_obj_cuts(sel_objs, ak.drop_none(sel_objs["muons"].matched_dsa_muons), "dsaMuons")
+                    # apply selections on matched_muons within the DSA muons and matched_dsa_muons within the PF muons
+                    # remove None entries from matched PF or DSA muons before applying cuts
+                    sel_objs["dsaMuons"]["good_matched_muons"] = nested_selection.apply_obj_cuts(sel_objs, ak.drop_none(sel_objs["dsaMuons"].matched_muons), "muons")
+                    sel_objs["muons"]["good_matched_dsa_muons"] = nested_selection.apply_obj_cuts(sel_objs, ak.drop_none(sel_objs["muons"].matched_dsa_muons), "dsaMuons")
 
-                # apply pre-LJ object selection
-                sel_objs = obj_selection.apply_obj_cuts(sel_objs)
+                    # apply pre-LJ object selection
+                    sel_objs = obj_selection.apply_obj_cuts(sel_objs)
 
-                # reconstruct lepton jets
-                sel_objs["ljs"] = self.build_lepton_jets(sel_objs, float(lj_reco))
+                    # reconstruct lepton jets
+                    sel_objs["ljs"] = self.build_lepton_jets(sel_objs, float(lj_reco))
+
+                    # the two lines above set fields of objs["muons"] and
+                    # objs["dsaMuons"] in place for each channel, so cache
+                    # snapshots that later channels cannot change
+                    lj_cache[cache_key] = {**sel_objs, "muons": copy.copy(sel_objs["muons"]),
+                                           "dsaMuons": copy.copy(sel_objs["dsaMuons"])}
 
                 # apply obj selection to ljs
                 lj_selection = selection.JaggedSelection(cuts["lj"], self.verbose)
                 sel_objs = lj_selection.apply_obj_cuts(sel_objs)
 
-                # add post-lj objects to sel_objs
+                # add post-lj objects to sel_objs, recording which collections
+                # each one is built from (e.g. mu_ljs from ljs)
                 if not is_data:
                     self.postLj_objs = {**self.postLj_objs, **self.postLj_objs_MC}
+                built_from = {}
                 for obj in self.postLj_objs:
-                    sel_objs[obj] = self.postLj_objs[obj](sel_objs)
+                    recorder = selection.CollectionRecorder(sel_objs)
+                    sel_objs[obj] = self.postLj_objs[obj](recorder)
+                    built_from[obj] = recorder.looked_up
 
                 # apply post-lj obj selection
                 postLj_selection = selection.JaggedSelection(cuts["postLj_obj"], self.verbose)
                 sel_objs = postLj_selection.apply_obj_cuts(sel_objs)
- 
-                # build Selection objects and apply event selection
-                sel_objs["evt_weights"] = evt_weights
+
                 evt_selection = selection.Selection(cuts["evt"], self.verbose)
+
+                # attach event weights. With corrections, the object SFs come
+                # from the objects the event cuts use (Corrections.sf_sources):
+                # the selected objects of a collection the cuts read, else the
+                # lepton-jet constituents if they read lepton jets, else none.
+                # Every weight category rides along so the event cuts slim it
+                # with the rest, as do the factors themselves (weight_factors,
+                # one column per factor and shift) for histograms of the
+                # corrections.
+                applied = {}
+                if weights is None:
+                    sel_objs["evt_weights"] = evt_weights
+                else:
+                    ch_weights = weights.copy()
+                    sources = corrector.sf_sources(
+                        cuts["obj"], evt_selection.collections_read(sel_objs, built_from))
+                    corrector.add_object_weights(ch_weights, sel_objs, sources)
+                    applied = {name: wp for name, (wp, _) in sources.items()}
+                    object_corrections[channel] = processor.set_accumulator(
+                        f"{name}:{wp}:{source}" for name, (wp, source) in sources.items())
+                    sel_objs["evt_weights"] = ak.Array(ch_weights.category("nominal", self.monitored))
+                    sel_objs["evt_weight_variations"] = ak.zip({
+                        c: ch_weights.category(c, self.monitored) for c in self.weight_categories
+                    })
+                    sel_objs["weight_factors"] = ak.zip(ch_weights.factor_columns(
+                        ["genWeight"] + self.corrections + self.monitored))
+
+                # apply event selection
                 sel_objs = evt_selection.apply_evt_cuts(sel_objs)
 
                 # optional debug output (no effect unless debug=True).
@@ -223,12 +316,23 @@ class SidmProcessor(processor.ProcessorABC):
                     cutflows[str(lj_reco)] = {}
                 cutflows[str(lj_reco)][channel] = evt_selection.cutflow
 
-                # fill histograms for this channel+lj_reco pair
+                # fill histograms for this channel+lj_reco pair. year and
+                # object_corrections ({correction: working point}) let fill
+                # functions evaluate the SFs this channel applied.
                 sel_objs["ch"] = channel
                 sel_objs["lj_reco"] = lj_reco
+                sel_objs["year"] = year
+                sel_objs["object_corrections"] = applied
                 hist_weights = sel_objs["evt_weights"]
                 if self.unweighted_hist:
                     hist_weights =  ak.ones_like(hist_weights)
+                if self.syst_hists:
+                    # a variation that does not apply here equals the nominal
+                    # weight; data fills "nominal" only
+                    hist_weights = {"nominal": hist_weights}
+                    if "evt_weight_variations" in sel_objs:
+                        hist_weights.update({c: sel_objs["evt_weight_variations"][c]
+                                             for c in self.weight_categories})
                 for h in hists.values():
                     h.fill(sel_objs, hist_weights, self.verbose)
 
@@ -256,10 +360,36 @@ class SidmProcessor(processor.ProcessorABC):
                 "n_evts": events.metadata["entrystop"] - events.metadata["entrystart"],
                 "scaled_sum_weights": ak.sum(evt_weights)/events.metadata["skim_factor"],
                 # add sample metadata as set_accumulator to only keep unique values during accumulation
-                "year": processor.set_accumulator([events.metadata["year"]]),
-                "is_data": processor.set_accumulator([events.metadata["is_data"]]),
+                "year": processor.set_accumulator([year]),
+                "is_data": processor.set_accumulator([is_data]),
+                "unweighted_hist": processor.set_accumulator([self.unweighted_hist]),
+                "n_removed_golden_json": n_removed,
             },
         }
+
+        # Record what was corrected. scaled_sum_weights_corrected is the sum of
+        # genWeight times each event-level correction, so its ratio to
+        # scaled_sum_weights shows how much a correction changes the total
+        # before any selection. Only added when corrections were requested, so
+        # an uncorrected run keeps the old output layout.
+        if self.corrections:
+            out["metadata"]["corrections"] = processor.set_accumulator(
+                [] if is_data else self.corrections)
+            if self.monitored:
+                out["metadata"]["monitored_corrections"] = processor.set_accumulator(
+                    [] if is_data else self.monitored)
+            if weights is not None:
+                skim = events.metadata["skim_factor"]
+                genweight = weights.factor("genWeight")
+                corrected = {name: float(np.sum(genweight * weights.factor(name))) / skim
+                             for name in weights.names if name != "genWeight"}
+                corrected["all_event_level"] = float(np.sum(
+                    weights.category("nominal", self.monitored))) / skim
+                out["metadata"]["scaled_sum_weights_corrected"] = corrected
+                # {channel: {"<correction>:<working point>:<source>"}}, source
+                # being the collection whose selected objects gave the SFs
+                # (e.g. "muons") or "ljs" for the lepton-jet constituents
+                out["metadata"]["object_corrections"] = object_corrections
 
         # optional debug output: keep the standard return shape, add one key
         if self.debug:
@@ -317,9 +447,14 @@ class SidmProcessor(processor.ProcessorABC):
         breaks pickling. So we strip behavior and record/array names and store plain
         data. numpy arrays and Python lists are wrapped directly; a bare scalar
         becomes a length-1 array.
+
+        A branch that returns an input column unchanged (e.g. a NanoAOD weight)
+        returns a virtual array that still reads from the ROOT file. A
+        multiprocess executor pickles the output after the file is closed, so
+        the array is materialized here, while the file is still open.
         """
         if isinstance(value, ak.Array):
-            arr = value
+            arr = ak.materialize(value)
         else:
             try:
                 arr = ak.Array(value)
@@ -340,13 +475,22 @@ class SidmProcessor(processor.ProcessorABC):
         if type_id == 8:
             forms["trkNumPixelHits"] = 0*shape
             forms["trkNumTrkLayers"] = 0*shape
+        if type_id == 3:
+            forms["vx"] = forms["innerVx"]
+            forms["vy"] = forms["innerVy"]
+            forms["vz"] = forms["innerVz"]
         if type_id == 4:
             forms["lostHits"] = 999*shape
         return vector.zip(forms)
 
     def make_constituent(self, consts, type_ids, name, fields):
         """Return array of particles of given type_ids, name, and only specified fields"""
-        relevant_consts = consts[ak.any((consts.part_type == x for x in type_ids), axis=0)]
+        # OR of one mask per type: ak.any over a generator of masks gives the
+        # same result but builds it event by event in python
+        is_relevant = consts.part_type == type_ids[0]
+        for type_id in type_ids[1:]:
+            is_relevant = is_relevant | (consts.part_type == type_id)
+        relevant_consts = consts[is_relevant]
         forms = {f: relevant_consts.__getattr__(f) for f in fields}
         return ak.zip(forms, with_name=name, behavior=nanoaod.behavior)
 
@@ -399,7 +543,7 @@ class SidmProcessor(processor.ProcessorABC):
 
         objs["dsaMuons"]["mass"] = ak.full_like(objs["dsaMuons"].pt, 0.105712890625)
 
-        safe_pf_fields = list(objs["muons"].fields)
+        safe_pf_fields = list(objs["muons"].fields) + ["vx", "vy", "vz"]
         safe_dsa_fields = list(objs["dsaMuons"].fields) +  ["trkNumPixelHits","trkNumTrkLayers" ]
 
         for field in unsafe_fields:
@@ -408,7 +552,7 @@ class SidmProcessor(processor.ProcessorABC):
             if field in safe_dsa_fields:
                 safe_dsa_fields.remove(field)
 
-        extra_muon_fields =  ["trkNumPixelHits","trkNumTrkLayers" ]
+        extra_muon_fields =  ["trkNumPixelHits","trkNumTrkLayers", "vx", "vy", "vz" ]
         muon_fields = list(set(safe_pf_fields).intersection(safe_dsa_fields)) + extra_muon_fields
        
 
@@ -439,6 +583,69 @@ class SidmProcessor(processor.ProcessorABC):
         # c) and then take the maximum dR per LJ, leaving us with a single value per LJ
         ljs["dRSpread"] = ak.max(ak.flatten(
             ljs["constituents"].metric_table(ljs["constituents"], axis=2), axis=-1), axis=-1)
+        ljs["vxSpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vx_diff), axis=-1), axis=-1), 0)
+        ljs["vySpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vy_diff), axis=-1), axis=-1), 0)
+        ljs["vzSpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vz_diff), axis=-1), axis=-1), 0)
+        ljs["dxySpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1), 0)
+        ljs["dzSpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1), 0)
+        ljs["vxySpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vxy_diff), axis=-1), axis=-1), 0)
+        ljs["vyzSpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vyz_diff), axis=-1), axis=-1), 0)
+        ljs["vzxSpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.vzx_diff), axis=-1), axis=-1), 0)
+        ljs["v3dSpread_dsa"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["dsaMuons"].metric_table(ljs["dsaMuons"], axis=2, metric = utilities.v3d_diff), axis=-1), axis=-1), 0)
+        
+        ljs["vxSpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.vx_diff), axis=-1), axis=-1), 0)
+        ljs["vySpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.vy_diff), axis=-1), axis=-1), 0)
+        ljs["vzSpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.vz_diff), axis=-1), axis=-1), 0)
+        ljs["dxySpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1), 0)
+        ljs["dzSpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1), 0)
+        ljs["vxySpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.vxy_diff), axis=-1), axis=-1), 0)
+        ljs["vyzSpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.vyz_diff), axis=-1), axis=-1), 0)
+        ljs["vzxSpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.vzx_diff), axis=-1), axis=-1), 0)
+        ljs["v3dSpread_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.v3d_diff), axis=-1), axis=-1), 0)
+        ljs["dzVzdiff_pf"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["pfMuons"].metric_table(ljs["pfMuons"], axis=2, metric = utilities.vz_diff_minus_dz_diff), axis=-1), axis=-1), 0)
+
+        ljs["dxySpread_ele"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["electrons"].metric_table(ljs["electrons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1), 0)
+        ljs["dzSpread_ele"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["electrons"].metric_table(ljs["electrons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1), 0)
+
+        ljs["vxSpread_mu"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vx_diff), axis=-1), axis=-1), 0)
+        ljs["vySpread_mu"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vy_diff), axis=-1), axis=-1), 0)
+        ljs["vzSpread_mu"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vz_diff), axis=-1), axis=-1), 0)
+        ljs["dxySpread_mu"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.dxy_diff), axis=-1), axis=-1), 0)
+        ljs["dzSpread_mu"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.dz_diff), axis=-1), axis=-1), 0)
+        ljs["vxySpread_mu"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vxy_diff), axis=-1), axis=-1), 0)
+        ljs["vyzSpread_mu"] =ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vyz_diff), axis=-1), axis=-1), 0)
+        ljs["vzxSpread_mu"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.vzx_diff), axis=-1), axis=-1), 0)
+        ljs["v3dSpread_mu"] =  ak.fill_none(ak.max(ak.flatten(
+            ljs["muons"].metric_table(ljs["muons"], axis=2, metric = utilities.v3d_diff), axis=-1), axis=-1), 0)
 
         # LJ isolation
         ljs["matched_jet"] = ljs.nearest(objs["jets"], threshold=0.4)       
@@ -450,6 +657,7 @@ class SidmProcessor(processor.ProcessorABC):
 
         # pt order the new LJs
         ljs = self.order(ljs)
+        ljs = ak.with_field(ljs, ak.local_index(ljs.pt), "idx")
 
         # return the new LJ collection
         return ljs
@@ -494,6 +702,7 @@ class SidmProcessor(processor.ProcessorABC):
     def build_histograms(self):
         """Create dictionary of Histogram objects"""
         hist_menu = utilities.load_yaml(f"{BASE_DIR}/{self.histograms_cfg}")
+        systematics = ["nominal"] + self.weight_categories if self.syst_hists else None
         # build dictionary and create hist.Hist objects
         hists = {}
         for collection in self.hist_collection_names:
@@ -502,7 +711,8 @@ class SidmProcessor(processor.ProcessorABC):
                 hists[hist_name] = copy.deepcopy(hist_defs[hist_name])
                 # Add lj_reco axis only when more than one reco is run
                 lj_reco_names = self.lj_reco_choices if len(self.lj_reco_choices) > 1 else None
-                hists[hist_name].make_hist(hist_name, self.channel_names, lj_reco_names)
+                hists[hist_name].make_hist(hist_name, self.channel_names, lj_reco_names,
+                                           systematics=systematics)
         return hists
 
     def order(self, obj):
@@ -521,12 +731,12 @@ class SidmProcessor(processor.ProcessorABC):
                 print(f"WARNING: {sample} has more than one value for is_data or year. Not scaling histograms or cutflows.")
                 continue
 
-            if output["metadata"]["is_data"].pop():
+            if list(output["metadata"]["is_data"])[0]:
                 print(f"{sample} is data. Not scaling histograms or cutflows.")
                 continue
 
             print(f"{sample} is simulation. Scaling histograms or cutflows according to lumi*xs.")
-            year = output["metadata"]["year"].pop()
+            year = list(output["metadata"]["year"])[0]
             sum_weights = output["metadata"]["scaled_sum_weights"]
             lumixs_weight = utilities.get_lumixs_weight(sample, year, sum_weights)
             for name in output["cutflow"]:

@@ -1,19 +1,22 @@
 """Module to define miscellaneous helper methods"""
 
+import json
 import math
+import os
 import warnings
-import yaml
-import numpy as np
+
 import awkward as ak
-import numpy as np
-import matplotlib.pyplot as plt
-import mplhep as hep
-import scipy.optimize as opt
+import coffea.util
 import hist
 import hist.intervals
-from sidm import BASE_DIR
-import coffea.util
+import matplotlib.pyplot as plt
+import mplhep as hep
+import numpy as np
+import scipy.optimize as opt
+import yaml
 from coffea.processor import accumulate
+
+from sidm import BASE_DIR
 
 def print_list(l):
     """Print one list element per line"""
@@ -77,9 +80,31 @@ def dR_general(obj1, obj2):
     """Return ΔR between obj1 and obj2, filling None with inf"""
     return ak.fill_none(obj1.delta_r(obj2), np.inf)
 
+def delta_phi(phi1, phi2):
+    """Return signed phi1 - phi2 in [-pi, pi), in radians.
+
+    Accepts scalars, NumPy arrays and Awkward arrays. Broadcasting, jagged
+    structure and missing values follow the input arrays' arithmetic rules.
+    Exactly antipodal directions map to -pi; abs(delta_phi(...)) is in [0, pi].
+    """
+    # Float32 pi lies above mathematical pi: keep the calculation in float64
+    # so absolute separations cannot exceed the full-range histogram boundary.
+    difference = np.subtract(phi1, phi2, dtype=np.float64)
+    wrapped = (difference + np.pi) % (2 * np.pi) - np.pi
+    # Modulo can round up to 2*pi just below the negative branch cut.
+    return wrapped - (wrapped == np.pi) * (2 * np.pi)
+
 def dR_outer(obj1, obj2):
-    """Return dR between outer tracks of obj1 and obj2"""
-    return ak.fill_none(np.sqrt((obj1.outerEta - obj2.outerEta)**2 + (obj1.outerPhi - obj2.outerPhi)**2), np.inf)
+    """Return wrapped outer-track dR; missing matches/tracks give inf.
+
+    LLPNanoAOD uses the pair (outerEta, outerPhi) == (-5, -5) when a muon
+    has no available, valid outer track. That sentinel is not an angle.
+    """
+    missing = ((obj1.outerEta == -5) & (obj1.outerPhi == -5)
+               | (obj2.outerEta == -5) & (obj2.outerPhi == -5))
+    distance = np.sqrt((obj1.outerEta - obj2.outerEta)**2
+                       + delta_phi(obj1.outerPhi, obj2.outerPhi)**2)
+    return ak.fill_none(ak.where(missing, np.inf, distance), np.inf)
 
 def drop_none(obj):
     """Remove None entries from an array (not available in Awkward 1)"""
@@ -92,7 +117,6 @@ def matched(obj1, obj2, r):
 def add_matched_dsamuon_mass(obj):
     obj["mass"] = ak.full_like(obj.pt, 0.105712890625)
     return obj
-
 def lj_combination_dR(obj):
     pair = ak.combinations(obj, 2, axis=1, fields=["lj1", "lj2"])
     dR = dR_general(pair["lj1"], pair["lj2"])
@@ -208,26 +232,55 @@ def load_yaml(cfg):
     with open(cfg, encoding="utf8") as yaml_cfg:
         return yaml.safe_load(yaml_cfg)
 
+def load_census_skip(census_skip):
+    """Load a census skip-list into {sample: set(basenames-to-skip)}. census_skip is a path to a
+    skip JSON (the `_skip.json` written by file_census.cleaned_filelists, or a promoted copy under
+    sidm/configs/census/), or a bare name resolved there. The skip JSON is {"skip": {sample: [...]}}."""
+    path = census_skip
+    if not os.path.isfile(path):
+        path = f"{BASE_DIR}/configs/census/{census_skip}"
+    with open(path, encoding="utf8") as f:
+        data = json.load(f)
+    return {sample: set(files) for sample, files in data.get("skip", {}).items()}
+
+
+def apply_census_veto(file_list, skip_basenames):
+    """Additively drop files whose basename is in skip_basenames (ON TOP of any the location YAML
+    already comments out -- the YAML commenting is honored upstream; this only removes more).
+    Returns (kept_files, n_dropped)."""
+    if not skip_basenames:
+        return file_list, 0
+    kept = [f for f in file_list if os.path.basename(f) not in skip_basenames]
+    return kept, len(file_list) - len(kept)
+
+
 def make_fileset(samples, ntuple_version, max_files=-1, location_cfg="signal_v8.yaml", fileset=None,
-                 replace_xcache=False):
+                 replace_xcache=False, census_skip=None):
     """Make fileset to pass to processor.runner.
 
     replace_xcache: when True, rewrite 'root://xcache//' to 'root://cmseos.fnal.gov//' so the
     fileset is usable from LPC (xcache is the coffea-casa cache and does not resolve elsewhere).
+    census_skip: optional census skip-list (a path, or a name under sidm/configs/census/). Files
+    the census flagged (bad / unreachable / empty -- see file_census) are dropped IN ADDITION to
+    those the location YAML comments out; the YAML's manual commenting is always honored.
     """
     # assume location_cfg is stored in sidm/configs/ntuples/
     location_cfg = f"{BASE_DIR}/configs/ntuples/" + location_cfg
     locations = load_yaml(location_cfg)[ntuple_version]
+    skip = load_census_skip(census_skip) if census_skip else {}
     if not fileset:
         fileset = {}
     for sample in samples:
         sample_yaml = locations["samples"][sample]
         base_path = locations["path"] + sample_yaml["path"]
         file_list = [base_path + f for f in sample_yaml["files"]]
-        if max_files != -1:
-            file_list = file_list[:max_files]
         if replace_xcache:
             file_list = [f.replace("root://xcache//", "root://cmseos.fnal.gov//") for f in file_list]
+        file_list, n_vetoed = apply_census_veto(file_list, skip.get(sample))
+        if n_vetoed:
+            print(f"  census veto: dropped {n_vetoed} flagged file(s) from {sample}")
+        if max_files != -1:
+            file_list = file_list[:max_files]
         fileset[sample] = {
             "files": file_list,
             "metadata": {
@@ -293,6 +346,8 @@ def plot_ratio(num, den, **kwargs):
 
     if "ylim" in kwargs:
         plt.ylim(kwargs["ylim"])
+    if "xlim" in kwargs:
+        plt.xlim(kwargs["xlim"])
     if "ylabel" in kwargs:
         plt.ylabel(kwargs["ylabel"])
     plt.tight_layout()
@@ -306,6 +361,8 @@ def plot_ratio(num, den, **kwargs):
             # raises -- fall back to a Gaussian-propagated ratio.
             eff, errors = _gaussian_ratio(x, den)
         plot(eff, histtype='errorbar', yerr=errors, skip_label=True)
+        if "xlim" in kwargs:
+            plt.xlim(kwargs["xlim"])
 
     ax2.set_ylabel(ratio_ylabel)
     if ratio_ylim is not None:
@@ -346,12 +403,19 @@ def lab_ctau(bs, zd, proper_ct, grid_cfg=f"{BASE_DIR}/configs/signal_grid.yaml")
         lab_ct = proper_ct*grid[bs][zd]["labframe_factor"]
     return round_sigfig(lab_ct, digits=2)
 
-def get_xs(dataset, cfg="cross_sections.yaml"):
+def get_xs(dataset, cfg="cross_sections.yaml", use_signal_xs=False):
     """Fetch dataset xs from cfg"""
     # assume location_cfg is stored in sidm/configs/
     xs_menu = load_yaml(f"{BASE_DIR}/configs/" + cfg)
     try:
-        return xs_menu[dataset]
+        if dataset.startswith(("2Mu2E", "4Mu")):
+            if use_signal_xs:
+                return xs_menu[dataset]
+            else:
+                print("Ignoring signal cross sections, assuming 1 fb")
+                return 0.001
+        else:
+            return xs_menu[dataset]
     except KeyError:
         if dataset.startswith(("2Mu2E", "4Mu")):
             print("Signal not in xs cfg, assuming 1fb")
@@ -409,6 +473,8 @@ def select_numbersPhoton(number, var1, var2):
     return selected
 
 def returnBitMapTArrayPhoton(bitMap, var1, var2):
+    if len(bitMap) == 0:
+        return ak.zeros_like(bitMap, dtype=bool)
     tList = []
     for i in range(len(bitMap)):
         temp = []
@@ -621,11 +687,6 @@ def sum_hist(samples_list, folder_name):
         else:
             summed_out = accumulate ([hists, summed_out])
     return summed_out
-
-def cosAlpha(objs):
-    pairs = ak.combinations(objs, 2, axis=1)
-    v1, v2 = ak.unzip(pairs)
-    return np.cos(v1.deltaangle(v2))
 
 def get_cut_yield(out_dict, sample, cut_name, channel, weighted=True, cumulative=True):
     """Return a weighted or unweighted yield for a cutflow cut."""
@@ -1239,6 +1300,66 @@ def plot_data_mc(
         plt.show()
 
     return fig, ax_main, ax_ratio
+
+def cosAlpha(objs, axis=1):
+    """cos Alpha between objects"""
+    pairs = ak.combinations(objs, 2, axis=axis)
+    v1, v2 = ak.unzip(pairs)
+    cos_alpha = np.cos(v1.deltaangle(v2))
+    return cos_alpha
+
 def get_pairs(obj):
+    """make pairs of object"""
     pairs = ak.combinations(obj, 2, axis=1)
-    return (pairs)
+    return pairs
+
+def nearest_lj_index(obj, lj):
+    """find nearest LJ index"""
+    nearest=obj.nearest(lj, threshold=0.4)
+    nearest_idx =  ak.fill_none(nearest.idx, -999)
+    return(nearest_idx)
+
+def vx_diff(obj1, obj2):
+    """Vx difference"""
+    return abs(obj1.vx-obj2.vx)
+
+def vz_diff(obj1, obj2):
+    """Vz difference"""
+    return abs(obj1.vz-obj2.vz)
+
+def vy_diff(obj1, obj2):
+    """Vy difference"""
+    return abs(obj1.vy-obj2.vy)
+
+def dxy_diff(obj1, obj2):
+    """dxy difference"""
+    return abs(obj1.dxy-obj2.dxy)
+
+def dz_diff(obj1, obj2):
+    """dz difference"""
+    return abs(obj1.dz-obj2.dz)
+
+def vxy_diff(obj1, obj2):
+    """Vxy difference"""
+    return ((obj1.vx-obj2.vx)**2 +
+            (obj1.vy-obj2.vy)**2)**0.5
+
+def vyz_diff(obj1, obj2):
+    """yz difference"""
+    return ((obj1.vy-obj2.vy)**2 +
+            (obj1.vz-obj2.vz)**2)**0.5
+
+def vzx_diff(obj1, obj2):
+    """Vzx difference"""
+    return ((obj1.vz-obj2.vz)**2 +
+            (obj1.vx-obj2.vx)**2)**0.5
+def v3d_diff(obj1, obj2):
+    """V3d difference"""
+    return ((obj1.vx-obj2.vx)**2 +
+            (obj1.vy-obj2.vy)**2 +
+            (obj1.vz-obj2.vz)**2)**0.5
+
+def vz_diff_minus_dz_diff(obj1, obj2):
+    """Vz-dz difference"""
+    return abs(obj1.vz - obj2.vz) - abs(obj1.dz-obj2.dz)
+
