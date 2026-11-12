@@ -22,7 +22,7 @@ sys.path.insert(0, _DIR)
 sys.path.insert(0, os.path.join(_DIR, "..", "truth_kinematics_forAN"))
 import run3_signal_validation as V
 from sidm.tools import utilities
-import an_style
+import an_style  # pylint: disable=import-error  # found through the sys.path entry above
 
 an_style.FIG_DIR = os.path.join(_DIR, "figures")
 ERAS = ["2022", "2022EE", "2023", "2023BPix"]
