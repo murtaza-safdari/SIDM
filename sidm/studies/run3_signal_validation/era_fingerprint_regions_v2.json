@@ -541,6 +541,92 @@
    }
   }
  },
+ "bp_fixed_2024_A": {
+  "eta": [
+   -2.4,
+   -1.4
+  ],
+  "phi_deg": [
+   [
+    120,
+    180
+   ]
+  ],
+  "n_bins": 60,
+  "quantity": "exclusive matching; mean layers of matched tracker muons, PF-muon efficiency of gen muons (definitions as bp_exclusive)",
+  "2023": {
+   "mean_layers": 13.4805,
+   "n_muons": 3174,
+   "mean_layers_stat": 0.0318,
+   "layers_std": 1.7941,
+   "pf_eff": 0.9549,
+   "pf_eff_stat": 0.0036,
+   "pf_denominator": 3301
+  },
+  "2023BPix": {
+   "mean_layers": 13.5526,
+   "n_muons": 3194,
+   "mean_layers_stat": 0.0298,
+   "layers_std": 1.6818,
+   "pf_eff": 0.9528,
+   "pf_eff_stat": 0.0037,
+   "pf_denominator": 3325
+  },
+  "2024": {
+   "mean_layers": 13.0461,
+   "n_muons": 3056,
+   "mean_layers_stat": 0.0322,
+   "layers_std": 1.7798,
+   "pf_eff": 0.9146,
+   "pf_eff_stat": 0.0048,
+   "pf_denominator": 3324
+  }
+ },
+ "bp_fixed_2024_B": {
+  "eta": [
+   1.4,
+   1.8
+  ],
+  "phi_deg": [
+   [
+    160,
+    180
+   ],
+   [
+    -180,
+    -140
+   ]
+  ],
+  "n_bins": 24,
+  "quantity": "exclusive matching; mean layers of matched tracker muons, PF-muon efficiency of gen muons (definitions as bp_exclusive)",
+  "2023": {
+   "mean_layers": 13.8176,
+   "n_muons": 1508,
+   "mean_layers_stat": 0.0496,
+   "layers_std": 1.9251,
+   "pf_eff": 0.9473,
+   "pf_eff_stat": 0.0056,
+   "pf_denominator": 1593
+  },
+  "2023BPix": {
+   "mean_layers": 13.9734,
+   "n_muons": 1431,
+   "mean_layers_stat": 0.0505,
+   "layers_std": 1.9119,
+   "pf_eff": 0.9566,
+   "pf_eff_stat": 0.0053,
+   "pf_denominator": 1499
+  },
+  "2024": {
+   "mean_layers": 13.3512,
+   "n_muons": 1569,
+   "mean_layers_stat": 0.0523,
+   "layers_std": 2.0701,
+   "pf_eff": 0.9478,
+   "pf_eff_stat": 0.0055,
+   "pf_denominator": 1649
+  }
+ },
  "eedp_per-dark-photon_in_v1_bins": {
   "region_from": "v1",
   "eta": [

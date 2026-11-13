@@ -1,0 +1,489 @@
+{
+ "code_commit": "a9d38c02",
+ "production": "v2",
+ "definition": "Summary of the committed LJ-efficiency scans (lj_eff_{real,geom}_<era>.json): per mode, era, channel and efficiency, the per-point (Run 3 - 2018) differences over the 18 grid points as mean, statistical error of the mean (per-point binomial errors propagated), RMS, [min, max], number negative, and the chi2 of the 18 differences about their mean (17 dof). A chi2 far above 17 means the points do not share a common shift, so the mean +- stat is not the uncertainty of one. Also the in-acceptance fractions. Writes lj_eff_summary<tag>.json (--production v1: no tag, the files of the first production; v2, the default: _v2, from lj_eff_{real,geom}_v2_<era>.json, five eras). No EOS access.",
+ "geom": {
+  "2022": {
+   "acceptance_run3": {
+    "mean": 0.6744,
+    "min": 0.3525,
+    "max": 0.8859
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": -0.02,
+    "stat_of_mean_pct": 0.008,
+    "rms_pct": 0.036,
+    "min_pct": -0.074,
+    "max_pct": 0.041,
+    "n_negative": 12,
+    "chi2_about_mean": 20.1,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 0.181,
+    "stat_of_mean_pct": 0.032,
+    "rms_pct": 0.152,
+    "min_pct": -0.081,
+    "max_pct": 0.499,
+    "n_negative": 1,
+    "chi2_about_mean": 21.3,
+    "ndof": 17
+   }
+  },
+  "2022EE": {
+   "acceptance_run3": {
+    "mean": 0.6747,
+    "min": 0.3568,
+    "max": 0.886
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": -0.032,
+    "stat_of_mean_pct": 0.008,
+    "rms_pct": 0.046,
+    "min_pct": -0.116,
+    "max_pct": 0.055,
+    "n_negative": 14,
+    "chi2_about_mean": 30.4,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": -0.352,
+    "stat_of_mean_pct": 0.033,
+    "rms_pct": 0.156,
+    "min_pct": -0.62,
+    "max_pct": 0.015,
+    "n_negative": 17,
+    "chi2_about_mean": 19.6,
+    "ndof": 17
+   }
+  },
+  "2023": {
+   "acceptance_run3": {
+    "mean": 0.6746,
+    "min": 0.3537,
+    "max": 0.8852
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 0.013,
+    "stat_of_mean_pct": 0.008,
+    "rms_pct": 0.046,
+    "min_pct": -0.038,
+    "max_pct": 0.134,
+    "n_negative": 7,
+    "chi2_about_mean": 31.7,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": -0.138,
+    "stat_of_mean_pct": 0.032,
+    "rms_pct": 0.147,
+    "min_pct": -0.524,
+    "max_pct": 0.115,
+    "n_negative": 17,
+    "chi2_about_mean": 18.2,
+    "ndof": 17
+   }
+  },
+  "2023BPix": {
+   "acceptance_run3": {
+    "mean": 0.6746,
+    "min": 0.3551,
+    "max": 0.8844
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 0.008,
+    "stat_of_mean_pct": 0.008,
+    "rms_pct": 0.048,
+    "min_pct": -0.078,
+    "max_pct": 0.085,
+    "n_negative": 9,
+    "chi2_about_mean": 35.7,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": -0.14,
+    "stat_of_mean_pct": 0.032,
+    "rms_pct": 0.142,
+    "min_pct": -0.481,
+    "max_pct": 0.134,
+    "n_negative": 15,
+    "chi2_about_mean": 19.2,
+    "ndof": 17
+   }
+  },
+  "2024": {
+   "acceptance_run3": {
+    "mean": 0.6745,
+    "min": 0.3545,
+    "max": 0.8854
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": -0.027,
+    "stat_of_mean_pct": 0.008,
+    "rms_pct": 0.043,
+    "min_pct": -0.091,
+    "max_pct": 0.068,
+    "n_negative": 13,
+    "chi2_about_mean": 26.4,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": -0.025,
+    "stat_of_mean_pct": 0.032,
+    "rms_pct": 0.154,
+    "min_pct": -0.212,
+    "max_pct": 0.426,
+    "n_negative": 12,
+    "chi2_about_mean": 20.4,
+    "ndof": 17
+   }
+  }
+ },
+ "real": {
+  "2022": {
+   "acceptance_run3": {
+    "mean": 0.6744,
+    "min": 0.3525,
+    "max": 0.8859
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 0.691,
+    "stat_of_mean_pct": 0.055,
+    "rms_pct": 0.403,
+    "min_pct": -0.051,
+    "max_pct": 1.477,
+    "n_negative": 1,
+    "chi2_about_mean": 65.8,
+    "ndof": 17
+   },
+   "4Mu_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 0.728,
+    "stat_of_mean_pct": 0.059,
+    "rms_pct": 0.345,
+    "min_pct": 0.239,
+    "max_pct": 1.469,
+    "n_negative": 0,
+    "chi2_about_mean": 41.3,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 7.37,
+    "stat_of_mean_pct": 0.061,
+    "rms_pct": 7.961,
+    "min_pct": 0.591,
+    "max_pct": 24.901,
+    "n_negative": 0,
+    "chi2_about_mean": 15394.2,
+    "ndof": 17
+   },
+   "2Mu2E_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 6.968,
+    "stat_of_mean_pct": 0.063,
+    "rms_pct": 7.429,
+    "min_pct": 0.74,
+    "max_pct": 23.621,
+    "n_negative": 0,
+    "chi2_about_mean": 12289.7,
+    "ndof": 17
+   }
+  },
+  "2022EE": {
+   "acceptance_run3": {
+    "mean": 0.6747,
+    "min": 0.3568,
+    "max": 0.886
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 0.842,
+    "stat_of_mean_pct": 0.055,
+    "rms_pct": 0.375,
+    "min_pct": 0.34,
+    "max_pct": 1.482,
+    "n_negative": 0,
+    "chi2_about_mean": 53.1,
+    "ndof": 17
+   },
+   "4Mu_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 0.874,
+    "stat_of_mean_pct": 0.059,
+    "rms_pct": 0.326,
+    "min_pct": 0.411,
+    "max_pct": 1.485,
+    "n_negative": 0,
+    "chi2_about_mean": 36.2,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 7.024,
+    "stat_of_mean_pct": 0.061,
+    "rms_pct": 7.968,
+    "min_pct": 0.181,
+    "max_pct": 24.547,
+    "n_negative": 0,
+    "chi2_about_mean": 15446.2,
+    "ndof": 17
+   },
+   "2Mu2E_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 6.695,
+    "stat_of_mean_pct": 0.063,
+    "rms_pct": 7.429,
+    "min_pct": 0.438,
+    "max_pct": 23.272,
+    "n_negative": 0,
+    "chi2_about_mean": 12288.5,
+    "ndof": 17
+   }
+  },
+  "2023": {
+   "acceptance_run3": {
+    "mean": 0.6746,
+    "min": 0.3537,
+    "max": 0.8852
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 2.053,
+    "stat_of_mean_pct": 0.054,
+    "rms_pct": 0.908,
+    "min_pct": 0.43,
+    "max_pct": 3.393,
+    "n_negative": 0,
+    "chi2_about_mean": 315.7,
+    "ndof": 17
+   },
+   "4Mu_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 1.492,
+    "stat_of_mean_pct": 0.059,
+    "rms_pct": 0.783,
+    "min_pct": 0.067,
+    "max_pct": 2.622,
+    "n_negative": 0,
+    "chi2_about_mean": 201.7,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 7.903,
+    "stat_of_mean_pct": 0.06,
+    "rms_pct": 8.049,
+    "min_pct": 0.785,
+    "max_pct": 25.995,
+    "n_negative": 0,
+    "chi2_about_mean": 15712.9,
+    "ndof": 17
+   },
+   "2Mu2E_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 6.984,
+    "stat_of_mean_pct": 0.063,
+    "rms_pct": 7.502,
+    "min_pct": 0.474,
+    "max_pct": 23.897,
+    "n_negative": 0,
+    "chi2_about_mean": 12428.3,
+    "ndof": 17
+   }
+  },
+  "2023BPix": {
+   "acceptance_run3": {
+    "mean": 0.6746,
+    "min": 0.3551,
+    "max": 0.8844
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 2.138,
+    "stat_of_mean_pct": 0.054,
+    "rms_pct": 0.996,
+    "min_pct": 0.344,
+    "max_pct": 3.475,
+    "n_negative": 0,
+    "chi2_about_mean": 375.4,
+    "ndof": 17
+   },
+   "4Mu_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 1.591,
+    "stat_of_mean_pct": 0.059,
+    "rms_pct": 0.824,
+    "min_pct": 0.184,
+    "max_pct": 2.716,
+    "n_negative": 0,
+    "chi2_about_mean": 221.0,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 7.921,
+    "stat_of_mean_pct": 0.06,
+    "rms_pct": 8.155,
+    "min_pct": 0.755,
+    "max_pct": 25.937,
+    "n_negative": 0,
+    "chi2_about_mean": 16170.7,
+    "ndof": 17
+   },
+   "2Mu2E_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 7.027,
+    "stat_of_mean_pct": 0.063,
+    "rms_pct": 7.614,
+    "min_pct": 0.507,
+    "max_pct": 24.0,
+    "n_negative": 0,
+    "chi2_about_mean": 12838.7,
+    "ndof": 17
+   }
+  },
+  "2024": {
+   "acceptance_run3": {
+    "mean": 0.6745,
+    "min": 0.3545,
+    "max": 0.8854
+   },
+   "acceptance_2018": {
+    "mean": 0.99958,
+    "min": 0.99845,
+    "max": 1.0
+   },
+   "inputs_commit": [
+    "06639ac8"
+   ],
+   "4Mu_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 1.083,
+    "stat_of_mean_pct": 0.055,
+    "rms_pct": 0.759,
+    "min_pct": -0.309,
+    "max_pct": 2.294,
+    "n_negative": 2,
+    "chi2_about_mean": 209.1,
+    "ndof": 17
+   },
+   "4Mu_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 0.643,
+    "stat_of_mean_pct": 0.059,
+    "rms_pct": 0.673,
+    "min_pct": -0.546,
+    "max_pct": 1.708,
+    "n_negative": 4,
+    "chi2_about_mean": 142.0,
+    "ndof": 17
+   },
+   "2Mu2E_incl_acc": {
+    "n_points": 18,
+    "mean_pct": 7.513,
+    "stat_of_mean_pct": 0.06,
+    "rms_pct": 8.07,
+    "min_pct": 0.26,
+    "max_pct": 25.155,
+    "n_negative": 0,
+    "chi2_about_mean": 15777.4,
+    "ndof": 17
+   },
+   "2Mu2E_excl_acc": {
+    "n_points": 18,
+    "mean_pct": 6.631,
+    "stat_of_mean_pct": 0.063,
+    "rms_pct": 7.597,
+    "min_pct": 0.003,
+    "max_pct": 23.446,
+    "n_negative": 0,
+    "chi2_about_mean": 12794.0,
+    "ndof": 17
+   }
+  }
+ }
+}

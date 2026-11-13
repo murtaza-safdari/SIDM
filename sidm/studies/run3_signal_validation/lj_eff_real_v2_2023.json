@@ -1,0 +1,4502 @@
+[
+ {
+  "chan": "2Mu2E",
+  "mbs": 1000,
+  "mdp": 0.25,
+  "ctau": 0.2,
+  "key": "2Mu2E_1000GeV_0p25GeV_0p2mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 85738,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 66739,
+    "n": 100000,
+    "p": 0.66739
+   },
+   "incl_acc": {
+    "k": 63663,
+    "n": 85738,
+    "p": 0.7425295668198465
+   },
+   "excl_raw": {
+    "k": 58071,
+    "n": 100000,
+    "p": 0.58071
+   },
+   "excl_acc": {
+    "k": 55400,
+    "n": 85738,
+    "p": 0.6461545639039865
+   },
+   "nmu_hist": [
+    20776,
+    75345,
+    3763,
+    112,
+    4
+   ],
+   "negm_hist": [
+    13894,
+    78574,
+    7122,
+    394,
+    16
+   ],
+   "nmu_hist_acc": [
+    14435,
+    67809,
+    3392,
+    99,
+    3
+   ],
+   "negm_hist_acc": [
+    8492,
+    70475,
+    6403,
+    355,
+    13
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5241213615971765
+  },
+  "v10": {
+   "n": 104262,
+   "n_acc": 104254,
+   "incl_raw": {
+    "k": 76170,
+    "n": 104262,
+    "p": 0.7305633883869482
+   },
+   "incl_acc": {
+    "k": 76164,
+    "n": 104254,
+    "p": 0.7305618969056343
+   },
+   "excl_raw": {
+    "k": 66526,
+    "n": 104262,
+    "p": 0.638065642324145
+   },
+   "excl_acc": {
+    "k": 66521,
+    "n": 104254,
+    "p": 0.638066644924895
+   },
+   "nmu_hist": [
+    17984,
+    82654,
+    3556,
+    67,
+    1
+   ],
+   "negm_hist": [
+    11207,
+    84662,
+    7970,
+    407,
+    16
+   ],
+   "nmu_hist_acc": [
+    17983,
+    82647,
+    3556,
+    67,
+    1
+   ],
+   "negm_hist_acc": [
+    11206,
+    84656,
+    7970,
+    406,
+    16
+   ],
+   "egm_photon_only_frac": 0.5317165094663696,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 1000,
+  "mdp": 1.2,
+  "ctau": 0.96,
+  "key": "2Mu2E_1000GeV_1p2GeV_0p96mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 84927,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 68035,
+    "n": 100000,
+    "p": 0.68035
+   },
+   "incl_acc": {
+    "k": 64363,
+    "n": 84927,
+    "p": 0.7578626349688556
+   },
+   "excl_raw": {
+    "k": 58998,
+    "n": 100000,
+    "p": 0.58998
+   },
+   "excl_acc": {
+    "k": 55813,
+    "n": 84927,
+    "p": 0.6571879378760582
+   },
+   "nmu_hist": [
+    19138,
+    76938,
+    3827,
+    97,
+    0
+   ],
+   "negm_hist": [
+    14150,
+    78163,
+    7304,
+    363,
+    20
+   ],
+   "nmu_hist_acc": [
+    12623,
+    68765,
+    3453,
+    86,
+    0
+   ],
+   "negm_hist_acc": [
+    8617,
+    69438,
+    6520,
+    333,
+    19
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5128060464126037
+  },
+  "v10": {
+   "n": 81952,
+   "n_acc": 81939,
+   "incl_raw": {
+    "k": 60719,
+    "n": 81952,
+    "p": 0.7409093127684498
+   },
+   "incl_acc": {
+    "k": 60709,
+    "n": 81939,
+    "p": 0.7409048194388509
+   },
+   "excl_raw": {
+    "k": 52922,
+    "n": 81952,
+    "p": 0.6457682545880515
+   },
+   "excl_acc": {
+    "k": 52914,
+    "n": 81939,
+    "p": 0.6457730750924469
+   },
+   "nmu_hist": [
+    12799,
+    66149,
+    2937,
+    66,
+    1
+   ],
+   "negm_hist": [
+    9226,
+    66072,
+    6321,
+    321,
+    12
+   ],
+   "nmu_hist_acc": [
+    12797,
+    66140,
+    2935,
+    66,
+    1
+   ],
+   "negm_hist_acc": [
+    9225,
+    66061,
+    6320,
+    321,
+    12
+   ],
+   "egm_photon_only_frac": 0.515697710881154,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 1000,
+  "mdp": 5.0,
+  "ctau": 4.0,
+  "key": "2Mu2E_1000GeV_5p0GeV_4p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 82768,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 58797,
+    "n": 100000,
+    "p": 0.58797
+   },
+   "incl_acc": {
+    "k": 53875,
+    "n": 82768,
+    "p": 0.6509158128745409
+   },
+   "excl_raw": {
+    "k": 51102,
+    "n": 100000,
+    "p": 0.51102
+   },
+   "excl_acc": {
+    "k": 46758,
+    "n": 82768,
+    "p": 0.5649284747728591
+   },
+   "nmu_hist": [
+    18285,
+    77821,
+    3793,
+    100,
+    1
+   ],
+   "negm_hist": [
+    25214,
+    68046,
+    6353,
+    369,
+    18
+   ],
+   "nmu_hist_acc": [
+    11509,
+    67785,
+    3384,
+    90,
+    0
+   ],
+   "negm_hist_acc": [
+    18491,
+    58416,
+    5532,
+    313,
+    16
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.4313821217595079
+  },
+  "v10": {
+   "n": 101774,
+   "n_acc": 101766,
+   "incl_raw": {
+    "k": 59459,
+    "n": 101774,
+    "p": 0.5842258337099848
+   },
+   "incl_acc": {
+    "k": 59453,
+    "n": 101766,
+    "p": 0.5842128019181259
+   },
+   "excl_raw": {
+    "k": 51792,
+    "n": 101774,
+    "p": 0.5088922514591153
+   },
+   "excl_acc": {
+    "k": 51786,
+    "n": 101766,
+    "p": 0.5088732975650021
+   },
+   "nmu_hist": [
+    14720,
+    83317,
+    3654,
+    81,
+    2
+   ],
+   "negm_hist": [
+    29385,
+    65742,
+    6297,
+    339,
+    11
+   ],
+   "nmu_hist_acc": [
+    14720,
+    83309,
+    3654,
+    81,
+    2
+   ],
+   "negm_hist_acc": [
+    29383,
+    65736,
+    6297,
+    339,
+    11
+   ],
+   "egm_photon_only_frac": 0.37289822033578096,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 100,
+  "mdp": 0.25,
+  "ctau": 2.0,
+  "key": "2Mu2E_100GeV_0p25GeV_2p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 50124,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 55613,
+    "n": 100000,
+    "p": 0.55613
+   },
+   "incl_acc": {
+    "k": 39590,
+    "n": 50124,
+    "p": 0.7898411938392786
+   },
+   "excl_raw": {
+    "k": 52780,
+    "n": 100000,
+    "p": 0.5278
+   },
+   "excl_acc": {
+    "k": 37614,
+    "n": 50124,
+    "p": 0.7504189609767776
+   },
+   "nmu_hist": [
+    24868,
+    72937,
+    2162,
+    33,
+    0
+   ],
+   "negm_hist": [
+    29846,
+    68515,
+    1616,
+    23,
+    0
+   ],
+   "nmu_hist_acc": [
+    4305,
+    44461,
+    1334,
+    24,
+    0
+   ],
+   "negm_hist_acc": [
+    6636,
+    42481,
+    993,
+    14,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5588587501392447
+  },
+  "v10": {
+   "n": 63514,
+   "n_acc": 63466,
+   "incl_raw": {
+    "k": 47500,
+    "n": 63514,
+    "p": 0.7478666120855244
+   },
+   "incl_acc": {
+    "k": 47467,
+    "n": 63466,
+    "p": 0.7479122679860083
+   },
+   "excl_raw": {
+    "k": 45382,
+    "n": 63514,
+    "p": 0.7145196334666373
+   },
+   "excl_acc": {
+    "k": 45353,
+    "n": 63466,
+    "p": 0.7146030945703211
+   },
+   "nmu_hist": [
+    6510,
+    55644,
+    1341,
+    19,
+    0
+   ],
+   "negm_hist": [
+    10345,
+    51968,
+    1182,
+    19,
+    0
+   ],
+   "nmu_hist_acc": [
+    6507,
+    55601,
+    1339,
+    19,
+    0
+   ],
+   "negm_hist_acc": [
+    10335,
+    51932,
+    1180,
+    19,
+    0
+   ],
+   "egm_photon_only_frac": 0.5483829450808068,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 100,
+  "mdp": 1.2,
+  "ctau": 9.6,
+  "key": "2Mu2E_100GeV_1p2GeV_9p6mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 37266,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 43880,
+    "n": 100000,
+    "p": 0.4388
+   },
+   "incl_acc": {
+    "k": 21859,
+    "n": 37266,
+    "p": 0.5865668437718027
+   },
+   "excl_raw": {
+    "k": 41649,
+    "n": 100000,
+    "p": 0.41649
+   },
+   "excl_acc": {
+    "k": 20735,
+    "n": 37266,
+    "p": 0.5564053024204368
+   },
+   "nmu_hist": [
+    26536,
+    71292,
+    2138,
+    34,
+    0
+   ],
+   "negm_hist": [
+    42293,
+    56382,
+    1295,
+    30,
+    0
+   ],
+   "nmu_hist_acc": [
+    3875,
+    32382,
+    995,
+    14,
+    0
+   ],
+   "negm_hist_acc": [
+    12524,
+    24165,
+    562,
+    15,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.4897057329585859
+  },
+  "v10": {
+   "n": 51746,
+   "n_acc": 51691,
+   "incl_raw": {
+    "k": 25319,
+    "n": 51746,
+    "p": 0.48929385846248985
+   },
+   "incl_acc": {
+    "k": 25297,
+    "n": 51691,
+    "p": 0.48938886846839874
+   },
+   "excl_raw": {
+    "k": 24243,
+    "n": 51746,
+    "p": 0.4684999806748348
+   },
+   "excl_acc": {
+    "k": 24222,
+    "n": 51691,
+    "p": 0.4685922114101101
+   },
+   "nmu_hist": [
+    6242,
+    44423,
+    1064,
+    17,
+    0
+   ],
+   "negm_hist": [
+    22445,
+    28630,
+    659,
+    12,
+    0
+   ],
+   "nmu_hist_acc": [
+    6234,
+    44376,
+    1064,
+    17,
+    0
+   ],
+   "negm_hist_acc": [
+    22418,
+    28603,
+    658,
+    12,
+    0
+   ],
+   "egm_photon_only_frac": 0.35769076840981856,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 100,
+  "mdp": 5.0,
+  "ctau": 40.0,
+  "key": "2Mu2E_100GeV_5p0GeV_40p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 35369,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 49394,
+    "n": 100000,
+    "p": 0.49394
+   },
+   "incl_acc": {
+    "k": 24555,
+    "n": 35369,
+    "p": 0.6942520286126269
+   },
+   "excl_raw": {
+    "k": 45580,
+    "n": 100000,
+    "p": 0.4558
+   },
+   "excl_acc": {
+    "k": 22508,
+    "n": 35369,
+    "p": 0.6363764878848709
+   },
+   "nmu_hist": [
+    26600,
+    68369,
+    4913,
+    116,
+    2
+   ],
+   "negm_hist": [
+    35895,
+    62499,
+    1581,
+    24,
+    1
+   ],
+   "nmu_hist_acc": [
+    3952,
+    29264,
+    2082,
+    70,
+    1
+   ],
+   "negm_hist_acc": [
+    7523,
+    27182,
+    651,
+    13,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5434078220788902
+  },
+  "v10": {
+   "n": 52065,
+   "n_acc": 51994,
+   "incl_raw": {
+    "k": 22615,
+    "n": 52065,
+    "p": 0.4343608950350523
+   },
+   "incl_acc": {
+    "k": 22581,
+    "n": 51994,
+    "p": 0.43430011155133286
+   },
+   "excl_raw": {
+    "k": 20696,
+    "n": 52065,
+    "p": 0.39750312109862673
+   },
+   "excl_acc": {
+    "k": 20663,
+    "n": 51994,
+    "p": 0.3974112397584337
+   },
+   "nmu_hist": [
+    6789,
+    42299,
+    2913,
+    60,
+    4
+   ],
+   "negm_hist": [
+    25390,
+    25980,
+    680,
+    15,
+    0
+   ],
+   "nmu_hist_acc": [
+    6778,
+    42240,
+    2912,
+    60,
+    4
+   ],
+   "negm_hist_acc": [
+    25361,
+    25939,
+    679,
+    15,
+    0
+   ],
+   "egm_photon_only_frac": 0.29264195727588094,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 150,
+  "mdp": 0.25,
+  "ctau": 1.3,
+  "key": "2Mu2E_150GeV_0p25GeV_1p3mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 59652,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 60402,
+    "n": 100000,
+    "p": 0.60402
+   },
+   "incl_acc": {
+    "k": 47795,
+    "n": 59652,
+    "p": 0.8012304700596795
+   },
+   "excl_raw": {
+    "k": 56685,
+    "n": 100000,
+    "p": 0.56685
+   },
+   "excl_acc": {
+    "k": 44805,
+    "n": 59652,
+    "p": 0.7511064172198753
+   },
+   "nmu_hist": [
+    22384,
+    75105,
+    2471,
+    40,
+    0
+   ],
+   "negm_hist": [
+    23690,
+    73990,
+    2263,
+    57,
+    0
+   ],
+   "nmu_hist_acc": [
+    5806,
+    52022,
+    1799,
+    25,
+    0
+   ],
+   "negm_hist_acc": [
+    6530,
+    51470,
+    1609,
+    43,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5533569712913188
+  },
+  "v10": {
+   "n": 81920,
+   "n_acc": 81879,
+   "incl_raw": {
+    "k": 63354,
+    "n": 81920,
+    "p": 0.7733642578125
+   },
+   "incl_acc": {
+    "k": 63323,
+    "n": 81879,
+    "p": 0.7733729039191979
+   },
+   "excl_raw": {
+    "k": 59723,
+    "n": 81920,
+    "p": 0.72904052734375
+   },
+   "excl_acc": {
+    "k": 59694,
+    "n": 81879,
+    "p": 0.7290514051221925
+   },
+   "nmu_hist": [
+    9361,
+    70467,
+    2062,
+    30,
+    0
+   ],
+   "negm_hist": [
+    10140,
+    69536,
+    2191,
+    50,
+    3
+   ],
+   "nmu_hist_acc": [
+    9358,
+    70429,
+    2062,
+    30,
+    0
+   ],
+   "negm_hist_acc": [
+    10133,
+    69504,
+    2189,
+    50,
+    3
+   ],
+   "egm_photon_only_frac": 0.548488120950324,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 150,
+  "mdp": 1.2,
+  "ctau": 6.4,
+  "key": "2Mu2E_150GeV_1p2GeV_6p4mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 49191,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 48450,
+    "n": 100000,
+    "p": 0.4845
+   },
+   "incl_acc": {
+    "k": 30426,
+    "n": 49191,
+    "p": 0.6185277794718546
+   },
+   "excl_raw": {
+    "k": 45474,
+    "n": 100000,
+    "p": 0.45474
+   },
+   "excl_acc": {
+    "k": 28534,
+    "n": 49191,
+    "p": 0.5800654591287024
+   },
+   "nmu_hist": [
+    24073,
+    73451,
+    2435,
+    40,
+    1
+   ],
+   "negm_hist": [
+    36473,
+    61512,
+    1967,
+    47,
+    1
+   ],
+   "nmu_hist_acc": [
+    5393,
+    42320,
+    1453,
+    24,
+    1
+   ],
+   "negm_hist_acc": [
+    14556,
+    33506,
+    1100,
+    28,
+    1
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.48483785885258646
+  },
+  "v10": {
+   "n": 67038,
+   "n_acc": 66974,
+   "incl_raw": {
+    "k": 36510,
+    "n": 67038,
+    "p": 0.5446164861720219
+   },
+   "incl_acc": {
+    "k": 36471,
+    "n": 66974,
+    "p": 0.5445546032788844
+   },
+   "excl_raw": {
+    "k": 34475,
+    "n": 67038,
+    "p": 0.5142605686327157
+   },
+   "excl_acc": {
+    "k": 34437,
+    "n": 66974,
+    "p": 0.5141846089527279
+   },
+   "nmu_hist": [
+    8198,
+    57235,
+    1584,
+    20,
+    1
+   ],
+   "negm_hist": [
+    24736,
+    41035,
+    1241,
+    25,
+    1
+   ],
+   "nmu_hist_acc": [
+    8187,
+    57183,
+    1583,
+    20,
+    1
+   ],
+   "negm_hist_acc": [
+    24718,
+    40989,
+    1241,
+    25,
+    1
+   ],
+   "egm_photon_only_frac": 0.3937517203413157,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 150,
+  "mdp": 5.0,
+  "ctau": 27.0,
+  "key": "2Mu2E_150GeV_5p0GeV_27p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 46846,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 53719,
+    "n": 100000,
+    "p": 0.53719
+   },
+   "incl_acc": {
+    "k": 33020,
+    "n": 46846,
+    "p": 0.7048627417495624
+   },
+   "excl_raw": {
+    "k": 49975,
+    "n": 100000,
+    "p": 0.49975
+   },
+   "excl_acc": {
+    "k": 30627,
+    "n": 46846,
+    "p": 0.6537804721854588
+   },
+   "nmu_hist": [
+    23968,
+    72523,
+    3427,
+    80,
+    2
+   ],
+   "negm_hist": [
+    30409,
+    67365,
+    2161,
+    63,
+    2
+   ],
+   "nmu_hist_acc": [
+    5303,
+    39746,
+    1756,
+    41,
+    0
+   ],
+   "negm_hist_acc": [
+    9296,
+    36305,
+    1208,
+    35,
+    2
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5207556618997273
+  },
+  "v10": {
+   "n": 68222,
+   "n_acc": 68175,
+   "incl_raw": {
+    "k": 30807,
+    "n": 68222,
+    "p": 0.45156987482043914
+   },
+   "incl_acc": {
+    "k": 30780,
+    "n": 68175,
+    "p": 0.4514851485148515
+   },
+   "excl_raw": {
+    "k": 28704,
+    "n": 68222,
+    "p": 0.4207440415115359
+   },
+   "excl_acc": {
+    "k": 28677,
+    "n": 68175,
+    "p": 0.42063806380638064
+   },
+   "nmu_hist": [
+    8762,
+    57221,
+    2197,
+    42,
+    0
+   ],
+   "negm_hist": [
+    31867,
+    35154,
+    1167,
+    33,
+    1
+   ],
+   "nmu_hist_acc": [
+    8756,
+    57180,
+    2197,
+    42,
+    0
+   ],
+   "negm_hist_acc": [
+    31854,
+    35120,
+    1167,
+    33,
+    1
+   ],
+   "egm_photon_only_frac": 0.2547684286132319,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 200,
+  "mdp": 0.25,
+  "ctau": 1.0,
+  "key": "2Mu2E_200GeV_0p25GeV_1p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 65091,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 61579,
+    "n": 100000,
+    "p": 0.61579
+   },
+   "incl_acc": {
+    "k": 51363,
+    "n": 65091,
+    "p": 0.7890952666267226
+   },
+   "excl_raw": {
+    "k": 57330,
+    "n": 100000,
+    "p": 0.5733
+   },
+   "excl_acc": {
+    "k": 47818,
+    "n": 65091,
+    "p": 0.7346330521884746
+   },
+   "nmu_hist": [
+    22011,
+    75187,
+    2745,
+    55,
+    2
+   ],
+   "negm_hist": [
+    21394,
+    75782,
+    2757,
+    66,
+    1
+   ],
+   "nmu_hist_acc": [
+    7340,
+    55620,
+    2087,
+    42,
+    2
+   ],
+   "negm_hist_acc": [
+    6974,
+    56021,
+    2040,
+    55,
+    1
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5532651108002651
+  },
+  "v10": {
+   "n": 45057,
+   "n_acc": 45042,
+   "incl_raw": {
+    "k": 34654,
+    "n": 45057,
+    "p": 0.7691146769647336
+   },
+   "incl_acc": {
+    "k": 34642,
+    "n": 45042,
+    "p": 0.7691043914568625
+   },
+   "excl_raw": {
+    "k": 32370,
+    "n": 45057,
+    "p": 0.718423330448099
+   },
+   "excl_acc": {
+    "k": 32359,
+    "n": 45042,
+    "p": 0.7184183650814795
+   },
+   "nmu_hist": [
+    5735,
+    38085,
+    1219,
+    17,
+    1
+   ],
+   "negm_hist": [
+    5172,
+    38377,
+    1468,
+    40,
+    0
+   ],
+   "nmu_hist_acc": [
+    5735,
+    38070,
+    1219,
+    17,
+    1
+   ],
+   "negm_hist_acc": [
+    5170,
+    38365,
+    1467,
+    40,
+    0
+   ],
+   "egm_photon_only_frac": 0.5530615692805252,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 200,
+  "mdp": 1.2,
+  "ctau": 4.8,
+  "key": "2Mu2E_200GeV_1p2GeV_4p8mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 56624,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 52813,
+    "n": 100000,
+    "p": 0.52813
+   },
+   "incl_acc": {
+    "k": 37512,
+    "n": 56624,
+    "p": 0.6624752755015542
+   },
+   "excl_raw": {
+    "k": 49103,
+    "n": 100000,
+    "p": 0.49103
+   },
+   "excl_acc": {
+    "k": 34877,
+    "n": 56624,
+    "p": 0.6159402373551851
+   },
+   "nmu_hist": [
+    22342,
+    74953,
+    2654,
+    48,
+    3
+   ],
+   "negm_hist": [
+    31802,
+    65682,
+    2452,
+    64,
+    0
+   ],
+   "nmu_hist_acc": [
+    6244,
+    48608,
+    1739,
+    30,
+    3
+   ],
+   "negm_hist_acc": [
+    13946,
+    41092,
+    1542,
+    44,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.49064681115600894
+  },
+  "v10": {
+   "n": 41455,
+   "n_acc": 41431,
+   "incl_raw": {
+    "k": 24334,
+    "n": 41455,
+    "p": 0.5869979495838862
+   },
+   "incl_acc": {
+    "k": 24319,
+    "n": 41431,
+    "p": 0.5869759358934131
+   },
+   "excl_raw": {
+    "k": 22799,
+    "n": 41455,
+    "p": 0.549969846821855
+   },
+   "excl_acc": {
+    "k": 22784,
+    "n": 41431,
+    "p": 0.5499263836257875
+   },
+   "nmu_hist": [
+    5169,
+    35243,
+    1020,
+    22,
+    1
+   ],
+   "negm_hist": [
+    13179,
+    27236,
+    1019,
+    21,
+    0
+   ],
+   "nmu_hist_acc": [
+    5166,
+    35222,
+    1020,
+    22,
+    1
+   ],
+   "negm_hist_acc": [
+    13173,
+    27219,
+    1018,
+    21,
+    0
+   ],
+   "egm_photon_only_frac": 0.42448103078024335,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 200,
+  "mdp": 5.0,
+  "ctau": 20.0,
+  "key": "2Mu2E_200GeV_5p0GeV_20p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 54549,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 54916,
+    "n": 100000,
+    "p": 0.54916
+   },
+   "incl_acc": {
+    "k": 37909,
+    "n": 54549,
+    "p": 0.6949531613778438
+   },
+   "excl_raw": {
+    "k": 50929,
+    "n": 100000,
+    "p": 0.50929
+   },
+   "excl_acc": {
+    "k": 35144,
+    "n": 54549,
+    "p": 0.644264789455352
+   },
+   "nmu_hist": [
+    22223,
+    74502,
+    3202,
+    73,
+    0
+   ],
+   "negm_hist": [
+    29220,
+    68108,
+    2591,
+    79,
+    2
+   ],
+   "nmu_hist_acc": [
+    6150,
+    46541,
+    1821,
+    37,
+    0
+   ],
+   "negm_hist_acc": [
+    11396,
+    41482,
+    1615,
+    56,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.4962534847351601
+  },
+  "v10": {
+   "n": 35252,
+   "n_acc": 35231,
+   "incl_raw": {
+    "k": 16444,
+    "n": 35252,
+    "p": 0.46646998751843866
+   },
+   "incl_acc": {
+    "k": 16432,
+    "n": 35231,
+    "p": 0.46640742527887374
+   },
+   "excl_raw": {
+    "k": 15322,
+    "n": 35252,
+    "p": 0.4346420061273119
+   },
+   "excl_acc": {
+    "k": 15310,
+    "n": 35231,
+    "p": 0.4345604723113167
+   },
+   "nmu_hist": [
+    4384,
+    29814,
+    1029,
+    25,
+    0
+   ],
+   "negm_hist": [
+    15849,
+    18679,
+    705,
+    17,
+    2
+   ],
+   "nmu_hist_acc": [
+    4378,
+    29799,
+    1029,
+    25,
+    0
+   ],
+   "negm_hist_acc": [
+    15845,
+    18663,
+    704,
+    17,
+    2
+   ],
+   "egm_photon_only_frac": 0.24364701211038317,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 500,
+  "mdp": 0.25,
+  "ctau": 0.4,
+  "key": "2Mu2E_500GeV_0p25GeV_0p4mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 78157,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 64898,
+    "n": 100000,
+    "p": 0.64898
+   },
+   "incl_acc": {
+    "k": 59731,
+    "n": 78157,
+    "p": 0.7642437657535474
+   },
+   "excl_raw": {
+    "k": 58161,
+    "n": 100000,
+    "p": 0.58161
+   },
+   "excl_acc": {
+    "k": 53530,
+    "n": 78157,
+    "p": 0.6849034635413335
+   },
+   "nmu_hist": [
+    20886,
+    75693,
+    3338,
+    82,
+    1
+   ],
+   "negm_hist": [
+    16417,
+    78272,
+    5120,
+    179,
+    12
+   ],
+   "nmu_hist_acc": [
+    11186,
+    64034,
+    2866,
+    70,
+    1
+   ],
+   "negm_hist_acc": [
+    7997,
+    65669,
+    4330,
+    151,
+    10
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5404446838838569
+  },
+  "v10": {
+   "n": 110340,
+   "n_acc": 110331,
+   "incl_raw": {
+    "k": 82965,
+    "n": 110340,
+    "p": 0.7519032082653616
+   },
+   "incl_acc": {
+    "k": 82959,
+    "n": 110331,
+    "p": 0.7519101612420807
+   },
+   "excl_raw": {
+    "k": 74430,
+    "n": 110340,
+    "p": 0.6745513866231647
+   },
+   "excl_acc": {
+    "k": 74427,
+    "n": 110331,
+    "p": 0.674579220708595
+   },
+   "nmu_hist": [
+    16686,
+    89986,
+    3582,
+    84,
+    2
+   ],
+   "negm_hist": [
+    11928,
+    91753,
+    6368,
+    277,
+    14
+   ],
+   "nmu_hist_acc": [
+    16683,
+    89980,
+    3582,
+    84,
+    2
+   ],
+   "negm_hist_acc": [
+    11928,
+    91748,
+    6365,
+    276,
+    14
+   ],
+   "egm_photon_only_frac": 0.5440561033242548,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 500,
+  "mdp": 1.2,
+  "ctau": 1.9,
+  "key": "2Mu2E_500GeV_1p2GeV_1p9mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 75001,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 65080,
+    "n": 100000,
+    "p": 0.6508
+   },
+   "incl_acc": {
+    "k": 57643,
+    "n": 75001,
+    "p": 0.7685630858255224
+   },
+   "excl_raw": {
+    "k": 58283,
+    "n": 100000,
+    "p": 0.58283
+   },
+   "excl_acc": {
+    "k": 51559,
+    "n": 75001,
+    "p": 0.6874441674111011
+   },
+   "nmu_hist": [
+    19296,
+    77193,
+    3438,
+    72,
+    1
+   ],
+   "negm_hist": [
+    18047,
+    76650,
+    5090,
+    207,
+    6
+   ],
+   "nmu_hist_acc": [
+    9497,
+    62619,
+    2826,
+    58,
+    1
+   ],
+   "negm_hist_acc": [
+    8485,
+    62107,
+    4224,
+    182,
+    3
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5209488425264361
+  },
+  "v10": {
+   "n": 109018,
+   "n_acc": 108991,
+   "incl_raw": {
+    "k": 79045,
+    "n": 109018,
+    "p": 0.7250637509402117
+   },
+   "incl_acc": {
+    "k": 79024,
+    "n": 108991,
+    "p": 0.7250506922589939
+   },
+   "excl_raw": {
+    "k": 71062,
+    "n": 109018,
+    "p": 0.6518373112696986
+   },
+   "excl_acc": {
+    "k": 71042,
+    "n": 108991,
+    "p": 0.6518152875008029
+   },
+   "nmu_hist": [
+    15110,
+    90405,
+    3444,
+    58,
+    1
+   ],
+   "negm_hist": [
+    16224,
+    86505,
+    6047,
+    233,
+    9
+   ],
+   "nmu_hist_acc": [
+    15108,
+    90380,
+    3444,
+    58,
+    1
+   ],
+   "negm_hist_acc": [
+    16220,
+    86483,
+    6046,
+    233,
+    9
+   ],
+   "egm_photon_only_frac": 0.5046308414037489,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 500,
+  "mdp": 5.0,
+  "ctau": 8.0,
+  "key": "2Mu2E_500GeV_5p0GeV_8p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 72857,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 52234,
+    "n": 100000,
+    "p": 0.52234
+   },
+   "incl_acc": {
+    "k": 44010,
+    "n": 72857,
+    "p": 0.6040600079608
+   },
+   "excl_raw": {
+    "k": 46719,
+    "n": 100000,
+    "p": 0.46719
+   },
+   "excl_acc": {
+    "k": 39341,
+    "n": 72857,
+    "p": 0.5399755685795462
+   },
+   "nmu_hist": [
+    19187,
+    77279,
+    3466,
+    67,
+    1
+   ],
+   "negm_hist": [
+    32302,
+    63125,
+    4389,
+    178,
+    6
+   ],
+   "nmu_hist_acc": [
+    9098,
+    60966,
+    2740,
+    52,
+    1
+   ],
+   "negm_hist_acc": [
+    21291,
+    48017,
+    3400,
+    143,
+    6
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.3989318391962573
+  },
+  "v10": {
+   "n": 109972,
+   "n_acc": 109941,
+   "incl_raw": {
+    "k": 55773,
+    "n": 109972,
+    "p": 0.5071563670752555
+   },
+   "incl_acc": {
+    "k": 55755,
+    "n": 109941,
+    "p": 0.5071356454825771
+   },
+   "excl_raw": {
+    "k": 50272,
+    "n": 109972,
+    "p": 0.4571345433383043
+   },
+   "excl_acc": {
+    "k": 50256,
+    "n": 109941,
+    "p": 0.45711790869648267
+   },
+   "nmu_hist": [
+    14722,
+    91643,
+    3532,
+    70,
+    5
+   ],
+   "negm_hist": [
+    42730,
+    62868,
+    4193,
+    172,
+    9
+   ],
+   "nmu_hist_acc": [
+    14717,
+    91618,
+    3531,
+    70,
+    5
+   ],
+   "negm_hist_acc": [
+    42722,
+    62846,
+    4192,
+    172,
+    9
+   ],
+   "egm_photon_only_frac": 0.2792802829847088,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 800,
+  "mdp": 0.25,
+  "ctau": 0.25,
+  "key": "2Mu2E_800GeV_0p25GeV_0p25mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 83367,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 65864,
+    "n": 100000,
+    "p": 0.65864
+   },
+   "incl_acc": {
+    "k": 62294,
+    "n": 83367,
+    "p": 0.7472261206472585
+   },
+   "excl_raw": {
+    "k": 57789,
+    "n": 100000,
+    "p": 0.57789
+   },
+   "excl_acc": {
+    "k": 54648,
+    "n": 83367,
+    "p": 0.6555111734859117
+   },
+   "nmu_hist": [
+    20947,
+    75369,
+    3594,
+    90,
+    0
+   ],
+   "negm_hist": [
+    14788,
+    78369,
+    6545,
+    288,
+    10
+   ],
+   "nmu_hist_acc": [
+    13430,
+    66661,
+    3194,
+    82,
+    0
+   ],
+   "negm_hist_acc": [
+    8445,
+    68861,
+    5805,
+    247,
+    9
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5292703788313502
+  },
+  "v10": {
+   "n": 97889,
+   "n_acc": 97879,
+   "incl_raw": {
+    "k": 72375,
+    "n": 97889,
+    "p": 0.7393578440887127
+   },
+   "incl_acc": {
+    "k": 72369,
+    "n": 97879,
+    "p": 0.7393720818561693
+   },
+   "excl_raw": {
+    "k": 63703,
+    "n": 97889,
+    "p": 0.6507677062795616
+   },
+   "excl_acc": {
+    "k": 63697,
+    "n": 97879,
+    "p": 0.6507728930618416
+   },
+   "nmu_hist": [
+    16124,
+    78325,
+    3361,
+    76,
+    3
+   ],
+   "negm_hist": [
+    10451,
+    80253,
+    6850,
+    318,
+    17
+   ],
+   "nmu_hist_acc": [
+    16120,
+    78319,
+    3361,
+    76,
+    3
+   ],
+   "negm_hist_acc": [
+    10451,
+    80244,
+    6849,
+    318,
+    17
+   ],
+   "egm_photon_only_frac": 0.5305606738615425,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 800,
+  "mdp": 1.2,
+  "ctau": 1.2,
+  "key": "2Mu2E_800GeV_1p2GeV_1p2mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 81991,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 67118,
+    "n": 100000,
+    "p": 0.67118
+   },
+   "incl_acc": {
+    "k": 62394,
+    "n": 81991,
+    "p": 0.7609859618738642
+   },
+   "excl_raw": {
+    "k": 58800,
+    "n": 100000,
+    "p": 0.588
+   },
+   "excl_acc": {
+    "k": 54624,
+    "n": 81991,
+    "p": 0.6662194631118049
+   },
+   "nmu_hist": [
+    19163,
+    76977,
+    3772,
+    87,
+    1
+   ],
+   "negm_hist": [
+    15222,
+    77976,
+    6479,
+    319,
+    4
+   ],
+   "nmu_hist_acc": [
+    11679,
+    66915,
+    3326,
+    70,
+    1
+   ],
+   "negm_hist_acc": [
+    8584,
+    67407,
+    5715,
+    282,
+    3
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.5152926327700827
+  },
+  "v10": {
+   "n": 98768,
+   "n_acc": 98757,
+   "incl_raw": {
+    "k": 73250,
+    "n": 98768,
+    "p": 0.7416369674388466
+   },
+   "incl_acc": {
+    "k": 73242,
+    "n": 98757,
+    "p": 0.7416385673926912
+   },
+   "excl_raw": {
+    "k": 64428,
+    "n": 98768,
+    "p": 0.652316539769966
+   },
+   "excl_acc": {
+    "k": 64422,
+    "n": 98757,
+    "p": 0.6523284425407819
+   },
+   "nmu_hist": [
+    14794,
+    80468,
+    3426,
+    78,
+    2
+   ],
+   "negm_hist": [
+    11684,
+    79783,
+    6927,
+    361,
+    13
+   ],
+   "nmu_hist_acc": [
+    14792,
+    80460,
+    3425,
+    78,
+    2
+   ],
+   "negm_hist_acc": [
+    11683,
+    79774,
+    6926,
+    361,
+    13
+   ],
+   "egm_photon_only_frac": 0.515188925115803,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "2Mu2E",
+  "mbs": 800,
+  "mdp": 5.0,
+  "ctau": 5.0,
+  "key": "2Mu2E_800GeV_5p0GeV_5p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 79717,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 55298,
+    "n": 100000,
+    "p": 0.55298
+   },
+   "incl_acc": {
+    "k": 49582,
+    "n": 79717,
+    "p": 0.6219752374023106
+   },
+   "excl_raw": {
+    "k": 48473,
+    "n": 100000,
+    "p": 0.48473
+   },
+   "excl_acc": {
+    "k": 43447,
+    "n": 79717,
+    "p": 0.5450154923040255
+   },
+   "nmu_hist": [
+    18367,
+    77895,
+    3645,
+    93,
+    0
+   ],
+   "negm_hist": [
+    29013,
+    65127,
+    5615,
+    235,
+    10
+   ],
+   "nmu_hist_acc": [
+    10580,
+    65935,
+    3129,
+    73,
+    0
+   ],
+   "negm_hist_acc": [
+    20776,
+    54022,
+    4704,
+    205,
+    10
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)",
+   "egm_photon_only_frac": 0.4089906876605017
+  },
+  "v10": {
+   "n": 106387,
+   "n_acc": 106371,
+   "incl_raw": {
+    "k": 58874,
+    "n": 106387,
+    "p": 0.5533946816810325
+   },
+   "incl_acc": {
+    "k": 58867,
+    "n": 106371,
+    "p": 0.5534121142040593
+   },
+   "excl_raw": {
+    "k": 51759,
+    "n": 106387,
+    "p": 0.4865162096872738
+   },
+   "excl_acc": {
+    "k": 51753,
+    "n": 106371,
+    "p": 0.4865329836139549
+   },
+   "nmu_hist": [
+    14863,
+    87775,
+    3643,
+    105,
+    1
+   ],
+   "negm_hist": [
+    35013,
+    65402,
+    5688,
+    274,
+    10
+   ],
+   "nmu_hist_acc": [
+    14862,
+    87760,
+    3643,
+    105,
+    1
+   ],
+   "negm_hist_acc": [
+    35007,
+    65393,
+    5687,
+    274,
+    10
+   ],
+   "egm_photon_only_frac": 0.3417524246210121,
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 1000,
+  "mdp": 0.25,
+  "ctau": 0.2,
+  "key": "4Mu_1000GeV_0p25GeV_0p2mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 88524,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 62067,
+    "n": 100000,
+    "p": 0.62067
+   },
+   "incl_acc": {
+    "k": 61571,
+    "n": 88524,
+    "p": 0.6955288961185667
+   },
+   "excl_raw": {
+    "k": 53862,
+    "n": 100000,
+    "p": 0.53862
+   },
+   "excl_acc": {
+    "k": 53420,
+    "n": 88524,
+    "p": 0.6034521711626226
+   },
+   "nmu_hist": [
+    4189,
+    33744,
+    59032,
+    2960,
+    75
+   ],
+   "negm_hist": [
+    91233,
+    8296,
+    451,
+    20,
+    0
+   ],
+   "nmu_hist_acc": [
+    3047,
+    23906,
+    58554,
+    2943,
+    74
+   ],
+   "negm_hist_acc": [
+    80690,
+    7406,
+    411,
+    17,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 75943,
+   "n_acc": 75943,
+   "incl_raw": {
+    "k": 52350,
+    "n": 75943,
+    "p": 0.6893327890654833
+   },
+   "incl_acc": {
+    "k": 52350,
+    "n": 75943,
+    "p": 0.6893327890654833
+   },
+   "excl_raw": {
+    "k": 45492,
+    "n": 75943,
+    "p": 0.5990282185323202
+   },
+   "excl_acc": {
+    "k": 45492,
+    "n": 75943,
+    "p": 0.5990282185323202
+   },
+   "nmu_hist": [
+    2636,
+    20957,
+    50029,
+    2264,
+    57
+   ],
+   "negm_hist": [
+    69007,
+    6568,
+    349,
+    19,
+    0
+   ],
+   "nmu_hist_acc": [
+    2636,
+    20957,
+    50029,
+    2264,
+    57
+   ],
+   "negm_hist_acc": [
+    69007,
+    6568,
+    349,
+    19,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 1000,
+  "mdp": 1.2,
+  "ctau": 0.96,
+  "key": "4Mu_1000GeV_1p2GeV_0p96mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 87086,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 64551,
+    "n": 100000,
+    "p": 0.64551
+   },
+   "incl_acc": {
+    "k": 62957,
+    "n": 87086,
+    "p": 0.7229290586316974
+   },
+   "excl_raw": {
+    "k": 56000,
+    "n": 100000,
+    "p": 0.56
+   },
+   "excl_acc": {
+    "k": 54585,
+    "n": 87086,
+    "p": 0.6267942034310912
+   },
+   "nmu_hist": [
+    3448,
+    32001,
+    61331,
+    3131,
+    89
+   ],
+   "negm_hist": [
+    91026,
+    8477,
+    480,
+    17,
+    0
+   ],
+   "nmu_hist_acc": [
+    2382,
+    21747,
+    59781,
+    3089,
+    87
+   ],
+   "negm_hist_acc": [
+    79147,
+    7494,
+    431,
+    14,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 103016,
+   "n_acc": 103004,
+   "incl_raw": {
+    "k": 73243,
+    "n": 103016,
+    "p": 0.7109866428515959
+   },
+   "incl_acc": {
+    "k": 73235,
+    "n": 103004,
+    "p": 0.7109918061434507
+   },
+   "excl_raw": {
+    "k": 63634,
+    "n": 103016,
+    "p": 0.6177098703114079
+   },
+   "excl_acc": {
+    "k": 63627,
+    "n": 103004,
+    "p": 0.6177138751893131
+   },
+   "nmu_hist": [
+    3076,
+    26697,
+    69918,
+    3246,
+    79
+   ],
+   "negm_hist": [
+    93497,
+    8986,
+    510,
+    22,
+    1
+   ],
+   "nmu_hist_acc": [
+    3076,
+    26693,
+    69910,
+    3246,
+    79
+   ],
+   "negm_hist_acc": [
+    93486,
+    8985,
+    510,
+    22,
+    1
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 1000,
+  "mdp": 5.0,
+  "ctau": 4.0,
+  "key": "4Mu_1000GeV_5p0GeV_4p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 83095,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 66222,
+    "n": 100000,
+    "p": 0.66222
+   },
+   "incl_acc": {
+    "k": 61583,
+    "n": 83095,
+    "p": 0.7411155905890848
+   },
+   "excl_raw": {
+    "k": 57279,
+    "n": 100000,
+    "p": 0.57279
+   },
+   "excl_acc": {
+    "k": 53235,
+    "n": 83095,
+    "p": 0.6406522654792707
+   },
+   "nmu_hist": [
+    3030,
+    30748,
+    62886,
+    3226,
+    110
+   ],
+   "negm_hist": [
+    90614,
+    8895,
+    470,
+    19,
+    2
+   ],
+   "nmu_hist_acc": [
+    1983,
+    19529,
+    58442,
+    3039,
+    102
+   ],
+   "negm_hist_acc": [
+    75224,
+    7456,
+    398,
+    15,
+    2
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 102649,
+   "n_acc": 102641,
+   "incl_raw": {
+    "k": 75087,
+    "n": 102649,
+    "p": 0.7314927568705004
+   },
+   "incl_acc": {
+    "k": 75080,
+    "n": 102641,
+    "p": 0.7314815716916242
+   },
+   "excl_raw": {
+    "k": 65293,
+    "n": 102649,
+    "p": 0.6360802345858216
+   },
+   "excl_acc": {
+    "k": 65286,
+    "n": 102641,
+    "p": 0.6360616128057989
+   },
+   "nmu_hist": [
+    2640,
+    24922,
+    71831,
+    3182,
+    74
+   ],
+   "negm_hist": [
+    92841,
+    9252,
+    524,
+    30,
+    2
+   ],
+   "nmu_hist_acc": [
+    2640,
+    24921,
+    71824,
+    3182,
+    74
+   ],
+   "negm_hist_acc": [
+    92833,
+    9252,
+    524,
+    30,
+    2
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 100,
+  "mdp": 0.25,
+  "ctau": 2.0,
+  "key": "4Mu_100GeV_0p25GeV_2p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 68749,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 59045,
+    "n": 100000,
+    "p": 0.59045
+   },
+   "incl_acc": {
+    "k": 57568,
+    "n": 68749,
+    "p": 0.8373649071259218
+   },
+   "excl_raw": {
+    "k": 55858,
+    "n": 100000,
+    "p": 0.55858
+   },
+   "excl_acc": {
+    "k": 54459,
+    "n": 68749,
+    "p": 0.792142431162635
+   },
+   "nmu_hist": [
+    8515,
+    32440,
+    57142,
+    1857,
+    46
+   ],
+   "negm_hist": [
+    97817,
+    2142,
+    40,
+    1,
+    0
+   ],
+   "nmu_hist_acc": [
+    541,
+    10640,
+    55698,
+    1824,
+    46
+   ],
+   "negm_hist_acc": [
+    67191,
+    1530,
+    27,
+    1,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 82470,
+   "n_acc": 82463,
+   "incl_raw": {
+    "k": 66257,
+    "n": 82470,
+    "p": 0.8034072996241057
+   },
+   "incl_acc": {
+    "k": 66254,
+    "n": 82463,
+    "p": 0.8034391181499582
+   },
+   "excl_raw": {
+    "k": 63221,
+    "n": 82470,
+    "p": 0.766593912938038
+   },
+   "excl_acc": {
+    "k": 63219,
+    "n": 82463,
+    "p": 0.7666347331530504
+   },
+   "nmu_hist": [
+    922,
+    15291,
+    64509,
+    1720,
+    28
+   ],
+   "negm_hist": [
+    80756,
+    1684,
+    27,
+    3,
+    0
+   ],
+   "nmu_hist_acc": [
+    922,
+    15287,
+    64507,
+    1719,
+    28
+   ],
+   "negm_hist_acc": [
+    80749,
+    1684,
+    27,
+    3,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 100,
+  "mdp": 1.2,
+  "ctau": 9.6,
+  "key": "4Mu_100GeV_1p2GeV_9p6mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 38838,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 55319,
+    "n": 100000,
+    "p": 0.55319
+   },
+   "incl_acc": {
+    "k": 31001,
+    "n": 38838,
+    "p": 0.7982130902724136
+   },
+   "excl_raw": {
+    "k": 52429,
+    "n": 100000,
+    "p": 0.52429
+   },
+   "excl_acc": {
+    "k": 29320,
+    "n": 38838,
+    "p": 0.754930737937072
+   },
+   "nmu_hist": [
+    9085,
+    35596,
+    53595,
+    1694,
+    30
+   ],
+   "negm_hist": [
+    97720,
+    2239,
+    39,
+    2,
+    0
+   ],
+   "nmu_hist_acc": [
+    478,
+    7359,
+    29987,
+    993,
+    21
+   ],
+   "negm_hist_acc": [
+    37916,
+    900,
+    21,
+    1,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 41542,
+   "n_acc": 41487,
+   "incl_raw": {
+    "k": 32067,
+    "n": 41542,
+    "p": 0.7719175773915555
+   },
+   "incl_acc": {
+    "k": 32029,
+    "n": 41487,
+    "p": 0.772024971677875
+   },
+   "excl_raw": {
+    "k": 30589,
+    "n": 41542,
+    "p": 0.7363391266669876
+   },
+   "excl_acc": {
+    "k": 30553,
+    "n": 41487,
+    "p": 0.7364475618868561
+   },
+   "nmu_hist": [
+    623,
+    8852,
+    31230,
+    819,
+    18
+   ],
+   "negm_hist": [
+    40648,
+    874,
+    19,
+    1,
+    0
+   ],
+   "nmu_hist_acc": [
+    622,
+    8836,
+    31192,
+    819,
+    18
+   ],
+   "negm_hist_acc": [
+    40596,
+    872,
+    18,
+    1,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 100,
+  "mdp": 5.0,
+  "ctau": 40.0,
+  "key": "4Mu_100GeV_5p0GeV_40p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 36148,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 57904,
+    "n": 100000,
+    "p": 0.57904
+   },
+   "incl_acc": {
+    "k": 28851,
+    "n": 36148,
+    "p": 0.7981354431780459
+   },
+   "excl_raw": {
+    "k": 51628,
+    "n": 100000,
+    "p": 0.51628
+   },
+   "excl_acc": {
+    "k": 25312,
+    "n": 36148,
+    "p": 0.7002323780015491
+   },
+   "nmu_hist": [
+    8942,
+    33154,
+    52746,
+    4865,
+    293
+   ],
+   "negm_hist": [
+    97735,
+    2231,
+    33,
+    1,
+    0
+   ],
+   "nmu_hist_acc": [
+    482,
+    6815,
+    25847,
+    2753,
+    251
+   ],
+   "negm_hist_acc": [
+    35315,
+    821,
+    12,
+    0,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 26464,
+   "n_acc": 26423,
+   "incl_raw": {
+    "k": 20324,
+    "n": 26464,
+    "p": 0.7679866989117291
+   },
+   "incl_acc": {
+    "k": 20295,
+    "n": 26423,
+    "p": 0.7680808386632858
+   },
+   "excl_raw": {
+    "k": 17870,
+    "n": 26464,
+    "p": 0.6752569528415961
+   },
+   "excl_acc": {
+    "k": 17843,
+    "n": 26423,
+    "p": 0.675282897475684
+   },
+   "nmu_hist": [
+    464,
+    5676,
+    18229,
+    1908,
+    187
+   ],
+   "negm_hist": [
+    25888,
+    567,
+    9,
+    0,
+    0
+   ],
+   "nmu_hist_acc": [
+    462,
+    5666,
+    18201,
+    1907,
+    187
+   ],
+   "negm_hist_acc": [
+    25849,
+    565,
+    9,
+    0,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 150,
+  "mdp": 0.25,
+  "ctau": 1.3,
+  "key": "4Mu_150GeV_0p25GeV_1p3mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 73383,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 60805,
+    "n": 100000,
+    "p": 0.60805
+   },
+   "incl_acc": {
+    "k": 59927,
+    "n": 73383,
+    "p": 0.8166332801875094
+   },
+   "excl_raw": {
+    "k": 56890,
+    "n": 100000,
+    "p": 0.5689
+   },
+   "excl_acc": {
+    "k": 56065,
+    "n": 73383,
+    "p": 0.7640052873281278
+   },
+   "nmu_hist": [
+    6320,
+    32875,
+    58612,
+    2152,
+    41
+   ],
+   "negm_hist": [
+    97059,
+    2874,
+    67,
+    0,
+    0
+   ],
+   "nmu_hist_acc": [
+    747,
+    12709,
+    57760,
+    2127,
+    40
+   ],
+   "negm_hist_acc": [
+    71142,
+    2190,
+    51,
+    0,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 89088,
+   "n_acc": 89087,
+   "incl_raw": {
+    "k": 69892,
+    "n": 89088,
+    "p": 0.784527658045977
+   },
+   "incl_acc": {
+    "k": 69891,
+    "n": 89087,
+    "p": 0.784525239372748
+   },
+   "excl_raw": {
+    "k": 65909,
+    "n": 89088,
+    "p": 0.7398190553160919
+   },
+   "excl_acc": {
+    "k": 65908,
+    "n": 89087,
+    "p": 0.7398161347895877
+   },
+   "nmu_hist": [
+    1338,
+    17858,
+    67825,
+    2030,
+    37
+   ],
+   "negm_hist": [
+    86424,
+    2583,
+    77,
+    4,
+    0
+   ],
+   "nmu_hist_acc": [
+    1338,
+    17858,
+    67824,
+    2030,
+    37
+   ],
+   "negm_hist_acc": [
+    86423,
+    2583,
+    77,
+    4,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 150,
+  "mdp": 1.2,
+  "ctau": 6.4,
+  "key": "4Mu_150GeV_1p2GeV_6p4mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 50750,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 58895,
+    "n": 100000,
+    "p": 0.58895
+   },
+   "incl_acc": {
+    "k": 40500,
+    "n": 50750,
+    "p": 0.7980295566502463
+   },
+   "excl_raw": {
+    "k": 55235,
+    "n": 100000,
+    "p": 0.55235
+   },
+   "excl_acc": {
+    "k": 37916,
+    "n": 50750,
+    "p": 0.7471133004926108
+   },
+   "nmu_hist": [
+    6716,
+    34389,
+    56880,
+    1989,
+    26
+   ],
+   "negm_hist": [
+    97101,
+    2839,
+    59,
+    1,
+    0
+   ],
+   "nmu_hist_acc": [
+    608,
+    9642,
+    39064,
+    1418,
+    18
+   ],
+   "negm_hist_acc": [
+    49194,
+    1523,
+    33,
+    0,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 63555,
+   "n_acc": 63499,
+   "incl_raw": {
+    "k": 48879,
+    "n": 63555,
+    "p": 0.7690818975690347
+   },
+   "incl_acc": {
+    "k": 48836,
+    "n": 63499,
+    "p": 0.7690829776846879
+   },
+   "excl_raw": {
+    "k": 46108,
+    "n": 63555,
+    "p": 0.7254818661002281
+   },
+   "excl_acc": {
+    "k": 46067,
+    "n": 63499,
+    "p": 0.7254759917479016
+   },
+   "nmu_hist": [
+    984,
+    13692,
+    47454,
+    1394,
+    31
+   ],
+   "negm_hist": [
+    61675,
+    1836,
+    44,
+    0,
+    0
+   ],
+   "nmu_hist_acc": [
+    984,
+    13679,
+    47412,
+    1393,
+    31
+   ],
+   "negm_hist_acc": [
+    61621,
+    1834,
+    44,
+    0,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 150,
+  "mdp": 5.0,
+  "ctau": 27.0,
+  "key": "4Mu_150GeV_5p0GeV_27p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 47524,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 59745,
+    "n": 100000,
+    "p": 0.59745
+   },
+   "incl_acc": {
+    "k": 37595,
+    "n": 47524,
+    "p": 0.7910739836714081
+   },
+   "excl_raw": {
+    "k": 54972,
+    "n": 100000,
+    "p": 0.54972
+   },
+   "excl_acc": {
+    "k": 34539,
+    "n": 47524,
+    "p": 0.7267696321858429
+   },
+   "nmu_hist": [
+    6718,
+    33537,
+    56606,
+    3016,
+    123
+   ],
+   "negm_hist": [
+    96992,
+    2929,
+    79,
+    0,
+    0
+   ],
+   "nmu_hist_acc": [
+    646,
+    9283,
+    35587,
+    1906,
+    102
+   ],
+   "negm_hist_acc": [
+    46056,
+    1425,
+    43,
+    0,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 57582,
+   "n_acc": 57532,
+   "incl_raw": {
+    "k": 43992,
+    "n": 57582,
+    "p": 0.763988746483276
+   },
+   "incl_acc": {
+    "k": 43960,
+    "n": 57532,
+    "p": 0.7640965028158242
+   },
+   "excl_raw": {
+    "k": 40681,
+    "n": 57582,
+    "p": 0.7064881386544406
+   },
+   "excl_acc": {
+    "k": 40650,
+    "n": 57532,
+    "p": 0.706563303900438
+   },
+   "nmu_hist": [
+    992,
+    12598,
+    41857,
+    2016,
+    119
+   ],
+   "negm_hist": [
+    55851,
+    1689,
+    41,
+    1,
+    0
+   ],
+   "nmu_hist_acc": [
+    992,
+    12580,
+    41826,
+    2015,
+    119
+   ],
+   "negm_hist_acc": [
+    55803,
+    1687,
+    41,
+    1,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 200,
+  "mdp": 0.25,
+  "ctau": 1.0,
+  "key": "4Mu_200GeV_0p25GeV_1p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 76174,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 61006,
+    "n": 100000,
+    "p": 0.61006
+   },
+   "incl_acc": {
+    "k": 60276,
+    "n": 76174,
+    "p": 0.7912936172447291
+   },
+   "excl_raw": {
+    "k": 56839,
+    "n": 100000,
+    "p": 0.56839
+   },
+   "excl_acc": {
+    "k": 56150,
+    "n": 76174,
+    "p": 0.7371281539632946
+   },
+   "nmu_hist": [
+    5389,
+    33605,
+    58785,
+    2179,
+    42
+   ],
+   "negm_hist": [
+    96665,
+    3244,
+    90,
+    1,
+    0
+   ],
+   "nmu_hist_acc": [
+    1078,
+    14820,
+    58074,
+    2160,
+    42
+   ],
+   "negm_hist_acc": [
+    73502,
+    2595,
+    76,
+    1,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 94490,
+   "n_acc": 94489,
+   "incl_raw": {
+    "k": 71866,
+    "n": 94490,
+    "p": 0.760567255794264
+   },
+   "incl_acc": {
+    "k": 71865,
+    "n": 94489,
+    "p": 0.7605647218194711
+   },
+   "excl_raw": {
+    "k": 67174,
+    "n": 94490,
+    "p": 0.7109112075351889
+   },
+   "excl_acc": {
+    "k": 67173,
+    "n": 94489,
+    "p": 0.710908148038396
+   },
+   "nmu_hist": [
+    1733,
+    20891,
+    69562,
+    2257,
+    47
+   ],
+   "negm_hist": [
+    91090,
+    3314,
+    85,
+    1,
+    0
+   ],
+   "nmu_hist_acc": [
+    1733,
+    20891,
+    69561,
+    2257,
+    47
+   ],
+   "negm_hist_acc": [
+    91089,
+    3314,
+    85,
+    1,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 200,
+  "mdp": 1.2,
+  "ctau": 4.8,
+  "key": "4Mu_200GeV_1p2GeV_4p8mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 58655,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 60806,
+    "n": 100000,
+    "p": 0.60806
+   },
+   "incl_acc": {
+    "k": 46523,
+    "n": 58655,
+    "p": 0.7931634131787572
+   },
+   "excl_raw": {
+    "k": 56302,
+    "n": 100000,
+    "p": 0.56302
+   },
+   "excl_acc": {
+    "k": 42987,
+    "n": 58655,
+    "p": 0.7328786974682465
+   },
+   "nmu_hist": [
+    5513,
+    33681,
+    58379,
+    2380,
+    47
+   ],
+   "negm_hist": [
+    96374,
+    3533,
+    90,
+    3,
+    0
+   ],
+   "nmu_hist_acc": [
+    732,
+    11400,
+    44634,
+    1853,
+    36
+   ],
+   "negm_hist_acc": [
+    56386,
+    2213,
+    55,
+    1,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 70475,
+   "n_acc": 70432,
+   "incl_raw": {
+    "k": 53983,
+    "n": 70475,
+    "p": 0.7659879389854558
+   },
+   "incl_acc": {
+    "k": 53953,
+    "n": 70432,
+    "p": 0.7660296456156293
+   },
+   "excl_raw": {
+    "k": 50341,
+    "n": 70475,
+    "p": 0.7143100390209294
+   },
+   "excl_acc": {
+    "k": 50312,
+    "n": 70432,
+    "p": 0.7143343934575193
+   },
+   "nmu_hist": [
+    1171,
+    15321,
+    52236,
+    1721,
+    26
+   ],
+   "negm_hist": [
+    67833,
+    2560,
+    80,
+    2,
+    0
+   ],
+   "nmu_hist_acc": [
+    1171,
+    15308,
+    52207,
+    1720,
+    26
+   ],
+   "negm_hist_acc": [
+    67792,
+    2558,
+    80,
+    2,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 200,
+  "mdp": 5.0,
+  "ctau": 20.0,
+  "key": "4Mu_200GeV_5p0GeV_20p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 54973,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 61278,
+    "n": 100000,
+    "p": 0.61278
+   },
+   "incl_acc": {
+    "k": 43288,
+    "n": 54973,
+    "p": 0.7874411074527495
+   },
+   "excl_raw": {
+    "k": 56549,
+    "n": 100000,
+    "p": 0.56549
+   },
+   "excl_acc": {
+    "k": 39965,
+    "n": 54973,
+    "p": 0.7269932512324232
+   },
+   "nmu_hist": [
+    5469,
+    33253,
+    58620,
+    2591,
+    67
+   ],
+   "negm_hist": [
+    96301,
+    3612,
+    85,
+    1,
+    1
+   ],
+   "nmu_hist_acc": [
+    792,
+    10893,
+    41391,
+    1847,
+    50
+   ],
+   "negm_hist_acc": [
+    52918,
+    2015,
+    40,
+    0,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 58573,
+   "n_acc": 58537,
+   "incl_raw": {
+    "k": 44902,
+    "n": 58573,
+    "p": 0.7665989449063562
+   },
+   "incl_acc": {
+    "k": 44878,
+    "n": 58537,
+    "p": 0.7666604028221466
+   },
+   "excl_raw": {
+    "k": 41717,
+    "n": 58573,
+    "p": 0.7122223550099875
+   },
+   "excl_acc": {
+    "k": 41695,
+    "n": 58537,
+    "p": 0.7122845379845226
+   },
+   "nmu_hist": [
+    1059,
+    12612,
+    43216,
+    1644,
+    42
+   ],
+   "negm_hist": [
+    56384,
+    2140,
+    48,
+    1,
+    0
+   ],
+   "nmu_hist_acc": [
+    1057,
+    12602,
+    43193,
+    1643,
+    42
+   ],
+   "negm_hist_acc": [
+    56349,
+    2139,
+    48,
+    1,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 500,
+  "mdp": 0.25,
+  "ctau": 0.4,
+  "key": "4Mu_500GeV_0p25GeV_0p4mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 83624,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 62529,
+    "n": 100000,
+    "p": 0.62529
+   },
+   "incl_acc": {
+    "k": 61914,
+    "n": 83624,
+    "p": 0.7403855352530374
+   },
+   "excl_raw": {
+    "k": 55780,
+    "n": 100000,
+    "p": 0.5578
+   },
+   "excl_acc": {
+    "k": 55215,
+    "n": 83624,
+    "p": 0.660276953984502
+   },
+   "nmu_hist": [
+    3865,
+    33606,
+    59600,
+    2869,
+    60
+   ],
+   "negm_hist": [
+    93642,
+    6122,
+    230,
+    6,
+    0
+   ],
+   "nmu_hist_acc": [
+    1948,
+    19762,
+    58996,
+    2858,
+    60
+   ],
+   "negm_hist_acc": [
+    78188,
+    5230,
+    200,
+    6,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 100752,
+   "n_acc": 100751,
+   "incl_raw": {
+    "k": 73060,
+    "n": 100752,
+    "p": 0.7251468953469906
+   },
+   "incl_acc": {
+    "k": 73060,
+    "n": 100751,
+    "p": 0.7251540927633473
+   },
+   "excl_raw": {
+    "k": 65659,
+    "n": 100752,
+    "p": 0.6516892964903922
+   },
+   "excl_acc": {
+    "k": 65659,
+    "n": 100751,
+    "p": 0.6516957648063046
+   },
+   "nmu_hist": [
+    2560,
+    25132,
+    70152,
+    2851,
+    57
+   ],
+   "negm_hist": [
+    94198,
+    6310,
+    241,
+    3,
+    0
+   ],
+   "nmu_hist_acc": [
+    2560,
+    25131,
+    70152,
+    2851,
+    57
+   ],
+   "negm_hist_acc": [
+    94197,
+    6310,
+    241,
+    3,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 500,
+  "mdp": 1.2,
+  "ctau": 1.9,
+  "key": "4Mu_500GeV_1p2GeV_1p9mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 77363,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 64206,
+    "n": 100000,
+    "p": 0.64206
+   },
+   "incl_acc": {
+    "k": 58945,
+    "n": 77363,
+    "p": 0.7619275364192185
+   },
+   "excl_raw": {
+    "k": 57536,
+    "n": 100000,
+    "p": 0.57536
+   },
+   "excl_acc": {
+    "k": 52800,
+    "n": 77363,
+    "p": 0.6824968007962463
+   },
+   "nmu_hist": [
+    3437,
+    32357,
+    61362,
+    2773,
+    71
+   ],
+   "negm_hist": [
+    93661,
+    6081,
+    252,
+    6,
+    0
+   ],
+   "nmu_hist_acc": [
+    1527,
+    16891,
+    56309,
+    2569,
+    67
+   ],
+   "negm_hist_acc": [
+    72393,
+    4761,
+    203,
+    6,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 96588,
+   "n_acc": 96557,
+   "incl_raw": {
+    "k": 71799,
+    "n": 96588,
+    "p": 0.7433532115790782
+   },
+   "incl_acc": {
+    "k": 71775,
+    "n": 96557,
+    "p": 0.7433433101691229
+   },
+   "excl_raw": {
+    "k": 64494,
+    "n": 96588,
+    "p": 0.6677226984718598
+   },
+   "excl_acc": {
+    "k": 64473,
+    "n": 96557,
+    "p": 0.6677195853226592
+   },
+   "nmu_hist": [
+    2195,
+    22594,
+    69027,
+    2697,
+    75
+   ],
+   "negm_hist": [
+    90072,
+    6274,
+    234,
+    8,
+    0
+   ],
+   "nmu_hist_acc": [
+    2194,
+    22588,
+    69004,
+    2696,
+    75
+   ],
+   "negm_hist_acc": [
+    90045,
+    6270,
+    234,
+    8,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 500,
+  "mdp": 5.0,
+  "ctau": 8.0,
+  "key": "4Mu_500GeV_5p0GeV_8p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 73231,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 65064,
+    "n": 100000,
+    "p": 0.65064
+   },
+   "incl_acc": {
+    "k": 56338,
+    "n": 73231,
+    "p": 0.7693190042468353
+   },
+   "excl_raw": {
+    "k": 58228,
+    "n": 100000,
+    "p": 0.58228
+   },
+   "excl_acc": {
+    "k": 50369,
+    "n": 73231,
+    "p": 0.6878098073220358
+   },
+   "nmu_hist": [
+    3300,
+    31636,
+    62065,
+    2910,
+    89
+   ],
+   "negm_hist": [
+    93429,
+    6288,
+    278,
+    4,
+    1
+   ],
+   "nmu_hist_acc": [
+    1311,
+    15582,
+    53695,
+    2565,
+    78
+   ],
+   "negm_hist_acc": [
+    68376,
+    4648,
+    202,
+    4,
+    1
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 91442,
+   "n_acc": 91414,
+   "incl_raw": {
+    "k": 68578,
+    "n": 91442,
+    "p": 0.7499617243717329
+   },
+   "incl_acc": {
+    "k": 68559,
+    "n": 91414,
+    "p": 0.7499835911348371
+   },
+   "excl_raw": {
+    "k": 61534,
+    "n": 91442,
+    "p": 0.67292928851075
+   },
+   "excl_acc": {
+    "k": 61515,
+    "n": 91414,
+    "p": 0.6729275603299276
+   },
+   "nmu_hist": [
+    1925,
+    20939,
+    65847,
+    2672,
+    59
+   ],
+   "negm_hist": [
+    85232,
+    5956,
+    243,
+    11,
+    0
+   ],
+   "nmu_hist_acc": [
+    1925,
+    20930,
+    65828,
+    2672,
+    59
+   ],
+   "negm_hist_acc": [
+    85204,
+    5956,
+    243,
+    11,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 800,
+  "mdp": 0.25,
+  "ctau": 0.25,
+  "key": "4Mu_800GeV_0p25GeV_0p25mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 86990,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 61884,
+    "n": 100000,
+    "p": 0.61884
+   },
+   "incl_acc": {
+    "k": 61348,
+    "n": 86990,
+    "p": 0.7052304862627888
+   },
+   "excl_raw": {
+    "k": 54009,
+    "n": 100000,
+    "p": 0.54009
+   },
+   "excl_acc": {
+    "k": 53536,
+    "n": 86990,
+    "p": 0.6154270605816761
+   },
+   "nmu_hist": [
+    4172,
+    33944,
+    58762,
+    3051,
+    71
+   ],
+   "negm_hist": [
+    91977,
+    7683,
+    324,
+    15,
+    1
+   ],
+   "nmu_hist_acc": [
+    2855,
+    22787,
+    58245,
+    3032,
+    71
+   ],
+   "negm_hist_acc": [
+    79911,
+    6788,
+    275,
+    15,
+    1
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 103674,
+   "n_acc": 103674,
+   "incl_raw": {
+    "k": 72668,
+    "n": 103674,
+    "p": 0.7009279086366881
+   },
+   "incl_acc": {
+    "k": 72668,
+    "n": 103674,
+    "p": 0.7009279086366881
+   },
+   "excl_raw": {
+    "k": 63734,
+    "n": 103674,
+    "p": 0.6147539402357389
+   },
+   "excl_acc": {
+    "k": 63734,
+    "n": 103674,
+    "p": 0.6147539402357389
+   },
+   "nmu_hist": [
+    3339,
+    27667,
+    69511,
+    3086,
+    71
+   ],
+   "negm_hist": [
+    95029,
+    8245,
+    379,
+    21,
+    0
+   ],
+   "nmu_hist_acc": [
+    3339,
+    27667,
+    69511,
+    3086,
+    71
+   ],
+   "negm_hist_acc": [
+    95029,
+    8245,
+    379,
+    21,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 800,
+  "mdp": 1.2,
+  "ctau": 1.2,
+  "key": "4Mu_800GeV_1p2GeV_1p2mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 84284,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 64520,
+    "n": 100000,
+    "p": 0.6452
+   },
+   "incl_acc": {
+    "k": 61940,
+    "n": 84284,
+    "p": 0.7348963029756538
+   },
+   "excl_raw": {
+    "k": 56479,
+    "n": 100000,
+    "p": 0.56479
+   },
+   "excl_acc": {
+    "k": 54204,
+    "n": 84284,
+    "p": 0.6431113853163115
+   },
+   "nmu_hist": [
+    3307,
+    32173,
+    61259,
+    3172,
+    89
+   ],
+   "negm_hist": [
+    91864,
+    7724,
+    398,
+    14,
+    0
+   ],
+   "nmu_hist_acc": [
+    2107,
+    20237,
+    58799,
+    3055,
+    86
+   ],
+   "negm_hist_acc": [
+    77363,
+    6562,
+    347,
+    12,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 80069,
+   "n_acc": 80061,
+   "incl_raw": {
+    "k": 57772,
+    "n": 80069,
+    "p": 0.7215276823739525
+   },
+   "incl_acc": {
+    "k": 57765,
+    "n": 80061,
+    "p": 0.7215123468355379
+   },
+   "excl_raw": {
+    "k": 50912,
+    "n": 80069,
+    "p": 0.635851578013963
+   },
+   "excl_acc": {
+    "k": 50905,
+    "n": 80061,
+    "p": 0.6358276813929379
+   },
+   "nmu_hist": [
+    2155,
+    20142,
+    55357,
+    2366,
+    49
+   ],
+   "negm_hist": [
+    73395,
+    6330,
+    335,
+    9,
+    0
+   ],
+   "nmu_hist_acc": [
+    2155,
+    20141,
+    55350,
+    2366,
+    49
+   ],
+   "negm_hist_acc": [
+    73387,
+    6330,
+    335,
+    9,
+    0
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ },
+ {
+  "chan": "4Mu",
+  "mbs": 800,
+  "mdp": 5.0,
+  "ctau": 5.0,
+  "key": "4Mu_800GeV_5p0GeV_5p0mm",
+  "run3": {
+   "n": 100000,
+   "n_acc": 79978,
+   "n_files_read": 120,
+   "n_files_requested": 120,
+   "incl_raw": {
+    "k": 65985,
+    "n": 100000,
+    "p": 0.65985
+   },
+   "incl_acc": {
+    "k": 60191,
+    "n": 79978,
+    "p": 0.7525944634774563
+   },
+   "excl_raw": {
+    "k": 57662,
+    "n": 100000,
+    "p": 0.57662
+   },
+   "excl_acc": {
+    "k": 52630,
+    "n": 79978,
+    "p": 0.6580559653904824
+   },
+   "nmu_hist": [
+    3006,
+    31009,
+    62765,
+    3136,
+    84
+   ],
+   "negm_hist": [
+    91314,
+    8261,
+    405,
+    20,
+    0
+   ],
+   "nmu_hist_acc": [
+    1717,
+    18070,
+    57264,
+    2850,
+    77
+   ],
+   "negm_hist_acc": [
+    73037,
+    6603,
+    322,
+    16,
+    0
+   ],
+   "dsa_nsegments_definition": "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
+  },
+  "v10": {
+   "n": 86989,
+   "n_acc": 86980,
+   "incl_raw": {
+    "k": 64242,
+    "n": 86989,
+    "p": 0.7385071675729116
+   },
+   "incl_acc": {
+    "k": 64237,
+    "n": 86980,
+    "p": 0.7385260979535525
+   },
+   "excl_raw": {
+    "k": 56386,
+    "n": 86989,
+    "p": 0.6481968984584258
+   },
+   "excl_acc": {
+    "k": 56383,
+    "n": 86980,
+    "p": 0.6482294780409289
+   },
+   "nmu_hist": [
+    2091,
+    20656,
+    61520,
+    2668,
+    54
+   ],
+   "negm_hist": [
+    79388,
+    7228,
+    353,
+    18,
+    2
+   ],
+   "nmu_hist_acc": [
+    2090,
+    20653,
+    61515,
+    2668,
+    54
+   ],
+   "negm_hist_acc": [
+    79381,
+    7226,
+    353,
+    18,
+    2
+   ],
+   "n_files_read": 25,
+   "n_files_requested": 25
+  },
+  "production": "v2",
+  "r3_chunks": 0,
+  "v10_files": 25,
+  "code_commit": "06639ac8",
+  "tarball_commit": "06639ac8",
+  "r3_chunks_read": 120,
+  "v10_files_read": 25,
+  "v10_provenance_note": "v10 block taken from lj_eff_real_2022.json (v1, code d579fe16; same 25 v10 files): the v2 jobs (06639ac8) applied the v2 DSA segment-count substitute to the 2018 files too, which changed one event at 4Mu_800GeV_5p0GeV_5p0mm (incl_acc k 64236 vs 64237 of 86980) and nothing else; fixed per file in run3_lj_eff.py"
+ }
+]
