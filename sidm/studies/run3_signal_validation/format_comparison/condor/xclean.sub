@@ -1,0 +1,19 @@
+# Submit from a run directory holding run_xclean.sh, xclean_code.tar.gz (sidm/__init__.py, sidm/definitions,
+# sidm/tools, sidm/configs/selections.yaml, xclean_rows.py), the repository's condor/requirements.txt and
+# constraints.txt, the task lists lists/job_<N>.txt, jobs.txt (one N per line) and empty out/ and logs/; see ../README.md.
+universe = vanilla
+executable = run_xclean.sh
+arguments = $(job)
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = xclean_code.tar.gz, requirements.txt, constraints.txt, lists/job_$(job).txt
+transfer_output_files = rows_$(job).tar
+transfer_output_remaps = "rows_$(job).tar = out/rows_$(job).tar"
+output = logs/xclean_$(job).$(Cluster).out
+error  = logs/xclean_$(job).$(Cluster).err
+log    = logs/xclean.$(Cluster).log
+request_cpus = 1
+request_memory = 2GB
+request_disk = 4GB
+x509userproxy = $ENV(X509_USER_PROXY)
+queue job from jobs.txt
