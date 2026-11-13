@@ -34,6 +34,27 @@ def nominal_mm(sample):
     return float(sample.split("_")[-1].replace("mm", "").replace("p", "."))
 
 
+# Run 3 productions: v1 = LLPNanoAOD, four eras (outputs/<era>/, one location YAML per channel, keyed
+# by era); v2 = EXONanoAOD, five eras (outputs_v2/<era>/, one location YAML per era, key exoNanoAOD_v2)
+PRODUCTIONS = ("v1", "v2")
+ERAS_BY_PRODUCTION = {"v1": ["2022", "2022EE", "2023", "2023BPix"],
+                      "v2": ["2022", "2022EE", "2023", "2023BPix", "2024"]}
+
+
+def run3_location(chan, era, production):
+    """(ntuple key, location YAML) of the Run 3 samples of one channel and era, for _fileset_files."""
+    if production == "v1":
+        return era, f"signal_{chan.lower()}_run3.yaml"
+    if production == "v2":
+        return "exoNanoAOD_v2", f"signal_run3_v2_{era}.yaml"
+    raise ValueError(f"unknown production {production!r}")
+
+
+def output_tag(production):
+    """Infix of a production's result files: '' for v1 (the files committed before v2), '_v2' for v2."""
+    return "" if production == "v1" else f"_{production}"
+
+
 def _fileset_files(sample, era, location_cfg, nfiles):
     """File URLs for one sample, read straight from the location YAML. Unlike
     utilities.make_fileset this tolerates entries without a per-sample 'path' key

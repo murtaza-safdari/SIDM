@@ -158,7 +158,7 @@ def fig_kinematics(chan):
 # ---------- per-era extension (full-grid campaign complete: all four eras) ----------
 
 ERAS = ["2022", "2022EE", "2023", "2023BPix"]
-_ECOL = {"2022": "#1f77b4", "2022EE": "#2ca02c", "2023": "#d62728", "2023BPix": "#9467bd"}
+_ECOL = {"2022": "#1f77b4", "2022EE": "#2ca02c", "2023": "#d62728", "2023BPix": "#9467bd", "2024": "#ff7f0e"}
 
 def parse_trigger_log(path):
     """Parse a trigger_eff_grid.py log into row dicts. Handles both the original 10-number rows
@@ -181,12 +181,13 @@ def parse_trigger_log(path):
         rows.append(r)
     return rows
 
-def fig_kinematics_eras(mbs=200):
-    """Gen kinematics of one grid point overlaid across all four eras: the generated content is
-    era-identical (same gridpacks + fragment; only detector conditions differ per era)."""
+def fig_kinematics_eras(mbs=200, eras=ERAS, tag=""):
+    """Gen kinematics of one grid point overlaid across the eras: the generated content is
+    era-identical (same gridpacks + fragment; only detector conditions differ per era). Reads
+    kin_hi<tag>_<era>.npz (tag '' for the v1 production, '_v2' for v2)."""
     fig, axes = plt.subplots(1, 2, figsize=(15, 6))
-    for era in ERAS:
-        d = np.load(os.path.join(_DIR, f"kin_hi_{era}.npz"))
+    for era in eras:
+        d = np.load(os.path.join(_DIR, f"kin_hi{tag}_{era}.npz"))
         axes[0].hist(d[f"4Mu_{mbs}_dR"], bins=np.linspace(0, 0.3, 60), histtype="step", lw=1.8,
                      density=True, color=_ECOL[era], label=era)
         axes[1].hist(d[f"4Mu_{mbs}_pt"], bins=np.linspace(0, 150, 60), histtype="step", lw=1.8,

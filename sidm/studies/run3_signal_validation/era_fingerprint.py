@@ -42,19 +42,17 @@ import run3_signal_validation as V
 import gen_requirement
 import an_style  # pylint: disable=import-error  # found through the sys.path entry above
 
-an_style.FIG_DIR = os.path.join(_DIR, "figures")
-
-
 COMMIT = V.code_commit()
-ERAS = ["2022", "2022EE", "2023", "2023BPix"]
+PRODUCTION = "v2"              # set by main() from --production; selects the samples and the output names
+ERAS = V.ERAS_BY_PRODUCTION[PRODUCTION]
 CHANS = ["4Mu", "2Mu2E"]
 POINT = "{chan}_200GeV_1p2GeV_4p8mm"
 REF = ("4Mu_200GeV_1p2GeV_4p8mm", "llpNanoAOD_v2", "signal_4mu_v10.yaml")   # 2018 v10, 13 TeV
 PATHS = ["HLT_DoubleL2Mu_L3Mu16NoVtx_VetoL3Mu0DxyMax0p1cm",
          "HLT_DoubleL2Mu10NoVtx_2Cha_CosmicSeed_VetoL3Mu0DxyMax1cm"]
 ECOL = {"2022": "#1f77b4", "2022EE": "#2ca02c", "2023": "#d62728", "2023BPix": "#9467bd",
-        "2018": "#000000"}
-ELS = {"2022": "-", "2022EE": "--", "2023": "-", "2023BPix": "--", "2018": "-"}
+        "2024": "#ff7f0e", "2018": "#000000"}
+ELS = {"2022": "-", "2022EE": "--", "2023": "-", "2023BPix": "--", "2024": "-.", "2018": "-"}
 
 # detector-map binning and selections
 EE_ETA = np.round(np.arange(-3.0, 3.0001, 0.1), 2)
@@ -169,6 +167,7 @@ def provenance(url, era=None):
         if _get(p, "VtxSmeared"):
             v = blobs[_get(p, "VtxSmeared")]
             info["vtx"] = {k: float(_get(v, k)) for k in ("X0", "Y0", "Z0", "SigmaZ") if _get(v, k) is not None}
+            info["vtx_readDB"] = _get(v, "readDB")
         if info:
             out["per_process"][name] = info
     return out
@@ -223,15 +222,15 @@ def _match_excl(geta, gphi, reco, cone):
 
 
 def read_file(url, maps):
-    """Per-event scalars and, if asked, the map histograms of one file (exclusive matching; the
-    non-exclusive closest-object version is kept under *_nx keys)."""
+    """Per-event scalars and the map histograms of the kinds in `maps` ("ee", "bpix"; exclusive
+    matching, the non-exclusive closest-object version kept under *_nx keys) of one file."""
     f = uproot.open(url)
     t = f["Events"]
     keys = t.keys()
     br = list(SCAL)
-    if maps == "ee":
+    if "ee" in maps:
         br += ["Electron_eta", "Electron_phi", "Photon_eta", "Photon_phi", "Photon_electronIdx"]
-    if maps == "bpix":
+    if "bpix" in maps:
         br += ["Muon_eta", "Muon_phi", "Muon_nTrackerLayers", "Muon_isPFcand", "Muon_isTracker"]
     a = t.arrays([b for b in br if b in keys])
     m35 = ak.to_numpy(ak.fill_none(ak.firsts(a["GenPart_mass"][a["GenPart_pdgId"] == 35]), np.nan))
@@ -257,7 +256,7 @@ def read_file(url, maps):
                req2018=req, hlt={k for k in keys if k.startswith("HLT_")})
     for k in ("Pileup_nTrueInt", "GenVtx_x", "GenVtx_y", "GenVtx_z", "PV_z"):
         out[k] = ak.to_numpy(a[k]) if k in a.fields else np.full(n, np.nan)
-    if maps == "ee":
+    if "ee" in maps:
         s = _gen_from_zd(a, 11) & (a["GenPart_pt"] > 10) & (abs(a["GenPart_eta"]) > 1.5) \
             & (abs(a["GenPart_eta"]) < 3.0) & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < EE_RHO) \
             & (abs(a["GenPart_vz"]) < EE_Z)
@@ -303,7 +302,7 @@ def read_file(url, maps):
         out["ee_dp_den"] = np.histogram2d(dpe, dpp, [EE_ETA, PHI])[0]
         out["ee_dp_num"] = np.histogram2d(dpe[dpok], dpp[dpok], [EE_ETA, PHI])[0] if dpok.any() else \
             np.zeros_like(out["ee_dp_den"])
-    if maps == "bpix":
+    if "bpix" in maps:
         s = _gen_from_zd(a, 13) & (a["GenPart_pt"] > 5) & (abs(a["GenPart_eta"]) < 2.4) \
             & (np.hypot(a["GenPart_vx"], a["GenPart_vy"]) < BP_RHO)
         eta, phi = a["GenPart_eta"][s], a["GenPart_phi"][s]
@@ -335,7 +334,7 @@ def collect(urls, maps, workers, map_nfiles=0):
     """Read all urls; the detector maps (if any) only from the first map_nfiles (0 = all)."""
     nm = map_nfiles if map_nfiles > 0 else len(urls)
     with ThreadPoolExecutor(workers) as ex:
-        parts = list(ex.map(lambda iu: read_file(iu[1], maps if iu[0] < nm else None), enumerate(urls)))
+        parts = list(ex.map(lambda iu: read_file(iu[1], maps if iu[0] < nm else ()), enumerate(urls)))
     out = dict(n=sum(p["n"] for p in parts), nhlt=sorted({len(p["hlt"]) for p in parts}),
                paths={q: sorted({q in p["hlt"] for p in parts}) for q in PATHS})
     for k in EVK:
@@ -486,8 +485,8 @@ def _restyle(fig, minfs):
 
 def geometry_diffs(era, chan):
     """Per grid point, (Run 3 - 2018) LJ clustering efficiency in acceptance [%] and its binomial
-    error, from the committed lj_eff_geom_<era>.json (run3_lj_eff.py geometry mode)."""
-    rows = json.load(open(os.path.join(_DIR, f"lj_eff_geom_{era}.json")))
+    error, from the committed lj_eff_geom<tag>_<era>.json (run3_lj_eff.py geometry mode)."""
+    rows = json.load(open(os.path.join(_DIR, f"lj_eff_geom{V.output_tag(PRODUCTION)}_{era}.json")))
     d, e = [], []
     for r in rows:
         if r["chan"] != chan or not (r["run3"] and r["v10"]):
@@ -533,7 +532,7 @@ def geometry_table():
 def fig_kinematics():
     """run3_study_plots.fig_kinematics_eras: gen kinematics of one point overlaid across the eras."""
     import run3_study_plots as P
-    fig = P.fig_kinematics_eras()
+    fig = P.fig_kinematics_eras(eras=ERAS, tag=V.output_tag(PRODUCTION))
     leg = fig.axes[0].get_legend()
     leg.set_title(r"4$\mu$, $m_{\chi\bar{\chi}}$ = 200 GeV")
     _restyle(fig, 8 / (7.5 / fig.get_figwidth()))
@@ -548,7 +547,6 @@ def _stats(x):
     return x
 
 
-REGIONS_JSON = os.path.join(_DIR, "era_fingerprint_regions.json")
 THR = {"eedp": 0.3, "ee": 0.3, "bp": 1.0}          # quoted thresholds: efficiency drop (EE), mean-layer drop (BPix)
 
 
@@ -573,96 +571,141 @@ def flagged(H, kind, a, b, thr, sfx=""):
     return lab == 1 + np.argmax(ndimage.sum(sel, lab, range(1, n + 1)))
 
 
+PAIRS = (("eedp", "2022", "2022EE"), ("ee", "2022", "2022EE"), ("bp", "2023", "2023BPix"))
+# 2024 (v2): its own dead regions, searched against each era of the same map kind
+PAIRS_2024 = (("eedp", "2022", "2024"), ("eedp", "2022EE", "2024"), ("bp", "2023", "2024"),
+              ("bp", "2023BPix", "2024"))
+EXTRA_ERA = "2024"     # read in the regions of PAIRS: its averages over the same bins
+
+
+def _has(H, kind, a, b, sfx):
+    dk = "ee_dp" if kind == "eedp" else kind
+    if f"{dk}_den_{a}" not in H or f"{dk}_den_{b}" not in H:
+        return False
+    return kind == "eedp" or (f"ee_num{sfx}_{a}" if kind == "ee" else f"bp_lay{sfx}_{a}") in H
+
+
+def _region(H, kind, a, b, sfx, mlab):
+    """The record of one region: bins where era b falls below era a (flagged), their bounding
+    rectangle, and every average quoted; with EXTRA_ERA's averages over the same bins when its maps
+    exist. None if no bin is flagged."""
+    na, da, nb, db, xe = _maps(H, kind, a, b, sfx)
+    thr = THR[kind]
+    sel = flagged(H, kind, a, b, thr, sfx)
+    if sel is None:
+        return None
+    ie, ip = np.where(sel)
+    rect = np.zeros_like(sel); rect[ie.min():ie.max() + 1, ip.min():ip.max() + 1] = True
+    av = lambda num, den, m: round(float(num[m].sum() / den[m].sum()), 4)
+    qty = {"eedp": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): "
+                   ">= 1 electron or photon (all objects) within the cone of either electron; both electrons "
+                   f"pT > 5 GeV, 1.5 < |eta| < 3.0, production vertex rho < {EE_RHO:g} cm and |z| < {EE_Z:g} cm "
+                   "(before the ECAL face); map at the dark photon's eta, phi",
+           ("ee", "_nx"): "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), closest "
+                          "electron or photon within the cone, one object may serve both electrons of a pair; "
+                          f"production vertex rho < {EE_RHO:g} cm, |z| < {EE_Z:g} cm; kept for reference",
+           ("ee", ""): "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), each object matched "
+                       "once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); "
+                       f"production vertex rho < {EE_RHO:g} cm, |z| < {EE_Z:g} cm; kept for reference",
+           "bp": "mean number of tracker layers with hits of matched muons"}
+    r = dict(quantity=qty[(kind, sfx)] if kind == "ee" else qty[kind],
+             matching=mlab, threshold=thr, cone_dR=DR_E if kind in ("ee", "eedp") else DR_MU,
+             eta=[float(xe[ie.min()]), float(xe[ie.max() + 1])],
+             phi=[round(float(PHI[ip.min()]), 4), round(float(PHI[ip.max() + 1]), 4)],
+             n_flagged_bins=int(sel.sum()), n_rectangle_bins=int(rect.sum()),
+             n_rectangle_unflagged_bins=int((rect & ~sel).sum()),
+             flagged_avg={a: av(na, da, sel), b: av(nb, db, sel)},
+             rectangle_avg={a: av(na, da, rect), b: av(nb, db, rect)},
+             outside_rectangle_avg={a: av(na, da, ~rect), b: av(nb, db, ~rect)},
+             denominators_flagged={a: int(da[sel].sum()), b: int(db[sel].sum())},
+             denominators_rectangle={a: int(da[rect].sum()), b: int(db[rect].sum())})
+    x = EXTRA_ERA if EXTRA_ERA not in (a, b) and _has(H, kind, a, EXTRA_ERA, sfx) else None
+    if x:
+        _, _, nx, dx, _ = _maps(H, kind, a, x, sfx)
+        for k, m in (("flagged_avg", sel), ("rectangle_avg", rect), ("outside_rectangle_avg", ~rect)):
+            r[k][x] = av(nx, dx, m)
+        r["denominators_flagged"][x] = int(dx[sel].sum()); r["denominators_rectangle"][x] = int(dx[rect].sum())
+    if kind in ("ee", "eedp"):
+        r["note"] = "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
+    else:
+        band = np.zeros_like(sel); band[:, ip.min():ip.max() + 1] = True
+        r["pf_definition"] = ("fraction of gen muons from a dark photon (pT > 5 GeV, |eta| < 2.4, "
+                              f"production radius < {BP_RHO:g} cm) whose matched reco Muon (Delta R < "
+                              f"{DR_MU}, {mlab}) is a PF candidate")
+        for lab, m in (("flagged", sel), ("rectangle", rect), ("phi_band_all_eta", band),
+                       ("outside_phi_band", ~band)):
+            r[f"pf_eff_{lab}"] = {e: av(H[f"bp_pf{sfx}_{e}"], H[f"bp_den_{e}"], m) for e in (a, b, x) if e}
+        ext = {}
+        for t in (0.5, 0.75, 1.0):
+            f2 = flagged(H, kind, a, b, t, sfx)
+            if f2 is not None:
+                je, jp = np.where(f2)
+                ext[str(t)] = dict(eta=[float(xe[je.min()]), float(xe[je.max() + 1])],
+                                   phi=[round(float(PHI[jp.min()]), 4), round(float(PHI[jp.max() + 1]), 4)],
+                                   n_bins=int(f2.sum()))
+        r["extent_by_threshold"] = ext
+    return r
+
+
 def regions(H):
     """Every number quoted for the two dead regions, exclusive matching and (as 'before') the
     non-exclusive closest-object matching: threshold, flagged-bin and bounding-rectangle averages,
-    bin counts, and for BPix the PF-muon efficiency and the extent at several thresholds."""
+    bin counts, and for BPix the PF-muon efficiency and the extent at several thresholds. With 2024
+    maps (v2): 2024's averages over the same bins, and 2024's own regions against each era of the
+    same map kind (exclusive matching, keys '<kind>_exclusive_2024_vs_<era>')."""
     R = {}
-    for kind, a, b in (("eedp", "2022", "2022EE"), ("ee", "2022", "2022EE"), ("bp", "2023", "2023BPix")):
-        dk = "ee_dp" if kind == "eedp" else kind
-        if f"{dk}_den_{a}" not in H or f"{dk}_den_{b}" not in H:
-            continue
+    for kind, a, b in PAIRS:
         for sfx, mlab in ((("", "per-dark-photon"),) if kind == "eedp" else
                           (("", "exclusive"), ("_nx", "non-exclusive"))):
-            if kind != "eedp" and (f"ee_num{sfx}_{a}" if kind == "ee" else f"bp_lay{sfx}_{a}") not in H:
+            if not _has(H, kind, a, b, sfx):
                 continue
-            na, da, nb, db, xe = _maps(H, kind, a, b, sfx)
-            thr = THR[kind]
-            sel = flagged(H, kind, a, b, thr, sfx)
-            if sel is None:
-                R[f"{kind}_{mlab}"] = "NO REGION FOUND"; continue
-            ie, ip = np.where(sel)
-            rect = np.zeros_like(sel); rect[ie.min():ie.max() + 1, ip.min():ip.max() + 1] = True
-            av = lambda num, den, m: round(float(num[m].sum() / den[m].sum()), 4)
-            qty = {"eedp": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): "
-                           ">= 1 electron or photon (all objects) within the cone of either electron; both electrons "
-                           f"pT > 5 GeV, 1.5 < |eta| < 3.0, production vertex rho < {EE_RHO:g} cm and |z| < {EE_Z:g} cm "
-                           "(before the ECAL face); map at the dark photon's eta, phi",
-                   ("ee", "_nx"): "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), closest "
-                                  "electron or photon within the cone, one object may serve both electrons of a pair; "
-                                  f"production vertex rho < {EE_RHO:g} cm, |z| < {EE_Z:g} cm; kept for reference",
-                   ("ee", ""): "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), each object matched "
-                               "once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); "
-                               f"production vertex rho < {EE_RHO:g} cm, |z| < {EE_Z:g} cm; kept for reference",
-                   "bp": "mean number of tracker layers with hits of matched muons"}
-            r = dict(quantity=qty[(kind, sfx)] if kind == "ee" else qty[kind],
-                     matching=mlab, threshold=thr, cone_dR=DR_E if kind in ("ee", "eedp") else DR_MU,
-                     eta=[float(xe[ie.min()]), float(xe[ie.max() + 1])],
-                     phi=[round(float(PHI[ip.min()]), 4), round(float(PHI[ip.max() + 1]), 4)],
-                     n_flagged_bins=int(sel.sum()), n_rectangle_bins=int(rect.sum()),
-                     n_rectangle_unflagged_bins=int((rect & ~sel).sum()),
-                     flagged_avg={a: av(na, da, sel), b: av(nb, db, sel)},
-                     rectangle_avg={a: av(na, da, rect), b: av(nb, db, rect)},
-                     outside_rectangle_avg={a: av(na, da, ~rect), b: av(nb, db, ~rect)},
-                     denominators_flagged={a: int(da[sel].sum()), b: int(db[sel].sum())},
-                     denominators_rectangle={a: int(da[rect].sum()), b: int(db[rect].sum())})
-            if kind in ("ee", "eedp"):
-                r["note"] = "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
-            else:
-                pf, den = (H[f"bp_pf{sfx}_{a}"], H[f"bp_den_{a}"]), (H[f"bp_pf{sfx}_{b}"], H[f"bp_den_{b}"])
-                band = np.zeros_like(sel); band[:, ip.min():ip.max() + 1] = True
-                r["pf_definition"] = ("fraction of gen muons from a dark photon (pT > 5 GeV, |eta| < 2.4, "
-                                      f"production radius < {BP_RHO:g} cm) whose matched reco Muon (Delta R < "
-                                      f"{DR_MU}, {mlab}) is a PF candidate")
-                for lab, m in (("flagged", sel), ("rectangle", rect), ("phi_band_all_eta", band),
-                               ("outside_phi_band", ~band)):
-                    r[f"pf_eff_{lab}"] = {a: av(*pf, m), b: av(*den, m)}
-                ext = {}
-                for t in (0.5, 0.75, 1.0):
-                    f2 = flagged(H, kind, a, b, t, sfx)
-                    if f2 is not None:
-                        je, jp = np.where(f2)
-                        ext[str(t)] = dict(eta=[float(xe[je.min()]), float(xe[je.max() + 1])],
-                                           phi=[round(float(PHI[jp.min()]), 4), round(float(PHI[jp.max() + 1]), 4)],
-                                           n_bins=int(f2.sum()))
-                r["extent_by_threshold"] = ext
-            R[f"{kind}_{mlab}"] = r
+            r = _region(H, kind, a, b, sfx, mlab)
+            R[f"{kind}_{mlab}"] = r if r is not None else "NO REGION FOUND"
+    for kind, a, b in PAIRS_2024:
+        mlab = "per-dark-photon" if kind == "eedp" else "exclusive"
+        if _has(H, kind, a, b, ""):
+            r = _region(H, kind, a, b, "", mlab)
+            R[f"{kind}_{mlab}_{b}_vs_{a}"] = r if r is not None else "NO REGION FOUND"
     return R
 
 
 def main():
+    global PRODUCTION, ERAS
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--eras", default=",".join(ERAS + ["2018"]),
-                    help="Run 3 eras and/or 2018 (the v10 4Mu reference, 13 TeV)")
+    ap.add_argument("--production", choices=V.PRODUCTIONS, default="v2",
+                    help="Run 3 production: v1 (LLPNanoAOD, four eras) or v2 (EXONanoAOD, five eras); "
+                         "selects the samples, the output names (v2: *_v2.*) and the figure directory")
+    ap.add_argument("--eras", default=None,
+                    help="Run 3 eras and/or 2018 (the v10 4Mu reference, 13 TeV); default all of the production")
     ap.add_argument("--channels", default=",".join(CHANS))
     ap.add_argument("--nfiles", type=int, default=0, help="files per sample (0 = all 120)")
     ap.add_argument("--map-nfiles", type=int, default=0, help="files per sample for the maps (0 = all)")
     ap.add_argument("--ref-nfiles", type=int, default=0, help="files of the 2018 v10 reference (0 = all 47)")
     ap.add_argument("--workers", type=int, default=4)
-    ap.add_argument("--csv", default=os.path.join(_DIR, "era_fingerprint.csv"))
-    ap.add_argument("--npz", default=os.path.join(_DIR, "era_fingerprint.npz"))
+    ap.add_argument("--csv", default=None, help="default era_fingerprint<tag>.csv in this directory")
+    ap.add_argument("--npz", default=None, help="default era_fingerprint<tag>.npz in this directory")
+    ap.add_argument("--regions", default=None, help="default era_fingerprint_regions<tag>.json in this directory")
     ap.add_argument("--no-maps", action="store_true", help="skip the detector maps")
     ap.add_argument("--no-figures", action="store_true")
     ap.add_argument("--replot", action="store_true", help="redraw figures from --npz, no EOS access")
     args = ap.parse_args()
-    eras, chans = args.eras.split(","), args.channels.split(",")
+    PRODUCTION = args.production; ERAS = V.ERAS_BY_PRODUCTION[PRODUCTION]
+    tag = V.output_tag(PRODUCTION)
+    args.csv = args.csv or os.path.join(_DIR, f"era_fingerprint{tag}.csv")
+    args.npz = args.npz or os.path.join(_DIR, f"era_fingerprint{tag}.npz")
+    regions_json = args.regions or os.path.join(_DIR, f"era_fingerprint_regions{tag}.json")
+    an_style.FIG_DIR = os.path.join(_DIR, "figures" if PRODUCTION == "v1" else f"figures_{PRODUCTION}")
+    eras = (args.eras or ",".join(ERAS + ["2018"])).split(",")
+    chans = args.channels.split(",")
     an_style.set_style()
 
     if args.replot:
         H = dict(np.load(args.npz, allow_pickle=True))
     else:
         H = dict(sqrts_edges=np.linspace(12500, 14000, 151), pu_edges=np.arange(0, 101, 1.0),
-                 vtxx_edges=np.linspace(0.035, 0.11, 151), vtxy_edges=np.linspace(-0.025, -0.008, 69),
+                 # v2 adds 2024, whose beam spot (from the conditions DB) sits at x = 0.028 cm
+                 vtxx_edges=np.linspace(0.035, 0.11, 151) if PRODUCTION == "v1" else np.linspace(0.02, 0.11, 181),
+                 vtxy_edges=np.linspace(-0.025, -0.008, 69),
                  vtxz_edges=np.linspace(-15, 15, 61))
         rows = []
         for era in eras:
@@ -672,12 +715,16 @@ def main():
                 if era == "2018":
                     urls = V._fileset_files(REF[0], REF[1], REF[2], args.ref_nfiles)
                 else:
-                    urls = V._fileset_files(POINT.format(chan=chan), era, f"signal_{chan.lower()}_run3.yaml",
+                    urls = V._fileset_files(POINT.format(chan=chan), *V.run3_location(chan, era, PRODUCTION),
                                             args.nfiles)
-                maps = None
+                # ECAL-endcap map from 2Mu2E of 2022 and 2022EE, pixel map from both channels of 2023
+                # and 2023BPix; 2024 (v2) gets both, to be read in the same bins
+                maps = set()
                 if not args.no_maps and era != "2018":
-                    maps = "ee" if (chan == "2Mu2E" and era in ("2022", "2022EE")) else \
-                           "bpix" if era in ("2023", "2023BPix") else None
+                    if chan == "2Mu2E" and era in ("2022", "2022EE", "2024"):
+                        maps.add("ee")
+                    if era in ("2023", "2023BPix", "2024"):
+                        maps.add("bpix")
                 evs.append(collect(urls, maps, args.workers, args.map_nfiles))
                 pa, pb = provenance(urls[0], era), provenance(urls[-1], era)
                 prov[chan], provsame[chan] = pa, pa == pb
@@ -729,6 +776,7 @@ def main():
                 if "vtx" in info:
                     v = info["vtx"]
                     row[f"{name}_vtxsmear_X0_Y0_Z0_SigmaZ_cm"] = "/".join(f"{v[k]:.6g}" for k in ("X0", "Y0", "Z0", "SigmaZ"))
+                    row[f"{name}_vtxsmear_readDB"] = info.get("vtx_readDB")
             # the generator process's VtxSmeared must reproduce the stored generated vertex
             v = geninfo.get("vtx")
             N = len(c["GenVtx_z"])
@@ -743,6 +791,9 @@ def main():
             row["vtx_match"] = not bad                       # a mismatch never stops the run
             if bad:
                 print(f"WARNING vertex mismatch {era}: {genproc} VtxSmeared {v} vs GenVtx pulls {bad}")
+            if bad and geninfo.get("vtx_readDB") == "true":
+                row["vtx_note"] = ("VtxSmeared reads the beam spot from the conditions DB (readDB true): its "
+                                   "X0/Y0/Z0/SigmaZ parameters are unused, so this check does not apply")
             if bad and era == "2018":
                 # no VtxSmeared scenario of the GEN (10_6_27) or SIM (10_6_17_patch1) release matches the
                 # stored vertex (closest SigmaZ 3.4 cm, Z0 0.0357 cm for all candidates; readDB = false)
@@ -778,19 +829,20 @@ def main():
     have = {e for e in ERAS if f"sqrts_{e}" in H}
     R = regions(H)
     R["code_commit"] = str(H.get("code_commit", COMMIT))
-    with open(REGIONS_JSON, "w") as fh:
+    R["production"] = PRODUCTION
+    with open(regions_json, "w") as fh:
         json.dump(R, fh, indent=1)
-    print(f"wrote {REGIONS_JSON}")
+    print(f"wrote {regions_json}")
     # the quoted region numbers also go into the table rows of the eras they describe
     if os.path.exists(args.csv):
         with open(args.csv) as fh:
             rows = list(csv.DictReader(fh))
         for row in rows:
-            for col, rk, eras_ in (("ee", "eedp_per-dark-photon", ("2022", "2022EE")),
-                                   ("ee_obj_excl", "ee_exclusive", ("2022", "2022EE")),
-                                   ("bp", "bp_exclusive", ("2023", "2023BPix"))):
+            for col, rk, eras_ in (("ee", "eedp_per-dark-photon", ("2022", "2022EE", EXTRA_ERA)),
+                                   ("ee_obj_excl", "ee_exclusive", ("2022", "2022EE", EXTRA_ERA)),
+                                   ("bp", "bp_exclusive", ("2023", "2023BPix", EXTRA_ERA))):
                 r = R.get(rk); kind = col
-                if row["era"] in eras_ and isinstance(r, dict):
+                if row["era"] in eras_ and isinstance(r, dict) and row["era"] in r["flagged_avg"]:
                     e = row["era"]
                     row[f"{col}_region_eta_phi"] = f"{r['eta']}/{r['phi']}"
                     row[f"{col}_region_flagged_avg"] = r["flagged_avg"][e]
