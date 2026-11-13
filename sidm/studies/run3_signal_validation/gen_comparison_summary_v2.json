@@ -1,0 +1,199 @@
+{
+ "point": "4Mu_200GeV_1p2GeV_4p8mm",
+ "production": "v2",
+ "files": {
+  "run3_2022_chunks": 24,
+  "v10_2018_files": 10
+ },
+ "filter": "geq4 prompt final-state e/mu, |eta| < 2.4, p_{T} > 4 GeV",
+ "data_commit": "5929c6e1",
+ "code_commit": "5929c6e1",
+ "pass_fraction": {
+  "2022": {
+   "num": 6995,
+   "den": 12000,
+   "frac": 0.58292
+  },
+  "2018": {
+   "num": 29057,
+   "den": 29073,
+   "frac": 0.99945
+  }
+ },
+ "quantities": {
+  "lep_pt": {
+   "2018_raw": {
+    "mean": 43.90772,
+    "stat": 0.08225,
+    "median": 40.625,
+    "n": 116292
+   },
+   "2018_filter": {
+    "mean": 43.9119,
+    "stat": 0.08226,
+    "median": 40.625,
+    "n": 116228
+   },
+   "2022_raw": {
+    "mean": 40.36329,
+    "stat": 0.13525,
+    "median": 35.375,
+    "n": 48000
+   },
+   "2022_filter": {
+    "mean": 43.86957,
+    "stat": 0.16919,
+    "median": 40.375,
+    "n": 27980
+   },
+   "reldiff_raw": -0.08072,
+   "reldiff_filter": -0.00096,
+   "reldiff_filter_err": 0.00429
+  },
+  "lep_abseta": {
+   "2018_raw": {
+    "mean": 0.95439,
+    "stat": 0.00185,
+    "median": 0.86914,
+    "n": 116292
+   },
+   "2018_filter": {
+    "mean": 0.95427,
+    "stat": 0.00185,
+    "median": 0.86914,
+    "n": 116228
+   },
+   "2022_raw": {
+    "mean": 1.28377,
+    "stat": 0.00441,
+    "median": 1.08984,
+    "n": 48000
+   },
+   "2022_filter": {
+    "mean": 0.96108,
+    "stat": 0.00381,
+    "median": 0.87207,
+    "n": 27980
+   },
+   "reldiff_raw": 0.34512,
+   "reldiff_filter": 0.00714,
+   "reldiff_filter_err": 0.00441
+  },
+  "dp_dR": {
+   "2018_raw": {
+    "mean": 0.03695,
+    "stat": 6e-05,
+    "median": 0.0332,
+    "n": 58146
+   },
+   "2018_filter": {
+    "mean": 0.03694,
+    "stat": 6e-05,
+    "median": 0.0332,
+    "n": 58114
+   },
+   "2022_raw": {
+    "mean": 0.05168,
+    "stat": 0.00036,
+    "median": 0.03906,
+    "n": 24000
+   },
+   "2022_filter": {
+    "mean": 0.03701,
+    "stat": 0.00012,
+    "median": 0.03338,
+    "n": 13990
+   },
+   "reldiff_raw": 0.39865,
+   "reldiff_filter": 0.00189,
+   "reldiff_filter_err": 0.00363
+  },
+  "dp_pt": {
+   "2018_raw": {
+    "mean": 87.81181,
+    "stat": 0.08942,
+    "median": 90.5,
+    "n": 58146
+   },
+   "2018_filter": {
+    "mean": 87.82017,
+    "stat": 0.08941,
+    "median": 90.5,
+    "n": 58114
+   },
+   "2022_raw": {
+    "mean": 80.72166,
+    "stat": 0.17377,
+    "median": 85.25,
+    "n": 24000
+   },
+   "2022_filter": {
+    "mean": 87.73496,
+    "stat": 0.19094,
+    "median": 90.5,
+    "n": 13990
+   },
+   "reldiff_raw": -0.08074,
+   "reldiff_filter": -0.00097,
+   "reldiff_filter_err": 0.0024
+  },
+  "dp_mass": {
+   "2018_raw": {
+    "mean": 1.20076,
+    "stat": 9e-05,
+    "median": 1.19922,
+    "n": 58146
+   },
+   "2018_filter": {
+    "mean": 1.20076,
+    "stat": 9e-05,
+    "median": 1.19922,
+    "n": 58114
+   },
+   "2022_raw": {
+    "mean": 1.20055,
+    "stat": 0.00014,
+    "median": 1.19922,
+    "n": 24000
+   },
+   "2022_filter": {
+    "mean": 1.20051,
+    "stat": 0.00018,
+    "median": 1.19922,
+    "n": 13990
+   },
+   "reldiff_raw": -0.00017,
+   "reldiff_filter": -0.00021,
+   "reldiff_filter_err": 0.00017
+  },
+  "dp_proper_mm": {
+   "2018_raw": {
+    "mean": 4.80207,
+    "stat": 0.0198,
+    "median": 3.33475,
+    "n": 58146
+   },
+   "2018_filter": {
+    "mean": 4.80229,
+    "stat": 0.01981,
+    "median": 3.33341,
+    "n": 58114
+   },
+   "2022_raw": {
+    "mean": 4.82851,
+    "stat": 0.03124,
+    "median": 3.33517,
+    "n": 24000
+   },
+   "2022_filter": {
+    "mean": 4.81964,
+    "stat": 0.04092,
+    "median": 3.33391,
+    "n": 13990
+   },
+   "reldiff_raw": 0.00551,
+   "reldiff_filter": 0.00361,
+   "reldiff_filter_err": 0.00944
+  }
+ }
+}

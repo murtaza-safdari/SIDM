@@ -1,0 +1,805 @@
+{
+ "eedp_per-dark-photon": {
+  "quantity": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): >= 1 electron or photon (all objects) within the cone of either electron; both electrons pT > 5 GeV, 1.5 < |eta| < 3.0, production vertex rho < 110 cm and |z| < 290 cm (before the ECAL face); map at the dark photon's eta, phi",
+  "matching": "per-dark-photon",
+  "threshold": 0.3,
+  "cone_dR": 0.1,
+  "eta": [
+   1.5,
+   1.9
+  ],
+  "phi": [
+   1.7453,
+   2.618
+  ],
+  "n_flagged_bins": 13,
+  "n_rectangle_bins": 20,
+  "n_rectangle_unflagged_bins": 7,
+  "flagged_avg": {
+   "2022": 0.9707,
+   "2022EE": 0.1462,
+   "2024": 0.9434
+  },
+  "rectangle_avg": {
+   "2022": 0.9493,
+   "2022EE": 0.3506,
+   "2024": 0.9335
+  },
+  "outside_rectangle_avg": {
+   "2022": 0.9485,
+   "2022EE": 0.9487,
+   "2024": 0.9512
+  },
+  "denominators_flagged": {
+   "2022": 375,
+   "2022EE": 383,
+   "2024": 371
+  },
+  "denominators_rectangle": {
+   "2022": 572,
+   "2022EE": 599,
+   "2024": 556
+  },
+  "note": "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
+ },
+ "ee_exclusive": {
+  "quantity": "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), each object matched once (collimated pairs mostly resolve into a single object, hence a plateau near 0.6); production vertex rho < 110 cm, |z| < 290 cm; kept for reference",
+  "matching": "exclusive",
+  "threshold": 0.3,
+  "cone_dR": 0.1,
+  "eta": [
+   1.5,
+   2.0
+  ],
+  "phi": [
+   1.7453,
+   2.4435
+  ],
+  "n_flagged_bins": 13,
+  "n_rectangle_bins": 20,
+  "n_rectangle_unflagged_bins": 7,
+  "flagged_avg": {
+   "2022": 0.625,
+   "2022EE": 0.0407,
+   "2024": 0.5977
+  },
+  "rectangle_avg": {
+   "2022": 0.6075,
+   "2022EE": 0.1696,
+   "2024": 0.5995
+  },
+  "outside_rectangle_avg": {
+   "2022": 0.591,
+   "2022EE": 0.5877,
+   "2024": 0.589
+  },
+  "denominators_flagged": {
+   "2022": 752,
+   "2022EE": 787,
+   "2024": 793
+  },
+  "denominators_rectangle": {
+   "2022": 1154,
+   "2022EE": 1156,
+   "2024": 1171
+  },
+  "note": "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
+ },
+ "ee_non-exclusive": {
+  "quantity": "e/gamma reconstruction efficiency per gen electron (pT > 10 GeV), closest electron or photon within the cone, one object may serve both electrons of a pair; production vertex rho < 110 cm, |z| < 290 cm; kept for reference",
+  "matching": "non-exclusive",
+  "threshold": 0.3,
+  "cone_dR": 0.1,
+  "eta": [
+   1.5,
+   2.1
+  ],
+  "phi": [
+   1.7453,
+   2.618
+  ],
+  "n_flagged_bins": 18,
+  "n_rectangle_bins": 30,
+  "n_rectangle_unflagged_bins": 12,
+  "flagged_avg": {
+   "2022": 0.9535,
+   "2022EE": 0.1963,
+   "2024": 0.9313
+  },
+  "rectangle_avg": {
+   "2022": 0.9501,
+   "2022EE": 0.4606,
+   "2024": 0.9413
+  },
+  "outside_rectangle_avg": {
+   "2022": 0.9392,
+   "2022EE": 0.9415,
+   "2024": 0.9425
+  },
+  "denominators_flagged": {
+   "2022": 1032,
+   "2022EE": 1039,
+   "2024": 1048
+  },
+  "denominators_rectangle": {
+   "2022": 1702,
+   "2022EE": 1687,
+   "2024": 1636
+  },
+  "note": "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
+ },
+ "bp_exclusive": {
+  "quantity": "mean number of tracker layers with hits of matched muons",
+  "matching": "exclusive",
+  "threshold": 1.0,
+  "cone_dR": 0.05,
+  "eta": [
+   -1.6,
+   0.0
+  ],
+  "phi": [
+   -1.2217,
+   -0.8727
+  ],
+  "n_flagged_bins": 30,
+  "n_rectangle_bins": 32,
+  "n_rectangle_unflagged_bins": 2,
+  "flagged_avg": {
+   "2023": 11.4082,
+   "2023BPix": 9.9006,
+   "2024": 9.9582
+  },
+  "rectangle_avg": {
+   "2023": 11.5099,
+   "2023BPix": 10.0215,
+   "2024": 10.0718
+  },
+  "outside_rectangle_avg": {
+   "2023": 12.2866,
+   "2023BPix": 12.2674,
+   "2024": 12.2611
+  },
+  "denominators_flagged": {
+   "2023": 2724,
+   "2023BPix": 2303,
+   "2024": 2273
+  },
+  "denominators_rectangle": {
+   "2023": 2887,
+   "2023BPix": 2415,
+   "2024": 2383
+  },
+  "pf_definition": "fraction of gen muons from a dark photon (pT > 5 GeV, |eta| < 2.4, production radius < 10 cm) whose matched reco Muon (Delta R < 0.05, exclusive) is a PF candidate",
+  "pf_eff_flagged": {
+   "2023": 0.9505,
+   "2023BPix": 0.8871,
+   "2024": 0.8976
+  },
+  "pf_eff_rectangle": {
+   "2023": 0.951,
+   "2023BPix": 0.8884,
+   "2024": 0.8983
+  },
+  "pf_eff_phi_band_all_eta": {
+   "2023": 0.9514,
+   "2023BPix": 0.9237,
+   "2024": 0.9291
+  },
+  "pf_eff_outside_phi_band": {
+   "2023": 0.9567,
+   "2023BPix": 0.9554,
+   "2024": 0.9573
+  },
+  "extent_by_threshold": {
+   "0.5": {
+    "eta": [
+     -1.7,
+     0.1
+    ],
+    "phi": [
+     -1.5708,
+     -0.6981
+    ],
+    "n_bins": 45
+   },
+   "0.75": {
+    "eta": [
+     -1.6,
+     0.0
+    ],
+    "phi": [
+     -1.2217,
+     -0.6981
+    ],
+    "n_bins": 31
+   },
+   "1.0": {
+    "eta": [
+     -1.6,
+     0.0
+    ],
+    "phi": [
+     -1.2217,
+     -0.8727
+    ],
+    "n_bins": 30
+   }
+  }
+ },
+ "bp_non-exclusive": {
+  "quantity": "mean number of tracker layers with hits of matched muons",
+  "matching": "non-exclusive",
+  "threshold": 1.0,
+  "cone_dR": 0.05,
+  "eta": [
+   -1.6,
+   0.0
+  ],
+  "phi": [
+   -1.2217,
+   -0.8727
+  ],
+  "n_flagged_bins": 30,
+  "n_rectangle_bins": 32,
+  "n_rectangle_unflagged_bins": 2,
+  "flagged_avg": {
+   "2023": 11.3831,
+   "2023BPix": 9.8833,
+   "2024": 9.9336
+  },
+  "rectangle_avg": {
+   "2023": 11.4836,
+   "2023BPix": 9.998,
+   "2024": 10.0434
+  },
+  "outside_rectangle_avg": {
+   "2023": 12.2683,
+   "2023BPix": 12.2468,
+   "2024": 12.243
+  },
+  "denominators_flagged": {
+   "2023": 2793,
+   "2023BPix": 2442,
+   "2024": 2394
+  },
+  "denominators_rectangle": {
+   "2023": 2959,
+   "2023BPix": 2557,
+   "2024": 2510
+  },
+  "pf_definition": "fraction of gen muons from a dark photon (pT > 5 GeV, |eta| < 2.4, production radius < 10 cm) whose matched reco Muon (Delta R < 0.05, non-exclusive) is a PF candidate",
+  "pf_eff_flagged": {
+   "2023": 0.9735,
+   "2023BPix": 0.9381,
+   "2024": 0.9455
+  },
+  "pf_eff_rectangle": {
+   "2023": 0.9734,
+   "2023BPix": 0.938,
+   "2024": 0.9461
+  },
+  "pf_eff_phi_band_all_eta": {
+   "2023": 0.9714,
+   "2023BPix": 0.9565,
+   "2024": 0.962
+  },
+  "pf_eff_outside_phi_band": {
+   "2023": 0.9751,
+   "2023BPix": 0.9741,
+   "2024": 0.9749
+  },
+  "extent_by_threshold": {
+   "0.5": {
+    "eta": [
+     -1.7,
+     0.1
+    ],
+    "phi": [
+     -1.3963,
+     -0.6981
+    ],
+    "n_bins": 45
+   },
+   "0.75": {
+    "eta": [
+     -1.7,
+     0.0
+    ],
+    "phi": [
+     -1.3963,
+     -0.6981
+    ],
+    "n_bins": 34
+   },
+   "1.0": {
+    "eta": [
+     -1.6,
+     0.0
+    ],
+    "phi": [
+     -1.2217,
+     -0.8727
+    ],
+    "n_bins": 30
+   }
+  }
+ },
+ "eedp_per-dark-photon_2024_vs_2022": "NO REGION FOUND",
+ "eedp_per-dark-photon_2024_vs_2022EE": {
+  "quantity": "e/gamma reconstruction efficiency per dark photon to e+e- (the note's quantity): >= 1 electron or photon (all objects) within the cone of either electron; both electrons pT > 5 GeV, 1.5 < |eta| < 3.0, production vertex rho < 110 cm and |z| < 290 cm (before the ECAL face); map at the dark photon's eta, phi",
+  "matching": "per-dark-photon",
+  "threshold": 0.3,
+  "cone_dR": 0.1,
+  "eta": [
+   -1.6,
+   -1.5
+  ],
+  "phi": [
+   0.8727,
+   1.0472
+  ],
+  "n_flagged_bins": 1,
+  "n_rectangle_bins": 1,
+  "n_rectangle_unflagged_bins": 0,
+  "flagged_avg": {
+   "2022EE": 0.9643,
+   "2024": 0.6522
+  },
+  "rectangle_avg": {
+   "2022EE": 0.9643,
+   "2024": 0.6522
+  },
+  "outside_rectangle_avg": {
+   "2022EE": 0.9303,
+   "2024": 0.951
+  },
+  "denominators_flagged": {
+   "2022EE": 28,
+   "2024": 23
+  },
+  "denominators_rectangle": {
+   "2022EE": 28,
+   "2024": 23
+  },
+  "note": "the lower eta edge 1.5 is the edge of the map (|eta| > 1.5), not of the hole"
+ },
+ "bp_exclusive_2024_vs_2023": {
+  "quantity": "mean number of tracker layers with hits of matched muons",
+  "matching": "exclusive",
+  "threshold": 1.0,
+  "cone_dR": 0.05,
+  "eta": [
+   -1.3,
+   0.0
+  ],
+  "phi": [
+   -1.2217,
+   -0.8727
+  ],
+  "n_flagged_bins": 22,
+  "n_rectangle_bins": 26,
+  "n_rectangle_unflagged_bins": 4,
+  "flagged_avg": {
+   "2023": 11.4566,
+   "2024": 9.8661
+  },
+  "rectangle_avg": {
+   "2023": 11.3931,
+   "2024": 9.884
+  },
+  "outside_rectangle_avg": {
+   "2023": 12.2862,
+   "2024": 12.2587
+  },
+  "denominators_flagged": {
+   "2023": 2122,
+   "2024": 1748
+  },
+  "denominators_rectangle": {
+   "2023": 2450,
+   "2024": 2069
+  },
+  "pf_definition": "fraction of gen muons from a dark photon (pT > 5 GeV, |eta| < 2.4, production radius < 10 cm) whose matched reco Muon (Delta R < 0.05, exclusive) is a PF candidate",
+  "pf_eff_flagged": {
+   "2023": 0.9589,
+   "2024": 0.9008
+  },
+  "pf_eff_rectangle": {
+   "2023": 0.957,
+   "2024": 0.897
+  },
+  "pf_eff_phi_band_all_eta": {
+   "2023": 0.9514,
+   "2024": 0.9291
+  },
+  "pf_eff_outside_phi_band": {
+   "2023": 0.9567,
+   "2024": 0.9573
+  },
+  "extent_by_threshold": {
+   "0.5": {
+    "eta": [
+     -1.6,
+     0.2
+    ],
+    "phi": [
+     -1.3963,
+     -0.6981
+    ],
+    "n_bins": 43
+   },
+   "0.75": {
+    "eta": [
+     -1.6,
+     0.1
+    ],
+    "phi": [
+     -1.2217,
+     -0.6981
+    ],
+    "n_bins": 31
+   },
+   "1.0": {
+    "eta": [
+     -1.3,
+     0.0
+    ],
+    "phi": [
+     -1.2217,
+     -0.8727
+    ],
+    "n_bins": 22
+   }
+  }
+ },
+ "bp_exclusive_2024_vs_2023BPix": {
+  "quantity": "mean number of tracker layers with hits of matched muons",
+  "matching": "exclusive",
+  "threshold": 1.0,
+  "cone_dR": 0.05,
+  "eta": [
+   -2.4,
+   -2.1
+  ],
+  "phi": [
+   2.618,
+   3.1416
+  ],
+  "n_flagged_bins": 6,
+  "n_rectangle_bins": 9,
+  "n_rectangle_unflagged_bins": 3,
+  "flagged_avg": {
+   "2023BPix": 12.369,
+   "2024": 11.217
+  },
+  "rectangle_avg": {
+   "2023BPix": 12.1501,
+   "2024": 11.2418
+  },
+  "outside_rectangle_avg": {
+   "2023BPix": 12.2246,
+   "2024": 12.2226
+  },
+  "denominators_flagged": {
+   "2023BPix": 252,
+   "2024": 212
+  },
+  "denominators_rectangle": {
+   "2023BPix": 393,
+   "2024": 335
+  },
+  "pf_definition": "fraction of gen muons from a dark photon (pT > 5 GeV, |eta| < 2.4, production radius < 10 cm) whose matched reco Muon (Delta R < 0.05, exclusive) is a PF candidate",
+  "pf_eff_flagged": {
+   "2023BPix": 0.9611,
+   "2024": 0.9292
+  },
+  "pf_eff_rectangle": {
+   "2023BPix": 0.9533,
+   "2024": 0.9068
+  },
+  "pf_eff_phi_band_all_eta": {
+   "2023BPix": 0.9616,
+   "2024": 0.9542
+  },
+  "pf_eff_outside_phi_band": {
+   "2023BPix": 0.9529,
+   "2024": 0.9559
+  },
+  "extent_by_threshold": {
+   "0.5": {
+    "eta": [
+     -2.4,
+     -1.4
+    ],
+    "phi": [
+     2.2689,
+     3.1416
+    ],
+    "n_bins": 35
+   },
+   "0.75": {
+    "eta": [
+     -2.0,
+     -1.4
+    ],
+    "phi": [
+     2.2689,
+     3.1416
+    ],
+    "n_bins": 14
+   },
+   "1.0": {
+    "eta": [
+     -2.4,
+     -2.1
+    ],
+    "phi": [
+     2.618,
+     3.1416
+    ],
+    "n_bins": 6
+   }
+  }
+ },
+ "eedp_per-dark-photon_in_v1_bins": {
+  "region_from": "v1",
+  "eta": [
+   1.5,
+   2.1
+  ],
+  "phi": [
+   1.7453,
+   2.618
+  ],
+  "n_flagged_bins": 18,
+  "n_rectangle_bins": 30,
+  "flagged_avg": {
+   "2022": 0.9462,
+   "2022EE": 0.1897,
+   "2024": 0.9218
+  },
+  "denominators_flagged": {
+   "2022": 502,
+   "2022EE": 506,
+   "2024": 499
+  },
+  "rectangle_avg": {
+   "2022": 0.9644,
+   "2022EE": 0.4779,
+   "2024": 0.949
+  },
+  "denominators_rectangle": {
+   "2022": 814,
+   "2022EE": 837,
+   "2024": 765
+  },
+  "outside_rectangle_avg": {
+   "2022": 0.9479,
+   "2022EE": 0.9506,
+   "2024": 0.9507
+  },
+  "denominators_outside_rectangle": {
+   "2022": 18396,
+   "2022EE": 18633,
+   "2024": 18409
+  }
+ },
+ "ee_exclusive_in_v1_bins": {
+  "region_from": "v1",
+  "eta": [
+   1.5,
+   2.0
+  ],
+  "phi": [
+   1.7453,
+   2.4435
+  ],
+  "n_flagged_bins": 13,
+  "n_rectangle_bins": 20,
+  "flagged_avg": {
+   "2022": 0.5987,
+   "2022EE": 0.0366,
+   "2024": 0.5785
+  },
+  "denominators_flagged": {
+   "2022": 780,
+   "2022EE": 766,
+   "2024": 790
+  },
+  "rectangle_avg": {
+   "2022": 0.6075,
+   "2022EE": 0.1696,
+   "2024": 0.5995
+  },
+  "denominators_rectangle": {
+   "2022": 1154,
+   "2022EE": 1156,
+   "2024": 1171
+  },
+  "outside_rectangle_avg": {
+   "2022": 0.591,
+   "2022EE": 0.5877,
+   "2024": 0.589
+  },
+  "denominators_outside_rectangle": {
+   "2022": 38950,
+   "2022EE": 39439,
+   "2024": 38852
+  }
+ },
+ "ee_non-exclusive_in_v1_bins": {
+  "region_from": "v1",
+  "eta": [
+   1.5,
+   2.1
+  ],
+  "phi": [
+   1.7453,
+   2.618
+  ],
+  "n_flagged_bins": 19,
+  "n_rectangle_bins": 30,
+  "flagged_avg": {
+   "2022": 0.9275,
+   "2022EE": 0.2167,
+   "2024": 0.9159
+  },
+  "denominators_flagged": {
+   "2022": 1103,
+   "2022EE": 1112,
+   "2024": 1118
+  },
+  "rectangle_avg": {
+   "2022": 0.9501,
+   "2022EE": 0.4606,
+   "2024": 0.9413
+  },
+  "denominators_rectangle": {
+   "2022": 1702,
+   "2022EE": 1687,
+   "2024": 1636
+  },
+  "outside_rectangle_avg": {
+   "2022": 0.9392,
+   "2022EE": 0.9415,
+   "2024": 0.9425
+  },
+  "denominators_outside_rectangle": {
+   "2022": 38402,
+   "2022EE": 38908,
+   "2024": 38387
+  }
+ },
+ "bp_exclusive_in_v1_bins": {
+  "region_from": "v1",
+  "eta": [
+   -1.3,
+   0.1
+  ],
+  "phi": [
+   -1.2217,
+   -0.8727
+  ],
+  "n_flagged_bins": 24,
+  "n_rectangle_bins": 28,
+  "flagged_avg": {
+   "2023": 11.4645,
+   "2023BPix": 9.9631,
+   "2024": 9.9466
+  },
+  "denominators_flagged": {
+   "2023": 2269,
+   "2023BPix": 1951,
+   "2024": 1930
+  },
+  "rectangle_avg": {
+   "2023": 11.4459,
+   "2023BPix": 10.0387,
+   "2024": 10.0312
+  },
+  "denominators_rectangle": {
+   "2023": 2604,
+   "2023BPix": 2324,
+   "2024": 2274
+  },
+  "outside_rectangle_avg": {
+   "2023": 12.2862,
+   "2023BPix": 12.2654,
+   "2024": 12.2599
+  },
+  "denominators_outside_rectangle": {
+   "2023": 123902,
+   "2023BPix": 123508,
+   "2024": 124688
+  },
+  "pf_eff_flagged": {
+   "2023": 0.9545,
+   "2023BPix": 0.8968,
+   "2024": 0.9028
+  },
+  "pf_denominators_flagged": {
+   "2023": 2376,
+   "2023BPix": 2180,
+   "2024": 2130
+  },
+  "pf_eff_rectangle": {
+   "2023": 0.9566,
+   "2023BPix": 0.8976,
+   "2024": 0.9005
+  },
+  "pf_denominators_rectangle": {
+   "2023": 2722,
+   "2023BPix": 2597,
+   "2024": 2522
+  }
+ },
+ "bp_non-exclusive_in_v1_bins": {
+  "region_from": "v1",
+  "eta": [
+   -1.3,
+   0.1
+  ],
+  "phi": [
+   -1.2217,
+   -0.8727
+  ],
+  "n_flagged_bins": 24,
+  "n_rectangle_bins": 28,
+  "flagged_avg": {
+   "2023": 11.4451,
+   "2023BPix": 9.9418,
+   "2024": 9.9182
+  },
+  "denominators_flagged": {
+   "2023": 2321,
+   "2023BPix": 2062,
+   "2024": 2029
+  },
+  "rectangle_avg": {
+   "2023": 11.4302,
+   "2023BPix": 10.0139,
+   "2024": 10.0017
+  },
+  "denominators_rectangle": {
+   "2023": 2659,
+   "2023BPix": 2450,
+   "2024": 2394
+  },
+  "outside_rectangle_avg": {
+   "2023": 12.2676,
+   "2023BPix": 12.2446,
+   "2024": 12.2417
+  },
+  "denominators_outside_rectangle": {
+   "2023": 126301,
+   "2023BPix": 126002,
+   "2024": 127042
+  },
+  "pf_eff_flagged": {
+   "2023": 0.9756,
+   "2023BPix": 0.944,
+   "2024": 0.9488
+  },
+  "pf_denominators_flagged": {
+   "2023": 2376,
+   "2023BPix": 2180,
+   "2024": 2130
+  },
+  "pf_eff_rectangle": {
+   "2023": 0.9765,
+   "2023BPix": 0.943,
+   "2024": 0.9477
+  },
+  "pf_denominators_rectangle": {
+   "2023": 2722,
+   "2023BPix": 2597,
+   "2024": 2522
+  }
+ },
+ "ref_npz": {
+  "path": "era_fingerprint.npz",
+  "code_commit": "d579fe16"
+ },
+ "code_commit": "be5af4ad",
+ "production": "v2"
+}
