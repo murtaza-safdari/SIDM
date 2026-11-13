@@ -669,6 +669,41 @@ def regions(H):
     return R
 
 
+def regions_in_bins(H, Href, ref_label):
+    """Each region of PAIRS as flagged in the maps Href (another production), read in the maps H: per
+    era of H, the averages and denominators over Href's flagged bins, their rectangle and the rest of
+    the map. Keys '<kind>_<matching>_in_<ref_label>_bins'."""
+    R = {}
+    for kind, a, b in PAIRS:
+        for sfx, mlab in ((("", "per-dark-photon"),) if kind == "eedp" else
+                          (("", "exclusive"), ("_nx", "non-exclusive"))):
+            if not _has(Href, kind, a, b, sfx):
+                continue
+            sel = flagged(Href, kind, a, b, THR[kind], sfx)
+            if sel is None:
+                continue
+            ie, ip = np.where(sel)
+            rect = np.zeros_like(sel); rect[ie.min():ie.max() + 1, ip.min():ip.max() + 1] = True
+            xe = EE_ETA if kind in ("ee", "eedp") else BP_ETA
+            r = dict(region_from=ref_label, eta=[float(xe[ie.min()]), float(xe[ie.max() + 1])],
+                     phi=[round(float(PHI[ip.min()]), 4), round(float(PHI[ip.max() + 1]), 4)],
+                     n_flagged_bins=int(sel.sum()), n_rectangle_bins=int(rect.sum()))
+            for e in (a, b, EXTRA_ERA):
+                if not _has(H, kind, a, e, sfx):
+                    continue
+                _, _, n, d, _ = _maps(H, kind, a, e, sfx)
+                for lab, m in (("flagged", sel), ("rectangle", rect), ("outside_rectangle", ~rect)):
+                    r.setdefault(f"{lab}_avg", {})[e] = round(float(n[m].sum() / d[m].sum()), 4)
+                    r.setdefault(f"denominators_{lab}", {})[e] = int(d[m].sum())
+                if kind == "bp":
+                    for lab, m in (("flagged", sel), ("rectangle", rect)):
+                        r.setdefault(f"pf_eff_{lab}", {})[e] = round(float(H[f"bp_pf{sfx}_{e}"][m].sum()
+                                                                            / H[f"bp_den_{e}"][m].sum()), 4)
+                        r.setdefault(f"pf_denominators_{lab}", {})[e] = int(H[f"bp_den_{e}"][m].sum())
+            R[f"{kind}_{mlab}_in_{ref_label}_bins"] = r
+    return R
+
+
 def main():
     global PRODUCTION, ERAS
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -685,6 +720,9 @@ def main():
     ap.add_argument("--csv", default=None, help="default era_fingerprint<tag>.csv in this directory")
     ap.add_argument("--npz", default=None, help="default era_fingerprint<tag>.npz in this directory")
     ap.add_argument("--regions", default=None, help="default era_fingerprint_regions<tag>.json in this directory")
+    ap.add_argument("--ref-npz", default=None,
+                    help="v2: maps of v1 whose flagged regions are also read in the v2 maps (default: the "
+                         "committed era_fingerprint.npz; 'none' to skip)")
     ap.add_argument("--no-maps", action="store_true", help="skip the detector maps")
     ap.add_argument("--no-figures", action="store_true")
     ap.add_argument("--replot", action="store_true", help="redraw figures from --npz, no EOS access")
@@ -828,6 +866,11 @@ def main():
 
     have = {e for e in ERAS if f"sqrts_{e}" in H}
     R = regions(H)
+    ref_npz = args.ref_npz or (os.path.join(_DIR, "era_fingerprint.npz") if PRODUCTION != "v1" else "none")
+    if ref_npz != "none":
+        Href = dict(np.load(ref_npz, allow_pickle=True))
+        R.update(regions_in_bins(H, Href, "v1"))
+        R["ref_npz"] = dict(path=os.path.relpath(ref_npz, _DIR), code_commit=str(Href.get("code_commit", "")))
     R["code_commit"] = str(H.get("code_commit", COMMIT))
     R["production"] = PRODUCTION
     with open(regions_json, "w") as fh:
