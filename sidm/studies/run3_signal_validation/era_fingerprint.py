@@ -322,6 +322,7 @@ def read_file(url, maps):
         h = lambda sel, w=None: np.histogram2d(e[sel], p[sel], [BP_ETA, PHI], weights=w)[0]
         out["bp_den"] = np.histogram2d(e, p, [BP_ETA, PHI])[0]
         out["bp_pf"], out["bp_ntrk"], out["bp_lay"] = h(pf), h(trk), h(trk, lay[trk])
+        out["bp_lay2"] = h(trk, lay[trk] ** 2)          # second moment: statistical error of region means
         out["bp_pf_nx"], out["bp_ntrk_nx"], out["bp_lay_nx"] = h(pf_nx), h(trk_nx), h(trk_nx, lay_nx[trk_nx])
     return out
 
@@ -674,6 +675,48 @@ def regions(H):
     return R
 
 
+# fixed rectangles (eta range, phi intervals in degrees on the 10-degree grid; a range crossing phi = pi
+# is given as two intervals) where 2024 has fewer tracker layers than 2023 and 2023BPix outside the BPix
+# sector. A: the 0.5-layer extent of the 2024 vs 2023BPix search widened to the 60-bin rectangle that was
+# quoted (phi 120-180 deg); B: eta 1.4-1.8, phi chosen from the 2024 - 2023 map, the contiguous run of
+# negative columns across phi = pi (160 deg to -140 deg; the -140..-130 deg column is +0.02)
+TRACKER_2024 = {"bp_fixed_2024_A": ((-2.4, -1.4), ((120, 180),)),
+                "bp_fixed_2024_B": ((1.4, 1.8), ((160, 180), (-180, -140)))}
+
+
+def tracker_regions(H, eras=("2023", "2023BPix", "2024")):
+    """Per fixed rectangle of TRACKER_2024 and era: mean number of tracker layers of the matched muons
+    (exclusive matching) with its statistical error (from the bp_lay2 second moment), the muon count,
+    and the PF-muon efficiency with its binomial error and denominator."""
+    R = {}
+    for key, ((e0, e1), phis) in TRACKER_2024.items():
+        ie = (BP_ETA[:-1] >= e0 - 1e-9) & (BP_ETA[1:] <= e1 + 1e-9)
+        deg = np.degrees(PHI)
+        ip = np.zeros(len(PHI) - 1, dtype=bool)
+        for p0, p1 in phis:
+            ip |= (deg[:-1] >= p0 - 1e-6) & (deg[1:] <= p1 + 1e-6)
+        m = np.outer(ie, ip)
+        r = dict(eta=[e0, e1], phi_deg=[list(x) for x in phis], n_bins=int(m.sum()),
+                 quantity="exclusive matching; mean layers of matched tracker muons, PF-muon efficiency of gen "
+                          "muons (definitions as bp_exclusive)")
+        for e in eras:
+            if f"bp_lay_{e}" not in H:
+                continue
+            n = float(H[f"bp_ntrk_{e}"][m].sum()); s1 = float(H[f"bp_lay_{e}"][m].sum())
+            mean = s1 / n
+            x = dict(mean_layers=round(mean, 4), n_muons=int(n))
+            if f"bp_lay2_{e}" in H:
+                var = float(H[f"bp_lay2_{e}"][m].sum()) / n - mean ** 2
+                x["mean_layers_stat"] = round(float(np.sqrt(var / n)), 4)
+                x["layers_std"] = round(float(np.sqrt(var)), 4)
+            k, d = float(H[f"bp_pf_{e}"][m].sum()), float(H[f"bp_den_{e}"][m].sum())
+            x.update(pf_eff=round(k / d, 4), pf_eff_stat=round(float(np.sqrt(k / d * (1 - k / d) / d)), 4),
+                     pf_denominator=int(d))
+            r[e] = x
+        R[key] = r
+    return R
+
+
 def regions_in_bins(H, Href, ref_label):
     """Each region of PAIRS as flagged in the maps Href (another production), read in the maps H: per
     era of H, the averages and denominators over Href's flagged bins, their rectangle and the rest of
@@ -871,6 +914,8 @@ def main():
 
     have = {e for e in ERAS if f"sqrts_{e}" in H}
     R = regions(H)
+    if "bp_lay_2024" in H:
+        R.update(tracker_regions(H))
     ref_npz = args.ref_npz or (os.path.join(_DIR, "era_fingerprint.npz") if PRODUCTION != "v1" else "none")
     if ref_npz != "none":
         Href = dict(np.load(ref_npz, allow_pickle=True))
