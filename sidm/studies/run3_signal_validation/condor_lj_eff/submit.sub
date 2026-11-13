@@ -13,7 +13,7 @@ output = logs/$(mode)_$(era)_$(part)_$(Cluster).out
 error  = logs/$(mode)_$(era)_$(part)_$(Cluster).err
 log    = logs/lj_eff_$(Cluster).log
 request_cpus = 1
-request_memory = 2GB
-request_disk = 6GB
+request_memory = 2000MB
+request_disk = 3GB
 x509userproxy = $ENV(X509_USER_PROXY)
 queue mode, era, part, names from $(ARGS)
