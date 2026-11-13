@@ -4,23 +4,26 @@ channel and efficiency, the per-point (Run 3 - 2018) differences over the 18 gri
 statistical error of the mean (per-point binomial errors propagated), RMS, [min, max], number
 negative, and the chi2 of the 18 differences about their mean (17 dof). A chi2 far above 17 means
 the points do not share a common shift, so the mean +- stat is not the uncertainty of one. Also the
-in-acceptance fractions. Writes lj_eff_summary.json. No EOS access."""
-import json, os, sys
+in-acceptance fractions. Writes lj_eff_summary<tag>.json (--production v1: no tag, the files of the
+first production; v2, the default: _v2, from lj_eff_{real,geom}_v2_<era>.json, five eras). No EOS access."""
+import argparse, json, os, sys
 import numpy as np
 
 _DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _DIR)
 import run3_signal_validation as V
 
-ERAS = ["2022", "2022EE", "2023", "2023BPix"]
-
-
 def main():
-    out = dict(code_commit=V.code_commit(), definition=__doc__.split("\n\n")[0].replace("\n", " "))
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--production", choices=V.PRODUCTIONS, default="v2")
+    args = ap.parse_args()
+    eras, tag = V.ERAS_BY_PRODUCTION[args.production], V.output_tag(args.production)
+    out = dict(code_commit=V.code_commit(), production=args.production,
+               definition=__doc__.split("\n\n")[0].replace("\n", " "))
     for mode in ("geom", "real"):
         out[mode] = {}
-        for era in ERAS:
-            rows = json.load(open(os.path.join(_DIR, f"lj_eff_{mode}_{era}.json")))
+        for era in eras:
+            rows = json.load(open(os.path.join(_DIR, f"lj_eff_{mode}{tag}_{era}.json")))
             a3 = np.array([r["run3"]["n_acc"] / r["run3"]["n"] for r in rows])
             a2 = np.array([r["v10"]["n_acc"] / r["v10"]["n"] for r in rows])
             e = out[mode][era] = dict(
@@ -43,11 +46,11 @@ def main():
                         rms_pct=round(d.std(), 3), min_pct=round(d.min(), 3), max_pct=round(d.max(), 3),
                         n_negative=int((d < 0).sum()),
                         chi2_about_mean=round(float((((d - mean) / s) ** 2).sum()), 1), ndof=len(d) - 1)
-    path = os.path.join(_DIR, "lj_eff_summary.json")
+    path = os.path.join(_DIR, f"lj_eff_summary{tag}.json")
     json.dump(out, open(path, "w"), indent=1)
     print(f"wrote {path}")
     for mode in ("geom", "real"):
-        for era in ERAS:
+        for era in eras:
             for k, v in out[mode][era].items():
                 if isinstance(v, dict) and "mean_pct" in v:
                     print(f"{mode} {era:8s} {k:14s} mean {v['mean_pct']:+.3f} +- {v['stat_of_mean_pct']:.3f}  rms {v['rms_pct']:.3f}"

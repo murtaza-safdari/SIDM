@@ -35,6 +35,12 @@ MU_PT, EG_PT, ETA, EL_ETA, DR_MATCH = 3.0, 1.0, 2.4, 2.5, 0.4
 # Default (not LOOSE) = the full SIDM LJ-source object selection + DSA segment-match cross-cleaning.
 LOOSE = "loose" in sys.argv
 ERA = os.environ.get("RUN3_ERA", "2022")   # era of the Run 3 samples to scan
+# Run 3 production: v1 (LLPNanoAOD, outputs/<era>/, files listed on EOS) or v2 (EXONanoAOD, outputs_v2/<era>/,
+# files from the census-checked location YAML signal_run3_v2_<era>.yaml)
+PRODUCTION = os.environ.get("RUN3_PRODUCTION", "v1")
+# v2 stores DSAMuon_nSegments as twice nDTSegments (producer bug in CMSSW_16_0_10, nCSCSegments counts DT
+# segments too); the real mode's segment-match fraction then uses this substitute for the segment count
+DSA_NSEG_V2 = "DSAMuon_nDTSegments + ceil(DSAMuon_trkNumCSCHits / 6)"
 JETDEF = fastjet.JetDefinition(fastjet.antikt_algorithm, 0.4)
 MU_M, EL_M = 0.10566, 0.000511
 GBR = sorted(set(["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_genPartIdxMother"]
@@ -75,7 +81,8 @@ def lj_counts(files, is2e, egm_variant=None):
         n_read += 1
         keys = set(ev.keys())
         br = ["Muon_pt","Muon_eta","Muon_phi","Muon_looseId","DSAMuon_pt","DSAMuon_eta","DSAMuon_phi",
-              "DSAMuon_displacedID","DSAMuon_muonMatch1","DSAMuon_nSegments",
+              "DSAMuon_displacedID","DSAMuon_muonMatch1","DSAMuon_nSegments","DSAMuon_nDTSegments",
+              "DSAMuon_trkNumCSCHits",
               "Electron_pt","Electron_eta","Electron_phi","Photon_pt","Photon_eta","Photon_phi",
               "Photon_cutBased", "Electron_cutBased"] + GBR
         a = ev.arrays([b for b in br if b in keys])
@@ -95,7 +102,9 @@ def lj_counts(files, is2e, egm_variant=None):
                 keep = (pt > 5) & (abs(eta) < ETA) & (a["Muon_looseId"] == 1)
             elif coll == "DSAMuon":                 # DSA: pT>10, |eta|<2.4, displacedID, + segment-match cross-cleaning
                 keep = (pt > 10) & (abs(eta) < ETA) & (a["DSAMuon_displacedID"] > 0)
-                ns = a["DSAMuon_nSegments"]; frac = ak.where(ns > 0, a["DSAMuon_muonMatch1"] / ns, 0.0)
+                ns = (a["DSAMuon_nDTSegments"] + np.ceil(a["DSAMuon_trkNumCSCHits"] / 6)
+                      if PRODUCTION == "v2" else a["DSAMuon_nSegments"])
+                frac = ak.where(ns > 0, a["DSAMuon_muonMatch1"] / ns, 0.0)
                 keep = keep & (frac < 0.34)         # remove DSA that share >=34% segments with a PF muon (SR "all" veto term)
             elif coll == "Electron":                # e: pT>10, |eta|<2.4 (SR adds MVANonIsoWPL; egm leg is gen-matched)
                 keep = (pt > 10) & (abs(eta) < ETA)
@@ -173,6 +182,8 @@ def lj_counts(files, is2e, egm_variant=None):
              excl_raw=eff(excl, allm), excl_acc=eff(excl, acc),
              nmu_hist=hist(nmu, allm), negm_hist=hist(negm, allm),
              nmu_hist_acc=hist(nmu, acc), negm_hist_acc=hist(negm, acc))
+    if not LOOSE and PRODUCTION == "v2" and "DSAMuon_nDTSegments" in keys:   # keys: of the last file read
+        d["dsa_nsegments_definition"] = DSA_NSEG_V2
     ee = np.concatenate(egm_e) if egm_e else np.array([]); gg = np.concatenate(egm_g) if egm_g else np.array([])
     if is2e and len(ee):
         d["egm_photon_only_frac"] = float(((ee == 0) & (gg > 0)).mean())
@@ -191,6 +202,14 @@ def lj_counts(files, is2e, egm_variant=None):
     return d
 
 def run3_files(name, nchunks):
+    if PRODUCTION == "v2":
+        import yaml
+        cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "configs",
+                           "ntuples", f"signal_run3_v2_{ERA}.yaml")
+        blk = yaml.safe_load(open(cfg))["exoNanoAOD_v2"]; entry = blk["samples"][r3_to_key(name)[0]]
+        urls = [(blk["path"] + entry["path"] + f).replace("root://xcache//", "root://cmseos.fnal.gov//")
+                for f in entry["files"]]
+        return urls[:nchunks] if nchunks else urls
     REDIR = "root://cmseos.fnal.gov/"; d = "/store/group/lpcmetx/SIDM/run3_samplegen/outputs/%s/" % ERA + name
     fl = subprocess.run(["xrdfs","root://cmseos.fnal.gov","ls",d],capture_output=True,text=True,timeout=60).stdout.split()
     fl = [REDIR + f for f in fl if f.endswith(".root")]
@@ -221,7 +240,7 @@ if __name__ == "__main__":
                   f"excl_acc={d['excl_acc']['p']*100:.1f}% (k={d['excl_acc']['k']}/{d['excl_acc']['n']}) "
                   f"negm_hist={d['negm_hist']} gmatch_in_excl={'yes'}")
         sys.exit(0)
-    BASE = "/store/group/lpcmetx/SIDM/run3_samplegen/outputs/" + ERA
+    BASE = "/store/group/lpcmetx/SIDM/run3_samplegen/%s/" % ("outputs_v2" if PRODUCTION == "v2" else "outputs") + ERA
     subdirs = subprocess.run(["xrdfs","root://cmseos.fnal.gov","ls",BASE],capture_output=True,text=True).stdout.split()
     ready = []
     for d in subdirs:

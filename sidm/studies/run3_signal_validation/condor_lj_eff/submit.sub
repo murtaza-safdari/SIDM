@@ -1,9 +1,10 @@
 # submit from a work directory:
-#   condor_submit CODEDIR=<this dir> ARGS=<job_args file> R3N=<chunks, 0 = all> V10N=<files> COMMIT=<hash> submit.sub
+#   condor_submit CODEDIR=<this dir> ARGS=<job_args file> R3N=<chunks, 0 = all> V10N=<files> COMMIT=<hash> \
+#                 PRODUCTION=<v1|v2, empty = v1> submit.sub
 # (make_tarball.sh <work dir> first; logs/ and the output jsons land in the work directory)
 universe = vanilla
 executable = $(CODEDIR)/run_lj_eff.sh
-arguments = $(mode) $(era) $(names) $(R3N) $(V10N) lj_$(mode)_$(era)_$(part).json $(COMMIT)
+arguments = $(mode) $(era) $(names) $(R3N) $(V10N) lj_$(mode)_$(era)_$(part).json $(COMMIT) $(PRODUCTION)
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 transfer_input_files = lj_eff_code.tar.gz, $(CODEDIR)/../../../../condor/requirements.txt
@@ -12,7 +13,7 @@ output = logs/$(mode)_$(era)_$(part)_$(Cluster).out
 error  = logs/$(mode)_$(era)_$(part)_$(Cluster).err
 log    = logs/lj_eff_$(Cluster).log
 request_cpus = 1
-request_memory = 4GB
+request_memory = 2GB
 request_disk = 6GB
 x509userproxy = $ENV(X509_USER_PROXY)
 queue mode, era, part, names from $(ARGS)
