@@ -9,7 +9,9 @@ EXONanoAOD, `run3_samplegen/outputs_v2/<era>/`). In v2 the stored `DSAMuon_nSegm
 |---|---|---|
 | `make_tasks.py` | login node, ~30 s | file lists (`VERSION ERA SAMPLE URL` per line) from the location YAMLs: `--stage step1` the files of the 2026-11-12 comparison, `--stage full` every file of the 36 column samples and of the 12 prompt-like points in 2022, 2022EE, 2023, 2023BPix |
 | `xclean_rows.py` | login node or condor, ~1 s per file and process | per file, one `.npz` with the "pre" DSA muons (pT > 10 GeV, abs(eta) < 2.4, displaced ID): kinematics, hit and segment counts, the five `muonMatch` slot counts, the number of good matched PF muons, the veto decisions for the stored, rebuilt and rebuilt + 1 segment counts, and the gen Lxy and dR of the nearest gen muon from a dark-photon decay; per event the numbers of DSA, "pre" DSA and good PF muons |
+| `xclean_step1.py` | login node, seconds | the 2026-11-12 pass-fraction table on its own files (displaced j040-j059, prompt-like j000-j003; 2022, 2023) |
 | `xclean_stats.py` | login node, minutes | the tables: per set and era v1, v2, v2 - v1 with binomial and event-clustered uncertainties, the pulls, inverse-variance combinations over eras and samples, chi2 against zero, and the verdicts of the decision rule |
+| `xclean_where.py` | login node, minutes | per era, v1 against v2 for the inputs of the veto (DSA multiplicity, segment counts by region, match slots, good PF muons, pass fraction in abs(eta) and gen Lxy bins, rebuilt + 1 bound), for locating a difference |
 | `condor/` | condor | `run_xclean.sh` and `xclean.sub`: `xclean_rows.py` on a task list per job |
 
 The veto is evaluated with the cut lambdas of `sidm/definitions/cuts.py` themselves, on a `good_matched_muons`
@@ -44,8 +46,10 @@ cp $S/condor/{run_xclean.sh,xclean.sub} <repo>/condor/{requirements.txt,constrai
 for t in $C/out/rows_*.tar; do tar -xf $t -C $W --skip-old-files rows; done
 
 # 4. tables
+$PY -I $S/xclean_step1.py $W/rows > $W/step1_table.md                 # the 2026-11-12 table
 $PY -I $S/xclean_stats.py $W/rows $W/xclean_tables.md                 # all steps
 $PY -I $S/xclean_stats.py $W/rows $W/step2_tables.md --step2-only     # the eight sets only
+$PY -I $S/xclean_where.py $W/rows $W/where.md "2Mu2E displaced" 2Mu2E_200GeV_1p2GeV_4p8mm   # step 6, if needed
 ```
 
 ## Definitions
