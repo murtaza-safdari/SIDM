@@ -72,6 +72,7 @@ def lj_counts(files, is2e, egm_variant=None):
     var = egm_variant or "V0"
     NMU = []; NEGM = []; ACC = []; MATCH = []; egm_e = []; egm_g = []; COMP = []; NSEL = []
     n = 0; n_read = 0                       # n_read: files actually opened (unreadable ones are skipped)
+    n_v2 = 0                                # files of the v2 production read (the DSA segment-count substitute)
     for f in files:
         try:
             ev = uproot.open(f)["Events"]
@@ -80,6 +81,8 @@ def lj_counts(files, is2e, egm_variant=None):
             continue
         n_read += 1
         keys = set(ev.keys())
+        v2file = PRODUCTION == "v2" and "/outputs_v2/" in f     # the 2018 v10 files keep their stored count
+        n_v2 += v2file
         br = ["Muon_pt","Muon_eta","Muon_phi","Muon_looseId","DSAMuon_pt","DSAMuon_eta","DSAMuon_phi",
               "DSAMuon_displacedID","DSAMuon_muonMatch1","DSAMuon_nSegments","DSAMuon_nDTSegments",
               "DSAMuon_trkNumCSCHits",
@@ -103,7 +106,7 @@ def lj_counts(files, is2e, egm_variant=None):
             elif coll == "DSAMuon":                 # DSA: pT>10, |eta|<2.4, displacedID, + segment-match cross-cleaning
                 keep = (pt > 10) & (abs(eta) < ETA) & (a["DSAMuon_displacedID"] > 0)
                 ns = (a["DSAMuon_nDTSegments"] + np.ceil(a["DSAMuon_trkNumCSCHits"] / 6)
-                      if PRODUCTION == "v2" else a["DSAMuon_nSegments"])
+                      if v2file else a["DSAMuon_nSegments"])
                 frac = ak.where(ns > 0, a["DSAMuon_muonMatch1"] / ns, 0.0)
                 keep = keep & (frac < 0.34)         # remove DSA that share >=34% segments with a PF muon (SR "all" veto term)
             elif coll == "Electron":                # e: pT>10, |eta|<2.4 (SR adds MVANonIsoWPL; egm leg is gen-matched)
@@ -182,7 +185,7 @@ def lj_counts(files, is2e, egm_variant=None):
              excl_raw=eff(excl, allm), excl_acc=eff(excl, acc),
              nmu_hist=hist(nmu, allm), negm_hist=hist(negm, allm),
              nmu_hist_acc=hist(nmu, acc), negm_hist_acc=hist(negm, acc))
-    if not LOOSE and PRODUCTION == "v2" and "DSAMuon_nDTSegments" in keys:   # keys: of the last file read
+    if not LOOSE and n_v2:
         d["dsa_nsegments_definition"] = DSA_NSEG_V2
     ee = np.concatenate(egm_e) if egm_e else np.array([]); gg = np.concatenate(egm_g) if egm_g else np.array([])
     if is2e and len(ee):
