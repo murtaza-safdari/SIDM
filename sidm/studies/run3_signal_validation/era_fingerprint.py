@@ -474,6 +474,21 @@ def fig_bpix(H):
     return _finish(fig, axes, "era_bpix")
 
 
+def fig_2024_maps(H):
+    """v2: the 2024 maps against the era each is compared with in the text (ECAL endcap against 2022,
+    pixel layers against 2023BPix), in the layout of era_ecal_ee and era_bpix."""
+    fig, axes = plt.subplots(1, 3, figsize=(22, 7.5), layout="constrained", sharey=True)
+    _eff_maps(fig, axes, H["ee_dp_num_2022"], H["ee_dp_den_2022"], H["ee_dp_num_2024"], H["ee_dp_den_2024"],
+              EE_ETA, ("2022", "2024"), r"e/$\gamma$ efficiency per dark photon", 1.5, "2024 $-$ 2022",
+              1.0, (0.0, 1.0), obj="dark-photon")
+    _finish(fig, axes, "map2024_ecal_ee_vs_2022")
+    fig, axes = plt.subplots(1, 3, figsize=(22, 7.5), layout="constrained", sharey=True)
+    _eff_maps(fig, axes, H["bp_lay_2023BPix"], H["bp_ntrk_2023BPix"], H["bp_lay_2024"], H["bp_ntrk_2024"],
+              BP_ETA, ("2023BPix", "2024"), "mean number of tracker layers with hits", None,
+              "2024 $-$ 2023BPix", 3.0, (8, 16))
+    return _finish(fig, axes, "map2024_bpix_vs_2023BPix")
+
+
 def _restyle(fig, minfs):
     """Committed run3_study_plots figures, made AN-ready without editing that module: suptitle
     dropped (the AN caption carries it), in-figure text and legends raised to >= minfs."""
@@ -954,6 +969,8 @@ def main():
         fig_ecal_ee(H)
     if {"2023", "2023BPix"} <= have and "bp_ntrk_2023" in H:
         fig_bpix(H)
+    if {"2022", "2023BPix", "2024"} <= have and "ee_dp_den_2024" in H and "bp_ntrk_2024" in H:
+        fig_2024_maps(H)
     tag = V.output_tag(PRODUCTION)
     if all(os.path.exists(os.path.join(_DIR, f"lj_eff_geom{tag}_{e}.json")) for e in ERAS):
         geometry_table(); fig_reco_eff()
