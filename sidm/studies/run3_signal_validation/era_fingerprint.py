@@ -368,8 +368,9 @@ def _draw_sqrt_s(ax, H, fs):
     ax.set_xlabel(r"$\sqrt{s} = m_{\chi\bar{\chi}} / \sqrt{x_1 x_2}$  [TeV]")
     ax.set_ylabel(f"Fraction of events / {np.diff(edges)[0]:.0f} GeV")
     ax.set_yscale("log"); ax.set_ylim(1e-4, 2)
+    # five Run 3 eras + 2018 in one column would reach down onto the 2018 peak: two columns
     ax.legend(loc="upper center", fontsize=fs, frameon=True, facecolor="white", edgecolor="none",
-              framealpha=0.92)
+              framealpha=0.92, ncol=1 if len(ERAS) < 5 else 2)
 
 
 def _draw_pileup(ax, H, fs):
@@ -400,7 +401,7 @@ def fig_sqrts_pileup(H):
     """sqrt(s) (left, Run 3 eras + 2018) and pileup (right, Run 3) for full text width."""
     fig, axes = plt.subplots(1, 2, figsize=(21, 8), layout="constrained")
     _draw_sqrt_s(axes[0], H, FS_WIDE)
-    axes[0].set_ylim(1e-4, 20)          # legend headroom at the larger font
+    axes[0].set_ylim(1e-4, 20 if len(ERAS) < 5 else 60)          # legend headroom at the larger font
     _draw_pileup(axes[1], H, FS_WIDE)
     axes[1].set_ylim(0, axes[1].get_ylim()[1] * 1.3)
     fig.canvas.draw()
@@ -420,7 +421,11 @@ def fig_beamspot(H):
             ax.stairs(h / h.sum(), edges, color=ECOL[era], ls=ELS[era], lw=2.5, label=era)
         ax.set_xlabel(xl); ax.set_xlim(edges[0], edges[-1]); ax.set_ylim(0, None)
     axes[0].set_ylabel("Fraction of events")
-    axes[0].legend(loc="upper left", fontsize=FS_WIDE)
+    # v2: the 2024 beam spot at x = 0.028 cm fills the upper left; the gap between the x peaks is free
+    if PRODUCTION == "v1":
+        axes[0].legend(loc="upper left", fontsize=FS_WIDE)
+    else:     # starts right of the 2023 peak (x = 0.046 cm on the 0.02-0.11 cm axis)
+        axes[0].legend(loc="upper left", bbox_to_anchor=(0.36, 1.0), fontsize=FS_WIDE)
     return _finish(fig, axes, "era_beamspot")
 
 
@@ -904,7 +909,12 @@ def main():
         fig_ecal_ee(H)
     if {"2023", "2023BPix"} <= have and "bp_ntrk_2023" in H:
         fig_bpix(H)
-    geometry_table(); fig_reco_eff(); fig_kinematics()
+    tag = V.output_tag(PRODUCTION)
+    if all(os.path.exists(os.path.join(_DIR, f"lj_eff_geom{tag}_{e}.json")) for e in ERAS):
+        geometry_table(); fig_reco_eff()
+    else:
+        print(f"no lj_eff_geom{tag}_<era>.json for every era: era_reco_eff_vs2018 not drawn")
+    fig_kinematics()
 
 
 if __name__ == "__main__":
