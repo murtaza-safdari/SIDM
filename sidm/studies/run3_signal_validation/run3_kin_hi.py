@@ -13,6 +13,8 @@ import run3_signal_validation as V
 plt.style.use(hep.style.CMS)
 RO = os.environ.get("RUN3_EFF_OUT", "/uscms_data/d3/murtazas/review_out")
 ERA = os.environ.get("RUN3_ERA", "2022")   # era of the Run 3 samples
+PRODUCTION = os.environ.get("RUN3_PRODUCTION", "v1")   # v1 (LLPNanoAOD) or v2 (EXONanoAOD); v2 files carry _v2
+TAG = V.output_tag(PRODUCTION)
 NF = 12
 
 POINTS = {
@@ -20,21 +22,21 @@ POINTS = {
     "2Mu2E": [("2Mu2E_200GeV_1p2GeV_4p8mm", 200), ("2Mu2E_500GeV_1p2GeV_1p9mm", 500), ("2Mu2E_800GeV_1p2GeV_1p2mm", 800)],
 }
 COL = {200: "#1f77b4", 500: "#2ca02c", 800: "#d62728"}
-NPZ = f"{RO}/kin_hi_{ERA}.npz"
+NPZ = f"{RO}/kin_hi{TAG}_{ERA}.npz"
 if os.path.exists(NPZ) and "--replot" in sys.argv:
     store = dict(np.load(NPZ)); print("loaded arrays from npz (replot only)")
 else:
     store = {}
     for chan, pts in POINTS.items():
-        cfg = f"signal_{chan.lower()}_run3.yaml"
+        key, cfg = V.run3_location(chan, ERA, PRODUCTION)
         for sample, mbs in pts:
-            r = V.analyze(sample, ERA, cfg, nfiles=NF)
+            r = V.analyze(sample, key, cfg, nfiles=NF)
             store[f"{chan}_{mbs}_dR"] = r["dR"]; store[f"{chan}_{mbs}_pt"] = r["lep_pt"]
             store[f"{chan}_{mbs}_mass"] = r["dpmass"]
             print(f"{sample:26s} N_dp_pairs={len(r['dR']):6d}  <dR>={np.mean(r['dR']):.3f}  "
                   f"<lep pT>={np.median(r['lep_pt']):.1f} GeV  <dpmass>={np.median(r['dpmass']):.3f}")
     np.savez_compressed(NPZ, **store)
-    print(f"wrote kin_hi_{ERA}.npz")
+    print(f"wrote {NPZ}")
 
 for chan in ["4Mu", "2Mu2E"]:
     fig, axes = plt.subplots(1, 2, figsize=(15, 6))
@@ -50,5 +52,5 @@ for chan in ["4Mu", "2Mu2E"]:
     axes[1].set_xlabel(r"gen lepton $p_T$  [GeV]"); axes[1].set_ylabel("a.u."); axes[1].legend(fontsize=13)
     hep.cms.label("", data=False, com=13.6, ax=axes[0]); hep.cms.label("", data=False, com=13.6, ax=axes[1])
     fig.suptitle(f"Run 3 ({ERA}) {chan} gen kinematics vs boost ($M_{{Z_d}}$=1.2 GeV, high stats)", y=0.99, fontsize=15)
-    fig.tight_layout(); fig.savefig(f"{RO}/kin_hi_{chan}_{ERA}.png", dpi=110, bbox_inches="tight")
+    fig.tight_layout(); fig.savefig(f"{RO}/kin_hi{TAG}_{chan}_{ERA}.png", dpi=110, bbox_inches="tight")
     print(f"wrote kin_hi_{chan}")

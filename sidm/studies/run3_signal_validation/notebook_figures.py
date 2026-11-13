@@ -11,6 +11,9 @@ run3_study_plots has no functions for these and no saved arrays exist, so the in
 (V.analyze over EOS, V.load_grid_scan) and cached in notebook_figures.npz; --replot redraws from it.
 The 180-point scan is a standalone LHE+GEN job (500 events per point) with 2022 conditions, not a
 read of the produced samples (SampleFactory sidm_run3_production/gen_validate_job.sh).
+--production v1|v2 (default v2) selects the Run 3 samples read (the 2022 era of that production), the
+cache and summary names (v2: notebook_figures_v2.npz, gen_comparison_summary_v2.json) and the figure
+directory (v2: figures_v2/). run3_ctau_grid does not read the produced samples and is drawn for v1 only.
 Run from the worktree root with the notebook venv.
 """
 import argparse, json, os, sys
@@ -37,14 +40,24 @@ def _here(*parts):
     return os.path.relpath(path) if os.path.samefile(os.getcwd(), _DIR) else path
 
 
-an_style.FIG_DIR = _here("figures")
-NPZ = _here("notebook_figures.npz")
-POINTS = [("4Mu_100GeV_0p25GeV_2p0mm", "signal_4mu_run3.yaml"),     # notebook section 2
-          ("4Mu_200GeV_1p2GeV_4p8mm", "signal_4mu_run3.yaml"),
-          ("4Mu_1000GeV_5p0GeV_4p0mm", "signal_4mu_run3.yaml"),
-          ("2Mu2E_150GeV_0p25GeV_1p3mm", "signal_2mu2e_run3.yaml"),
-          ("2Mu2E_500GeV_5p0GeV_8p0mm", "signal_2mu2e_run3.yaml"),
-          ("2Mu2E_1000GeV_1p2GeV_0p96mm", "signal_2mu2e_run3.yaml")]
+PRODUCTION = "v2"                    # set by main() from --production, with the paths below
+an_style.FIG_DIR = _here("figures_v2")
+NPZ = _here("notebook_figures_v2.npz")
+GEN_JSON = _here("gen_comparison_summary_v2.json")
+POINTS = ["4Mu_100GeV_0p25GeV_2p0mm", "4Mu_200GeV_1p2GeV_4p8mm", "4Mu_1000GeV_5p0GeV_4p0mm",   # notebook section 2
+          "2Mu2E_150GeV_0p25GeV_1p3mm", "2Mu2E_500GeV_5p0GeV_8p0mm", "2Mu2E_1000GeV_1p2GeV_0p96mm"]
+
+
+def _set_production(production):
+    global PRODUCTION, NPZ, GEN_JSON
+    PRODUCTION, tag = production, V.output_tag(production)
+    an_style.FIG_DIR = _here("figures" if production == "v1" else f"figures_{production}")
+    NPZ = _here(f"notebook_figures{tag}.npz")
+    GEN_JSON = _here(f"gen_comparison_summary{tag}.json")
+
+
+def _loc(sample, era="2022"):
+    return V.run3_location(sample.split("_")[0], era, PRODUCTION)
 CMP = "4Mu_200GeV_1p2GeV_4p8mm"
 LEG = dict(frameon=True, facecolor="white", edgecolor="none", framealpha=0.92)
 N22, N18 = 24, 10                                               # files read for the comparison
@@ -92,18 +105,19 @@ def gen_events(sample, era, cfg, nfiles):
 
 def compute():
     D = {}
-    for s, cfg in POINTS:                                     # nfiles=4, as the notebook
-        r = V.analyze(s, "2022", cfg)
+    for s in POINTS:                                          # nfiles=4, as the notebook
+        r = V.analyze(s, *_loc(s))
         p = r["proper_mm"]
         D[f"rep_{s}"] = np.array([r["nom"], p.mean(), p.std() / np.sqrt(len(p)), len(p)])
         print(f"{s:30s} nom {r['nom']:g} meas {p.mean():.3f} +- {p.std() / np.sqrt(len(p)):.3f} (N={len(p)})")
-    rows = V.load_grid_scan()
-    D["grid"] = np.array([x["meas_over_nom"] for x in rows])
-    D["grid_chan"] = np.array([x["chan"] for x in rows])
-    D["grid_ndecays"] = np.array([x["n_decays"] for x in rows])
-    assert len({x["name"] for x in rows}) == 180, "expected 180 unique scan points"
+    if PRODUCTION == "v1":                                    # the GEN scan: no produced samples read
+        rows = V.load_grid_scan()
+        D["grid"] = np.array([x["meas_over_nom"] for x in rows])
+        D["grid_chan"] = np.array([x["chan"] for x in rows])
+        D["grid_ndecays"] = np.array([x["n_decays"] for x in rows])
+        assert len({x["name"] for x in rows}) == 180, "expected 180 unique scan points"
     for tag, era, cfg, nf in (("r18", "llpNanoAOD_v2", "signal_4mu_v10.yaml", N18),
-                              ("r22", "2022", "signal_4mu_run3.yaml", N22)):
+                              ("r22", *_loc(CMP), N22)):
         for k, v in gen_events(CMP, era, cfg, nf).items():
             D[f"{tag}_{k}"] = v
         print(f"{tag}: {D[f'{tag}_nev']} events, {D[f'{tag}_npass']} pass the 2018 requirement")
@@ -118,7 +132,7 @@ def fig_ctau_representative(D):
     lo, hi = 0.5, 12
     ax.plot([lo, hi], [lo, hi], "k--", alpha=0.6, label="measured = nominal")
     for chan, mk, col, lab in (("4Mu", "o", "C0", r"4$\mu$"), ("2Mu2E", "s", "C1", r"2$\mu$2e")):
-        v = np.array([D[f"rep_{s}"] for s, _ in POINTS if s.startswith(chan + "_")])
+        v = np.array([D[f"rep_{s}"] for s in POINTS if s.startswith(chan + "_")])
         ax.errorbar(v[:, 0], v[:, 1], yerr=v[:, 2], fmt=mk, color=col, ms=11, capsize=3, label=lab, zorder=3)
     ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlim(lo, hi); ax.set_ylim(lo, hi)
     ax.set_xlabel(r"nominal proper $c\tau$  [mm]"); ax.set_ylabel(r"measured proper $c\tau$  [mm]")
@@ -183,16 +197,13 @@ def fig_vs_2018(D):
     return an_style.save(fig, "run3_vs_2018_gen")
 
 
-GEN_JSON = _here("gen_comparison_summary.json")
-
-
 def summary(D):
     """2022 vs 2018 gen comparison at 4mu 200 GeV / 1.2 GeV / 4.8 mm, with and without the 2018 filter
     applied to each sample: per quantity mean +- stat (std/sqrt(N)), median, N and the relative
     differences. Printed and written to gen_comparison_summary.json (every number the note cites)."""
     samples = {"2018_raw": ("r18", False), "2018_filter": ("r18", True),
                "2022_raw": ("r22", False), "2022_filter": ("r22", True)}
-    out = dict(point=CMP, files=dict(run3_2022_chunks=N22, v10_2018_files=N18),
+    out = dict(point=CMP, production=PRODUCTION, files=dict(run3_2022_chunks=N22, v10_2018_files=N18),
                filter=gen_requirement.TEXT.replace("$", "").replace("\\", ""),
                data_commit=str(D.get("code_commit", "unknown")), code_commit=V.code_commit(),
                pass_fraction={"2022": dict(num=int(D["r22_npass"]), den=int(D["r22_nev"]),
@@ -226,12 +237,16 @@ def summary(D):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--replot", action="store_true", help=f"redraw from {os.path.basename(NPZ)}, no EOS")
+    ap.add_argument("--production", choices=V.PRODUCTIONS, default="v2")
+    ap.add_argument("--replot", action="store_true", help="redraw from the production's npz, no EOS")
     args = ap.parse_args()
+    _set_production(args.production)
     an_style.set_style()
     D = dict(np.load(NPZ, allow_pickle=True)) if args.replot else compute()
     summary(D)
-    fig_ctau_representative(D); fig_ctau_grid(D); fig_vs_2018(D)
+    fig_ctau_representative(D); fig_vs_2018(D)
+    if "grid" in D:
+        fig_ctau_grid(D)
 
 
 if __name__ == "__main__":
