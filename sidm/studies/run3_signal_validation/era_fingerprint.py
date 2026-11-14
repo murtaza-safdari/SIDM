@@ -702,7 +702,10 @@ TRACKER_2024 = {"bp_fixed_2024_A": ((-2.4, -1.4), ((120, 180),)),
 def tracker_regions(H, eras=("2023", "2023BPix", "2024")):
     """Per fixed rectangle of TRACKER_2024 and era: mean number of tracker layers of the matched muons
     (exclusive matching) with its statistical error (from the bp_lay2 second moment), the muon count,
-    and the PF-muon efficiency with its binomial error and denominator."""
+    and the PF-muon efficiency with its binomial error and denominator. Both errors count every muon as
+    independent; the two muons of a dark photon mostly fall in the same bins, so fully correlated pairs
+    would give errors sqrt(2) larger. The rectangles were chosen on the 2024 maps (comment above
+    TRACKER_2024), so a difference read over them is not an unbiased test."""
     R = {}
     for key, ((e0, e1), phis) in TRACKER_2024.items():
         ie = (BP_ETA[:-1] >= e0 - 1e-9) & (BP_ETA[1:] <= e1 + 1e-9)

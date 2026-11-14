@@ -8,7 +8,7 @@ same with the variance clustered by event (muons of one event are not independen
 assumption. Combinations over eras or samples are inverse-variance weighted means of the differences; chi2 is
 sum (d / s)^2 of the listed differences against zero.
 
-Usage: xclean_stats.py ROWS_DIR OUT.md [--step2-only]
+Usage: xclean_stats.py ROWS_DIR OUT.md [--eight-sets-only]
 """
 import glob
 import os
@@ -106,7 +106,7 @@ HEAD = ("| {what} | pre v1 | pre v2 | v1 | v2 rebuilt | v2 - v1 (points) | s (po
 
 def fmt_comb(label, c):
     p = stats.chi2.sf(c["chi2"], c["ndof"])
-    return (f"| {label} | {100 * c['d']:+.2f} +- {100 * c['s']:.2f} | {c['d'] / c['s']:+.1f} | "
+    return (f"| {label} | {100 * c['d']:+.2f} +- {100 * c['s']:.2f} | {c['d'] / c['s']:+.2f} | "
             f"{100 * c['s_evt']:.2f} | {c['n_neg']} / {c['n_pos']} | {c['chi2']:.1f} / {c['ndof']} | {p:.3f} |")
 
 
@@ -128,16 +128,16 @@ def verdict(c, per_era):
 
 def main():
     rows_dir, out = sys.argv[1:3]
-    step2_only = "--step2-only" in sys.argv[3:]
+    eight_only = "--eight-sets-only" in sys.argv[3:]
     L = []
     w = L.append
 
-    # ---- step 2: the eight sets (plus the two new eras) on all events of the same samples
-    w("## Step 2: the eight sets on all events, four eras\n")
+    # ---- the eight sets of the first comparison (plus the two other eras) on all events of the same samples
+    w("## The eight sets on all events, four eras\n")
     w("Displaced = `<chan>_200GeV_1p2GeV_4p8mm`, all 120 files (100,000 events); prompt-like = the six points "
-      "`<chan>_<M>GeV_1p2GeV_<ctau>mm` of the 2026-11-12 table, all 4 files each (12,000 events: these are grid-only "
-      "samples, so step 1 already used all their events). Veto \"all\".\n")
-    step2 = {}
+      "`<chan>_<M>GeV_1p2GeV_<ctau>mm` of the first comparison, all 4 files each (12,000 events: these are grid-only "
+      "samples, so the first comparison already used all their events). Veto \"all\".\n")
+    eight = {}
     for chan in CHANS:
         for kind, samples in [("displaced", [DISPLACED.format(chan=chan)]),
                               ("prompt-like", [p.format(chan=chan) for p in PROMPT])]:
@@ -162,27 +162,27 @@ def main():
             w(fmt_comb("2022 + 2023", combine([res[0], res[2]])))
             w(fmt_comb("2022EE + 2023BPix", combine([res[1], res[3]])))
             if res_new:
-                w(fmt_comb("four eras, without the step-1 chunks j040-j059", combine(res_new)))
+                w(fmt_comb("four eras, without the files of the first comparison (j040-j059)", combine(res_new)))
             w(fmt_comb("\"all + charge\", four eras", combine(resq)))
             w("")
-            step2[(chan, kind)] = (c, res)
+            eight[(chan, kind)] = (c, res)
 
-    if step2_only:
-        c, res = step2[("2Mu2E", "displaced")]
+    if eight_only:
+        c, res = eight[("2Mu2E", "displaced")]
         v, z, same = verdict(c, res)
-        w(f"- **step 2, 2Mu2E displaced: {v}.** d = {100 * c['d']:+.3f} +- {100 * c['s']:.3f} points, "
+        w(f"- **eight sets on all events, 2Mu2E displaced: {v}.** d = {100 * c['d']:+.3f} +- {100 * c['s']:.3f} points, "
           f"d/s = {z:+.2f} (event-clustered s: {100 * c['s_evt']:.3f} points, d/s_evt = {c['d'] / c['s_evt']:+.2f}), {same} of 4 eras with the sign of d.")
         open(out, "w").write("\n".join(L) + "\n")
         print("\n".join(L))
         return
 
-    # ---- step 3: all column samples
-    w("## Step 3: all column samples (18 per channel), four eras\n")
+    # ---- all column samples
+    w("## All column samples (18 per channel), four eras\n")
     w("Every column sample has 120 files (100,000 events) per era and production. All 36 have ctau scaled with "
-      "the boost (lab decay length of order 40 cm), so all are \"displaced\" in the sense of the 2026-11-12 table; "
-      "its prompt-like points are grid-only samples (step 2). Median generated Lxy of the gen-matched (dR < 0.3) "
+      "the boost (lab decay length of order 40 cm), so all are \"displaced\" in the sense of the first comparison; "
+      "its prompt-like points are grid-only samples (previous section). Median generated Lxy of the gen-matched (dR < 0.3) "
       "\"pre\" DSA muons is listed per sample (v1, 2022).\n")
-    step3 = {}
+    cols = {}
     for chan in CHANS:
         samples = [s for s in COLUMN if s.startswith(chan + "_")]
         w(f"### {chan}: per sample and era\n")
@@ -218,14 +218,14 @@ def main():
         w(fmt_comb("pooled samples, four eras", c))
         w(fmt_comb(f"per-sample differences ({len(per_sample)} = 18 samples x 4 eras)", combine(per_sample)))
         w("")
-        step3[chan] = (c, res, combine(per_sample))
+        cols[chan] = (c, res, combine(per_sample))
 
-    # ---- step 5
-    w("## Step 5: verdicts\n")
+    # ---- the decision rule
+    w("## Verdicts of the decision rule\n")
     w("Rule: |d|/s < 2 not confirmed; |d|/s > 3 with the same sign in at least three of the four eras confirmed; "
       "otherwise inconclusive.\n")
-    for label, (c, res) in [("step 2, 2Mu2E displaced", step2[("2Mu2E", "displaced")]),
-                            ("step 3, 2Mu2E pooled column samples", step3["2Mu2E"][:2])]:
+    for label, (c, res) in [("eight sets on all events, 2Mu2E displaced", eight[("2Mu2E", "displaced")]),
+                            ("2Mu2E pooled column samples", cols["2Mu2E"][:2])]:
         v, z, same = verdict(c, res)
         w(f"- **{label}: {v}.** d = {100 * c['d']:+.3f} +- {100 * c['s']:.3f} points, d/s = {z:+.2f} (event-clustered s: {100 * c['s_evt']:.3f} points, d/s_evt = {c['d'] / c['s_evt']:+.2f}), "
           f"{same} of 4 eras with the sign of d.")

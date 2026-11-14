@@ -1,10 +1,10 @@
 # The 2Mu2E-displaced cross-cleaning difference between the two Run 3 signal productions
 
-The comparison of 2026-11-12 (20,000 events per production) found the pass fraction of the DSA-PF segment-match
-veto lower in the second production (v2, EXONanoAOD, rebuilt segment count) than in the first (v1, LLPNanoAOD) for
-the 2Mu2E displaced set: -0.92 +- 0.31 points in 2022 and 2023 combined, while seven other sets agreed. This study
-repeats the comparison with five times the events, two more eras and all column samples, and applies a decision
-rule fixed before the run.
+The first comparison of the two productions (2026-11-12; 20,000 events per production in 2022 and 2023) found the
+pass fraction of the DSA-PF segment-match veto lower in the second production (v2, EXONanoAOD, rebuilt segment
+count) than in the first (v1, LLPNanoAOD) for the 2Mu2E displaced set: -0.92 +- 0.31 points in 2022 and 2023
+combined, while seven other sets agreed. This study repeats the comparison with five times the events, two more
+eras and all column samples, and applies a decision rule fixed before the run.
 
 ## Verdicts
 
@@ -12,20 +12,36 @@ Rule, fixed before the run, for the combined 2Mu2E-displaced difference d +- s o
 and, separately, of the pooled column samples: |d|/s < 2 "not confirmed"; |d|/s > 3 with the same sign in at
 least three of the four eras "confirmed"; anything else "inconclusive".
 
-- **Eight sets on all events, 2Mu2E displaced (`2Mu2E_200GeV_1p2GeV_4p8mm`, 100,000 events per era and production, four eras): not confirmed.**
-  d = -0.194 +- 0.099 points, d/s = -1.96; 4 of 4 eras negative. Margin: 0.04 sigma below the "inconclusive"
-  threshold. With the variance clustered by event, s = 0.111 and d/s = -1.74. Without the chunks of the 2026-11-12
-  comparison (j040-j059; the independent 83%): -0.16 +- 0.11 (-1.4).
-- **All column samples, 2Mu2E, 18 samples pooled, four eras: not confirmed.** d = +0.007 +- 0.024 points, d/s = +0.30;
-  2 of 4 eras negative. The 72 per-sample differences: 34 below / 38 above zero, chi2 98.7 / 72 (p = 0.020) with
-  binomial s; the event-clustered s is about 1.12 times larger for 2Mu2E, which scales chi2 to about 78 / 72
-  (p about 0.3; scaling estimated from the pooled s_evt / s, not recomputed per sample).
-- The 4Mu control: 18 samples pooled, +0.00 +- 0.02 points (d/s +0.3); per-sample chi2 85.8 / 72 (p = 0.13). The 4Mu displaced set on all events: -0.05 +- 0.07 (-0.6).
+- **Eight sets on all events, 2Mu2E displaced (`2Mu2E_200GeV_1p2GeV_4p8mm`, 100,000 events per era and
+  production, four eras): not confirmed by the rule, 0.04 below its threshold.** d = -0.194 +- 0.099 points,
+  d/s = -1.96; 4 of 4 eras negative. With the variance clustered by event, s = 0.111 and d/s = -1.74.
+  - The two eras of the first comparison alone, on all their events (2022 + 2023): -0.31 +- 0.14 (d/s = -2.21).
+    The veto "all + charge" over four eras: -0.22 +- 0.10 (-2.20). The rule was not written for these two
+    numbers; both are beyond 2.
+  - Without the files of the first comparison (j040-j059; 100 of 120 files and 80,000 of 100,000 events per era
+    remain): -0.16 +- 0.11 (-1.43), +- 0.12 with the variance clustered by event.
+  - Reading: the 0.9-point difference is not reproduced. A difference of about -0.2 points in this one sample is
+    not excluded.
+- **All column samples, 2Mu2E, 18 samples pooled, four eras: not confirmed.** d = +0.007 +- 0.024 points,
+  d/s = +0.30; 2 of 4 eras negative. The 72 per-sample differences: 34 below / 38 above zero, chi2 98.7 / 72
+  (p = 0.020) with binomial s; the event-clustered s is about 1.12 times larger for 2Mu2E, which scales chi2 to
+  about 78 / 72 (p about 0.3; scaling estimated from the pooled s_evt / s, not recomputed per sample).
+- The 4Mu control: 18 samples pooled, +0.00 +- 0.02 points (d/s +0.27); per-sample chi2 85.8 / 72 (p = 0.13).
+  The 4Mu displaced set on all events: -0.05 +- 0.07.
+- The 2Mu2E prompt-like set, which the rule does not cover: +0.36 +- 0.19 points over four eras (d/s = +1.95),
+  above zero in 4 of 4 eras. Its samples have 4 files of 500 events per point, all of them used; in 2022 and
+  2023 these are the events of the first comparison.
 - With both verdicts "not confirmed", the search for where the productions first differ was not run.
 
-The 2026-11-12 difference of -0.92 +- 0.31 points (20,000 events) becomes -0.19 +- 0.10 at 100,000 events in four
-eras. The first 20,000 events moved both productions: in 2022 v1 0.3245 (2026-11-12 events) against 0.3198 (all events),
-v2 rebuilt 0.3149 against 0.3182.
+The first 20,000 events moved both productions: in 2022 v1 gives 0.3245 on the events of the first comparison
+against 0.3198 on all events, v2 with the rebuilt count 0.3149 against 0.3182.
+
+## Not tested
+
+- 2024: the first production has no 2024 samples, so neither this comparison nor check (a) below exists there.
+- The effect of a difference of this size on the lepton-jet efficiency or on a signal yield.
+- The rebuilt count on background simulation or on data.
+- The per-sample chi2 with event-clustered uncertainties (scaled from the pooled samples, not recomputed).
 
 ## Method
 
@@ -40,15 +56,17 @@ v2 rebuilt 0.3149 against 0.3182.
 - Uncertainties: binomial per muon, productions independent; `s_evt` clusters the variance by
   event. Combinations are inverse-variance weighted means; chi2 is sum (d / s)^2 against zero.
 - Displaced / prompt-like split for the column samples: all 36 column samples have ctau scaled with the boost, median gen Lxy of the
-  gen-matched "pre" DSA muons 17.4 to 22.8 cm (table), so all fall on the displaced side of the 2026-11-12
+  gen-matched "pre" DSA muons 17.4 to 22.8 cm (table), so all fall on the displaced side of the first comparison's
   definition. Its prompt-like points are grid-only samples (4 files of 500 events); the eight-set comparison uses all their
-  events, which are the events of 2026-11-12.
+  events, which are the events of the first comparison.
+- The sections from "The eight sets on all events" to "Verdicts of the decision rule" are the output of
+  `xclean_stats.py`, unedited; d / s there uses the binomial s.
 
-## Reproduction of the 2026-11-12 table (same files and events; `xclean_step1.py`)
+## Reproduction of the first comparison's table (same files and events; `xclean_first_table.py`)
 
-All 40 values of the 2026-11-12 table reproduce to four digits (columns "all" v1, v2, v2 fixed, "all + charge" v1, v2;
+All 40 values of the first comparison's table reproduce to four digits (columns "all" v1, v2, v2 fixed, "all + charge" v1, v2;
 the extra column is "all + charge" with the rebuilt count). The "pre" counts of the 2Mu2E displaced sets (22,135
-and 22,183 in v1) equal those of the 2026-11-12 comparison. Combination of the two 2Mu2E displaced eras: -0.92 +- 0.31
+and 22,183 in v1) equal those of the first comparison. Combination of the two 2Mu2E displaced eras: -0.92 +- 0.31
 points (-2.9), and -0.92 +- 0.35 (-2.6) with the event-clustered variance.
 
 | sample | events v1 / v2 | pre v1 / v2 | all v1 | all v2 | all v2 fixed | all+q v1 | all+q v2 | all+q v2 fixed |
@@ -62,9 +80,9 @@ points (-2.9), and -0.92 +- 0.35 (-2.6) with the event-clustered variance.
 | 2022 2Mu2E prompt-like | 12,000 / 12,000 | 12,907 / 12,825 | 0.0972 | 0.1076 | 0.1016 | 0.1223 | 0.1288 | 0.1288 |
 | 2023 2Mu2E prompt-like | 12,000 / 12,000 | 12,892 / 12,819 | 0.0967 | 0.1048 | 0.0978 | 0.1243 | 0.1250 | 0.1242 |
 
-## The eight sets on all events, four eras (`xclean_stats.py`)
+## The eight sets on all events, four eras
 
-Displaced = `<chan>_200GeV_1p2GeV_4p8mm`, all 120 files (100,000 events); prompt-like = the six points `<chan>_<M>GeV_1p2GeV_<ctau>mm` of the 2026-11-12 table, all 4 files each (12,000 events: these are grid-only samples, so the 2026-11-12 comparison already used all their events). Veto "all".
+Displaced = `<chan>_200GeV_1p2GeV_4p8mm`, all 120 files (100,000 events); prompt-like = the six points `<chan>_<M>GeV_1p2GeV_<ctau>mm` of the first comparison, all 4 files each (12,000 events: these are grid-only samples, so the first comparison already used all their events). Veto "all".
 
 ### 2Mu2E displaced
 
@@ -77,11 +95,11 @@ Displaced = `<chan>_200GeV_1p2GeV_4p8mm`, all 120 files (100,000 events); prompt
 
 | combination | d +- s (points) | d / s | s_evt (points) | eras or samples below / above zero | chi2 / ndof | p(chi2) |
 |---|---|---|---|---|---|---|
-| four eras | -0.19 +- 0.10 | -2.0 | 0.11 | 4 / 0 | 6.3 / 4 | 0.180 |
-| 2022 + 2023 | -0.31 +- 0.14 | -2.2 | 0.16 | 2 / 0 | 5.9 / 2 | 0.052 |
-| 2022EE + 2023BPix | -0.08 +- 0.14 | -0.6 | 0.16 | 2 / 0 | 0.3 / 2 | 0.846 |
-| four eras, without the 2026-11-12 chunks j040-j059 | -0.16 +- 0.11 | -1.4 | 0.12 | 3 / 1 | 3.6 / 4 | 0.467 |
-| "all + charge", four eras | -0.22 +- 0.10 | -2.2 | 0.11 | 4 / 0 | 7.1 / 4 | 0.128 |
+| four eras | -0.19 +- 0.10 | -1.96 | 0.11 | 4 / 0 | 6.3 / 4 | 0.180 |
+| 2022 + 2023 | -0.31 +- 0.14 | -2.21 | 0.16 | 2 / 0 | 5.9 / 2 | 0.052 |
+| 2022EE + 2023BPix | -0.08 +- 0.14 | -0.56 | 0.16 | 2 / 0 | 0.3 / 2 | 0.846 |
+| four eras, without the files of the first comparison (j040-j059) | -0.16 +- 0.11 | -1.43 | 0.12 | 3 / 1 | 3.6 / 4 | 0.467 |
+| "all + charge", four eras | -0.22 +- 0.10 | -2.20 | 0.11 | 4 / 0 | 7.1 / 4 | 0.128 |
 
 ### 2Mu2E prompt-like
 
@@ -94,10 +112,10 @@ Displaced = `<chan>_200GeV_1p2GeV_4p8mm`, all 120 files (100,000 events); prompt
 
 | combination | d +- s (points) | d / s | s_evt (points) | eras or samples below / above zero | chi2 / ndof | p(chi2) |
 |---|---|---|---|---|---|---|
-| four eras | +0.36 +- 0.19 | +1.9 | 0.20 | 0 / 4 | 4.9 / 4 | 0.298 |
-| 2022 + 2023 | +0.28 +- 0.26 | +1.0 | 0.28 | 0 / 2 | 1.5 / 2 | 0.471 |
-| 2022EE + 2023BPix | +0.45 +- 0.26 | +1.7 | 0.28 | 0 / 2 | 3.4 / 2 | 0.183 |
-| "all + charge", four eras | +0.25 +- 0.21 | +1.2 | 0.22 | 1 / 3 | 2.9 / 4 | 0.568 |
+| four eras | +0.36 +- 0.19 | +1.95 | 0.20 | 0 / 4 | 4.9 / 4 | 0.298 |
+| 2022 + 2023 | +0.28 +- 0.26 | +1.05 | 0.28 | 0 / 2 | 1.5 / 2 | 0.471 |
+| 2022EE + 2023BPix | +0.45 +- 0.26 | +1.70 | 0.28 | 0 / 2 | 3.4 / 2 | 0.183 |
+| "all + charge", four eras | +0.25 +- 0.21 | +1.23 | 0.22 | 1 / 3 | 2.9 / 4 | 0.568 |
 
 ### 4Mu displaced
 
@@ -110,11 +128,11 @@ Displaced = `<chan>_200GeV_1p2GeV_4p8mm`, all 120 files (100,000 events); prompt
 
 | combination | d +- s (points) | d / s | s_evt (points) | eras or samples below / above zero | chi2 / ndof | p(chi2) |
 |---|---|---|---|---|---|---|
-| four eras | -0.05 +- 0.07 | -0.6 | 0.08 | 3 / 1 | 1.5 / 4 | 0.835 |
-| 2022 + 2023 | -0.11 +- 0.10 | -1.1 | 0.11 | 2 / 0 | 1.4 / 2 | 0.509 |
-| 2022EE + 2023BPix | +0.02 +- 0.10 | +0.2 | 0.11 | 1 / 1 | 0.1 / 2 | 0.950 |
-| four eras, without the 2026-11-12 chunks j040-j059 | -0.06 +- 0.08 | -0.8 | 0.09 | 3 / 1 | 1.5 / 4 | 0.833 |
-| "all + charge", four eras | -0.04 +- 0.07 | -0.5 | 0.08 | 3 / 1 | 2.0 / 4 | 0.732 |
+| four eras | -0.05 +- 0.07 | -0.65 | 0.08 | 3 / 1 | 1.5 / 4 | 0.835 |
+| 2022 + 2023 | -0.11 +- 0.10 | -1.10 | 0.11 | 2 / 0 | 1.4 / 2 | 0.509 |
+| 2022EE + 2023BPix | +0.02 +- 0.10 | +0.19 | 0.11 | 1 / 1 | 0.1 / 2 | 0.950 |
+| four eras, without the files of the first comparison (j040-j059) | -0.06 +- 0.08 | -0.81 | 0.09 | 3 / 1 | 1.5 / 4 | 0.833 |
+| "all + charge", four eras | -0.04 +- 0.07 | -0.55 | 0.08 | 3 / 1 | 2.0 / 4 | 0.732 |
 
 ### 4Mu prompt-like
 
@@ -127,14 +145,14 @@ Displaced = `<chan>_200GeV_1p2GeV_4p8mm`, all 120 files (100,000 events); prompt
 
 | combination | d +- s (points) | d / s | s_evt (points) | eras or samples below / above zero | chi2 / ndof | p(chi2) |
 |---|---|---|---|---|---|---|
-| four eras | -0.08 +- 0.13 | -0.6 | 0.14 | 2 / 2 | 3.0 / 4 | 0.557 |
-| 2022 + 2023 | -0.28 +- 0.19 | -1.5 | 0.20 | 2 / 0 | 2.6 / 2 | 0.267 |
-| 2022EE + 2023BPix | +0.11 +- 0.19 | +0.6 | 0.20 | 0 / 2 | 0.4 / 2 | 0.833 |
-| "all + charge", four eras | -0.04 +- 0.15 | -0.2 | 0.16 | 3 / 1 | 1.9 / 4 | 0.760 |
+| four eras | -0.08 +- 0.13 | -0.63 | 0.14 | 2 / 2 | 3.0 / 4 | 0.557 |
+| 2022 + 2023 | -0.28 +- 0.19 | -1.48 | 0.20 | 2 / 0 | 2.6 / 2 | 0.267 |
+| 2022EE + 2023BPix | +0.11 +- 0.19 | +0.59 | 0.20 | 0 / 2 | 0.4 / 2 | 0.833 |
+| "all + charge", four eras | -0.04 +- 0.15 | -0.25 | 0.16 | 3 / 1 | 1.9 / 4 | 0.760 |
 
-## All column samples (18 per channel), four eras (`xclean_stats.py`)
+## All column samples (18 per channel), four eras
 
-Every column sample has 120 files (100,000 events) per era and production. All 36 have ctau scaled with the boost (lab decay length of order 40 cm), so all are "displaced" in the sense of the 2026-11-12 table; its prompt-like points are grid-only samples (previous section). Median generated Lxy of the gen-matched (dR < 0.3) "pre" DSA muons is listed per sample (v1, 2022).
+Every column sample has 120 files (100,000 events) per era and production. All 36 have ctau scaled with the boost (lab decay length of order 40 cm), so all are "displaced" in the sense of the first comparison; its prompt-like points are grid-only samples (previous section). Median generated Lxy of the gen-matched (dR < 0.3) "pre" DSA muons is listed per sample (v1, 2022).
 
 ### 2Mu2E: per sample and era
 
@@ -170,8 +188,8 @@ Every column sample has 120 files (100,000 events) per era and production. All 3
 
 | combination | d +- s (points) | d / s | s_evt (points) | eras or samples below / above zero | chi2 / ndof | p(chi2) |
 |---|---|---|---|---|---|---|
-| pooled samples, four eras | +0.01 +- 0.02 | +0.3 | 0.03 | 2 / 2 | 0.6 / 4 | 0.963 |
-| per-sample differences (72 = 18 samples x 4 eras) | +0.01 +- 0.02 | +0.4 | 0.03 | 34 / 38 | 98.7 / 72 | 0.020 |
+| pooled samples, four eras | +0.01 +- 0.02 | +0.30 | 0.03 | 2 / 2 | 0.6 / 4 | 0.963 |
+| per-sample differences (72 = 18 samples x 4 eras) | +0.01 +- 0.02 | +0.43 | 0.03 | 34 / 38 | 98.7 / 72 | 0.020 |
 
 ### 4Mu: per sample and era
 
@@ -207,10 +225,10 @@ Every column sample has 120 files (100,000 events) per era and production. All 3
 
 | combination | d +- s (points) | d / s | s_evt (points) | eras or samples below / above zero | chi2 / ndof | p(chi2) |
 |---|---|---|---|---|---|---|
-| pooled samples, four eras | +0.00 +- 0.02 | +0.3 | 0.02 | 2 / 2 | 2.8 / 4 | 0.593 |
-| per-sample differences (72 = 18 samples x 4 eras) | +0.00 +- 0.02 | +0.3 | 0.02 | 33 / 39 | 85.8 / 72 | 0.127 |
+| pooled samples, four eras | +0.00 +- 0.02 | +0.27 | 0.02 | 2 / 2 | 2.8 / 4 | 0.593 |
+| per-sample differences (72 = 18 samples x 4 eras) | +0.00 +- 0.02 | +0.26 | 0.02 | 33 / 39 | 85.8 / 72 | 0.127 |
 
-## Verdicts as computed by `xclean_stats.py`
+## Verdicts of the decision rule
 
 Rule: |d|/s < 2 not confirmed; |d|/s > 3 with the same sign in at least three of the four eras confirmed; otherwise inconclusive.
 

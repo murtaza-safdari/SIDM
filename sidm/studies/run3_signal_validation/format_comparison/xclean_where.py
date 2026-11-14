@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Where v1 and v2 first differ, for one set of samples: the step-6 tables of the veto comparison.
+"""Where v1 and v2 first differ, for one set of samples: the tables that locate a difference in the veto comparison.
 
 (a) DSA muons per event (all, "pre"); (b) segment count, v1 stored against v2 rebuilt, barrel (DT hits only) and
 endcap (CSC hits only); (c) the five muonMatch slot counts; (d) PF muons per event passing the ljsource muon cuts,
@@ -45,7 +45,7 @@ def main():
     rows_dir, out, label, samples = sys.argv[1:5]
     samples = samples.split(",")
     eras = sys.argv[5:] or ERAS
-    L = [f"## Step 6: {label}\n", f"Samples: {', '.join(samples)}; eras {', '.join(eras)}.\n"]
+    L = [f"## Where the productions differ: {label}\n", f"Samples: {', '.join(samples)}; eras {', '.join(eras)}.\n"]
     w = L.append
     for era in eras:
         r1, r2 = Rows(rows_dir, "v1", era, samples), Rows(rows_dir, "v2", era, samples)

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""The 2026-11-12 pass-fraction table from the rows of xclean_rows.py, on its files: displaced = j040-j059 of
-<chan>_200GeV_1p2GeV_4p8mm, prompt-like = j000-j003 of the six PROMPT points; eras 2022 and 2023.
+"""The pass-fraction table of the first comparison of the two productions (made on 2026-11-12 with 20,000
+displaced and 12,000 prompt-like events per production), from the rows of xclean_rows.py, on its files:
+displaced = j040-j059 of <chan>_200GeV_1p2GeV_4p8mm, prompt-like = j000-j003 of the six PROMPT points; eras
+2022 and 2023.
 Columns: "all" v1 (stored), v2 (stored), v2 fixed (rebuilt); "all + charge" v1, v2 (stored), v2 fixed.
 
-Usage: xclean_step1.py ROWS_DIR
+Usage: xclean_first_table.py ROWS_DIR
 """
 import os
 import sys

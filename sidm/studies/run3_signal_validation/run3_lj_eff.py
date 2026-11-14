@@ -272,11 +272,12 @@ if __name__ == "__main__":
             if cache and v10 is not None:
                 vc = json.load(open(cache)) if os.path.exists(cache) else {}
                 vc[tag] = v10; json.dump(vc, open(cache, "w"))
-        out.append(dict(chan=chan, mbs=mbs, mdp=mdp, ctau=ctau, key=key, run3=r3, v10=v10))
+        out.append(dict(chan=chan, mbs=mbs, mdp=mdp, ctau=ctau, key=key, production=PRODUCTION, run3=r3, v10=v10))
         v = f"v10 excl_acc={v10['excl_acc']['p']*100:5.1f}%" if v10 else "v10 --"
         print(f"{key:28s} R3 incl_acc={r3['incl_acc']['p']*100:5.1f}% excl_acc={r3['excl_acc']['p']*100:5.1f}% "
               f"(n_acc={r3['n_acc']:6d}) | {v}")
-    OUT_DIR = os.environ.get("RUN3_EFF_OUT", "/uscms_data/d3/murtazas/review_out")
-    OUT = "%s/lj_eff_%s_%s.json" % (OUT_DIR, "geom" if LOOSE else "real", ERA)
+    OUT_DIR = os.environ.get("RUN3_EFF_OUT", os.getcwd())
+    TAG = "" if PRODUCTION == "v1" else "_" + PRODUCTION          # as condor_lj_eff/merge.py names the files
+    OUT = "%s/lj_eff_%s%s_%s.json" % (OUT_DIR, "geom" if LOOSE else "real", TAG, ERA)
     json.dump(out, open(OUT, "w"), indent=1)
     print(f"\nwrote {OUT}: {len(out)} points")

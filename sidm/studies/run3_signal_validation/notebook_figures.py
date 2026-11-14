@@ -40,10 +40,6 @@ def _here(*parts):
     return os.path.relpath(path) if os.path.samefile(os.getcwd(), _DIR) else path
 
 
-PRODUCTION = "v2"                    # set by main() from --production, with the paths below
-an_style.FIG_DIR = _here("figures_v2")
-NPZ = _here("notebook_figures_v2.npz")
-GEN_JSON = _here("gen_comparison_summary_v2.json")
 POINTS = ["4Mu_100GeV_0p25GeV_2p0mm", "4Mu_200GeV_1p2GeV_4p8mm", "4Mu_1000GeV_5p0GeV_4p0mm",   # notebook section 2
           "2Mu2E_150GeV_0p25GeV_1p3mm", "2Mu2E_500GeV_5p0GeV_8p0mm", "2Mu2E_1000GeV_1p2GeV_0p96mm"]
 
@@ -54,6 +50,11 @@ def _set_production(production):
     an_style.FIG_DIR = _here("figures" if production == "v1" else f"figures_{production}")
     NPZ = _here(f"notebook_figures{tag}.npz")
     GEN_JSON = _here(f"gen_comparison_summary{tag}.json")
+
+
+# Imported (the notebook run3_signal_validation.ipynb, which describes the first production), the module is
+# on v1; main() switches to --production, whose default is v2.
+_set_production("v1")
 
 
 def _loc(sample, era="2022"):

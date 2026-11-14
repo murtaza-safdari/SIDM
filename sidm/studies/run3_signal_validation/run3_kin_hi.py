@@ -11,7 +11,7 @@ import mplhep as hep
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # repo-relative: works in any checkout
 import run3_signal_validation as V
 plt.style.use(hep.style.CMS)
-RO = os.environ.get("RUN3_EFF_OUT", "/uscms_data/d3/murtazas/review_out")
+RO = os.environ.get("RUN3_EFF_OUT", os.getcwd())   # output directory
 ERA = os.environ.get("RUN3_ERA", "2022")   # era of the Run 3 samples
 PRODUCTION = os.environ.get("RUN3_PRODUCTION", "v1")   # v1 (LLPNanoAOD) or v2 (EXONanoAOD); v2 files carry _v2
 TAG = V.output_tag(PRODUCTION)

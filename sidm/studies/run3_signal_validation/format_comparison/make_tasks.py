@@ -4,12 +4,12 @@
 v1: sidm/configs/ntuples/signal_{4mu,2mu2e}_run3.yaml (key = era); v2: signal_run3_v2_<era>.yaml (key
 exoNanoAOD_v2). URLs as make_fileset(..., replace_xcache=True) gives them.
 
-  --stage step1   the 2026-11-12 files: displaced = <chan>_200GeV_1p2GeV_4p8mm j040-j059 (20 x 1000 events),
+  --stage first   the files of the first comparison: displaced = <chan>_200GeV_1p2GeV_4p8mm j040-j059 (20 x 1000 events),
                   prompt-like = the six PROMPT points j000-j003 (4 x 500 events each); eras 2022, 2023
   --stage full    every listed file of the 36 column samples (v2_census/production/reduced_points.txt) and of
                   the six prompt-like points per channel; eras 2022, 2022EE, 2023, 2023BPix
 
-Usage: make_tasks.py --stage {step1,full} > tasks.txt
+Usage: make_tasks.py --stage {first,full} > tasks.txt
 """
 import argparse
 import os
@@ -44,10 +44,10 @@ def chunk(url):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", choices=["step1", "full"], required=True)
+    ap.add_argument("--stage", choices=["first", "full"], required=True)
     args = ap.parse_args()
     for version in ["v1", "v2"]:
-        if args.stage == "step1":
+        if args.stage == "first":
             for era in ["2022", "2023"]:
                 for chan in CHANS:
                     for u in files(version, era, DISPLACED.format(chan=chan)):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Every number of the first Run 3 production's outputs (v1, LLPNanoAOD: era_fingerprint.csv,
-era_fingerprint_regions.json, gen_comparison_summary.json, lj_eff_summary.json) beside its value in the
+"""The numbers of four result files of the first Run 3 production (v1, LLPNanoAOD: era_fingerprint.csv,
+era_fingerprint_regions.json, gen_comparison_summary.json, lj_eff_summary.json) beside their values in the
 second production (v2, EXONanoAOD), with statistical uncertainties, for the four common eras plus the 2024
 column (v2 only). Reads the committed v1 and v2 result files of this directory (the tables and JSONs above,
 their *_v2 counterparts, the era_fingerprint npz maps and the per-point lj_eff_{geom,real}[_v2]_<era>.json)
@@ -19,12 +19,22 @@ files in both, so it cancels in v2 - v1):
     (--spread-in 1.4 inside the BPix region, --spread-out 1.9 outside) - an estimate, the v1 maps keep no
     second moment;
   * LJ efficiencies: per point binomial errors of the Run 3 efficiencies only (2018 common).
+The region uncertainties count every lepton (every dark photon in the e/gamma maps) as independent; the two
+muons of a dark photon mostly fall in the same bins, so fully correlated pairs would give sqrt(2) more.
+Real-mode LJ efficiencies: v1 with the stored DSA segment count, v2 with the rebuilt one
+(nDTSegments + ceil(trkNumCSCHits / 6)), which on v1 changes 199 of 22.7 million cross-cleaning decisions
+(format_comparison/xclean_results.md).
+Not compared: ctau_all_samples.csv (v2: v2_census/results/ctau_v2.csv), the arrays of notebook_figures.npz
+beyond the numbers of gen_comparison_summary.json, lj_eff_real_diag.json and trig_grid_<era>.json (v1
+only), kin_hi_<era>.npz.
 Differences beyond 2 sigma are listed at the end.
 """
 import argparse, csv, json, os, sys
 import numpy as np
+from scipy import stats
 
 S = os.path.dirname(os.path.abspath(__file__))
+CHI2 = {}                      # mode -> [sum of the per-point chi2 of v2 - v1, points]
 _ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
 _ap.add_argument("--out", default=os.path.join(S, "v1_vs_v2.md"))
 _ap.add_argument("--spread-in", type=float, default=1.4,
@@ -262,6 +272,7 @@ if L2:
                                for x in p1)
                     add(f"lj_eff_summary.json ({mode})", f"{k}: chi2 of v2 - v1 Run 3 eff. over {len(p1)} points",
                         era, "", None, round(chi2, 1), None, f"{len(p1)} dof")
+                    c2 = CHI2.setdefault(mode, [0.0, 0]); c2[0] += chi2; c2[1] += len(p1)
 
 
 # ------------------------------------------------------------------ render
@@ -284,14 +295,22 @@ def nsig(v1, s1, v2, s2):
     return b - a, ((b - a) / s if s > 0 else None)
 
 
-lines = ["# v1 (LLPNanoAOD) against v2 (EXONanoAOD): every number of the v1 outputs", "",
+lines = ["# v1 (LLPNanoAOD) against v2 (EXONanoAOD): the numbers of four v1 result files", "",
          "Written by `v1_vs_v2.py` in this directory; uncertainty definitions in its docstring. "
          "Era `-` = a property of the region, not of one era. 2024 rows: v2 only. "
          "`regions (v1 bins)`: v1 numbers against v2 read over the same (v1) flagged bins; "
          "`regions (own flagged bins)`: v2 over the bins it flags itself (no sigma: the flagged set selects "
          "downward fluctuations). In `regions (v1 bins)` the bins were chosen on v1's own fluctuations (where the "
          "second era reads below the first), so v1's flagged averages of the second era lean low and v2's, read "
-         "over the same bins, do not: a positive v2 - v1 there is partly that selection.", ""]
+         "over the same bins, do not: a positive v2 - v1 there is partly that selection.", "",
+         "The region uncertainties count every lepton (every dark photon in the e/gamma maps) as independent; "
+         "the two muons of a dark photon mostly fall in the same bins, so fully correlated pairs would give "
+         "√2 more. The real-mode LJ efficiencies use the stored DSA segment count in v1 and the rebuilt one in "
+         "v2 (`nDTSegments + ceil(trkNumCSCHits / 6)`); on v1 the rebuilt count changes 199 of 22.7 million "
+         "cross-cleaning decisions (`format_comparison/xclean_results.md`).", "",
+         "Not compared: `ctau_all_samples.csv` (v2: `v2_census/results/ctau_v2.csv`), the arrays of "
+         "`notebook_figures.npz` beyond the numbers of `gen_comparison_summary.json`, `lj_eff_real_diag.json` "
+         "and `trig_grid_<era>.json` (v1 only), `kin_hi_<era>.npz`.", ""]
 order = list(dict.fromkeys(r[0] for r in rows))
 rows.sort(key=lambda r: order.index(r[0]))          # stable: keeps the order within a section
 big = []
@@ -324,7 +343,11 @@ summary = (f"**Summary.** {tot[0]} Run 3 quantities were compared with an n σ v
                      f"{n:+.1f}σ" for sec, q, e, _, _, n in big) +
            (f". The largest is {abs(top[5]):.1f}σ ({top[1]}, {top[2]})" if top else "") +
            f". About {0.0455 * tot[0]:.0f} would be expected beyond 2σ for Gaussian errors. Of the region "
-           f"averages compared over the first production's bins, {rb[1]} of {rb[0]} lie beyond 2σ.")
+           f"averages compared over the first production's bins, {rb[1]} of {rb[0]} lie beyond 2σ. The rows "
+           f"with a χ² of the v2 − v1 efficiencies over the 18 points of an era and channel carry no n σ and "
+           f"are not counted; their sums are " +
+           "; ".join(f"{m} mode {c[0]:.0f} / {c[1]} (p = {stats.chi2.sf(c[0], c[1]):.2f})" for m, c in CHI2.items()) +
+           " (where a mode lists the inclusive and the exclusive efficiency of a sample, the two are correlated).")
 lines[2:2] = [summary, ""]
 lines += ["", "## Differences beyond 2 standard deviations", "",
           "Rows with an n σ value (v1 and v2 both present, both with an uncertainty), Run 3 eras; the 2018 "
